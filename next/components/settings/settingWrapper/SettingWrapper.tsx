@@ -16,10 +16,10 @@ export type SettingWrapperProps = {
 
 export const SettingWrapper = memo(({ setting, handleSave }: SettingWrapperProps) => {
     const { t } = useTranslation();
-
+  
     return (
         <div>
-            <h3>{t(setting.i18nLabel)}</h3>
+            <h3>{setting.type !== SettingType.Radio && t(setting.i18nLabel)}</h3>
             {(() => {
                 switch (setting.type) {
                     case SettingType.SelectorFinite:

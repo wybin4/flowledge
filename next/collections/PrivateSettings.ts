@@ -9,11 +9,6 @@ export const PrivateSettings = new CachedCollection<SettingValue>('private-setti
 //     PrivateSettings.collection.insertOne(setting);
 // }
 
-export function getPrivateSetting<T>(_id: string): T | undefined {
-    const setting = PrivateSettings.collection.findOne({ _id });
-    return setting?.value as T ?? undefined;
-}
-
 function filterSettingsByRegex(regexArray: string[]): SettingValue[] {
     const regexQueries = regexArray.map(regex => ({ _id: { '$regex': regex } }));
     const settings = PrivateSettings.collection.find({
@@ -30,7 +25,7 @@ export function getPrivateSettingByRegex<T>(regexArray: string[]): T | undefined
     const filteredSettings = filterSettingsByRegex(regexArray);
 
     return filteredSettings.length > 0
-        ? (filteredSettings[0].value || filteredSettings[0].packageValue) as T | undefined
+        ? filteredSettings[0].value as T | undefined
         : undefined;
 }
 

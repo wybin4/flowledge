@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import styles from "./ToggleSwitch.module.css";
 
-export const ToggleSwitch = () => {
-    const [isOn, setIsOn] = useState<boolean>(false);
+type ToggleSwitchProps = {
+    isChecked: boolean;
+    onToggle: () => void;
+};
 
-    const toggleSwitch = () => setIsOn(!isOn);
-
+export const ToggleSwitch = ({ isChecked, onToggle }: ToggleSwitchProps) => {
     return (
         <div className={styles.container}>
             <label className={styles.switch}>
                 <input
                     type='checkbox'
-                    checked={isOn}
-                    onChange={toggleSwitch}
+                    checked={isChecked}
+                    onChange={onToggle}
                 />
                 <span className={styles.slider} />
             </label>

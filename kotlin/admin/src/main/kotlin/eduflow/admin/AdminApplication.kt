@@ -55,19 +55,27 @@ class AdminApplication : CommandLineRunner {
 
 
        runBlocking {
-//           settingsRegistry.addGroup("ldap") {
-//               addTab("connection") {
-//                   addSetting("host", "", SettingDetails(
-//                       type = SettingType.STRING,
-//                       public = true,
-//                   ))
-//               }
-//           }
-           settingsRegistry.addGroup("search") {
-               addSetting("page-size", 10, SettingDetails(
-                   type = SettingType.INPUT_NUMBER,
+           settingsRegistry.addGroup("ldap") {
+               addSetting("enabled", false, SettingDetails(
+                   type = SettingType.RADIO,
+                   public = true
                ))
+               addTab("connection") {
+                   addSetting("host", "", SettingDetails(
+                       type = SettingType.INPUT_TEXT,
+                       public = true,
+                   ))
+                   addSetting("port", 389, SettingDetails(
+                       type = SettingType.INPUT_NUMBER,
+                       public = true,
+                   ))
+               }
            }
+//           settingsRegistry.addGroup("search") {
+//               addSetting("page-size", 10, SettingDetails(
+//                   type = SettingType.INPUT_NUMBER,
+//               ))
+//           }
        }
     }
 }

@@ -1,19 +1,23 @@
 import WebSocketClient from "@/socket/WebSocketClient";
 import { CallbackUsage } from "@/types/StateCallback";
+import EventEmitter from "events";
 import Loki, { Collection } from "lokijs";
 
 const Application = new Loki('app.db');
 
 type CachedCollectionCallback<T> = (data: T[], usage: CallbackUsage, regex?: string) => void;
 
-export class CachedCollection<T extends { _id: string }, U = T> {
+export class CachedCollection<T extends { _id: string }, U = T> extends EventEmitter {
     public collection: Collection<T>;
     protected name: string;
+    public eventName: string;
     protected updatedAt: Date = new Date(0);
     private callbacks: Set<{ cb: CachedCollectionCallback<T>; regex?: string }> = new Set();
 
     constructor(name: string) {
+        super();
         this.name = name;
+        this.eventName = `${name}-changed`
         this.collection = Application.addCollection<T>(name, { unique: ["_id"] });
     }
 
@@ -34,6 +38,7 @@ export class CachedCollection<T extends { _id: string }, U = T> {
         this.callbacks.forEach(({ cb, regex }) => {
             cb(record, usage, regex);
         });
+        this.emit(this.eventName, record);
     }
 
     async listen() {
@@ -91,7 +96,7 @@ export class CachedCollection<T extends { _id: string }, U = T> {
             }
         }
 
-        const channel = `/topic/${this.name}-changed`;
+        const channel = `/topic/${this.eventName}`;
 
         WebSocketClient.subscribeToChannel(channel, async (message) => {
             try {

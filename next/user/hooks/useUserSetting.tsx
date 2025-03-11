@@ -1,36 +1,37 @@
 import { getPrivateSettingByRegex } from "@/collections/PrivateSettings";
 import UserService from "@/user/UserService";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { User } from "../types/User";
 import { UserSetting } from "../types/UserSetting";
+import { useStateFromService } from "@/hooks/useStateFromService";
 
 export const useUserSetting = <T,>(_id: keyof UserSetting): T | undefined => {
-    const [settingValue, setSettingValue] = useState<T | undefined>(undefined);
+    const [settingValue, setSettingValue] = useState<T | undefined>(UserService.getUserState()?.settings[_id] as T);
 
-    function updateSettingValue<T>(state: User | undefined) {
-        if (!state) {
-            return;
-        }
+    const updateSettingValue = useCallback(
+        (newState: User | undefined) => {
+            if (!newState) {
+                return;
+            }
 
-        const defaultSettingValue = getPrivateSettingByRegex<T>([UserService.getUserSettingRegex(), _id]);
-        const newUserSettingValue = state.settings[_id] as T | undefined;
+            const defaultSettingValue = getPrivateSettingByRegex<T>([
+                UserService.getUserSettingRegex(),
+                _id,
+            ]);
 
-        setSettingValue(newUserSettingValue || defaultSettingValue as any);
-    }
+            const newUserSettingValue = newState.settings[_id] as T | undefined;
 
-    const handleUserStateChange = useCallback(
-        (newState: User | undefined) => updateSettingValue(newState), [_id]
+            setSettingValue(newUserSettingValue || defaultSettingValue);
+        },
+        [_id]
     );
 
-    useEffect(() => {
-        updateSettingValue(UserService.getUserState());
-
-        UserService.on('userStateChanged', handleUserStateChange);
-
-        return () => {
-            UserService.off('userStateChanged', handleUserStateChange);
-        };
-    }, [_id, handleUserStateChange]);
+    useStateFromService<User | undefined>(
+        () => UserService.getUserState(),
+        UserService.eventName,
+        UserService,
+        updateSettingValue
+    );
 
     return settingValue;
 };

@@ -31,7 +31,20 @@
         }
     },
     "ldap": {
-        "name": "ldap"
+        "name": "ldap",
+        "connection": {
+            "name": "connection",
+            "host": {
+                "name": "host"
+            },
+            "port": {
+                "name": "port",
+                "description": "ports 389 and 636 are used for ldap connection, with 389 being unencrypted and 636 encrypted"
+            }
+        },
+        "enabled": {
+            "name": "enabled"
+        }
     },
     "search": {
         "name": "search",

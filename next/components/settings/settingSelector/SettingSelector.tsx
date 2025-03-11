@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 import styles from "./SettingSelector.module.css";
 import cn from 'classnames';
 import SelectorInfiniteIcon from "../../../assets/selector-infinite.svg";
@@ -9,13 +9,13 @@ import { InputBoxWrapper } from "@/components/inputBox/InputBoxWrapper";
 import { UpdatableSetting } from "@/hooks/useSettings";
 
 type SettingSelectorProps = {
-    setting: SelectorSettingValue;
+    setting: SelectorSetting<SettingValueType>;
     handleSave: (setting: UpdatableSetting) => void;
 }
 
 export const SettingSelector = memo(({ setting, handleSave }: SettingSelectorProps) => {
     const { t } = useTranslation();
-
+    
     return (
         <InputBoxWrapper>
             {setting.type === SettingType.SelectorFinite ? (

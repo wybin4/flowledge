@@ -17,8 +17,7 @@ export function useStateUpdate<T extends { _id: string }>(
                     : newItems;
 
                 if (usage === CallbackUsage.MANY) {
-                    const filteredData = prevData.filter(p => filteredItems.some(f => f._id === p._id));
-                    return [...filteredData, ...filteredItems.filter(item => !filteredData.some(f => f._id === item._id))];
+                    return filteredItems;
                 }
 
                 if (filteredItems.length === 1) {

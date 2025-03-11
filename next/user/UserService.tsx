@@ -14,6 +14,7 @@ class UserService extends EventEmitter {
     public userId: string;
     private userState: User | undefined = undefined;
     private userStateCallbacks: Set<{ cb: UserSettingsCallback; regex?: string }> = new Set();
+    public eventName = 'user-changed';
 
     constructor(userId: string) {
         super();
@@ -30,7 +31,7 @@ class UserService extends EventEmitter {
         this.userStateCallbacks.forEach(({ cb, regex }) => {
             cb(this.processUserSettings(data.settings, regex), regex);
         });
-        this.emit('userStateChanged', data);
+        this.emit(this.eventName, data);
     }
 
     setUserStateCallbacks(callback: UserSettingsCallback, regex?: string) {
@@ -46,7 +47,7 @@ class UserService extends EventEmitter {
     }
 
     subscribeToUserChanges() {
-        const channel = `/topic/${this.userId}/user-changed`;
+        const channel = `/topic/${this.userId}/${this.eventName}`;
 
         WebSocketClient.subscribeToChannel(channel, (message) => {
             console.log("Received user change message:", message.body);

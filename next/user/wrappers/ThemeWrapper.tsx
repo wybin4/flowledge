@@ -6,7 +6,7 @@ import { Theme } from "@/user/types/Theme";
 export default function ThemeWrapper({ children }: { children: React.ReactNode }) {
     const [deviceTheme, setDeviceTheme] = useState<Theme>(Theme.Light);
     const theme = useUserSetting<Theme>('theme') || Theme.Auto;
-    
+
     useEffect(() => {
         if (theme === Theme.Auto) {
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');

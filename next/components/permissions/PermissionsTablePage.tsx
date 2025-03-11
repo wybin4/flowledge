@@ -7,15 +7,15 @@ import { IPermission } from "@/types/Permission";
 import { TablePage } from "../tablePage/TablePage";
 import { PermissionsHeader } from "./permissionsHeader/PermissionsHeader";
 import { PermissionsItem } from "./permissionsItem/PermissionsItem";
-import { getPrivateSetting } from "@/collections/PrivateSettings";
 import { useState } from "react";
 import { TablePageSearch } from "../tablePage/TablePageSearch";
 import PageLayout from "../pageLayout/PageLayout";
 import { apiClient } from "@/apiClient";
+import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 
 export const PermissionsTablePage = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const itemsPerPage = getPrivateSetting<number>('page-size') || 10;
+    const itemsPerPage = usePrivateSetting<number>('search.page-size') || 10;
 
     const {
         data,

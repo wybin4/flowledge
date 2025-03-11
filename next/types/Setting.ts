@@ -1,5 +1,3 @@
-import { JSX } from "react";
-
 export type SettingOption = {
     label: string;
     value: SettingValueType;
@@ -11,8 +9,8 @@ export enum SettingType {
     InputText = "INPUT_TEXT",
     InputNumber = "INPUT_NUMBER",
     InputPassword = "INPUT_PASSWORD",
-    Radio = "Radio",
-    Code = "Code",
+    Radio = "RADIO",
+    Code = "CODE",
 }
 
 type BaseSetting<T> = {

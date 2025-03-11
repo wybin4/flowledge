@@ -1,0 +1,4 @@
+package eduflow
+
+class Record {
+}

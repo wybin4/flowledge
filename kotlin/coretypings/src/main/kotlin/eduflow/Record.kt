@@ -1,4 +1,8 @@
 package eduflow
 
-class Record {
+import java.util.*
+
+interface Record {
+    val _id: String
+    val _updatedAt: Date
 }

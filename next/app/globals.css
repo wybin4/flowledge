@@ -1,0 +1,228 @@
+:root {
+  /* === dark */
+  --dark: black;
+  --secondary-text: #E1E1E1;
+  --secondary-light: #B9B9B9;
+  --blue: #2A7CE1;
+  --green: #37AA42;
+  --red: #ed2236;
+}
+
+.light {
+  --dark: white;
+  --light: black;
+  --secondary-text: #000000;
+  --secondary-light: #E7E7E7;
+  --hover-dark: #F0F0F0;
+  --description-text: #75757E;
+  --input-border: #E6E6E6;
+  --toggle-bg: #adadb7;
+  --toggle-bg-enabled: var(--light);
+  --toggle-checked: var(--dark);
+  --button: #f4f4f4;
+  --button-hover: #e8e8e8;
+  --sidebar: #EFEFEF;
+  --sidebar-hover: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  --dark: black;
+  --light: white;
+  --secondary-text: #E1E1E1;
+  --secondary-light: #B9B9B9;
+  --hover-dark: #282828;
+  --description-text: #818181;
+  --input-border: #383838;
+  --toggle-bg: var(--input-border);
+  --toggle-bg-enabled: #8a8a8a;
+  --toggle-checked: var(--light);
+  --button: #191919;
+  --button-hover: #2a2a2a;
+  --sidebar: #101010;
+  --sidebar-hover: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background-color: var(--dark);
+  color: var(--secondary-text);
+  transition: background-color 0.3s, color 0.3s;
+  font-family: "IBM Plex Mono", "Noto Sans Mono Variable", "Noto Sans Mono", monospace;
+}
+
+@media (max-width: 1950px) {
+
+  html,
+  body {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1600px) {
+
+  html,
+  body {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1200px) {
+
+  html,
+  body {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+
+  html,
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+
+  html,
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+
+  html,
+  body {
+    font-size: 13px;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark);
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--hover-dark);
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--input-border);
+}
+
+/* override code-mirror library styles */
+
+.cm-theme-none {
+  background-color: var(--hover-dark);
+  border-radius: 0.6875rem;
+}
+
+.cm-gutter.cm-lineNumbers {
+  border-radius: 0.6875rem 0 0 0.6875rem;
+}
+
+.cm-gutters {
+  background-color: var(--dark) !important;
+}
+
+.ͼ2 .cm-gutters {
+  border-right: none;
+}
+
+.cm-gutter {
+  background-color: var(--hover-dark);
+}
+
+.ͼ4 .cm-line {
+  color: var(--description-text);
+}
+
+.code-mirror-focused .ͼ4 .cm-line {
+  color: var(--light);
+}
+
+.ͼ1.cm-focused .cm-matchingBracket {
+  background-color: var(--red);
+  color: var(--light);
+}
+
+.cm-gutterElement {
+  font-family: "IBM Plex Mono", "Noto Sans Mono Variable", "Noto Sans Mono", monospace;
+}
+
+.ͼ2 .cm-activeLineGutter,
+.ͼ2 .cm-activeLine {
+  background-color: var(--hover-dark);
+  color: var(--description-text) !important;
+}
+
+.code-mirror-focused .ͼ2 .cm-activeLineGutter,
+.code-mirror-focused .ͼ2 .cm-activeLine {
+  background-color: var(--light);
+  color: var(--dark) !important;
+}
+
+.ͼd {
+  color: var(--green);
+}
+
+.ͼe {
+  color: var(--red);
+}
+
+.ͼc {
+  color: var(--blue);
+}
+
+.code-mirror-focused .ͼ1 .cm-foldPlaceholder {
+  background-color: var(--red);
+  border: none;
+  color: var(--light);
+}
+
+.ͼ1 .cm-foldPlaceholder {
+  background-color: var(--hover-dark);
+  border: none;
+  color: var(--description-text);
+}
+
+/* override code-mirror library styles */
+
+::-moz-selection {
+  background-color: var(--light);
+  color: var(--dark);
+}
+
+::selection {
+  background-color: var(--light);
+  color: var(--dark);
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+
+  color: var(--description-text);
+  background-color: var(--button);
+  font-family: inherit;
+  font-weight: 500;
+
+  border: solid 2px var(--input-border);
+  border-radius: 0.8rem;
+
+  outline: none !important;
+
+  padding: 0.9rem 1rem 0.9rem 1rem;
+
+  font-size: 0.875rem;
+}
+
+input:focus {
+  border: solid 2px var(--light);
+  color: var(--light);
+}

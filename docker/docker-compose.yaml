@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_REPLICA_SET: rs0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - mongo_network
+    command: ["mongod", "--replSet", "rs0"]
+
+volumes:
+  mongo_data:
+
+networks:
+  mongo_network:
+    driver: bridge

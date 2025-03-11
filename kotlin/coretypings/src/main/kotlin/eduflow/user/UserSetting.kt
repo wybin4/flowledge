@@ -1,4 +1,6 @@
 package eduflow.user
 
-class UserSetting {
+interface UserSetting {
+    var theme: Theme
+    var language: Language
 }

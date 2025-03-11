@@ -1,4 +1,5 @@
 package eduflow.user
 
-class Language {
+enum class Language {
+    EN, RU
 }

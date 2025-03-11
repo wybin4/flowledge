@@ -1,0 +1,156 @@
+import WebSocketClient from "@/socket/WebSocketClient";
+import { CallbackUsage } from "@/types/StateCallback";
+import Loki, { Collection } from "lokijs";
+
+const Application = new Loki('app.db');
+
+type CachedCollectionCallback<T> = (data: T[], usage: CallbackUsage, regex?: string) => void;
+
+export class CachedCollection<T extends { _id: string }, U = T> {
+    public collection: Collection<T>;
+    protected name: string;
+    protected updatedAt: Date = new Date(0);
+    private callbacks: Set<{ cb: CachedCollectionCallback<T>; regex?: string }> = new Set();
+
+    constructor(name: string) {
+        this.name = name;
+        this.collection = Application.addCollection<T>(name, { unique: ["_id"] });
+    }
+
+    pushCallback(callback: CachedCollectionCallback<T>, regex?: string): void {
+        this.callbacks.add({ cb: callback, regex });
+    }
+
+    popCallback(callback: CachedCollectionCallback<T>): void {
+        for (const item of this.callbacks) {
+            if (item.cb === callback) {
+                this.callbacks.delete(item);
+                break;
+            }
+        }
+    }
+
+    processRecords(record: T[], usage: CallbackUsage) {
+        this.callbacks.forEach(({ cb, regex }) => {
+            cb(record, usage, regex);
+        });
+    }
+
+    async listen() {
+        await this.init();
+    }
+
+    async init() {
+        const cachedData = this.loadFromCache();
+        if (!cachedData || cachedData.length === 0) {
+            await this.loadFromServer();
+        }
+        return this.setupListener();
+    }
+
+    protected handleReceived(record: U, _action: 'removed' | 'changed'): T {
+        return record as unknown as T;
+    }
+
+    protected async handleRecordEvent(action: 'removed' | 'changed', record: any) {
+        const newRecord = this.handleReceived(record, action);
+
+        if (!this.hasId(newRecord)) {
+            console.warn("Received record without _id. Skipping...", record);
+            return;
+        }
+
+        const { _id } = newRecord;
+
+        if (action === 'removed') {
+            this.collection.findAndRemove({ _id: { $eq: _id } });
+            console.log(`Record removed: ${_id}`);
+        } else {
+            const recordToUpdate = this.collection.findOne({ _id: { $eq: _id } });
+            if (recordToUpdate) {
+                const updatedRecord = { ...recordToUpdate, ...newRecord, _id: recordToUpdate._id };
+                this.collection.update(updatedRecord);
+            } else {
+                console.log(`No record found with _id: ${_id}`);
+            }
+            console.log(`Record updated: ${_id}`);
+        }
+
+        this.processRecords([record], CallbackUsage.ONE);
+    }
+
+    async setupListener() {
+        if (!WebSocketClient.isConnected) {
+            console.warn("WebSocket is not connected. Waiting for connection...");
+            try {
+                await WebSocketClient.waitForConnection();
+                console.log("WebSocket connected, proceeding with subscription...");
+            } catch (error) {
+                console.error("WebSocket connection failed or timed out", error);
+                return;
+            }
+        }
+
+        const channel = `/topic/${this.name}-changed`;
+
+        WebSocketClient.subscribeToChannel(channel, async (message) => {
+            try {
+                const { action, record } = JSON.parse(message.body);
+                console.log("Received WebSocket message:", action, record);
+                await this.handleRecordEvent(action, record);
+            } catch (error) {
+                console.error("Error processing WebSocket message:", error);
+            }
+        });
+
+        console.log(`Subscribed to WebSocket channel: ${channel}`);
+    }
+
+    loadFromCache(): T[] {
+        return this.collection.find();
+    }
+
+    async loadFromServer() {
+        try {
+            const response = await fetch(`http://localhost:8080/api/${this.name}.get`);
+            if (!response.ok) {
+                throw new Error(`Ошибка загрузки данных с сервера: ${response.statusText}`);
+            }
+
+            const data: T[] = await response.json();
+            const startTime = new Date();
+            const lastTime = this.updatedAt;
+
+            data.forEach((record) => {
+                const newRecord = this.handleLoadFromServer(record);
+                if (!this.hasId(newRecord)) {
+                    return;
+                }
+
+                const { _id } = newRecord;
+                this.collection.findAndRemove({ _id: { $eq: _id } });
+                this.collection.insert(newRecord);
+
+                if (this.hasUpdatedAt(newRecord) && newRecord._updatedAt! > this.updatedAt) {
+                    this.updatedAt = newRecord._updatedAt!;
+                }
+            });
+            this.processRecords(data, CallbackUsage.MANY);
+
+            this.updatedAt = this.updatedAt.getTime() === lastTime.getTime() ? startTime : this.updatedAt;
+        } catch (error) {
+            console.error("Ошибка при загрузке данных с сервера:", error);
+        }
+    }
+
+    private handleLoadFromServer(record: T): T {
+        return record; // Можно добавить обработку
+    }
+
+    private hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
+    private hasUpdatedAt = <T>(record: T): record is T & { _updatedAt: Date } =>
+        typeof record === 'object' &&
+        record !== null &&
+        '_updatedAt' in record &&
+        (record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date;
+}

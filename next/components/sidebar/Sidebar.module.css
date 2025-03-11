@@ -1,0 +1,54 @@
+.left {
+    padding-right: 18rem;
+}
+
+.left {
+    padding-right: 7rem;
+}
+
+.item {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    background-color: var(--sidebar);
+    color: white;
+    transition: width 0.3s ease-in-out;
+
+    font-weight: 500;
+}
+
+.left .item {
+    left: 0;
+}
+
+.right .item {
+    right: 0;
+}
+
+.left .expanded {
+    width: 16rem;
+}
+
+.left .collapsed {
+    width: 5rem;
+}
+
+.right .expanded {
+    width: 30rem;
+}
+
+.right .collapsed {
+    width: 0;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: 90%;
+}
+
+.toggledButton svg {
+    transform: rotate(90deg);
+}

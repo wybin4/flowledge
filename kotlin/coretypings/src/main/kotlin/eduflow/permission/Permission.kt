@@ -1,4 +1,6 @@
 package eduflow.permission
 
-class Permission {
+interface Permission {
+    val _id: String
+    val roles: List<String>
 }

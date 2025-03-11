@@ -1,4 +1,9 @@
 package eduflow.role
 
-class Role {
+interface Role {
+    val _id: String
+    val name: String
+    val description: String
+    val scope: RoleScope
 }
+

@@ -1,0 +1,51 @@
+import { useIcon } from "@/hooks/useIcon";
+import { ReactNode } from "react";
+import styles from "./TablePage.module.css";
+import { IPagination } from "@/types/Pagination";
+import cn from "classnames";
+import { useTranslation } from "react-i18next";
+
+type TablePageProps<T> = {
+    header: ReactNode;
+    body: ReactNode;
+    pagination: Omit<IPagination<T>, 'data'>;
+};
+
+export const TablePage = <T,>({ header, body, pagination }: TablePageProps<T>) => {
+    const iconRight = useIcon('right');
+    const iconLeft = useIcon('left');
+    const iconNothing = useIcon('nothing');
+    const { t } = useTranslation();
+
+    if (pagination.totalCount === 0) {
+        return (
+            <div className={styles.nothingContainer}>
+                <div>{iconNothing}</div>
+                <h2>{t('nothing-found')}</h2>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.container}>
+            <div className={cn(styles.button, {
+                [styles.disabled]: pagination.currentPage === 1
+            })}>
+                <div>{pagination.currentPage - 1}/{pagination.totalPages}</div>
+                <div onClick={pagination.handlePreviousPage}>{iconLeft}</div>
+            </div>
+            <table className={styles.table}>
+                {header}
+                <tbody>
+                    {body}
+                </tbody>
+            </table>
+            <div className={cn(styles.button, {
+                [styles.disabled]: pagination.currentPage === pagination.totalPages
+            })}>
+                <div>{pagination.currentPage + 1}/{pagination.totalPages}</div>
+                <div onClick={pagination.handleNextPage}>{iconRight}</div>
+            </div>
+        </div>
+    );
+};

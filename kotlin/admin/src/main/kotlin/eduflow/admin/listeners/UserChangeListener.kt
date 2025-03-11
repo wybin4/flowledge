@@ -1,20 +1,23 @@
 package eduflow.admin.listeners
 
-import eduflow.admin.models.PrivateSettingModel
+import com.mongodb.client.model.changestream.OperationType
+import eduflow.admin.models.UserModel
 import eduflow.admin.services.WebSocketNotificationService
 import org.springframework.stereotype.Component
 
 @Component
-class PrivateSettingChangeListener(
+class UserChangeListener(
     private val webSocketService: WebSocketNotificationService
-) : AbstractMongoChangeStreamListener<PrivateSettingModel>() {
+) : AbstractMongoChangeStreamListener<UserModel>() {
 
-    override val entityClass = PrivateSettingModel::class.java
+    override val entityClass = UserModel::class.java
 
-    override fun handleChange(change: PrivateSettingModel) {
-        if (change.public) {
-            webSocketService.notifyAll("public-settings-changed", change)
-        }
-        webSocketService.notifyLoggedInUsers("private-settings-changed", change)
+    override fun handleChange(action: OperationType?, record: UserModel) {
+        val payload = mapOf("action" to action, "record" to record)
+        webSocketService.notifyUser(record._id,"user-changed", payload)
+    }
+
+    override fun getCollectionName(): String {
+        return "userModel"
     }
 }

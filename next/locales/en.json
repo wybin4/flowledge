@@ -1,0 +1,107 @@
+{
+    "nothing-found": "nothing found",
+    "sidebar": {
+        "profile": "profile",
+        "courses": "courses",
+        "resize": {
+            "expand": "expand",
+            "collapse": "collapse"
+        },
+        "user-settings": "profile settings",
+        "private-settings": "administration",
+        "permissions": "permissions"
+    },
+    "name": "name",
+    "user-default": {
+        "name": "user default settings",
+        "appearance": {
+            "name": "appearance",
+            "theme": {
+                "name": "theme",
+                "auto": "auto",
+                "dark": "dark",
+                "light": "light",
+                "description": "auto theme switches between light and dark themes depending on your device's display mode"
+            },
+            "language": {
+                "name": "language",
+                "description": "any text that isn't translated will be displayed in english",
+                "placeholder": "preferred language"
+            }
+        }
+    },
+    "ldap": {
+        "name": "ldap"
+    },
+    "search": {
+        "name": "search",
+        "page-size": {
+            "name": "page size"
+        }
+    },
+    "permissions": {
+        "name": "permissions",
+        "placeholder": "search permissions",
+        "view-private-settings": {
+            "name": "view private settings",
+            "description": "allows the user to view confidential system settings."
+        },
+        "edit-private-settings": {
+            "name": "edit private settings",
+            "description": "allows the user to modify confidential system settings."
+        },
+        "manage-permissions": {
+            "name": "manage permissions",
+            "description": "allows the user to assign and modify permissions for other users."
+        },
+        "view-all-courses": {
+            "name": "view all courses",
+            "description": "allows the user to view all courses in the system."
+        },
+        "view-assigned-courses": {
+            "name": "view assigned courses",
+            "description": "allows the user to view only the courses they are assigned to."
+        },
+        "edit-assigned-courses": {
+            "name": "edit assigned courses",
+            "description": "allows the user to edit courses they are assigned to."
+        },
+        "edit-all-courses": {
+            "name": "edit all courses",
+            "description": "allows the user to edit any course in the system."
+        },
+        "delete-course": {
+            "name": "delete any course",
+            "description": "allows the user to delete any course in the system."
+        },
+        "delete-assigned-course": {
+            "name": "delete assigned course",
+            "description": "allows the user to delete only courses they are assigned to."
+        },
+        "assign-users-to-course": {
+            "name": "assign users to course",
+            "description": "allows the user to add participants to courses."
+        },
+        "remove-users-from-course": {
+            "name": "remove users from course",
+            "description": "allows the user to remove participants from courses."
+        },
+        "create-course": {
+            "name": "create course",
+            "description": "allows the user to create new courses."
+        },
+        "view-own-stats": {
+            "name": "view own statistics",
+            "description": "allows the user to view their own course statistics."
+        },
+        "view-assigned-stats": {
+            "name": "view assigned statistics",
+            "description": "allows the user to view statistics for courses they are assigned to."
+        },
+        "view-all-stats": {
+            "name": "view all statistics",
+            "description": "allows the user to view statistics for all courses in the system."
+        }
+    },
+    "save": "save"
+}

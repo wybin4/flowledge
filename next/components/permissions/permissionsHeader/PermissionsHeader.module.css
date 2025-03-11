@@ -1,0 +1,16 @@
+.name,
+.header {
+    padding-bottom: 1.5rem;
+}
+
+.name {
+    text-align: start;
+    width: 7rem;
+}
+
+.header {
+    word-wrap: break-word;
+    text-align: center;
+
+    width: 5rem;
+}

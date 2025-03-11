@@ -1,28 +1,16 @@
-package eduflow
+package eduflow.privateSetting
 
-import java.util.Date
-
-enum class SettingType {
-    BOOLEAN, STRING, PASSWORD, INT, SELECT, FONT, CODE, ACTION
-}
+import eduflow.Record
+import java.util.*
 
 typealias SettingValue = Any
-
-data class SettingSelectOption(
-    val key: Any,
-    val i18nLabel: String
-)
-
-data class EnableQuery(
-    val query: String
-)
 
 interface PrivateSetting: Record {
     val type: SettingType
     val public: Boolean
-    val group: String? get() = null
-    val section: String? get() = null
-    val tab: String? get() = null
+//    val group: String? get() = null
+//    val section: String? get() = null
+//    val tab: String? get() = null
     val i18nLabel: String
     val value: SettingValue
     val packageValue: SettingValue
@@ -31,6 +19,6 @@ interface PrivateSetting: Record {
     val i18nDescription: String? get() = null
     val ts: Date
     val createdAt: Date
-    val values: List<SettingSelectOption>? get() = null
+    val options: List<SettingSelectOption>? get() = null
     val placeholder: String? get() = null
 }

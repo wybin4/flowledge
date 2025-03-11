@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: auto;
+    height: 3.125rem;
+
+    margin: 0 0.3rem;
+
+    border-radius: 0.8125rem;
+
+    cursor: pointer;
+    color: var(--secondary-text);
+
+    transition: all 0.5s ease-in-out;
+}
+
+.container:hover {
+    background-color: var(--sidebar-hover);
+    color: var(--secondary-text);
+}
+
+.expanded {
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.active,
+.active:hover {
+    background-color: var(--light) !important;
+    color: var(--dark);
+}

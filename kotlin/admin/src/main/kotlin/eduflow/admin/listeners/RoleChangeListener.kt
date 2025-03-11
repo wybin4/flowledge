@@ -1,22 +1,22 @@
 package eduflow.admin.listeners
 
 import com.mongodb.client.model.changestream.OperationType
-import eduflow.admin.models.PermissionModel
+import eduflow.admin.models.RoleModel
 import eduflow.admin.services.WebSocketNotificationService
 import org.springframework.stereotype.Component
 
 @Component
-class PermissionChangeListener(
+class RoleChangeListener(
     private val webSocketService: WebSocketNotificationService
-) : AbstractMongoChangeStreamListener<PermissionModel>() {
-    override val entityClass = PermissionModel::class.java
+) : AbstractMongoChangeStreamListener<RoleModel>() {
+    override val entityClass = RoleModel::class.java
 
-    override fun handleChange(action: OperationType?, record: PermissionModel) {
+    override fun handleChange(action: OperationType?, record: RoleModel) {
         val payload = mapOf("action" to action, "record" to record)
-        webSocketService.notifyLoggedInUsers("permissions-changed", payload)
+        webSocketService.notifyLoggedInUsers("roles-changed", payload)
     }
 
     override fun getCollectionName(): String {
-        return "permissionModel"
+        return "roleModel"
     }
 }

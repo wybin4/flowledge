@@ -1,24 +1,16 @@
-package eduflow.admin
+package eduflow.admin.registries
 
 import eduflow.admin.models.PrivateSettingModel
 import eduflow.admin.repositories.PrivateSettingRepository
+import eduflow.admin.types.SettingDetails
 import eduflow.privateSetting.SettingSelectOption
 import eduflow.privateSetting.SettingType
+import eduflow.privateSetting.SettingValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
-
-data class SettingDetails(
-    val id: String? = null,
-    val type: SettingType,
-    val public: Boolean = false,
-    val i18nLabel: String? = null,
-    val i18nDescription: String? = null,
-    val placeholder: String? = null,
-    val options: List<SettingSelectOption>?
-)
 
 @Service
 class SettingsRegistry {
@@ -32,24 +24,31 @@ class SettingsRegistry {
 
     suspend fun addGroup(groupId: String, block: suspend SettingsRegistry.() -> Unit) {
         currentGroupId = groupId
-        this.block()
-        println(settings)
-        saveAllSettings()
-        currentGroupId = null
+        try {
+            this.block()
+        } finally {
+            saveAllSettings()
+            currentGroupId = null
+        }
     }
 
-    suspend fun addTab(tabId: String, block: suspend SettingsRegistry.() -> Unit) {
-        requireNotNull(currentGroupId) { "Group should be set before adding a tab" }
+    suspend fun addTab(tabId: String?, block: suspend SettingsRegistry.() -> Unit) {
         currentTabId = tabId
-        this.block()
-        currentTabId = null
+        try {
+            this.block()
+        } finally {
+            currentTabId = null
+        }
     }
 
-    suspend fun addSetting(id: String, packageValue: String, settingDetails: SettingDetails) {
+    suspend fun addSetting(id: String, packageValue: SettingValue, settingDetails: SettingDetails) {
         requireNotNull(currentGroupId) { "Group should be set before adding settings" }
-        requireNotNull(currentTabId) { "Tab should be set before adding settings" }
 
-        val prefix = "${currentGroupId!!.lowercase()}.${currentTabId!!.lowercase()}.$id".lowercase()
+        val prefix = buildString {
+            append(currentGroupId!!.lowercase())
+            currentTabId?.let { append(".${it.lowercase()}") }
+            append(".$id")
+        }
 
         val settingId = prefix
         val i18nLabel = "${prefix}.name"

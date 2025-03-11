@@ -1,24 +1,40 @@
 package eduflow.admin.controllers
 
-import eduflow.admin.models.PrivateSettingModel
-import eduflow.admin.repositories.PrivateSettingRepository
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import reactor.core.publisher.Flux
+import eduflow.admin.dto.SettingUpdateRequest
+import eduflow.admin.models.UserModel
+import eduflow.admin.repositories.UserRepository
+import eduflow.user.Language
+import eduflow.user.Theme
+import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api")
-class SettingController(private val privateSettingRepository: PrivateSettingRepository) {
+class UserController(private val userRepository: UserRepository) {
 
-    @GetMapping("/private-settings.get")
-    fun getPrivateSettings(): Flux<PrivateSettingModel> {
-        return privateSettingRepository.findAll()
+    @GetMapping("/users.get")
+    fun getUser(@RequestParam id: String): Mono<UserModel> {
+        return userRepository.findById(id)
     }
 
-    @GetMapping("/public-settings.get")
-    fun getPublicSettings(): Flux<PrivateSettingModel> {
-        return privateSettingRepository.findAll().filter { it.public }
+    @PostMapping("/users.set-setting")
+    fun setUserSettings(
+        @RequestParam userId: String,
+        @RequestBody settingUpdateRequest: SettingUpdateRequest
+    ): Mono<UserModel> {
+        return userRepository.findById(userId)
+            .flatMap { user ->
+                val updatedSettings = user.settings.copy()
+
+                when (settingUpdateRequest.id) {
+                    "theme" -> updatedSettings.theme = Theme.valueOf(settingUpdateRequest.value.toString())
+                    "language" -> updatedSettings.language = Language.valueOf(settingUpdateRequest.value.toString())
+                    else -> return@flatMap Mono.error<UserModel>(IllegalArgumentException("Invalid setting ID"))
+                }
+
+                val updatedUser = user.copy(settings = updatedSettings)
+                userRepository.save(updatedUser)
+            }
     }
 
 }

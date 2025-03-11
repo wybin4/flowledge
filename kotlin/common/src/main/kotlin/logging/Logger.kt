@@ -7,7 +7,6 @@ enum class LogLevel {
 }
 
 class MainLogger(private val loggerLabel: String) {
-
     private val logger = LoggerFactory.getLogger(loggerLabel)
 
     fun log(message: String) = log(LogLevel.LOG, message)

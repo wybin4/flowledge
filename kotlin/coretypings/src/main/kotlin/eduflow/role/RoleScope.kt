@@ -1,2 +1,5 @@
-package eduflow.role 
+package eduflow.role
 
+enum class RoleScope {
+    USERS, COURSES
+}

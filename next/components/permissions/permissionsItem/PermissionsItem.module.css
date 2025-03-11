@@ -1,0 +1,19 @@
+.container {
+    height: 3rem;
+}
+
+.item {
+    cursor: pointer;
+}
+
+.item:hover {
+    background-color: var(--hover-dark);
+}
+
+.checked {
+    background-color: var(--light);
+}
+
+.checked:hover {
+    background-color: var(--description-text);
+}

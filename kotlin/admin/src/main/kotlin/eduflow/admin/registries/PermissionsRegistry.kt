@@ -1,4 +1,4 @@
-package eduflow.admin.services
+package eduflow.admin.registries
 
 import eduflow.admin.models.PermissionModel
 import eduflow.admin.models.RoleModel
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class PermissionsService {
+class PermissionsRegistry {
 
     @Autowired
     private lateinit var permissionRepository: PermissionRepository
@@ -19,31 +19,66 @@ class PermissionsService {
     private lateinit var roleRepository: RoleRepository
 
     fun initializeDefaultRolesAndPermissions(): Mono<Void> {
-        return Mono.zip(
-            addDefaultRoles(),
-            addDefaultPermissions()
-        ).then()
+        return addMissingRoles()
+            .then(addMissingPermissions())
     }
 
-    private fun addDefaultRoles(): Mono<Void> {
+    private fun addMissingRoles(): Mono<Void> {
         val defaultRoles = listOf(
-            RoleModel("admin", "Users", "Admin", RoleScope.USERS),
-            RoleModel("user", "Users", "Regular User", RoleScope.USERS)
+            RoleModel("admin", "Users", "admin role", RoleScope.USERS),
+            RoleModel("user", "Users", "user role", RoleScope.USERS),
+            RoleModel("editor", "Users", "editor role", RoleScope.USERS),
+            RoleModel("owner", "Courses", "owner role", RoleScope.COURSES),
+            RoleModel("moderator", "Courses", "moderator role", RoleScope.COURSES),
+            RoleModel("custom_role", "Courses", "custom role", RoleScope.COURSES)
         )
 
-        val roleSaves = defaultRoles.map { roleRepository.save(it) }
-
-        return Mono.when(*roleSaves.toTypedArray()).then()
+        return roleRepository.findAll()
+            .map { it.name }  // Получаем все существующие имена ролей
+            .collectList()
+            .flatMap { existingRoleNames ->
+                val rolesToAdd = defaultRoles.filter { it.name !in existingRoleNames }
+                if (rolesToAdd.isNotEmpty()) {
+                    roleRepository.saveAll(rolesToAdd).collectList().then()
+                } else {
+                    Mono.empty()
+                }
+            }
     }
 
-    private fun addDefaultPermissions(): Mono<Void> {
+    private fun addMissingPermissions(): Mono<Void> {
         val defaultPermissions = listOf(
-            PermissionModel("access-permissions", listOf("admin"))
+            PermissionModel("view-private-settings", listOf("admin")),
+            PermissionModel("edit-private-settings", listOf("admin")),
+            PermissionModel("manage-permissions", listOf("admin")),
+
+            PermissionModel("view-all-courses", listOf("admin")),
+            PermissionModel("view-assigned-courses", listOf("moderator", "owner", "user")),
+            PermissionModel("edit-assigned-courses", listOf("moderator", "owner")),
+            PermissionModel("edit-all-courses", listOf("admin")),
+            PermissionModel("delete-course", listOf("admin")),
+            PermissionModel("delete-assigned-course", listOf("moderator", "owner")),
+
+            PermissionModel("assign-users-to-course", listOf("admin", "owner")),
+            PermissionModel("remove-users-from-course", listOf("admin", "owner")),
+
+            PermissionModel("create-course", listOf("admin")),
+
+            PermissionModel("view-own-stats", listOf("user")),
+            PermissionModel("view-assigned-stats", listOf("admin", "moderator", "owner")),
+            PermissionModel("view-all-stats", listOf("admin"))
         )
 
-        val permissionSaves = defaultPermissions.map { permissionRepository.save(it) }
-
-        return Mono.when(*permissionSaves.toTypedArray()).then()
+        return permissionRepository.findAll()
+            .map { it._id }
+            .collectList()
+            .flatMap { existingPermissionIds ->
+                val permissionsToAdd = defaultPermissions.filter { it._id !in existingPermissionIds }
+                if (permissionsToAdd.isNotEmpty()) {
+                    permissionRepository.saveAll(permissionsToAdd).collectList().then()
+                } else {
+                    Mono.empty()
+                }
+            }
     }
-
 }

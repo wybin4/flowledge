@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: space-around;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    background-color: var(--button);
+    border-radius: 0.875rem;
+    border: solid 0.125rem var(--input-border);
+
+    padding: 0.25rem;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+
+    padding: 0.4rem 0.6rem;
+
+    cursor: pointer;
+}
+
+.end {
+    display: flex;
+}
+
+.icon {
+    padding-top: 0.2rem;
+    padding-left: 1rem;
+}

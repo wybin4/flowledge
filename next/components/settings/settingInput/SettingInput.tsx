@@ -5,9 +5,9 @@ import styles from "./SettingInput.module.css";
 import { IconKey, useIcon } from "@/hooks/useIcon";
 import cn from "classnames";
 import { usePasswordInput } from "@/hooks/usePasswordInput";
+import { Input, InputType } from "@/components/inputBox/Input";
 
 export const SettingInput = memo(({ setting, handleSave }: SettingWrapperProps) => {
-    const [focused, setFocused] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<SettingValueType>(setting.value);
     const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
     const passwordInputProps = usePasswordInput();
@@ -53,23 +53,14 @@ export const SettingInput = memo(({ setting, handleSave }: SettingWrapperProps) 
         setTimeoutId(newTimeoutId);
     };
 
-
     return (
-        <div className={styles.container}>
-            <input
-                type={type}
-                className={styles.input}
-                value={inputValue as string}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
-                onChange={handleChange}
-            />
-            <span className={cn(styles.icon, {
-                [styles.iconFocused]: focused,
-                [styles.iconPointer]: isPassword
-            })} onClick={() => onClickIcon && onClickIcon()}>
-                {icon}
-            </span>
-        </div>
+        <Input
+            type={type as InputType}
+            value={inputValue as number | string}
+            onChange={handleChange}
+            icon={icon}
+            onClickIcon={onClickIcon}
+            iconClassName={cn({ [styles.inputIconPointer]: isPassword })}
+        />
     );
 });

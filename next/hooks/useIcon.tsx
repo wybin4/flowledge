@@ -19,7 +19,11 @@ import SeparatorIcon from "../assets/separator.svg";
 import CollapseIcon from "../assets/collapse.svg";
 import ExpandIcon from "../assets/expand.svg";
 import LockedIcon from "../assets/locked.svg";
-import Default from "../assets/default.svg";
+import DefaultIcon from "../assets/default.svg";
+import LinkIcon from "../assets/link.svg";
+import PresentationIcon from "../assets/presentation.svg";
+import TaskIcon from "../assets/task.svg";
+import AcceptIcon from "../assets/accept.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -32,12 +36,17 @@ const icons = {
     'appearance': <AppearanceIcon />,
     'ldap': <AccessIcon />,
     'search': <SearchIcon />,
-    'user-default': <Default />,
+    'user-default': <DefaultIcon />,
 
     'text': <TextIcon />,
     'number': <NumberIcon />,
+    'link': <LinkIcon />,
+    'presentation': <PresentationIcon />,
+    'task': <TaskIcon />,
     'password-hide': <PasswordHideIcon />,
     'password-show': <PasswordShowIcon />,
+
+    'accept': <AcceptIcon />,
 
     'right': <RightIcon />,
     'left': <LeftIcon />,

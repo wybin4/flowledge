@@ -33,3 +33,54 @@
     padding-top: 0.2rem;
     padding-left: 1rem;
 }
+
+.inputContainer {
+    position: relative;
+    width: 100%;
+    display: inline-block;
+}
+
+.inputIcon {
+    position: absolute;
+    top: 53%;
+    left: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+
+    color: var(--description-text);
+}
+
+.input {
+    padding: 0.9rem 1rem 0.9rem 2.3rem;
+    box-sizing: border-box;
+}
+
+.inputIconFocused {
+    color: var(--light);
+}
+
+input:-webkit-autofill {
+    box-shadow: 0 0 0px 1000px var(--button) inset;
+    -webkit-text-fill-color: var(--description-text);
+    border: solid 2px var(--input-border);
+    background-clip: content-box;
+    font-size: 0.875rem !important;
+}
+
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--light);
+    border: solid 2px var(--light);
+}
+
+.inputDisabled {
+    border: none;
+}
+
+.inputDisabled .input {
+    background-color: var(--input-border);
+    color: var(--light);
+}
+
+.inputDisabled .inputIcon {
+    color: var(--light)
+}

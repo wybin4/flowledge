@@ -1,0 +1,168 @@
+.toggleContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    font-size: 1.25rem;
+
+    margin-bottom: 1.25rem;
+
+    cursor: pointer;
+}
+
+.togglePlus {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+    width: 1.8rem;
+    height: 1.8rem;
+
+    background-color: var(--hover-dark);
+
+    border-radius: 50px;
+
+    font-size: 1.4rem;
+}
+
+.toggleExpanded {
+    transform: rotate(45deg);
+}
+
+.childrenExpanded {
+    display: block;
+}
+
+.childrenCollapsed {
+    display: none;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 0.375rem;
+
+    margin-bottom: 1.625rem;
+}
+
+.button {
+    background-color: var(--hover-dark);
+    border-radius: 0.4375rem;
+
+    padding: 0.2rem 0.5rem;
+
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: var(--button);
+}
+
+.buttonActive,
+.buttonActive:hover {
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+.inputContainer {
+    width: 60% !important;
+
+    margin-bottom: 1.5rem;
+}
+
+.input {
+    padding: .7rem 1rem .7rem 2.3rem !important;
+}
+
+.inputExtraContentContainer {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.clearInput {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 1.4375rem;
+    height: 1.4375rem;
+
+    font-size: 1.27rem;
+
+    background-color: var(--hover-dark);
+    border: solid 2px var(--input-border);
+    border-radius: 50px;
+
+    cursor: pointer;
+}
+
+.clearInput:hover {
+    background-color: var(--input-border);
+}
+
+.clearInputIcon {
+    transform: rotate(45deg);
+
+    padding-bottom: 2px;
+    padding-left: 1px;
+}
+
+.stuffItem .clearInput {
+    border: solid 2px #676464;
+
+    margin-right: 0.5rem !important;
+}
+
+.stuffItem .clearInput:hover {
+    background-color: var(--button);
+}
+
+.lineInput {
+    width: 2px;
+    height: 2.4rem;
+
+    background-color: var(--input-border);
+    border: none;
+    writing-mode: vertical-lr;
+}
+
+.inputExtraContentContainerFocused .lineInput,
+.inputFocused .lineInput {
+    background-color: var(--light);
+}
+
+.acceptInputIcon {
+    color: var(--input-border);
+
+    padding-right: 0.3rem;
+
+    cursor: pointer;
+}
+
+.inputExtraContentContainerFocused .acceptInputIcon,
+.inputFocused .acceptInputIcon {
+    color: var(--light);
+}
+
+.inputExtraContentContainerNotFocused .lineInput,
+.inputExtraContentContainerNotFocused .acceptInputIcon {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+.inputExtraContentContainerNotFocused .clearInput {
+    margin-right: -0.3rem;
+}
+
+.empty {
+    display: none;
+}

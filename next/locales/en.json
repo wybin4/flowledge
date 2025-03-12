@@ -116,5 +116,20 @@
             "description": "allows the user to view statistics for all courses in the system."
         }
     },
-    "save": "save"
+    "save": "save",
+    "stuff-upload": {
+        "description": "what to upload",
+        "link": {
+            "name": "link",
+            "placeholder": "paste link"
+        },
+        "presentation": {
+            "name": "presentation",
+            "placeholder": "supported formats: pptx, ppt, pdf"
+        },
+        "task": {
+            "name": "practical task",
+            "placeholder": "supported formats: doc, docx, pdf, rtf"
+        }
+    }
 }

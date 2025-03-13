@@ -1,7 +1,7 @@
 "use client";
 import { useTranslation } from "react-i18next";
 import styles from "./StuffUpload.module.css";
-import { useState } from "react";
+import { HTMLProps, useState } from "react";
 import cn from "classnames";
 import { StuffUploadButton } from "./StuffUploadButton";
 import { StuffTypes } from "../types/StuffTypes";
@@ -10,15 +10,16 @@ import { getEnumValueByString } from "@/helpers/getEnumValueByString";
 import { Stuff } from "../types/Stuff";
 import { StuffItem } from "./StuffItem";
 
-export const StuffUpload = () => {
+export const StuffUpload: React.FC<HTMLProps<HTMLDivElement>> = ({ className }) => {
     const { t } = useTranslation();
     const [expanded, setExpanded] = useState<boolean>(false);
     const [activeButton, setActiveButton] = useState<string | undefined>(undefined);
     const [stuffList, setStuffList] = useState<Stuff[]>([]);
 
     const handleAccept = (newItem: Stuff) => {
-        setStuffList(prevStuffList => [...prevStuffList, newItem]);
+        setStuffList(prevStuffList => [newItem, ...prevStuffList]);
         setActiveButton(undefined);
+        setExpanded(false);
     };
 
     const handleClear = (itemToRemove: Stuff) => {
@@ -26,7 +27,7 @@ export const StuffUpload = () => {
     };
 
     return (
-        <>
+        <div className={className}>
             <div className={styles.toggleContainer} onClick={() => setExpanded(!expanded)}>
                 <div className={cn(styles.togglePlus, {
                     [styles.toggleExpanded]: expanded
@@ -64,6 +65,6 @@ export const StuffUpload = () => {
                     />
                 )}</div>
             }
-        </>
+        </div>
     );
 };

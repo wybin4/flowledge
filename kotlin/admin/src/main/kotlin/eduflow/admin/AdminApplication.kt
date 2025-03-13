@@ -71,6 +71,23 @@ class AdminApplication : CommandLineRunner {
                    ))
                }
            }
+
+//           settingsRegistry.addGroup("file-upload") {
+//               addTab("stuff") {
+//                   addSetting("task", "*", SettingDetails(
+//                       type = SettingType.INPUT_TEXT,
+//                   ))
+//                   addSetting("presentation", "*", SettingDetails(
+//                       type = SettingType.INPUT_TEXT,
+//                   ))
+//               }
+//           }
+
+//           settingsRegistry.addGroup("security") {
+//               addSetting("link-restrictions", "[\"e.example.ru\"]", SettingDetails(
+//                   type = SettingType.INPUT_TEXT,
+//               ))
+//           }
 //           settingsRegistry.addGroup("search") {
 //               addSetting("page-size", 10, SettingDetails(
 //                   type = SettingType.INPUT_NUMBER,

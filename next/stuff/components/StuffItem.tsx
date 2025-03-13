@@ -15,7 +15,7 @@ export const StuffItem = ({ stuff, onClear }: StuffItemProps) => {
     return (
         <Input
             type='text'
-            value={stuff.value}
+            value={stuff.value || stuff.file?.name || ''}
             className={styles.inputContainer}
             inputClassName={styles.input}
             disabled={true}

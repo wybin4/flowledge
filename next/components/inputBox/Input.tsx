@@ -7,6 +7,7 @@ type InputProps = {
     value: string | number;
     placeholder?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onClick?: () => void;
     icon?: JSX.Element;
     onClickIcon?: () => void;
     iconClassName?: string;
@@ -20,7 +21,7 @@ type InputProps = {
 export type InputType = 'number' | 'text' | 'password';
 
 export const Input = ({
-    type, value, placeholder, className, onChange,
+    type, value, placeholder, className, onChange, onClick,
     icon, onClickIcon, iconClassName, inputClassName,
     readOnly, disabled, extraContent
 }: InputProps) => {
@@ -44,6 +45,7 @@ export const Input = ({
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
                 onChange={onChange}
+                onClick={onClick}
                 placeholder={placeholder}
                 readOnly={readOnly}
                 disabled={disabled}

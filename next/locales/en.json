@@ -117,19 +117,25 @@
         }
     },
     "save": "save",
+    "lesson": {
+        "synopsis": "synopsis",
+        "stuff": "stuff",
+        "survey": "survey"
+    },
     "stuff-upload": {
         "description": "what to upload",
+        "placeholder": "supported formats: ",
         "link": {
             "name": "link",
             "placeholder": "paste link"
         },
         "presentation": {
-            "name": "presentation",
-            "placeholder": "supported formats: pptx, ppt, pdf"
+            "name": "presentation"
         },
         "task": {
-            "name": "practical task",
-            "placeholder": "supported formats: doc, docx, pdf, rtf"
+            "name": "practical task"
         }
-    }
+    },
+    "file-must-be-one-of-types": "the file must be one of the following types:",
+    "link-is-not-valid": "link is not valid"
 }

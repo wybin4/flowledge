@@ -117,19 +117,25 @@
         }
     },
     "save": "сохранить",
+    "lesson": {
+        "synopsis": "конспект",
+        "stuff": "материалы",
+        "survey": "тест"
+    },
     "stuff-upload": {
         "description": "что загружать",
+        "placeholder": "поддерживаемые форматы:",
         "link": {
             "name": "ссылку",
             "placeholder": "вставьте ссылку сюда"
         },
         "presentation": {
-            "name": "презентацию",
-            "placeholder": "поддерживаемые форматы: pptx, ppt, pdf"
+            "name": "презентацию"
         },
         "task": {
-            "name": "практическое задание",
-            "placeholder": "поддерживаемые форматы: doc, docx, pdf, rtf"
+            "name": "практическое задание"
         }
-    }
+    },
+    "file-must-be-one-of-types": "файл должен быть одного из следующих типов:",
+    "link-is-not-valid": "ссылка невалидна"
 }

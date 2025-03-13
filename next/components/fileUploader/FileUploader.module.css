@@ -1,0 +1,13 @@
+.hiddenInput {
+    display: none;
+}
+
+.error {
+    color: var(--light);
+    text-decoration: underline;
+    font-size: 0.9rem;
+
+    margin-top: -0.8rem;
+    margin-bottom: 1rem;
+    margin-left: 0.3rem;
+}

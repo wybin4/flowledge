@@ -1,0 +1,58 @@
+.setting-code .cm-content {
+    background-color: var(--hover-dark);
+
+    border-radius: 0 0.6875rem 0.6875rem 0;
+    border-right: solid 2px var(--input-border);
+    border-top: solid 2px var(--input-border);
+    border-bottom: solid 2px var(--input-border);
+}
+
+/* start gutters  */
+
+.setting-code .cm-gutters {
+    background-color: var(--hover-dark) !important;
+
+    border-radius: 0.6875rem 0 0 0.6875rem;
+    border-left: solid 2px var(--input-border);
+    border-top: solid 2px var(--input-border);
+    border-bottom: solid 2px var(--input-border);
+}
+
+.setting-code .cm-gutter.cm-lineNumbers {
+    background-color: transparent;
+}
+
+.setting-code .ͼ2 .cm-gutters {
+    border-right: none;
+}
+
+.setting-code .cm-gutter {
+    background-color: var(--hover-dark);
+}
+
+.setting-code .cm-gutterElement {
+    font-family: "IBM Plex Mono", "Noto Sans Mono Variable", "Noto Sans Mono", monospace;
+}
+
+/* end gutters  */
+
+/* start numbers, booleans, string colors */
+
+.setting-code .ͼd {
+    color: var(--green);
+}
+
+.setting-code .ͼe {
+    color: var(--red);
+}
+
+.setting-code .ͼc {
+    color: var(--blue);
+}
+
+/* end numbers, booleans, string colors */
+
+.setting-code .ͼ1.cm-focused .cm-matchingBracket {
+    background-color: var(--red);
+    color: var(--light);
+}

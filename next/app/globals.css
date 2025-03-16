@@ -13,9 +13,10 @@
   --light: black;
   --secondary-text: #000000;
   --secondary-light: #E7E7E7;
+  --secondary-dark: #000000;
   --hover-dark: #F0F0F0;
   --description-text: #75757E;
-  --input-border: #E6E6E6;
+  --input-border: #dfdfdf;
   --toggle-bg: #adadb7;
   --toggle-bg-enabled: var(--light);
   --toggle-checked: var(--dark);
@@ -30,6 +31,7 @@
   --light: white;
   --secondary-text: #E1E1E1;
   --secondary-light: #B9B9B9;
+  --secondary-dark: #101010;
   --hover-dark: #282828;
   --description-text: #818181;
   --input-border: #383838;
@@ -115,84 +117,6 @@ body {
   background: var(--input-border);
 }
 
-/* override code-mirror library styles */
-
-.cm-theme-none {
-  background-color: var(--hover-dark);
-  border-radius: 0.6875rem;
-}
-
-.cm-gutter.cm-lineNumbers {
-  border-radius: 0.6875rem 0 0 0.6875rem;
-}
-
-.cm-gutters {
-  background-color: var(--dark) !important;
-}
-
-.ͼ2 .cm-gutters {
-  border-right: none;
-}
-
-.cm-gutter {
-  background-color: var(--hover-dark);
-}
-
-.ͼ4 .cm-line {
-  color: var(--description-text);
-}
-
-.code-mirror-focused .ͼ4 .cm-line {
-  color: var(--light);
-}
-
-.ͼ1.cm-focused .cm-matchingBracket {
-  background-color: var(--red);
-  color: var(--light);
-}
-
-.cm-gutterElement {
-  font-family: "IBM Plex Mono", "Noto Sans Mono Variable", "Noto Sans Mono", monospace;
-}
-
-.ͼ2 .cm-activeLineGutter,
-.ͼ2 .cm-activeLine {
-  background-color: var(--hover-dark);
-  color: var(--description-text) !important;
-}
-
-.code-mirror-focused .ͼ2 .cm-activeLineGutter,
-.code-mirror-focused .ͼ2 .cm-activeLine {
-  background-color: var(--light);
-  color: var(--dark) !important;
-}
-
-.ͼd {
-  color: var(--green);
-}
-
-.ͼe {
-  color: var(--red);
-}
-
-.ͼc {
-  color: var(--blue);
-}
-
-.code-mirror-focused .ͼ1 .cm-foldPlaceholder {
-  background-color: var(--red);
-  border: none;
-  color: var(--light);
-}
-
-.ͼ1 .cm-foldPlaceholder {
-  background-color: var(--hover-dark);
-  border: none;
-  color: var(--description-text);
-}
-
-/* override code-mirror library styles */
-
 ::-moz-selection {
   background-color: var(--light);
   color: var(--dark);
@@ -229,4 +153,16 @@ input {
 input:focus {
   border: solid 2px var(--light);
   color: var(--light);
+}
+
+.code-mirror-focused .ͼ1 .cm-foldPlaceholder {
+  background-color: var(--red);
+  border: none;
+  color: var(--light);
+}
+
+.ͼ1 .cm-foldPlaceholder {
+  background-color: var(--hover-dark);
+  border: none;
+  color: var(--description-text);
 }

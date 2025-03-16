@@ -1,0 +1,174 @@
+/* toolbar & toolbar buttons start */
+
+.editor-code .md-editor-toolbar {
+    background-color: transparent;
+    padding: 0.5rem !important;
+
+    gap: 0.375rem !important;
+}
+
+.editor-code .md-editor-toolbar button {
+    width: 2.125rem !important;
+    height: 2.125rem !important;
+}
+
+.editor-code .md-editor-toolbar button:hover {
+    background-color: var(--hover-dark);
+    border-radius: 0.3125rem;
+}
+
+.editor-code .md-editor-toolbar button:hover svg {
+    color: var(--light) !important;
+}
+
+.editor-code .md-editor-toolbar svg {
+    color: white;
+}
+
+/* toolbar & toolbar buttons end */
+
+/* background & border & text color start */
+
+.code-mirror-focused .wmde-markdown-color {
+    color: var(--light);
+}
+
+.code-mirror .wmde-markdown-color {
+    color: var(--description-text);
+    font-family: "IBM Plex Mono", "Noto Sans Mono Variable", "Noto Sans Mono", monospace;
+}
+
+.editor-code .md-editor-toolbar-warp {
+    background-color: var(--secondary-dark);
+
+    border-radius: 0.75rem 0.75rem 0 0;
+    border: solid 2px var(--input-border);
+    border-bottom: none !important;
+}
+
+.editor-code .md-editor {
+    background-color: transparent !important;
+}
+
+.editor-code .md-editor-content {
+    border-radius: 0 0 0.75rem 0.75rem;
+    border: solid 2px var(--input-border);
+}
+
+.editor-code .ͼ16,
+.editor-code .md-editor-preview,
+.editor-code .wmde-markdown {
+    background-color: var(--button) !important;
+}
+
+/* background & border & text color end */
+
+/* dashed border left start */
+
+.md-editor-preview {
+    position: relative;
+    padding-left: 10px;
+
+    border-left: none !important;
+}
+
+.md-editor-preview::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.5px;
+    height: 100%;
+
+    background-color: var(--input-border);
+
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='123' viewBox='0 0 3 123'%3E%3Cline x1='1.5' y1='0' x2='1.5' y2='125' stroke='black' stroke-width='3' stroke-dasharray='12 12'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: repeat-y;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='123' viewBox='0 0 3 123'%3E%3Cline x1='1.5' y1='0' x2='1.5' y2='125' stroke='black' stroke-width='3' stroke-dasharray='12 12'/%3E%3C/svg%3E");
+    mask-repeat: repeat-y;
+}
+
+/* dashed border left end */
+
+/* elements props start */
+
+.editor-code .cm-theme-none {
+    background-color: transparent;
+}
+
+.editor-code .ͼ1l,
+.editor-code .ͼ1o {
+    color: var(--blue);
+}
+
+.editor-code .ͼ1.cm-focused {
+    outline: none !important;
+}
+
+.editor-code .ͼ1.cm-focused .cm-matchingBracket {
+    background-color: transparent;
+    color: var(--light);
+}
+
+.editor-code .ͼ1q {
+    color: var(--blue);
+    background-color: transparent !important;
+}
+
+.editor-code .ͼ1q::selection,
+.editor-code .ͼ1p::selection {
+    color: var(--dark) !important;
+    background-color: var(--light) !important;
+}
+
+.editor-code .ͼ2 .cm-line::selection,
+.editor-code .ͼ2 br::selection,
+.editor-code .ͼ2 span::selection {
+    background-color: var(--light) !important;
+}
+
+.editor-code code {
+    background-color: var(--hover-dark);
+    color: var(--light);
+}
+
+.editor-code .md-editor-preview a {
+    color: var(--blue);
+}
+
+.editor-code .ͼ2 .ͼ1k {
+    color: var(--blue);
+}
+
+.editor-code .md-editor-preview blockquote {
+    border-left: solid 3px var(--blue);
+}
+
+/* elements props end */
+
+/* scrollbars start */
+
+.editor-code .cm-scroller::-webkit-scrollbar,
+.editor-code .md-editor-preview::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+.editor-code .cm-scroller::-webkit-scrollbar-track,
+.editor-code .md-editor-preview::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 0.5rem;
+}
+
+.editor-code .cm-scroller::-webkit-scrollbar-thumb,
+.editor-code .md-editor-preview::-webkit-scrollbar-thumb {
+    background: var(--hover-dark);
+    border-radius: 0.5rem;
+}
+
+.editor-code .cm-scroller::-webkit-scrollbar-thumb:hover,
+.editor-code .md-editor-preview::-webkit-scrollbar-thumb:hover {
+    background: var(--input-border);
+}
+
+/* scrollbars end */

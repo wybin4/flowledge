@@ -1,0 +1,42 @@
+.md-editor {
+    background-color: transparent !important;
+}
+
+.ͼ2 .cm-line {
+    caret-color: var(--light) !important;
+}
+
+.code-mirror-focused .ͼ2 .cm-line {
+    color: var(--description-text) !important;
+}
+
+.cm-selectionMatch {
+    background-color: var(--light) !important;
+    color: var(--dark) !important;
+}
+
+.code-mirror-focused .ͼ2 .cm-line {
+    color: var(--light) !important;
+}
+
+.code-mirror .ͼ2 .cm-line {
+    color: var(--description-text) !important;
+}
+
+.code-mirror-focused .ͼ2 .cm-line::selection,
+.code-mirror-focused .ͼ2 .cm-line .ͼe::selection,
+.code-mirror-focused .cm-line .ͼc::selection,
+.code-mirror-focused .cm-line .ͼd::selection {
+    background-color: var(--light) !important;
+    color: var(--dark) !important;
+
+    outline-color: none !important;
+}
+
+.cm-theme-none {
+    background-color: transparent;
+}
+
+.ͼ1.cm-focused {
+    outline: none !important;
+}

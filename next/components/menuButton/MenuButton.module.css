@@ -1,0 +1,33 @@
+.container {
+    display: flex;
+    justify-content: end;
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 3rem;
+    height: 3rem;
+
+    color: var(--light);
+
+    border-radius: 50px;
+
+    cursor: pointer;
+}
+
+.icon:hover {
+    color: var(--button-hover);
+}
+
+.expanded {
+    color: var(--dark);
+    background-color: var(--light);
+}
+
+.expanded:hover {
+    color: var(--light);
+    background-color: var(--button-hover);
+}

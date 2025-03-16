@@ -1,7 +1,7 @@
 package eduflow.privateSetting
 
 enum class SettingType {
-    RADIO,
+    RADIO, CODE,
     INPUT_NUMBER, INPUT_PASSWORD, INPUT_TEXT,
     SELECTOR_FINITE, SELECTOR_INFINITE
 }

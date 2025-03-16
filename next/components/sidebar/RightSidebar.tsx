@@ -6,7 +6,9 @@ import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
 import CollapsibleSection from "../collapsibleSection/CollapsibleSection";
 
-export default function RightSidebar({ children }: { children: ReactNode }) {
+export default function RightSidebar(
+    { children }: { children: (isExpanded: boolean, onClick: () => void) => ReactNode }
+) {
     const { isExpanded, hydrated, toggleSidebar } = useSidebar('right');
 
     if (!hydrated) {
@@ -41,7 +43,7 @@ export default function RightSidebar({ children }: { children: ReactNode }) {
                     </div>
                 </div>
             </div>
-            <div onClick={toggleSidebar}>{children}</div>
+            <div>{children(isExpanded, toggleSidebar)}</div>
         </>
     );
 }

@@ -7,14 +7,15 @@ type FiniteSelectorProps = {
     selectedValue: string;
     label: string;
     onClick: () => void;
+    className?: string;
 };
 
-export const FiniteSelector = ({ value, selectedValue, label, onClick }: FiniteSelectorProps) => {
+export const FiniteSelector = ({ value, selectedValue, label, onClick, className }: FiniteSelectorProps) => {
     const { t } = useTranslation();
 
     return (
         <div
-            className={cn(styles.item, {
+            className={cn(styles.item, className, {
                 [styles.active]: value === selectedValue
             })}
             onClick={() => onClick()}

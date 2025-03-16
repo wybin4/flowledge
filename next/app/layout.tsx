@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+"use client";
 import styles from "./layout.module.css";
 import "./globals.css";
 import LeftSidebar from "@/components/sidebar/LeftSidebar";
@@ -6,11 +6,7 @@ import ThemeWrapper from "@/user/wrappers/ThemeWrapper";
 import { ReduxProvider } from "@/redux/provider";
 import Preload from "@/components/Preload";
 import { LanguageWrapper } from "@/user/wrappers/LanguageWrapper";
-
-export const metadata: Metadata = {
-  title: "EduFlow",
-  description: "EduFlow — современная платформа для образования",
-};
+import cn from "classnames";
 
 export default function RootLayout({
   children,
@@ -25,8 +21,13 @@ export default function RootLayout({
             <LanguageWrapper>
               <ThemeWrapper>
                 <div className={styles.layoutContainer}>
-                  <LeftSidebar />
-                  <div className={styles.contentWrapper}>{children}</div>
+                  <LeftSidebar>
+                    {isExpanded => (
+                      <div className={cn(styles.contentWrapper, {
+                        [styles.expanded]: isExpanded
+                      })}>{children}</div>
+                    )}
+                  </LeftSidebar>
                 </div>
               </ThemeWrapper>
             </LanguageWrapper>

@@ -7,6 +7,15 @@
     margin-bottom: 1.3rem;
 }
 
+.tab {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
 .empty {
     display: none;
+}
+
+.expanded {
+    margin-right: 20rem;
 }

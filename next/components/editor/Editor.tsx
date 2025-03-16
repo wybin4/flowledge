@@ -2,16 +2,23 @@
 const MarkdownEditor = dynamic(
     () => import("@uiw/react-markdown-editor").then((mod) => mod.default),
     { ssr: false }
-); import React, { Dispatch, SetStateAction, useState } from 'react';
+);
+import React, { Dispatch, JSX, SetStateAction, useEffect, useState } from 'react';
 import dynamic from "next/dynamic";
 import { ICommand } from "@uiw/react-markdown-editor";
-import { Preview } from './Preview';
+import { Preview } from '../Preview';
 import { remark } from 'remark';
 import strip from 'strip-markdown';
+import "./Editor.css";
+import { IconKey, useIcon } from '@/hooks/useIcon';
+import FocusableContainer from '../FocusableContainer';
+import "./CodeEditorCommon.css";
+import cn from "classnames";
 
 type EditorProps = {
     markdownText: string;
     setMarkdownText: Dispatch<SetStateAction<string>>;
+    className: string;
 };
 
 const loadingIcon = (
@@ -30,8 +37,33 @@ const markdownToText = async (markdown: string) => {
     return result.toString();
 };
 
-export const Editor = ({ markdownText, setMarkdownText }: EditorProps) => {
+export const Editor = ({ markdownText, setMarkdownText, className }: EditorProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [commands, setCommands] = useState<any>([]);
+
+    const toolbarKeys: IconKey[] = [
+        'bold', 'header', 'italic', 'underline', 'image', 'code', 'link', 'ulist', 'olist', 'quote',
+    ];
+
+    const commandConfig = toolbarKeys.reduce((acc, key) => {
+        acc[key] = useIcon(key);
+        return acc;
+    }, {} as Record<string, JSX.Element>);
+
+    useEffect(() => {
+        const loadCommands = async () => {
+            const { defaultCommands } = await import('@uiw/react-markdown-editor');
+
+            const updatedCommands = toolbarKeys.map((key) => ({
+                ...defaultCommands[key as keyof typeof defaultCommands],
+                icon: commandConfig[key],
+            }));
+
+            setCommands(updatedCommands);
+        };
+
+        loadCommands();
+    }, []);
 
     const improveText: ICommand = {
         name: 'improveText',
@@ -85,14 +117,26 @@ export const Editor = ({ markdownText, setMarkdownText }: EditorProps) => {
     };
 
     return (
-        <MarkdownEditor
-            value={markdownText}
-            height="600px"
-            onChange={(value, _) => {
-                setMarkdownText(value);
-            }}
-            toolbarsMode={[improveText, settings, preview]}
-            onPreviewMode={() => false}
-        />
+        <FocusableContainer className={className}>
+            {(focused) => (
+                <MarkdownEditor
+                    className={cn(focused ? 'code-mirror-focused' : 'code-mirror', 'editor-code')}
+                    value={markdownText}
+                    height="600px"
+                    onChange={(value, _) => {
+                        setMarkdownText(value);
+                    }}
+                    toolbars={commands}
+                    toolbarsMode={[improveText, settings, preview]}
+                    onPreviewMode={() => false}
+                    basicSetup={{
+                        lineNumbers: false,
+                        foldGutter: false,
+                        drawSelection: false,
+                        highlightActiveLine: false,
+                        highlightActiveLineGutter: false
+                    }}
+                />)}
+        </FocusableContainer>
     );
 };

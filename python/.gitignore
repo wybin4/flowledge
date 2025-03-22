@@ -1,0 +1,8 @@
+venv
+uploads
+recasepunc/ru-test.txt
+recasepunc/ru-test.txt.orig
+recasepunc/example.py
+recasepunc/checkpoint
+model
+__pycache__

@@ -77,3 +77,5 @@
 
 # === Kotlin ===
 **/.kotlin/
+# === Python virtual environment ===
+**/venv/

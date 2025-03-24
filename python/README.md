@@ -5,6 +5,9 @@ python -m venv venv
 source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate  # Windows
 pip install fastapi uvicorn gunicorn h11 httptools anyio asgiref certifi charset-normalizer click idna faster-whisper pydub ffmpeg-python deepmultilingualpunctuation huggingface-hub transformers torch numpy pydantic python-multipart filelock
+
+pip install fastapi[all] motor
+pip install requests
 ```
 
 ## Также установим FFmpeg:

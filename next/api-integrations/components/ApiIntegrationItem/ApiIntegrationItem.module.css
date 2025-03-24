@@ -1,0 +1,42 @@
+.container {
+    width: 70%;
+}
+
+.title {
+    margin-bottom: 0.7rem;
+    margin-top: 0rem;
+}
+
+.settingsContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 2rem;
+}
+
+.saveButton {
+    background-color: var(--light);
+    color: var(--dark);
+
+    padding: 0.625rem 1.25rem;
+
+    font-size: 1rem;
+    font-family: var(--font-family-primary);
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    border: none;
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+}
+
+.saveButton:hover {
+    background-color: var(--secondary-light);
+}

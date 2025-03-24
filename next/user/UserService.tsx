@@ -1,6 +1,6 @@
 import { getPrivateSettingsByRegex } from "@/collections/PrivateSettings";
 import WebSocketClient from "../socket/WebSocketClient";
-import { apiClient } from "@/apiClient";
+import { userApiClient } from "@/apiClient";
 import EventEmitter from "events";
 import { User } from "./types/User";
 import { UserSetting } from "./types/UserSetting";
@@ -22,7 +22,7 @@ class UserService extends EventEmitter {
     }
 
     async fetchUser() {
-        const user = await apiClient<User>(`/users.get?id=${this.userId}`);
+        const user = await userApiClient<User>(`/users.get?id=${this.userId}`);
         this.setUserState(user);
     }
 
@@ -59,7 +59,7 @@ class UserService extends EventEmitter {
 
     async updateUserSetting(setting: UpdatableSetting): Promise<void> {
         try {
-            await apiClient(`/users.set-setting?userId=${this.userId}`, {
+            await userApiClient(`/users.set-setting?userId=${this.userId}`, {
                 method: 'POST',
                 body: JSON.stringify(setting),
             });

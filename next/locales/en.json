@@ -9,7 +9,8 @@
         },
         "user-settings": "profile settings",
         "private-settings": "administration",
-        "permissions": "permissions"
+        "permissions": "permissions",
+        "api-integrations": "api integrations"
     },
     "name": "name",
     "user-default": {
@@ -115,6 +116,15 @@
             "name": "view all statistics",
             "description": "allows the user to view statistics for all courses in the system."
         }
+    },
+    "api-integrations": {
+        "name": "name",
+        "secret": "secret",
+        "script": "script",
+        "enabled": "enabled",
+        "placeholder": "search api integrations",
+        "save": "save api integration",
+        "create": "create api integration"
     },
     "save": "save",
     "lesson": {

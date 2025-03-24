@@ -1,5 +1,5 @@
 .setting-code .cm-content {
-    background-color: var(--hover-dark);
+    background-color: var(--button);
 
     border-radius: 0 0.6875rem 0.6875rem 0;
     border-right: solid 2px var(--input-border);
@@ -7,15 +7,34 @@
     border-bottom: solid 2px var(--input-border);
 }
 
+.setting-code .ͼ1.cm-focused .cm-content {
+    border-right: solid 2px var(--light);
+    border-top: solid 2px var(--light);
+    border-bottom: solid 2px var(--light);
+}
+
 /* start gutters  */
 
 .setting-code .cm-gutters {
-    background-color: var(--hover-dark) !important;
+    background-color: var(--button) !important;
 
     border-radius: 0.6875rem 0 0 0.6875rem;
     border-left: solid 2px var(--input-border);
     border-top: solid 2px var(--input-border);
     border-bottom: solid 2px var(--input-border);
+}
+
+.setting-code .ͼ1.cm-focused .cm-gutters {
+    background-color: var(--button) !important;
+
+    border-radius: 0.6875rem 0 0 0.6875rem;
+    border-left: solid 2px var(--light);
+    border-top: solid 2px var(--light);
+    border-bottom: solid 2px var(--light);
+}
+
+.setting-code .ͼ1.cm-focused .cm-gutters .cm-gutterElement {
+    color: var(--light);
 }
 
 .setting-code .cm-gutter.cm-lineNumbers {
@@ -27,7 +46,7 @@
 }
 
 .setting-code .cm-gutter {
-    background-color: var(--hover-dark);
+    background-color: var(--button);
 }
 
 .setting-code .cm-gutterElement {

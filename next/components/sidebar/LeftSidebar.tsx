@@ -46,6 +46,7 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
                                 isRedirectable={false}
                             />
                             <SidebarIcon isExpanded={isExpanded} name='user-settings' />
+                            <SidebarIcon isExpanded={isExpanded} name='api-integrations' />
                             <SidebarIcon isExpanded={isExpanded} name='private-settings' />
                             <SidebarIcon isExpanded={isExpanded} name='permissions' />
                         </div>

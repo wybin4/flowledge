@@ -35,6 +35,7 @@ import ImageIcon from "../assets/image.svg";
 import UnorderedListIcon from "../assets/unordered-list.svg";
 import OrderedListIcon from "../assets/ordered-list.svg";
 import QuoteIcon from "../assets/quote.svg";
+import IntegrationsIcon from "../assets/integrations.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -43,6 +44,7 @@ const icons = {
     'courses': <CoursesIcon />,
     'resize': <ResizeIcon />,
     'profile': <ProfileIcon />,
+    'api-integrations': <IntegrationsIcon />,
 
     'appearance': <AppearanceIcon />,
     'ldap': <AccessIcon />,

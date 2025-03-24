@@ -5,7 +5,7 @@ import re
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydub import AudioSegment
 from faster_whisper import WhisperModel
@@ -14,6 +14,10 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, T5ForConditionalG
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import torch
+from motor.motor_asyncio import AsyncIOMotorClient  # Импортируем AsyncIOMotorClient
+from pydantic import BaseModel
+from bson import ObjectId
+from typing import List
 
 # Инициализация FastAPI
 app = FastAPI(
@@ -174,3 +178,126 @@ async def improve_text(request: TextRequest):
         improved_chunks = list(executor.map(lambda chunk: improve_chunk(chunk, request.type), chunks))
 
     return {"text": " ".join(improved_chunks)}
+
+MONGODB_URL = "mongodb://127.0.0.1:27017/eduflow?directConnection=true&serverSelectionTimeoutMS=2000"
+client = AsyncIOMotorClient(MONGODB_URL)
+db = client["eduflow"]
+
+class ApiIntegration(BaseModel):
+    _id: str
+    name: str
+    secret: str
+    script: str
+    u: dict
+    createdAt: str
+    updatedAt: str
+    enabled: bool
+
+def serialize_doc(doc) -> dict:
+    doc["id"] = str(doc["_id"])
+    del doc["_id"]
+    return doc
+
+@app.post("/api-integrations/", response_model=ApiIntegration)
+async def create_api_integration(integration: ApiIntegration):
+    integration_dict = integration.dict()
+    if not all(key in integration_dict for key in ["name", "secret", "script"]):
+        raise HTTPException(status_code=400, detail="Все поля должны быть заполнены")
+    
+    result = await db.api_integrations.insert_one(integration_dict)
+    integration_dict["_id"] = str(result.inserted_id)  # Исправлено на "_id"
+    return integration_dict
+
+@app.get("/api-integrations/", response_model=List[ApiIntegration])
+async def get_api_integrations():
+    integrations = []
+    async for doc in db.api_integrations.find():
+        integrations.append(serialize_doc(doc))
+    return integrations
+
+@app.get("/api-integrations/{integration_id}", response_model=ApiIntegration)
+async def get_api_integration(integration_id: str):
+    try:
+        doc = await db.api_integrations.find_one({"_id": ObjectId(integration_id)})
+        if doc is not None:
+            return serialize_doc(doc)
+        return {"error": "Интеграция не найдена"}
+    except Exception as e:
+        return {"error": f"Произошла ошибка: {str(e)}"}
+
+@app.put("/api-integrations/{integration_id}", response_model=ApiIntegration)
+async def update_api_integration(integration_id: str, integration: ApiIntegration):
+    try:
+        integration_dict = integration.dict()
+        
+        result = await db.api_integrations.update_one(
+            {"_id": ObjectId(integration_id)},
+            {"$set": integration_dict}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Интеграция не найдена или данные не изменены")
+        
+        integration_dict["id"] = integration_id
+        return integration_dict
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Произошла ошибка: {str(e)}")
+
+async def get_script_from_db(integration_id: str) -> str:
+    """
+    Извлекает скрипт из базы данных по идентификатору интеграции.
+    
+    :param integration_id: Идентификатор интеграции.
+    :return: Скрипт в виде строки.
+    """
+    doc = await db.api_integrations.find_one({"_id": ObjectId(integration_id)})
+    if doc and 'script' in doc:
+        return doc['script']
+    else:
+        raise ValueError("Скрипт не найден")
+
+def execute_script(script: str):
+    """
+    Выполняет переданный скрипт в дочернем процессе.
+    
+    :param script: Скрипт для выполнения.
+    :return: Результат выполнения скрипта.
+    """
+    process = subprocess.Popen(
+        ['python', '-c', script],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    
+    stdout, stderr = process.communicate()
+    
+    if process.returncode != 0:
+        raise Exception(f"Ошибка выполнения скрипта: {stderr.decode()}")
+    
+    return stdout.decode()
+
+@app.get("/execute-script/{integration_id}")
+async def execute_script_route(integration_id: str):
+    """
+    Извлекает скрипт из базы данных по идентификатору интеграции и выполняет его.
+    
+    :param integration_id: Идентификатор интеграции.
+    :return: Результат выполнения скрипта.
+    """
+    try:
+        doc = await db.api_integrations.find_one({"_id": ObjectId(integration_id)})
+        if not doc or 'secret' not in doc:
+            raise HTTPException(status_code=404, detail="Интеграция не найдена или API-ключ отсутствует")
+        
+        api_key = doc['secret']
+        
+        script = doc.get('script', '')
+        
+        result = execute_script(script)
+        
+        return {
+            "result": result
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Произошла ошибка: {str(e)}")
+

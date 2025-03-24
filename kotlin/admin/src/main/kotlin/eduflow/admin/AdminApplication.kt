@@ -55,14 +55,14 @@ class AdminApplication : CommandLineRunner {
 
 
        runBlocking {
-           settingsRegistry.addGroup("ldap") {
+//           settingsRegistry.addGroup("ldap") {
 //               addSetting("enabled", false, SettingDetails(
 //                   type = SettingType.RADIO,
 //                   public = true
 //               ))
-              addSetting("map-groups-to-courses", "", SettingDetails(
-                   type = SettingType.CODE,
-               ))
+//              addSetting("map-groups-to-courses", "", SettingDetails(
+//                   type = SettingType.CODE,
+//               ))
 //               addTab("connection") {
 //                   addSetting("host", "", SettingDetails(
 //                       type = SettingType.INPUT_TEXT,
@@ -73,7 +73,7 @@ class AdminApplication : CommandLineRunner {
 //                       public = true,
 //                   ))
 //               }
-           }
+//           }
 
 //           settingsRegistry.addGroup("file-upload") {
 //               addTab("stuff") {

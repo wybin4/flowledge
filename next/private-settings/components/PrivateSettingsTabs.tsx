@@ -1,5 +1,5 @@
 "use client";
-import { SettingWrapper } from "@/components/settings/settingWrapper/SettingWrapper";
+import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
 import { useValidDynamicPage } from "@/hooks/useValidDynamicPage";
 import { usePrivateSettingTabs } from "../hooks/usePrivateSettingTabs";
 import { usePrivateSettings } from "../hooks/usePrivateSettings";

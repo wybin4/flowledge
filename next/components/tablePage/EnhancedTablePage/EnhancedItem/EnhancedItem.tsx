@@ -1,0 +1,136 @@
+"use client";
+
+import { SettingType, SettingValue } from "@/types/Setting";
+import styles from "./EnhancedItem.module.css";
+import { useTranslation } from "react-i18next";
+import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
+import { useEffect, useState } from "react";
+import { TablePageMode } from "@/types/TablePageMode";
+import { useRouter } from "next/navigation";
+import { useIcon } from "@/hooks/useIcon";
+import cn from "classnames";
+import { UpdatableSetting } from "@/hooks/useSettings";
+import { useSaveEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useSaveEnhancedTablePageItem";
+import { useDeleteEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useDeleteEnhancedTablePageItem";
+import { useGetEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItem";
+import { IconKey } from "@/hooks/useIcon";
+import { ApiClient, FakeApiClient } from "@/types/ApiClient";
+
+interface EnhancedItemProps<T, U> {
+    _id?: string;
+    mode: TablePageMode;
+    prefix: IconKey;
+    apiClient: ApiClient<T> | FakeApiClient<T>;
+    settingKeys: { name: string, type: SettingType }[];
+    transformItemToSave: (item: T) => U;
+}
+
+export const EnhancedItem = <T, U>({ _id, mode, prefix, apiClient, settingKeys, transformItemToSave }: EnhancedItemProps<T, U>) => {
+    const { t } = useTranslation();
+    const [item, setItem] = useState<T | undefined>(undefined);
+    const [initialValues, setInitialValues] = useState<T | undefined>(undefined);
+    const router = useRouter();
+    const iconArrowLeft = useIcon('left');
+
+    const isEditMode = mode === TablePageMode.EDIT && _id;
+
+    const saveItem = useSaveEnhancedTablePageItem(mode, prefix, apiClient, transformItemToSave, _id);
+    const deleteItem = useDeleteEnhancedTablePageItem(prefix, apiClient);
+    const getItem = useGetEnhancedTablePageItem(prefix, apiClient, (item) => {
+        setItem(item);
+        setInitialValues(item);
+    });
+
+    useEffect(() => {
+        if (isEditMode) {
+            getItem(_id);
+        } else {
+            const newItem = {
+                _id: "",
+                name: "",
+                secret: "",
+                script: "",
+                u: {
+                    _id: "",
+                    username: ""
+                },
+                createdAt: "",
+                updatedAt: "",
+                enabled: false
+            };
+            setItem(newItem as T);
+            setInitialValues(newItem as T);
+        }
+    }, [_id, mode]);
+
+    const hasChanges = () => {
+        if (!initialValues || !item) return false;
+        return JSON.stringify(initialValues) !== JSON.stringify(item);
+    };
+
+    if (!item) {
+        return <div>Loading...</div>;
+    }
+
+    const getSettingType = (key: string) => {
+        return settingKeys.find((setting) => setting.name === key)?.type;
+    };
+
+    const renderSetting = (key: string) => {
+        const value = item[key as keyof T];
+        return {
+            setting: {
+                _id: key, i18nLabel: `${prefix}.${key}`,
+                value,
+                packageValue: value,
+                type: getSettingType(key)
+            } as SettingValue
+        };
+    };
+
+    const handleSave = (setting: UpdatableSetting) => {
+        setItem((prev) => {
+            if (!prev) return prev;
+            return { ...prev, [setting.id]: setting.value };
+        });
+    };
+
+    const renderSettings = () => {
+        const settings = settingKeys.map((key) => renderSetting(key.name));
+
+        return settings.map(({ setting }, index) => (
+            <SettingWrapper key={index} setting={setting} handleSave={(newValue) => {
+                handleSave({ id: setting._id, value: newValue.value });
+            }} />
+        ));
+    };
+
+    return (
+        <div className={styles.container}>
+            <div className={styles.backButton} onClick={() => router.back()}>
+                {iconArrowLeft} {t('back')}
+            </div>
+            <div className={styles.body}>
+                <h2 className={styles.title}>{mode === TablePageMode.CREATE ? t(`${prefix}.create`) : t(`${prefix}.edit`)}</h2>
+                <div className={styles.settingsContainer}>
+                    {renderSettings()}
+                </div>
+                <div className={styles.buttonContainer}>
+                    {isEditMode &&
+                        <button className={cn(styles.button, styles.deleteButton)} onClick={() => deleteItem(_id)}>
+                            {t(`${prefix}.delete`)}
+                        </button>
+                    }
+                    {hasChanges() && item &&
+                        <button
+                            className={cn(styles.button, styles.saveButton)}
+                            onClick={() => saveItem(item)}
+                        >
+                            {t(`${prefix}.save`)}
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    );
+};

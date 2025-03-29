@@ -1,11 +1,11 @@
 import { memo } from "react";
-import { SettingWrapperProps } from "../settingWrapper/SettingWrapper";
+import { SettingWrapperProps } from "../SettingWrapper/SettingWrapper";
 import { SettingType, SettingValueType } from "@/types/Setting";
 import styles from "./SettingInput.module.css";
 import { IconKey, useIcon } from "@/hooks/useIcon";
 import cn from "classnames";
 import { usePasswordInput } from "@/hooks/usePasswordInput";
-import { Input, InputType } from "@/components/inputBox/Input";
+import { Input, InputType } from "@/components/InputBox/Input";
 import { useDebouncedSave } from "@/hooks/useDebouncedSave";
 
 export const SettingInput = memo(({ setting, handleSave }: SettingWrapperProps) => {

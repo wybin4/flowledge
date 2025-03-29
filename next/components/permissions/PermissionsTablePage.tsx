@@ -4,14 +4,14 @@ import { getPermissionsPage, getTotalPermissionsCount, Permissions } from "@/col
 import { Roles } from "@/collections/Roles";
 import { usePagination } from "@/hooks/usePagination";
 import { IPermission } from "@/types/Permission";
-import { TablePage } from "../tablePage/TablePage";
+import { TablePage } from "../TablePage/TablePage/TablePage";
 import { PermissionsItem } from "./permissionsItem/PermissionsItem";
 import { useState } from "react";
-import { TablePageSearch } from "../tablePage/TablePageSearch";
-import PageLayout from "../pageLayout/PageLayout";
+import { TablePageSearch } from "../TablePage/TablePage/TablePageSearch";
+import PageLayout from "../PageLayout/PageLayout";
 import { userApiClient } from "@/apiClient";
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
-import { TablePageHeader } from "../tablePage/tablePageHeader/TablePageHeader";
+import { TablePageHeader } from "../TablePage/TablePageHeader/TablePageHeader";
 
 export const PermissionsTablePage = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -26,8 +26,10 @@ export const PermissionsTablePage = () => {
         handlePreviousPage,
     } = usePagination<IPermission>({
         itemsPerPage,
-        getDataPage: getPermissionsPage,
-        getTotalCount: getTotalPermissionsCount,
+        getDataPageHook: {
+            getDataPage: getPermissionsPage,
+            getTotalCount: getTotalPermissionsCount
+        },
         searchQuery,
         setStateCallbacks: Permissions.pushCallback.bind(Permissions),
         removeStateCallbacks: Permissions.popCallback.bind(Permissions),
@@ -42,8 +44,9 @@ export const PermissionsTablePage = () => {
 
     const handleAddRole = async (permissionId: string, roleId: string) => {
         try {
-            await userApiClient(`/permissions.toggle-role?id=${permissionId}&value=${roleId}`, {
-                method: 'POST',
+            await userApiClient({
+                url: `permissions.toggle-role?id=${permissionId}&value=${roleId}`,
+                options: { method: 'POST' }
             });
 
         } catch (error) {

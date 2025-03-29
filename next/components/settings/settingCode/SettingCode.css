@@ -1,14 +1,19 @@
-.setting-code .cm-content {
+.setting-code .cm-content,
+.setting-code .cm-scroller {
     background-color: var(--button);
+}
 
-    border-radius: 0 0.6875rem 0.6875rem 0;
+.setting-code .cm-scroller {
+    border-radius: 0.6875rem 0.6875rem 0.6875rem 0.6875rem;
     border-right: solid 2px var(--input-border);
+    border-left: solid 2px var(--input-border);
     border-top: solid 2px var(--input-border);
     border-bottom: solid 2px var(--input-border);
 }
 
-.setting-code .ͼ1.cm-focused .cm-content {
+.setting-code .ͼ1.cm-focused .cm-scroller {
     border-right: solid 2px var(--light);
+    border-left: solid 2px var(--light);
     border-top: solid 2px var(--light);
     border-bottom: solid 2px var(--light);
 }
@@ -18,19 +23,16 @@
 .setting-code .cm-gutters {
     background-color: var(--button) !important;
 
-    border-radius: 0.6875rem 0 0 0.6875rem;
-    border-left: solid 2px var(--input-border);
+    border-radius: 0.6875rem 0 0 0;
     border-top: solid 2px var(--input-border);
-    border-bottom: solid 2px var(--input-border);
+
+    margin-top: -2px;
 }
 
 .setting-code .ͼ1.cm-focused .cm-gutters {
     background-color: var(--button) !important;
 
-    border-radius: 0.6875rem 0 0 0.6875rem;
-    border-left: solid 2px var(--light);
     border-top: solid 2px var(--light);
-    border-bottom: solid 2px var(--light);
 }
 
 .setting-code .ͼ1.cm-focused .cm-gutters .cm-gutterElement {
@@ -91,3 +93,33 @@
     background-color: var(--red);
     color: var(--light);
 }
+
+/* start scrollbar */
+
+.code-mirror .cm-scroller::-webkit-scrollbar {
+    display: none;
+}
+
+.code-mirror-focused .cm-scroller::-webkit-scrollbar {
+    height: 0.5rem;
+    width: 0.5rem;
+}
+
+.code-mirror-focused .cm-scroller::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 0.5rem;
+
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.code-mirror-focused .cm-scroller::-webkit-scrollbar-thumb {
+    background: var(--hover-dark);
+    border-radius: 0.5rem;
+}
+
+.code-mirror-focused .cm-scroller::-webkit-scrollbar-thumb:hover {
+    background: var(--input-border);
+}
+
+/* end scrollbar */

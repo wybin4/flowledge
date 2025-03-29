@@ -1,5 +1,5 @@
 "use client";
-import { Input } from "@/components/inputBox/Input";
+import { Input } from "@/components/InputBox/Input";
 import { Stuff } from "../types/Stuff";
 import styles from "./StuffUpload.module.css";
 import { useIcon, IconKey } from "@/hooks/useIcon";

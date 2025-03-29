@@ -2,19 +2,19 @@ import { RemoveStateCallbacks, SetStateCallbacks } from "@/types/StateCallback";
 import { IPagination } from "@/types/Pagination";
 import { useState, useEffect } from "react";
 import { useStateUpdate } from "./useStateUpdate";
+import { DataPageHook } from "@/types/DataPageHook";
+import { Identifiable } from "@/types/Identifiable";
 
-export const usePagination = <T extends { _id: string }>({
+export const usePagination = <T extends Identifiable>({
     itemsPerPage,
     searchQuery,
     sortQuery,
-    getDataPage,
-    getTotalCount,
+    getDataPageHook,
     setStateCallbacks,
     removeStateCallbacks
 }: {
     itemsPerPage: number;
-    getDataPage: (page: number, limit: number, searchQuery?: string, sortQuery?: string) => Promise<T[]> | T[];
-    getTotalCount: (searchQuery?: string) => Promise<number> | number;
+    getDataPageHook: DataPageHook<T>;
     searchQuery: string;
     sortQuery?: string;
     setStateCallbacks?: SetStateCallbacks<T>;
@@ -25,16 +25,18 @@ export const usePagination = <T extends { _id: string }>({
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
+    const { getDataPage, getTotalCount } = getDataPageHook;
+
     if (setStateCallbacks && removeStateCallbacks) {
         useStateUpdate<T>(searchQuery, setData, setStateCallbacks, removeStateCallbacks);
     }
 
     useEffect(() => {
         const fetchData = async () => {
-            const dataPage = await getDataPage(currentPage, itemsPerPage, searchQuery, sortQuery);
+            const dataPage = await getDataPage({ page: currentPage, pageSize: itemsPerPage, searchQuery, sortQuery });
             setData(dataPage);
 
-            const count = await getTotalCount(searchQuery);
+            const count = await getTotalCount({ searchQuery });
             setTotalCount(count);
             setTotalPages(Math.ceil(count / itemsPerPage));
         };

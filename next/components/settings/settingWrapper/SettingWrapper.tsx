@@ -1,12 +1,12 @@
 "use client";
 import { memo } from "react";
-import { SettingSelector } from "../settingSelector/SettingSelector";
-import { SettingInput } from "../settingInput/SettingInput";
+import { SettingSelector } from "../SettingSelector/SettingSelector";
+import { SettingInput } from "../SettingInput/SettingInput";
 import { useTranslation } from "react-i18next";
 import styles from "./SettingWrapper.module.css";
 import { SelectorSetting, SettingType, SettingValue, SettingValueType } from "@/types/Setting";
 import { SettingRadio } from "../SettingRadio";
-import { SettingCode } from "../settingCode/SettingCode";
+import { SettingCode } from "../SettingCode/SettingCode";
 import { UpdatableSetting } from "@/hooks/useSettings";
 
 export type SettingWrapperProps = {

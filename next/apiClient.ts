@@ -1,5 +1,7 @@
-export const userApiClient = async <T>(url: string, options?: RequestInit): Promise<T> => {
-    const response = await fetch(`http://localhost:8080/api${url}`, {
+import { ApiClientRequest } from "./types/ApiClient";
+
+export const userApiClient = async <T>({ url, options }: ApiClientRequest): Promise<T> => {
+    const response = await fetch(`http://localhost:8080/api/${url}`, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -14,7 +16,7 @@ export const userApiClient = async <T>(url: string, options?: RequestInit): Prom
     return response.json();
 };
 
-export const neuralApiClient = async <T>(url: string, options?: RequestInit): Promise<T> => {
+export const neuralApiClient = async <T>({ url, options }: ApiClientRequest): Promise<T> => {
     const response = await fetch(`http://localhost:8000/${url}`, {
         ...options,
         headers: {

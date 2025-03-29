@@ -1,7 +1,7 @@
 "use client";
 import styles from "./layout.module.css";
 import "./globals.css";
-import LeftSidebar from "@/components/sidebar/LeftSidebar";
+import LeftSidebar from "@/components/Sidebar/LeftSidebar";
 import ThemeWrapper from "@/user/wrappers/ThemeWrapper";
 import { ReduxProvider } from "@/redux/provider";
 import Preload from "@/components/Preload";

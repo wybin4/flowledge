@@ -1,4 +1,4 @@
-import PageLayout from "@/components/pageLayout/PageLayout";
+import PageLayout from "@/components/PageLayout/PageLayout";
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
     return (

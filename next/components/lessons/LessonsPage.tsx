@@ -2,14 +2,14 @@
 
 import { StuffUpload } from "@/stuff/components/StuffUpload";
 import { useState } from "react";
-import { FiniteSelector } from "../finiteSelector/FiniteSelector";
-import { InputBoxWrapper } from "../inputBox/InputBoxWrapper";
-import RightSidebar from "../sidebar/RightSidebar";
+import { FiniteSelector } from "../FiniteSelector/FiniteSelector";
+import { InputBoxWrapper } from "../InputBox/InputBoxWrapper";
+import RightSidebar from "../Sidebar/RightSidebar";
 import styles from "./LessonsPage.module.css";
 import { LessonTabs } from "@/types/LessonTabs";
 import cn from "classnames";
-import { MenuButton } from "../menuButton/MenuButton";
-import { Editor } from "../editor/Editor";
+import { MenuButton } from "../MenuButton/MenuButton";
+import { Editor } from "../Editor/Editor";
 
 export const LessonsPage = () => {
     const tabs = Object.values(LessonTabs);

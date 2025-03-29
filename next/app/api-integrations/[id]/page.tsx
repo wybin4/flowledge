@@ -1,11 +1,11 @@
-import { ApiIntegrationItem } from "@/api-integrations/components/ApiIntegrationItem/ApiIntegrationItem";
-import { ApiIntegrationMode } from "@/api-integrations/types/ApiIntegrationMode";
+import { ApiIntegrationItem } from "@/api-integrations/components/ApiIntegrationItem";
+import { TablePageMode } from "@/types/TablePageMode";
 
-export default async function ApiIntegrationPage({ params, searchParams }: { params: { id: string }, searchParams: { mode?: string } }) {
+export default async function ApiIntegrationItemPage({ params, searchParams }: { params: { id: string }, searchParams: { mode?: string } }) {
     const { id } = await params;
     const { mode } = await searchParams;
 
     return (
-        <ApiIntegrationItem _id={id} mode={mode as ApiIntegrationMode} />
+        <ApiIntegrationItem mode={mode as TablePageMode} _id={id} />
     );
 }

@@ -4,7 +4,7 @@ import styles from "./Sidebar.module.css";
 import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
-import CollapsibleSection from "../collapsibleSection/CollapsibleSection";
+import CollapsibleSection from "../CollapsibleSection/CollapsibleSection";
 
 export default function RightSidebar(
     { children }: { children: (isExpanded: boolean, onClick: () => void) => ReactNode }

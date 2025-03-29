@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { SettingWrapperProps } from "../settingWrapper/SettingWrapper";
+import { SettingWrapperProps } from "../SettingWrapper/SettingWrapper";
 import { javascript } from "@codemirror/lang-javascript";
 import CodeMirror from "@uiw/react-codemirror";
 import { foldGutter } from "@codemirror/language";
@@ -7,7 +7,7 @@ import { useDebouncedSave } from "@/hooks/useDebouncedSave";
 import { SettingValueType } from "@/types/Setting";
 import "./SettingCode.css";
 import FocusableContainer from "@/components/FocusableContainer";
-import "../../../components/Editor/CodeEditorCommon.css";
+import "../../Editor/CodeEditorCommon.css";
 import cn from "classnames";
 
 export const SettingCode = memo(({ setting, handleSave }: SettingWrapperProps) => {

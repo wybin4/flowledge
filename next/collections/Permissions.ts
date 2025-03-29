@@ -1,21 +1,23 @@
 import { IPermission } from "@/types/Permission";
 import { CachedCollection } from "./CachedCollection";
+import { GetDataPage } from "@/types/GetDataPage";
+import { GetTotalCountPage } from "@/types/GetTotalCountPage";
 
 export const Permissions = new CachedCollection<IPermission>('permissions');
 
-export const getPermissionsPage = (page: number, limit: number, searchQuery: string = "") => {
-    const offset = (page - 1) * limit;
+export const getPermissionsPage = ({ page, pageSize, searchQuery }: GetDataPage): IPermission[] => {
+    const offset = (page - 1) * pageSize;
 
     return Permissions.collection.chain()
         .find(searchQuery ? {
             _id: { $regex: new RegExp(searchQuery, "i") }
         } : {})
         .offset(offset)
-        .limit(limit)
+        .limit(pageSize)
         .data();
 };
 
-export const getTotalPermissionsCount = (searchQuery: string = "") => {
+export const getTotalPermissionsCount = ({ searchQuery }: GetTotalCountPage): number => {
     if (!searchQuery) {
         return Permissions.collection.count();
     }

@@ -1,11 +1,11 @@
 "use client";
 
 import styles from "./Sidebar.module.css";
-import SidebarIcon from "./leftSidebarIcon/leftSidebarIcon";
+import SidebarIcon from "./LeftSidebarIcon/leftSidebarIcon";
 import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
-
+import { apiIntegrationsPrefix } from "@/helpers/prefixes";
 export default function LeftSidebar({ children }: { children: (isExpanded: boolean) => ReactNode }) {
     const { isExpanded, hydrated, toggleSidebar } = useSidebar('left');
 
@@ -32,7 +32,8 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
                     <div className={styles.nav}>
                         <div>
                             <SidebarIcon isExpanded={isExpanded} name='profile' />
-                            <SidebarIcon isExpanded={isExpanded} name='courses' />
+                            <SidebarIcon isExpanded={isExpanded} name='courses-list' />
+                            <SidebarIcon isExpanded={isExpanded} name='courses-hub' />
                         </div>
                         <div>
                             <SidebarIcon
@@ -46,7 +47,7 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
                                 isRedirectable={false}
                             />
                             <SidebarIcon isExpanded={isExpanded} name='user-settings' />
-                            <SidebarIcon isExpanded={isExpanded} name='api-integrations' />
+                            <SidebarIcon isExpanded={isExpanded} name={apiIntegrationsPrefix} />
                             <SidebarIcon isExpanded={isExpanded} name='private-settings' />
                             <SidebarIcon isExpanded={isExpanded} name='permissions' />
                         </div>

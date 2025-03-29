@@ -2,7 +2,6 @@
     "nothing-found": "nothing found",
     "sidebar": {
         "profile": "profile",
-        "courses": "courses",
         "resize": {
             "expand": "expand",
             "collapse": "collapse"
@@ -10,7 +9,9 @@
         "user-settings": "profile settings",
         "private-settings": "administration",
         "permissions": "permissions",
-        "api-integrations": "api integrations"
+        "api-integrations": "api integrations",
+        "courses-hub": "courses hub",
+        "courses-list": "courses list"
     },
     "name": "name",
     "user-default": {
@@ -132,6 +133,17 @@
         "create": "create api integration",
         "edit": "edit api integration"
     },
+    "courses-hub": {
+        "name": "courses hub",
+        "placeholder": "search courses",
+        "save": "save course",
+        "delete": "delete course",
+        "create": "create course",
+        "edit": "edit course",
+        "title": "title",
+        "creator": "creator",
+        "createdAt": "created at"
+    },
     "save": "save",
     "back": "back",
     "lesson": {
@@ -151,6 +163,24 @@
         },
         "task": {
             "name": "practical task"
+        }
+    },
+    "file-upload": {
+        "name": "file upload",
+        "stuff": {
+            "task": {
+                "name": "file types for practical tasks"
+            },
+            "presentation": {
+                "name": "file types for presentations"
+            }
+        }
+    },
+    "security": {
+        "name": "security",
+        "link-restrictions": {
+            "name": "link restrictions",
+            "description": "list domains that cannot be linked"
         }
     },
     "file-must-be-one-of-types": "the file must be one of the following types:",

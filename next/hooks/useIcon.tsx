@@ -1,7 +1,7 @@
 import { JSX, useMemo } from "react";
 import AppearanceIcon from "@/assets/appearance.svg";
 import ProfileIcon from "../assets/profile.svg";
-import CoursesIcon from "../assets/courses.svg";
+import CoursesListIcon from "../assets/courses-list.svg";
 import ResizeIcon from "../assets/resize.svg";
 import PublicSettingsIcon from "../assets/user-settings.svg";
 import PrivateSettingsIcon from "../assets/private-settings.svg";
@@ -37,12 +37,16 @@ import OrderedListIcon from "../assets/ordered-list.svg";
 import QuoteIcon from "../assets/quote.svg";
 import IntegrationsIcon from "../assets/integrations.svg";
 import SortIcon from "../assets/sort.svg";
+import FileUploadIcon from "../assets/file-upload.svg";
+import SecurityIcon from "../assets/security.svg";
+import CoursesHubIcon from "../assets/courses-hub.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
     'private-settings': <PrivateSettingsIcon />,
     'user-settings': <PublicSettingsIcon />,
-    'courses': <CoursesIcon />,
+    'courses-list': <CoursesListIcon />,
+    'courses-hub': <CoursesHubIcon />,
     'resize': <ResizeIcon />,
     'profile': <ProfileIcon />,
     'api-integrations': <IntegrationsIcon />,
@@ -51,6 +55,8 @@ const icons = {
     'ldap': <AccessIcon />,
     'search': <SearchIcon />,
     'user-default': <DefaultIcon />,
+    'file-upload': <FileUploadIcon />,
+    'security': <SecurityIcon />,
 
     'text': <TextIcon />,
     'number': <NumberIcon />,

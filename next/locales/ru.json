@@ -2,7 +2,6 @@
     "nothing-found": "ничего не найдено",
     "sidebar": {
         "profile": "профиль",
-        "courses": "курсы",
         "resize": {
             "expand": "показать",
             "collapse": "скрыть"
@@ -10,7 +9,9 @@
         "user-settings": "настройки профиля",
         "private-settings": "администрирование",
         "permissions": "права доступа",
-        "api-integrations": "api-интеграции"
+        "api-integrations": "api-интеграции",
+        "courses-hub": "центр курсов",
+        "courses-list": "список курсов"
     },
     "name": "название",
     "user-default": {
@@ -132,6 +133,17 @@
         "create": "создать api-интеграцию",
         "edit": "редактировать api-интеграцию"
     },
+    "courses-hub": {
+        "name": "центр курсов",
+        "placeholder": "поиск по курсам",
+        "save": "сохранить курс",
+        "delete": "удалить курс",
+        "create": "создать курс",
+        "edit": "редактировать курс",
+        "title": "название",
+        "creator": "создатель",
+        "createdAt": "создан"
+    },
     "save": "сохранить",
     "back": "назад",
     "lesson": {
@@ -151,6 +163,24 @@
         },
         "task": {
             "name": "практическое задание"
+        }
+    },
+    "file-upload": {
+        "name": "загрузка файлов",
+        "stuff": {
+            "task": {
+                "name": "типы файлов для практических заданий"
+            },
+            "presentation": {
+                "name": "типы файлов для презентаций"
+            }
+        }
+    },
+    "security": {
+        "name": "безопасность",
+        "link-restrictions": {
+            "name": "валидация ссылок",
+            "description": "перечислите домены, на которые нельзя ссылаться"
         }
     },
     "file-must-be-one-of-types": "файл должен быть одного из следующих типов:",

@@ -1,4 +1,4 @@
-import { Input } from "@/components/inputBox/Input";
+import { Input } from "@/components/InputBox/Input";
 import { StuffTypes } from "../types/StuffTypes";
 import { IconKey, useIcon } from "@/hooks/useIcon";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,7 @@ import cn from "classnames";
 import { isValidUrl } from "@/helpers/isValidUrl";
 import { Stuff } from "../types/Stuff";
 import { generateRandomId } from "@/helpers/generateRandomId";
-import FileUploader from "@/components/fileUploader/FileUploader";
+import FileUploader from "@/components/FileUploader/FileUploader";
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 
 type StuffUploadInputProps = {

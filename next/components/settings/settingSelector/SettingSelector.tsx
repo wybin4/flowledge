@@ -1,10 +1,10 @@
 import { memo } from "react";
 import SelectorInfiniteIcon from "../../../assets/selector-infinite.svg";
 import { SelectorSetting, SettingValueType, SettingType, SettingOption, Setting } from "@/types/Setting";
-import { InputBox } from "@/components/inputBox/InputBox";
-import { InputBoxWrapper } from "@/components/inputBox/InputBoxWrapper";
+import { InputBox } from "@/components/InputBox/InputBox";
+import { InputBoxWrapper } from "@/components/InputBox/InputBoxWrapper";
 import { UpdatableSetting } from "@/hooks/useSettings";
-import { FiniteSelector } from "@/components/finiteSelector/FiniteSelector";
+import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
 
 type SettingSelectorProps = {
     setting: SelectorSetting<SettingValueType>;

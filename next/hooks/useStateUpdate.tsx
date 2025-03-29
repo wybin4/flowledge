@@ -1,7 +1,8 @@
 import { CallbackUsage, RemoveStateCallbacks, SetStateCallbacks } from '@/types/StateCallback';
+import { Identifiable } from '@/types/Identifiable';
 import { useEffect } from 'react';
 
-export function useStateUpdate<T extends { _id: string }>(
+export function useStateUpdate<T extends Identifiable>(
     searchQuery: string,
     setData: React.Dispatch<React.SetStateAction<T[]>>,
     setStateCallbacks: SetStateCallbacks<T>,

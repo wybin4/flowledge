@@ -1,4 +1,10 @@
 .container {
+    display: flex;
+    flex-direction: row;
+    gap: 8rem;
+}
+
+.body {
     width: 70%;
 }
 
@@ -15,14 +21,12 @@
 .buttonContainer {
     display: flex;
     justify-content: flex-end;
+    gap: 1.5rem;
 
     margin-top: 2rem;
 }
 
-.saveButton {
-    background-color: var(--light);
-    color: var(--dark);
-
+.button {
     padding: 0.625rem 1.25rem;
 
     font-size: 1rem;
@@ -37,6 +41,30 @@
     cursor: pointer;
 }
 
+.saveButton {
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+.deleteButton {
+    background-color: var(--red);
+    color: var(--light);
+}
+
+.deleteButton:hover {
+    background-color: var(--dark-red);
+}
+
 .saveButton:hover {
     background-color: var(--secondary-light);
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    margin-bottom: 2rem;
+
+    cursor: pointer;
 }

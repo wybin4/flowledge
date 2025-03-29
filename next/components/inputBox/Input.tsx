@@ -1,4 +1,4 @@
-import { JSX, ReactNode, useState } from "react";
+import { JSX, ReactNode, useMemo, useState } from "react";
 import styles from "./InputBox.module.css";
 import cn from "classnames";
 
@@ -27,7 +27,7 @@ export const Input = ({
 }: InputProps) => {
     const [focused, setFocused] = useState<boolean>(false);
 
-    return (
+    return useMemo(() => (
         <div className={cn(styles.inputContainer, className, {
             [styles.inputDisabled]: disabled
         })}>
@@ -39,18 +39,24 @@ export const Input = ({
                 </span>
             }
             <input
-                type={type}
+                type={value ? type : 'text'}
                 className={cn(styles.input, inputClassName)}
                 value={value}
                 onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
+                onBlur={() => {
+                    setFocused(false);
+                    if (!value) {
+                        onChange?.({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
+                    }
+                }}
                 onChange={onChange}
                 onClick={onClick}
                 placeholder={placeholder}
                 readOnly={readOnly}
                 disabled={disabled}
+                autoComplete="off"
             />
             {extraContent?.(focused)}
         </div>
-    );
+    ), [type, value, focused, extraContent]);
 };

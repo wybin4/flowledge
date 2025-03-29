@@ -8,12 +8,6 @@ export default async function DynamicCourseSectionPage({ params }: { params: { s
         <PageLayout
             name={section as IconKey}
             translateName={false}
-            headerChildren={<></>}
-            mainChildren={
-                <>
-
-                </>
-            }
         />
     );
 }

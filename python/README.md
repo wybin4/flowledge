@@ -8,6 +8,7 @@ pip install fastapi uvicorn gunicorn h11 httptools anyio asgiref certifi charset
 
 pip install fastapi[all] motor
 pip install requests
+pip install openai
 ```
 
 ## Также установим FFmpeg:

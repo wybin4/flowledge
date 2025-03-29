@@ -43,9 +43,10 @@
 }
 
 input:checked+.slider {
-    background-color: var(--toggle-bg-enabled);
+    background-color: var(--light);
 }
 
 input:checked+.slider:before {
+    background-color: var(--dark);
     transform: translateX(1.18rem);
 }

@@ -66,7 +66,10 @@ class PermissionsRegistry {
 
             PermissionModel("view-own-stats", listOf("user")),
             PermissionModel("view-assigned-stats", listOf("admin", "moderator", "owner")),
-            PermissionModel("view-all-stats", listOf("admin"))
+            PermissionModel("view-all-stats", listOf("admin")),
+
+            PermissionModel("view-all-integrations", listOf("admin")),
+            PermissionModel("manage-integration", listOf("admin")),
         )
 
         return permissionRepository.findAll()

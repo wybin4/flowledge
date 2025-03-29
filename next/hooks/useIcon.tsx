@@ -36,6 +36,7 @@ import UnorderedListIcon from "../assets/unordered-list.svg";
 import OrderedListIcon from "../assets/ordered-list.svg";
 import QuoteIcon from "../assets/quote.svg";
 import IntegrationsIcon from "../assets/integrations.svg";
+import SortIcon from "../assets/sort.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -70,6 +71,7 @@ const icons = {
 
     'nothing': <NothingIcon />,
     'menu': <MenuIcon />,
+    'sort': <SortIcon />,
 
     'bold': <BoldIcon />,
     'italic': <ItalicIcon />,

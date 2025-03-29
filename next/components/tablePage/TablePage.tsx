@@ -9,9 +9,10 @@ type TablePageProps<T> = {
     header: ReactNode;
     body: ReactNode;
     pagination: Omit<IPagination<T>, 'data'>;
+    bodyStyles?: string;
 };
 
-export const TablePage = <T,>({ header, body, pagination }: TablePageProps<T>) => {
+export const TablePage = <T,>({ header, body, pagination, bodyStyles }: TablePageProps<T>) => {
     const iconRight = useIcon('right');
     const iconLeft = useIcon('left');
     const iconNothing = useIcon('nothing');
@@ -36,7 +37,7 @@ export const TablePage = <T,>({ header, body, pagination }: TablePageProps<T>) =
             </div>
             <table className={styles.table}>
                 {header}
-                <tbody>
+                <tbody className={bodyStyles}>
                     {body}
                 </tbody>
             </table>

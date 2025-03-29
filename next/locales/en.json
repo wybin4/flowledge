@@ -122,11 +122,18 @@
         "secret": "secret",
         "script": "script",
         "enabled": "enabled",
+        "disabled": "disabled",
+        "creator": "creator",
+        "createdAt": "created at",
+        "status": "status",
         "placeholder": "search api integrations",
         "save": "save api integration",
-        "create": "create api integration"
+        "delete": "delete api integration",
+        "create": "create api integration",
+        "edit": "edit api integration"
     },
     "save": "save",
+    "back": "back",
     "lesson": {
         "synopsis": "synopsis",
         "stuff": "stuff",

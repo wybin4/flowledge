@@ -1,36 +1,46 @@
-"use client";
-import { CallbackUsage, RemoveStateCallbacks, SetStateCallbacks } from "@/types/StateCallback";
+import { RemoveStateCallbacks, SetStateCallbacks } from "@/types/StateCallback";
 import { IPagination } from "@/types/Pagination";
 import { useState, useEffect } from "react";
 import { useStateUpdate } from "./useStateUpdate";
 
 export const usePagination = <T extends { _id: string }>({
-    itemsPerPage, searchQuery,
-    getDataPage, getTotalCount,
-    setStateCallbacks, removeStateCallbacks
+    itemsPerPage,
+    searchQuery,
+    sortQuery,
+    getDataPage,
+    getTotalCount,
+    setStateCallbacks,
+    removeStateCallbacks
 }: {
     itemsPerPage: number;
-    getDataPage: (page: number, limit: number, searchQuery?: string) => T[];
-    getTotalCount: (searchQuery?: string) => number;
+    getDataPage: (page: number, limit: number, searchQuery?: string, sortQuery?: string) => Promise<T[]> | T[];
+    getTotalCount: (searchQuery?: string) => Promise<number> | number;
     searchQuery: string;
-    setStateCallbacks: SetStateCallbacks<T>;
-    removeStateCallbacks: RemoveStateCallbacks<T>;
+    sortQuery?: string;
+    setStateCallbacks?: SetStateCallbacks<T>;
+    removeStateCallbacks?: RemoveStateCallbacks<T>;
 }): IPagination<T> => {
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState<T[]>([]);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
-    useStateUpdate<T>(searchQuery, setData, setStateCallbacks, removeStateCallbacks);
+    if (setStateCallbacks && removeStateCallbacks) {
+        useStateUpdate<T>(searchQuery, setData, setStateCallbacks, removeStateCallbacks);
+    }
 
     useEffect(() => {
-        const dataPage = getDataPage(currentPage, itemsPerPage, searchQuery);
-        setData(dataPage);
+        const fetchData = async () => {
+            const dataPage = await getDataPage(currentPage, itemsPerPage, searchQuery, sortQuery);
+            setData(dataPage);
 
-        const count = getTotalCount(searchQuery);
-        setTotalCount(count);
-        setTotalPages(Math.ceil(count / itemsPerPage));
-    }, [currentPage, itemsPerPage, getDataPage, getTotalCount, searchQuery]);
+            const count = await getTotalCount(searchQuery);
+            setTotalCount(count);
+            setTotalPages(Math.ceil(count / itemsPerPage));
+        };
+
+        fetchData();
+    }, [currentPage, itemsPerPage, searchQuery, sortQuery]);
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {

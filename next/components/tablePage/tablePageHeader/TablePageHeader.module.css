@@ -1,0 +1,43 @@
+.name,
+.header {
+    padding-bottom: 1.5rem;
+}
+
+.name {
+    text-align: start;
+    width: 7rem;
+}
+
+.header {
+    word-wrap: break-word;
+
+    width: 5rem;
+
+    cursor: pointer;
+}
+
+.headerContent {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.iconSort {
+    color: var(--toggle-bg);
+}
+
+.iconSort svg {
+    margin-bottom: -3.5px;
+}
+
+.iconSort:hover {
+    color: #656565;
+}
+
+.iconSortBottom path:first-child {
+    fill: var(--light);
+}
+
+.iconSortTop path:last-child {
+    fill: var(--light);
+}

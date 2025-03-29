@@ -3,8 +3,8 @@ export enum CallbackUsage {
     ONE = 'ONE'
 }
 
-type CallbackOneMany<T> = (newSettings: T[], usage?: CallbackUsage) => void;
-type CallbackSimple<T> = (newSettings: T[]) => void;
+type CallbackOneMany<T> = (newItems: T[], usage?: CallbackUsage) => void;
+type CallbackSimple<T> = (newItems: T[]) => void;
 
 export type SetStateCallbacks<T> =
     | ((callback: CallbackOneMany<T>, regex: string) => void)

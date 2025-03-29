@@ -5,13 +5,13 @@ import { Roles } from "@/collections/Roles";
 import { usePagination } from "@/hooks/usePagination";
 import { IPermission } from "@/types/Permission";
 import { TablePage } from "../tablePage/TablePage";
-import { PermissionsHeader } from "./permissionsHeader/PermissionsHeader";
 import { PermissionsItem } from "./permissionsItem/PermissionsItem";
 import { useState } from "react";
 import { TablePageSearch } from "../tablePage/TablePageSearch";
 import PageLayout from "../pageLayout/PageLayout";
 import { userApiClient } from "@/apiClient";
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
+import { TablePageHeader } from "../tablePage/tablePageHeader/TablePageHeader";
 
 export const PermissionsTablePage = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -55,15 +55,19 @@ export const PermissionsTablePage = () => {
         <PageLayout
             name='permissions'
             type='block'
-            headerChildren={<></>}
             headerInfo={`${totalCount}`}
             mainChildren={
                 <>
                     <TablePageSearch query={searchQuery} onChange={handleSearchChange} placeholder='permissions.placeholder' />
                     <TablePage
-                        header={<PermissionsHeader roles={roles} />}
+                        header={<TablePageHeader title='permissions.name' items={roleNames.map(name => ({ name }))} />}
                         body={data.map(permission => (
-                            <PermissionsItem onClick={handleAddRole} key={permission._id} permission={permission} roles={roleNames} />
+                            <PermissionsItem
+                                onClick={handleAddRole}
+                                key={permission._id}
+                                permission={permission}
+                                roles={roleNames}
+                            />
                         ))}
                         pagination={{
                             totalCount,

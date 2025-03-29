@@ -27,5 +27,5 @@ export const neuralApiClient = async <T>(url: string, options?: RequestInit): Pr
         throw new Error(`Ошибка ${response.status}: ${await response.text()}`);
     }
 
-    return response.json();
+    return await response.json();
 };

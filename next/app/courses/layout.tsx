@@ -10,7 +10,6 @@ export default function CoursesLayout({ children }: { children: React.ReactNode 
         return (
             <PageLayout
                 name='courses'
-                headerChildren={<></>}
                 mainChildren={children}
             />
         );

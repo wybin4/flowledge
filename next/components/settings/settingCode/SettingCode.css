@@ -69,6 +69,22 @@
     color: var(--blue);
 }
 
+.code-mirror-focused .ͼg,
+.code-mirror-focused .ͼb,
+.code-mirror-focused .ͼl,
+.code-mirror-focused .ͼd {
+    color: var(--light);
+}
+
+.code-mirror .ͼg,
+.code-mirror .ͼb,
+.code-mirror .ͼd,
+.code-mirror .ͼe,
+.code-mirror .ͼc,
+.code-mirror .ͼl {
+    color: var(--description-text);
+}
+
 /* end numbers, booleans, string colors */
 
 .setting-code .ͼ1.cm-focused .cm-matchingBracket {

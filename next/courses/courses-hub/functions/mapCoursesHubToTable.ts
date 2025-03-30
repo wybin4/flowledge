@@ -1,5 +1,5 @@
 import { getFormattedDateWithTime } from "@/helpers/getFormattedDateWithTime"
-import { Course } from "../types/Course"
+import { Course } from "../../types/Course"
 import { CoursesHubTableItem } from "../types/CoursesHubTableItem"
 import { TFunction } from "i18next"
 import { coursesHubPrefix } from "@/helpers/prefixes"

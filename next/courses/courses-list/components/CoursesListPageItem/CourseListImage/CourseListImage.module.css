@@ -1,0 +1,8 @@
+.image {
+    width: 8.875rem;
+    height: 5.125rem;
+    object-fit: cover;
+
+    border: 1px solid var(--card-border);
+    border-radius: 0.5rem;
+}

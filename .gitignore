@@ -79,3 +79,6 @@
 **/.kotlin/
 # === Python virtual environment ===
 **/venv/
+
+# === Temporary solution ===
+/next/public

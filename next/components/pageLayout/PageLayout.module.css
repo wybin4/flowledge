@@ -4,6 +4,11 @@
     width: 85%;
 }
 
+.mainChildrenBottom {
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .first {
     flex: 1;
 }

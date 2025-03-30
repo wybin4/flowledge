@@ -1,6 +1,7 @@
 package eduflow.admin.controllers
 
 import eduflow.admin.dto.CourseCreateRequest
+import eduflow.admin.dto.CourseUpdateRequest
 import eduflow.admin.models.CourseCreatorModel
 import eduflow.admin.models.CourseModel
 import eduflow.admin.repositories.CourseRepository
@@ -62,7 +63,7 @@ class CourseController(private val courseRepository: CourseRepository) {
     }
 
     @PutMapping("/{id}")
-    fun updateCourse(@PathVariable id: String, @RequestBody course: CourseModel): Mono<ResponseEntity<CourseModel>> {
+    fun updateCourse(@PathVariable id: String, @RequestBody course: CourseUpdateRequest): Mono<ResponseEntity<CourseModel>> {
         return courseRepository.findById(id)
             .flatMap { existingCourse ->
                 val updatedCourse = existingCourse.copy(
@@ -76,7 +77,9 @@ class CourseController(private val courseRepository: CourseRepository) {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteCourse(@PathVariable id: String): Mono<Void> {
+    fun deleteCourse(@PathVariable id: String): Mono<ResponseEntity<Void>> {
         return courseRepository.deleteById(id)
+            .then(Mono.just<ResponseEntity<Void>>(ResponseEntity.noContent().build()))
+            .onErrorResume { Mono.just(ResponseEntity.notFound().build()) }
     }
 }

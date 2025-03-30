@@ -1,0 +1,86 @@
+.container {
+    width: 90%;
+}
+
+.itemContainer {
+    background-color: var(--card);
+    border: 1px solid var(--card-border);
+
+    border-radius: 1rem;
+
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 1rem;
+
+    font-size: 0.875rem;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.itemHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.titleText {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.titleSubtext,
+.titleProgress {
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+.titleSubtext {
+    color: var(--description-text);
+}
+
+.titleProgress {
+    color: var(--toggle-bg-enabled);
+
+    margin-top: 0.4rem;
+}
+
+.actionsTop {
+    padding-bottom: 1.5rem;
+}
+
+.actionsRight {
+    width: fit-content !important;
+
+    padding: 1rem;
+}
+
+.menuContainer {
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    gap: 1.5rem;
+}
+
+

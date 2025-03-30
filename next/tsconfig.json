@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "courses/courses-list/components/CoursesListPageItem/CoursesListItemActions/CoursesListItemActions.module.c.ss"],
   "exclude": ["node_modules"]
 }

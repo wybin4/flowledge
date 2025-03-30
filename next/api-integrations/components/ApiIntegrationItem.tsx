@@ -7,6 +7,7 @@ import { EnhancedItem } from "@/components/TablePage/EnhancedTablePage/EnhancedI
 import { SettingType } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
 import { ApiIntegrationToSave } from "../types/ApiIntegrationToSave";
+import { fakeUser } from "@/helpers/fakeUser";
 
 interface ApiIntegrationItemProps {
     mode: TablePageMode;
@@ -27,8 +28,8 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
             ]}
             apiClient={neuralApiClient}
             transformItemToSave={(item) => {
-                const { name, secret, script, u, enabled } = item;
-                const body = { name, secret, script, u, enabled };
+                const { name, secret, script, enabled } = item;
+                const body = { name, secret, script, u: fakeUser, enabled };
                 return body;
             }}
         />

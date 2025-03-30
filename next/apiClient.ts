@@ -13,6 +13,10 @@ export const userApiClient = async <T>({ url, options }: ApiClientRequest): Prom
         throw new Error(`Ошибка ${response.status}: ${await response.text()}`);
     }
 
+    if (response.status === 204) {
+        return {} as T;
+    }
+
     return response.json();
 };
 

@@ -140,9 +140,17 @@
         "delete": "delete course",
         "create": "create course",
         "edit": "edit course",
-        "title": "title",
+        "title": "course",
         "creator": "creator",
-        "createdAt": "created at"
+        "createdAt": "created at",
+        "description": "description"
+    },
+    "courses-list": {
+        "menu": {
+            "lessons": "lessons",
+            "about": "about",
+            "comments": "comments"
+        }
     },
     "save": "save",
     "back": "back",
@@ -184,5 +192,9 @@
         }
     },
     "file-must-be-one-of-types": "the file must be one of the following types:",
-    "link-is-not-valid": "link is not valid"
+    "link-is-not-valid": "link is not valid",
+    "mark-as-favorite": "mark as favorite",
+    "unmark-as-favorite": "unmark as favorite",
+    "description": "description",
+    "read-more": "read more"
 }

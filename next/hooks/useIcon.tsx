@@ -40,6 +40,8 @@ import SortIcon from "../assets/sort.svg";
 import FileUploadIcon from "../assets/file-upload.svg";
 import SecurityIcon from "../assets/security.svg";
 import CoursesHubIcon from "../assets/courses-hub.svg";
+import MarkIcon from "../assets/mark.svg";
+import UnmarkIcon from "../assets/unmark.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -89,6 +91,9 @@ const icons = {
     'ulist': <UnorderedListIcon />,
     'olist': <OrderedListIcon />,
     'quote': <QuoteIcon />,
+
+    'mark': <MarkIcon />,
+    'unmark': <UnmarkIcon />,
 } as const;
 
 export type IconKey = keyof typeof icons;

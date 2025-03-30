@@ -5,9 +5,9 @@ import { createCoursesHubTableHeader } from "../functions/createCoursesHubTableH
 import { coursesHubPrefix } from "@/helpers/prefixes";
 import { EnhancedTablePage } from "@/components/TablePage/EnhancedTablePage/EnhancedTablePage";
 import { TFunction } from "i18next";
-import { CoursesHubTableItem } from "@/courses-hub/types/CoursesHubTableItem";
+import { CoursesHubTableItem } from "@/courses/courses-hub/types/CoursesHubTableItem";
 import { userApiClient } from "@/apiClient";
-import { Course } from "../types/Course";
+import { Course } from "../../types/Course";
 
 export const CoursesHubTablePage = () => {
     const getHeaderItems = (

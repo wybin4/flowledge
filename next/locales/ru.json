@@ -11,7 +11,7 @@
         "permissions": "права доступа",
         "api-integrations": "api-интеграции",
         "courses-hub": "центр курсов",
-        "courses-list": "список курсов"
+        "courses-list": "каталог курсов"
     },
     "name": "название",
     "user-default": {
@@ -140,9 +140,17 @@
         "delete": "удалить курс",
         "create": "создать курс",
         "edit": "редактировать курс",
-        "title": "название",
+        "title": "курс",
         "creator": "создатель",
-        "createdAt": "создан"
+        "createdAt": "создан",
+        "description": "описание"
+    },
+    "courses-list": {
+        "menu": {
+            "lessons": "лекции",
+            "about": "о курсе",
+            "comments": "комментарии"
+        }
     },
     "save": "сохранить",
     "back": "назад",
@@ -184,5 +192,9 @@
         }
     },
     "file-must-be-one-of-types": "файл должен быть одного из следующих типов:",
-    "link-is-not-valid": "ссылка невалидна"
+    "link-is-not-valid": "ссылка невалидна",
+    "mark-as-favorite": "добавить в избранное",
+    "unmark-as-favorite": "удалить из избранного",
+    "description": "описание",
+    "read-more": "читать далее"
 }

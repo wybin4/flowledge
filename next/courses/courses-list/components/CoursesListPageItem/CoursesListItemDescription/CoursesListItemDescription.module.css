@@ -1,0 +1,44 @@
+.container {
+    height: fit-content;
+}
+
+.title {
+    font-size: 0.875rem;
+    color: var(--description-text);
+
+    margin-bottom: 0.7rem;
+}
+
+.collapsedTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+
+    color: var(--light);
+}
+
+.text {
+    font-size: 0.95rem;
+
+    margin-bottom: 0.5rem;
+}
+
+.collapsed .text {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+}
+
+.readMore {
+    font-size: 0.95rem;
+    color: var(--description-text);
+    text-decoration: underline;
+    cursor: pointer;
+
+    margin-top: 0.5rem;
+}
+
+.readMore:hover {
+    color: var(--secondary-light);
+}

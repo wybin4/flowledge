@@ -3,12 +3,14 @@ import PageHeader from "../PageHeader";
 import { IconKey } from "@/hooks/useIcon";
 import cn from "classnames";
 import styles from "./PageLayout.module.css";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
 
 interface PageLayoutProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     name: IconKey;
     translateName?: boolean;
     mainChildren?: ReactNode;
-    headerChildrenPosition?: 'bottom' | 'right';
+    mainChildrenPosition?: ChildrenPosition.Right | ChildrenPosition.Bottom;
+    headerChildrenPosition?: ChildrenPosition.Right | ChildrenPosition.Bottom;
     headerStyles?: string;
     headerChildren?: ReactNode;
     type?: 'flex' | 'block';
@@ -18,15 +20,18 @@ interface PageLayoutProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElemen
 export default function PageLayout({
     name, translateName = true,
     mainChildren,
-    headerChildren, headerChildrenPosition = 'bottom', headerStyles, headerInfo,
+    headerChildren, headerStyles, headerInfo,
+    mainChildrenPosition = ChildrenPosition.Right,
+    headerChildrenPosition = ChildrenPosition.Bottom,
     type = 'flex', className
 }: PageLayoutProps) {
     return (
         <div className={cn(className, {
             [styles.flex]: type === 'flex',
+            [styles.mainChildrenBottom]: mainChildrenPosition === ChildrenPosition.Bottom,
         })}>
             <div className={cn(styles.first, headerStyles, {
-                [styles.headerChildrenRight]: headerChildrenPosition === 'right'
+                [styles.headerChildrenRight]: headerChildrenPosition === ChildrenPosition.Right
             })}>
                 <div className={cn({
                     [styles.headerContainer]: headerInfo,

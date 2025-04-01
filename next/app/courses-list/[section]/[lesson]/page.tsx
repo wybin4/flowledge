@@ -6,7 +6,7 @@ export default async function DynamicCourseListLessonPage({ params }: { params: 
     return (<LessonsPage
         mode={PageMode.Viewer}
         lesson={{
-            _id: params.lesson,
+            _id: '1',
             title: "Пример урока",
             time: "30 минут",
             synopsis: `

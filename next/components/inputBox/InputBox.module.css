@@ -72,15 +72,15 @@ input:-webkit-autofill:focus {
     border: solid 2px var(--light);
 }
 
-.inputDisabled {
-    border: none;
+.inputDisabled input {
+    border: none !important;
 }
 
 .inputDisabled .input {
-    background-color: var(--input-border);
-    color: var(--light);
+    background-color: var(--input-border) !important;
+    color: var(--description-text) !important;
 }
 
 .inputDisabled .inputIcon {
-    color: var(--light)
+    color: var(--description-text) !important;
 }

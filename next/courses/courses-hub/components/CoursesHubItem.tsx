@@ -8,6 +8,7 @@ import { SettingType } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
 import { CourseToSave } from "../types/CourseToSave";
 import { fakeUser } from "@/helpers/fakeUser";
+
 interface CoursesHubItemProps {
     mode: TablePageMode;
     _id?: string;
@@ -22,12 +23,13 @@ export const CoursesHubItem = ({ mode, _id }: CoursesHubItemProps) => {
             settingKeys={[
                 { name: 'title', type: SettingType.InputText },
                 { name: 'description', type: SettingType.InputText },
+                { name: 'imageUrl', type: SettingType.InputText },
             ]}
             apiClient={userApiClient}
             transformItemToSave={(item) => {
-                const { title, description } = item;
+                const { title, description, imageUrl } = item;
                 const body = {
-                    title, description, u: fakeUser
+                    title, description, imageUrl, u: fakeUser
                 };
                 return body;
             }}

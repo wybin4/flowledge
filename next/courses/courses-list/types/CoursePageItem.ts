@@ -1,9 +1,12 @@
-import { LessonItem } from "./LessonItem";
+import { SectionItem } from "./SectionItem";
 
 export interface CoursePageItem {
     _id: string;
     title: string;
     imageUrl: string;
     description?: string;
-    lessons?: LessonItem[];
+    favorite?: boolean;
+    sections?: SectionItem[];
+    tags?: string[];
+    comments?: string[];
 }

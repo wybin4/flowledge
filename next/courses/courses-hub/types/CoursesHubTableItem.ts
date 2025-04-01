@@ -3,4 +3,5 @@ export type CoursesHubTableItem = {
     title: string;
     creator: string;
     createdAt: string;
+    imageUrl: string;
 };

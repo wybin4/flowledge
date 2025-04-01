@@ -6,6 +6,7 @@ interface Course {
     val _id: String
     val title: String
     val description: String
+    val imageUrl: String?
     val u: CourseCreator
     val createdAt: Date
     val updatedAt: Date

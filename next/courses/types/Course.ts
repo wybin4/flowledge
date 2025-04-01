@@ -3,6 +3,7 @@ export interface Course {
     title: string;
     description: string;
     createdAt: string;
+    imageUrl: string;
     u: {
         _id: string;
         name: string;

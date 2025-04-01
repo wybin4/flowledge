@@ -1,0 +1,50 @@
+.header {
+    flex-direction: row-reverse;
+    justify-content: flex-end !important;
+
+    gap: 1rem;
+}
+
+.header h3 {
+    font-size: 1rem;
+
+    margin: 0;
+}
+
+.child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    cursor: pointer;
+
+    margin-top: 0.7rem;
+
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.child:hover {
+    background-color: var(--hover-dark);
+}
+
+.childTitle {
+    font-size: 0.875rem;
+}
+
+.childTime {
+    font-size: 0.85rem;
+
+    margin-right: 1.5rem;
+}
+
+.childTitleContainer {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.childAdditionalInfo {
+    font-size: 0.85rem;
+    color: var(--description-text);
+}

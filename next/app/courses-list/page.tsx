@@ -7,12 +7,12 @@ export default function CoursesListPage() {
                 _id: '1',
                 title: 'Course 1',
                 imageUrl: 'http://localhost:3000/justpic.png'
-            }} />
+            }} isListPage={true} />
             <CoursesListItem course={{
                 _id: '2',
                 title: 'Course 2',
                 imageUrl: 'http://localhost:3000/justpic.png'
-            }} />
+            }} isListPage={true} />
         </>
     );
 }

@@ -15,6 +15,12 @@ export default function RightSidebar(
         return null;
     }
 
+    const classNames = {
+        containerClassName: styles.container,
+        headerClassName: styles.header,
+        contentClassName: styles.content
+    }
+
     return (
         <>
             <div
@@ -31,13 +37,13 @@ export default function RightSidebar(
                 >
                     <div style={{ height: '5.5625rem' }}></div>
                     <div style={{ overflowY: 'scroll', height: 'max-content' }}>
-                        <CollapsibleSection title='основные понятия' expandedByDefault={true}>
+                        <CollapsibleSection title='основные понятия' expandedByDefault={true} {...classNames}>
                             дети
                         </CollapsibleSection>
-                        <CollapsibleSection title='проектирование по' expandedByDefault={false}>
+                        <CollapsibleSection title='проектирование по' expandedByDefault={false} {...classNames}>
                             дети
                         </CollapsibleSection>
-                        <CollapsibleSection title='классические методы' expandedByDefault={false}>
+                        <CollapsibleSection title='классические методы' expandedByDefault={false} {...classNames}>
                             дети
                         </CollapsibleSection>
                     </div>

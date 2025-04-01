@@ -1,12 +1,14 @@
 import styles from "./CourseListImage.module.css";
+import cn from 'classnames';
 
 type CourseListImageProps = {
     imageUrl: string;
     title: string;
+    size?: 'medium' | 'large' | 'xlarge';
 }
 
-export const CourseListImage = ({ imageUrl, title }: CourseListImageProps) => {
+export const CourseListImage = ({ imageUrl, title, size = 'large' }: CourseListImageProps) => {
     return (
-        <img className={styles.image} src={imageUrl} alt={title} />
+        <img className={cn(styles.image, styles[size])} src={imageUrl} alt={title} />
     );
 };

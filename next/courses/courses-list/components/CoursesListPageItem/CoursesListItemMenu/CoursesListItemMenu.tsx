@@ -1,9 +1,8 @@
 import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
 import { coursesListPrefix } from "@/helpers/prefixes";
 import { CourseTabs } from "@/types/CourseTabs";
-import { useState } from "react";
 import styles from "./CoursesListItemMenu.module.css";
-
+import cn from "classnames";
 type CoursesListItemMenuProps = {
     className?: string;
     selectedTab: CourseTabs;
@@ -14,7 +13,7 @@ export const CoursesListItemMenu = ({ className, selectedTab, setSelectedTab }: 
     const tabs = Object.values(CourseTabs);
 
     return (
-        <div className={className}>
+        <div className={cn(styles.menu, className)}>
             {tabs.map(tab => (
                 <FiniteSelector
                     key={tab}

@@ -13,7 +13,7 @@ type InputProps = {
     iconClassName?: string;
     readOnly?: boolean;
     disabled?: boolean;
-    extraContent?: (focused?: boolean) => ReactNode;
+    extraContent?: (focused?: boolean) => ReactNode | null;
     className?: string;
     inputClassName?: string;
 };
@@ -26,15 +26,15 @@ export const Input = ({
     readOnly, disabled, extraContent
 }: InputProps) => {
     const [focused, setFocused] = useState<boolean>(false);
-
+  
     return useMemo(() => (
         <div className={cn(styles.inputContainer, className, {
-            [styles.inputDisabled]: disabled
+            [styles.inputDisabled]: disabled || readOnly
         })}>
             {icon &&
                 <span className={cn(styles.inputIcon, iconClassName, {
                     [styles.inputIconFocused]: focused,
-                })} onClick={() => onClickIcon && onClickIcon()}>
+                })} onClick={(e) => { e.stopPropagation(); onClickIcon && onClickIcon(); }}>
                     {icon}
                 </span>
             }
@@ -42,7 +42,7 @@ export const Input = ({
                 type={value ? type : 'text'}
                 className={cn(styles.input, inputClassName)}
                 value={value}
-                onFocus={() => setFocused(true)}
+                onFocus={() => !readOnly && setFocused(true)}
                 onBlur={() => {
                     setFocused(false);
                     if (!value) {

@@ -17,6 +17,7 @@ import { EnhancedTablePageItem } from "./EnhancedTablePageItem";
 import { TablePageMode } from "@/types/TablePageMode";
 import { useGetEnhancedTablePageItems } from "./hooks/useGetEnhancedTablePageItems";
 import { ApiClient, FakeApiClient } from "@/types/ApiClient";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
 
 interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
@@ -82,7 +83,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
                 </div>
             }
             headerInfo={`${totalCount}`}
-            headerChildrenPosition='right'
+            headerChildrenPosition={ChildrenPosition.Right}
             headerStyles={styles.container}
             mainChildren={
                 <>

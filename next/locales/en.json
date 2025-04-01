@@ -150,7 +150,11 @@
             "lessons": "lessons",
             "about": "about",
             "comments": "comments"
-        }
+        },
+        "tags": "tags",
+        "__count__comments_zero": "start discussion",
+        "__count__comments_one": "{{count}} comment",
+        "__count__comments_plural": "{{count}} comments"
     },
     "save": "save",
     "back": "back",

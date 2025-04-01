@@ -33,14 +33,6 @@
     width: 5rem;
 }
 
-.right .expanded {
-    width: 30rem;
-}
-
-.right .collapsed {
-    width: 0;
-}
-
 .nav {
     display: flex;
     flex-direction: column;
@@ -52,3 +44,62 @@
 .toggledButton svg {
     transform: rotate(90deg);
 }
+
+/* RightSidebar styles start */
+
+.right .expanded {
+    width: 30rem;
+}
+
+.right .collapsed {
+    width: 0;
+}
+
+.right .container {
+    background-color: var(--hover-dark);
+
+    overflow: hidden;
+}
+
+.right .header {
+    background-color: var(--hover-dark);
+    color: var(--light);
+
+    padding: 0.6rem 2rem;
+    margin: 0.5rem 0;
+}
+
+.right .content {
+    transition: max-height 0.3s ease-in-out, opacity 0.2s;
+}
+
+.right .child {
+    color: var(--light);
+
+    border-radius: 1rem;
+
+    margin: 0.5rem;
+    padding: 1rem 1.5rem;
+}
+
+.right .child:hover {
+    background-color: var(--sidebar-hover);
+}
+
+.right .active,
+.right .active:hover {
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+.right .viewed {
+    text-decoration: line-through;
+    color: var(--description-text);
+}
+
+.right .childTitle {
+    display: flex;
+    gap: 1rem;
+}
+
+/* RightSidebar styles end */

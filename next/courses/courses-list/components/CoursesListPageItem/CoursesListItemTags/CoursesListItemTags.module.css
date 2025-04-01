@@ -1,0 +1,29 @@
+.title {
+    font-size: 0.875rem;
+    color: var(--description-text);
+
+    margin-bottom: 0.7rem;
+}
+
+.tag {
+    font-size: 0.875rem;    
+    
+    background-color: var(--hover-dark);
+
+    border-radius: 0.5rem;
+    border: 1px solid var(--input-border);
+
+    padding: 0.2rem 0.5rem;
+
+    cursor: pointer;
+}
+
+.tag:hover {
+    background-color: var(--input-border);
+}
+
+.tagsContainer  {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}

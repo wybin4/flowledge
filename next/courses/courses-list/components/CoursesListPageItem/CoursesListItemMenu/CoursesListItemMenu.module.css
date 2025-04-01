@@ -5,3 +5,7 @@
 
     margin-bottom: 0.4rem;
 }
+
+.menu {
+    height: max-content;
+}

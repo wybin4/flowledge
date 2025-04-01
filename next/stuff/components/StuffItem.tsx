@@ -7,27 +7,32 @@ import cn from "classnames";
 
 type StuffItemProps = {
     stuff: Stuff;
-    onClear: (stuff: Stuff) => void;
+    onClear?: (stuff: Stuff) => void;
+    onDownload?: () => void;
 };
 
-export const StuffItem = ({ stuff, onClear }: StuffItemProps) => {
+export const StuffItem = ({ stuff, onClear, onDownload }: StuffItemProps) => {
     const icon = useIcon(stuff.type as IconKey);
+
     return (
         <Input
             type='text'
             value={stuff.value || stuff.file?.name || ''}
-            className={styles.inputContainer}
+            className={cn(styles.inputContainer, {
+                [styles.downloadable]: onDownload
+            })}
             inputClassName={styles.input}
-            disabled={true}
             icon={icon}
+            onClick={onDownload}
+            readOnly={true}
             extraContent={_ =>
-                <span className={cn(styles.inputExtraContentContainer, styles.stuffItem, {
+                onClear ? (<span className={cn(styles.inputExtraContentContainer, styles.stuffItem, {
                     [styles.inputExtraContentContainerNotFocused]: true,
                 })}>
                     <span className={styles.clearInput} onClick={() => onClear(stuff)}>
                         <span className={styles.clearInputIcon}>+</span>
                     </span>
-                </span>
+                </span>) : null
             }
         />
     );

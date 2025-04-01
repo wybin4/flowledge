@@ -18,6 +18,8 @@ import SearchIcon from "../assets/search.svg";
 import SeparatorIcon from "../assets/separator.svg";
 import CollapseIcon from "../assets/collapse.svg";
 import ExpandIcon from "../assets/expand.svg";
+import CollapseLittleIcon from "../assets/collapse-little.svg";
+import ExpandLittleIcon from "../assets/expand-little.svg";
 import LockedIcon from "../assets/locked.svg";
 import DefaultIcon from "../assets/default.svg";
 import LinkIcon from "../assets/link.svg";
@@ -73,8 +75,8 @@ const icons = {
     'right': <RightIcon />,
     'left': <LeftIcon />,
     'separator': <SeparatorIcon />,
-    'collapse': <CollapseIcon />,
     'expand': <ExpandIcon />,
+    'expand-little': <ExpandLittleIcon />,
     'locked': <LockedIcon />,
 
     'nothing': <NothingIcon />,

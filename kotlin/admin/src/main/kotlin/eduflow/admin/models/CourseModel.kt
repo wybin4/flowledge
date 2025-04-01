@@ -10,6 +10,7 @@ data class CourseModel(
     override val _id: String,
     override val title: String,
     override val description: String,
+    override val imageUrl: String? = null,
     override val u: CourseCreator,
     override val createdAt: Date,
     override val updatedAt: Date

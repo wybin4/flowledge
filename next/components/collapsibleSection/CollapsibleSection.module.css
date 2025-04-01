@@ -1,15 +1,7 @@
-.container {
-    background-color: var(--hover-dark);
-
+.hidden {
+    max-height: 0;
+    opacity: 0;
     overflow: hidden;
-}
-
-.header {
-    background-color: var(--hover-dark);
-    color: var(--light);
-
-    padding: 0.6rem 2rem;
-    margin: 0.5rem 0;
 }
 
 .header,
@@ -21,41 +13,19 @@
     cursor: pointer;
 }
 
-.content {
-    transition: max-height 0.3s ease-in-out, opacity 0.2s;
-}
-
-.hidden {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-}
-
-.child {
-    color: var(--light);
-
-    border-radius: 1rem;
-
-    margin: 0.5rem;
-    padding: 1rem 1.5rem;
-}
-
-.child:hover {
-    background-color: var(--sidebar-hover);
-}
-
-.active,
-.active:hover {
-    background-color: var(--light);
-    color: var(--dark);
-}
-
-.viewed {
-    text-decoration: line-through;
-    color: var(--description-text);
-}
-
-.childTitle {
+.childTitleContainer {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+
+    gap: 0.3rem;
+}
+
+.icon {
+    transition: transform 0.3s ease-in-out;
+
+    transform: rotate(-90deg);
+}
+
+.expanded {
+    transform: rotate(0deg);
 }

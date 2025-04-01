@@ -2,7 +2,6 @@ package eduflow.admin.controllers
 
 import eduflow.admin.dto.CourseCreateRequest
 import eduflow.admin.dto.CourseUpdateRequest
-import eduflow.admin.models.CourseCreatorModel
 import eduflow.admin.models.CourseModel
 import eduflow.admin.repositories.CourseRepository
 import org.springframework.data.domain.PageRequest
@@ -54,6 +53,7 @@ class CourseController(private val courseRepository: CourseRepository) {
             _id = UUID.randomUUID().toString(),
             title = course.title,
             description = course.description,
+            imageUrl = course.imageUrl,
             u = course.u,
             createdAt = Date(),
             updatedAt = Date()
@@ -68,7 +68,8 @@ class CourseController(private val courseRepository: CourseRepository) {
             .flatMap { existingCourse ->
                 val updatedCourse = existingCourse.copy(
                     title = course.title,
-                    description = course.description
+                    description = course.description,
+                    imageUrl = course.imageUrl,
                 )
                 courseRepository.save(updatedCourse)
             }

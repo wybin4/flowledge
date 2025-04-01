@@ -150,7 +150,12 @@
             "lessons": "лекции",
             "about": "о курсе",
             "comments": "комментарии"
-        }
+        },
+        "tags": "теги",
+        "__count__comments_zero": "начать обсуждение",
+        "__count__comments_one": "{{count}} комментарий",
+        "__count__comments_two": "{{count}} комментария",
+        "__count__comments_plural": "{{count}} комментариев"
     },
     "save": "сохранить",
     "back": "назад",

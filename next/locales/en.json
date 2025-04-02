@@ -143,7 +143,8 @@
         "title": "course",
         "creator": "creator",
         "createdAt": "created at",
-        "description": "description"
+        "description": "description",
+        "imageUrl": "course cover"
     },
     "courses-list": {
         "menu": {

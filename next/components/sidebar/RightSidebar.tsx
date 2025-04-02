@@ -4,22 +4,29 @@ import styles from "./Sidebar.module.css";
 import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
-import CollapsibleSection from "../CollapsibleSection/CollapsibleSection";
 
-export default function RightSidebar(
-    { children }: { children: (isExpanded: boolean, onClick: () => void) => ReactNode }
-) {
+type RightSidebarClassNames = {
+    containerClassName: string;
+    headerClassName: string;
+    contentClassName: string;
+};
+
+type RightSidebarProps = {
+    children: (isExpanded: boolean, onClick: () => void) => ReactNode;
+    content: (classNames: RightSidebarClassNames) => ReactNode;
+};
+
+export default function RightSidebar({ children }: RightSidebarProps) {
     const { isExpanded, hydrated, toggleSidebar } = useSidebar('right');
 
     if (!hydrated) {
         return null;
     }
-
-    const classNames = {
+    const classNames: RightSidebarClassNames = {
         containerClassName: styles.container,
         headerClassName: styles.header,
         contentClassName: styles.content
-    }
+    };
 
     return (
         <>
@@ -35,18 +42,7 @@ export default function RightSidebar(
                         [styles.collapsed]: !isExpanded,
                     })}
                 >
-                    <div style={{ height: '5.5625rem' }}></div>
-                    <div style={{ overflowY: 'scroll', height: 'max-content' }}>
-                        <CollapsibleSection title='основные понятия' expandedByDefault={true} {...classNames}>
-                            дети
-                        </CollapsibleSection>
-                        <CollapsibleSection title='проектирование по' expandedByDefault={false} {...classNames}>
-                            дети
-                        </CollapsibleSection>
-                        <CollapsibleSection title='классические методы' expandedByDefault={false} {...classNames}>
-                            дети
-                        </CollapsibleSection>
-                    </div>
+                    content(classNames)
                 </div>
             </div>
             <div>{children(isExpanded, toggleSidebar)}</div>

@@ -10,6 +10,7 @@ interface PageLayoutProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElemen
     translateName?: boolean;
     mainChildren?: ReactNode;
     mainChildrenPosition?: ChildrenPosition.Right | ChildrenPosition.Bottom;
+    mainStyles?: string;
     headerChildrenPosition?: ChildrenPosition.Right | ChildrenPosition.Bottom;
     headerStyles?: string;
     headerChildren?: ReactNode;
@@ -19,7 +20,7 @@ interface PageLayoutProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElemen
 
 export default function PageLayout({
     name, translateName = true,
-    mainChildren,
+    mainChildren, mainStyles,
     headerChildren, headerStyles, headerInfo,
     mainChildrenPosition = ChildrenPosition.Right,
     headerChildrenPosition = ChildrenPosition.Bottom,
@@ -43,7 +44,7 @@ export default function PageLayout({
                     {headerChildren}
                 </div>
             </div>
-            <div className={styles.second}>{mainChildren}</div>
+            <div className={cn(styles.second, mainStyles)}>{mainChildren}</div>
         </div>
     );
 }

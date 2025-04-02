@@ -6,6 +6,7 @@ import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
 import { apiIntegrationsPrefix } from "@/helpers/prefixes";
+
 export default function LeftSidebar({ children }: { children: (isExpanded: boolean) => ReactNode }) {
     const { isExpanded, hydrated, toggleSidebar } = useSidebar('left');
 
@@ -16,7 +17,7 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
     return (
         <>
             <div
-                className={cn(styles.left, {
+                className={cn(styles.left, isExpanded ? 'expandedLeftSidebar' : '', {
                     [styles.containerWhenExpanded]: isExpanded,
                     [styles.containerWhenCollapsed]: !isExpanded,
                 })}

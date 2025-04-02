@@ -1,5 +1,5 @@
 import { CoursesHubItem } from "@/courses/courses-hub/components/CoursesHubItem";
-import { CoursesHubTablePage } from "@/courses/courses-hub/components/CoursesHubTablePage";
+import { CoursesHubTablePage } from "@/courses/courses-hub/components/CoursesHubTablePage/CoursesHubTablePage";
 import { TablePageMode } from "@/types/TablePageMode";
 
 export default async function CoursesHubPage({ searchParams }: { searchParams: { mode?: string } }) {

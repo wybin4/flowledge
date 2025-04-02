@@ -308,7 +308,7 @@ async def get_script_from_db(integration_id: str) -> str:
     doc = await db.api_integrations.find_one({"_id": integration_id})
     if doc and 'script' in doc:
         return doc['script']
-        else:
+    else:
         raise ValueError("Скрипт не найден")
 
 def execute_script(script: str, api_key: str, context: Dict[str, Any]):

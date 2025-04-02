@@ -32,6 +32,19 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
                 const body = { name, secret, script, u: fakeUser, enabled };
                 return body;
             }}
+            createEmptyItem={() => ({
+                _id: "",
+                name: "",
+                secret: "",
+                script: "",
+                u: {
+                    _id: "",
+                    username: ""
+                },
+                createdAt: "",
+                updatedAt: "",
+                enabled: false
+            })}
         />
     );
 };

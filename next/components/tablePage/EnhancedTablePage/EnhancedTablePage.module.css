@@ -1,7 +1,32 @@
 .body tr {
     height: 2.5rem;
+}
 
+.table tbody tr:hover {
+    background-color: var(--secondary-dark);
+}
+
+.table tbody tr {
     cursor: pointer;
+}
+
+.table {
+    border-collapse: collapse;
+    margin: 0 8.5rem 0 6.5rem;
+}
+
+.table td {
+    border-bottom: 1rem solid var(--dark);
+}
+
+.table td:first-child {
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-bottom: 1rem;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
 }
 
 .container {

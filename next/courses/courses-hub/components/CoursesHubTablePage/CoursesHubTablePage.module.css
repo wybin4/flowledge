@@ -1,0 +1,14 @@
+.elementsExpanded {
+    width: 60%;
+
+    margin-left: 1.3rem;
+    margin-right: 3rem;
+}
+
+.bodyExpanded [data-pagination='right'] {
+    right: 31.5rem;
+}
+
+.bodyExpanded [data-pagination='left'] {
+    left: 6.5rem;
+}

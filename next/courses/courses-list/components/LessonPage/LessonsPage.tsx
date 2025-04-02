@@ -16,6 +16,8 @@ import { LessonItem, LessonStuff } from "../../types/LessonItem";
 import { StuffItem } from "@/stuff/components/StuffItem";
 import { Stuff } from "@/stuff/types/Stuff";
 import { StuffTypes } from "@/stuff/types/StuffTypes";
+import CollapsibleSection from "@/components/CollapsibleSection/CollapsibleSection";
+import classNames from "classnames";
 
 export type LessonsPageProps = {
     mode: PageMode;
@@ -46,7 +48,22 @@ export const LessonsPage = ({ mode, lesson }: LessonsPageProps) => {
 
     return (
         <div className={styles.container}>
-            <RightSidebar>
+            <RightSidebar content={classNames =>
+                <>
+                    <div style={{ height: '5.5625rem' }}></div>
+                    <div style={{ overflowY: 'scroll', height: 'max-content' }}>
+                        <CollapsibleSection title='основные понятия' expandedByDefault={true} {...classNames}>
+                            дети
+                        </CollapsibleSection>
+                        <CollapsibleSection title='проектирование по' expandedByDefault={false} {...classNames}>
+                            дети
+                        </CollapsibleSection>
+                        <CollapsibleSection title='классические методы' expandedByDefault={false} {...classNames}>
+                            дети
+                        </CollapsibleSection>
+                    </div>
+                </>
+            }>
                 {(isExpanded, onClick) => (
                     <div className={cn({
                         [styles.expanded]: isExpanded

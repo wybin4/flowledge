@@ -23,9 +23,10 @@ interface EnhancedItemProps<T, U> {
     apiClient: ApiClient<T> | FakeApiClient<T>;
     settingKeys: { name: string, type: SettingType }[];
     transformItemToSave: (item: T) => U;
+    createEmptyItem: () => T;
 }
 
-export const EnhancedItem = <T, U>({ _id, mode, prefix, apiClient, settingKeys, transformItemToSave }: EnhancedItemProps<T, U>) => {
+export const EnhancedItem = <T, U>({ _id, mode, prefix, apiClient, settingKeys, transformItemToSave, createEmptyItem }: EnhancedItemProps<T, U>) => {
     const { t } = useTranslation();
     const [item, setItem] = useState<T | undefined>(undefined);
     const [initialValues, setInitialValues] = useState<T | undefined>(undefined);
@@ -45,19 +46,7 @@ export const EnhancedItem = <T, U>({ _id, mode, prefix, apiClient, settingKeys, 
         if (isEditMode) {
             getItem(_id);
         } else {
-            const newItem = {
-                _id: "",
-                name: "",
-                secret: "",
-                script: "",
-                u: {
-                    _id: "",
-                    username: ""
-                },
-                createdAt: "",
-                updatedAt: "",
-                enabled: false
-            };
+            const newItem = createEmptyItem();
             setItem(newItem as T);
             setInitialValues(newItem as T);
         }

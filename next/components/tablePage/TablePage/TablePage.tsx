@@ -10,9 +10,10 @@ type TablePageProps<T> = {
     body: ReactNode;
     pagination: Omit<IPagination<T>, 'data'>;
     bodyStyles?: string;
+    tableStyles?: string;
 };
 
-export const TablePage = <T,>({ header, body, pagination, bodyStyles }: TablePageProps<T>) => {
+export const TablePage = <T,>({ header, body, pagination, bodyStyles, tableStyles }: TablePageProps<T>) => {
     const iconRight = useIcon('right');
     const iconLeft = useIcon('left');
     const iconNothing = useIcon('nothing');
@@ -29,19 +30,19 @@ export const TablePage = <T,>({ header, body, pagination, bodyStyles }: TablePag
 
     return (
         <div className={styles.container}>
-            <div className={cn(styles.button, {
+            <div data-pagination='left' className={cn(styles.button, styles.buttonLeft, {
                 [styles.disabled]: pagination.currentPage === 1
             })}>
                 <div>{pagination.currentPage - 1}/{pagination.totalPages}</div>
                 <div onClick={pagination.handlePreviousPage}>{iconLeft}</div>
             </div>
-            <table className={styles.table}>
+            <table className={cn(styles.table, tableStyles)}>
                 {header}
                 <tbody className={bodyStyles}>
                     {body}
                 </tbody>
             </table>
-            <div className={cn(styles.button, {
+            <div data-pagination='right' className={cn(styles.button, styles.buttonRight, 'tablePaginationButtonRight', {
                 [styles.disabled]: pagination.currentPage === pagination.totalPages
             })}>
                 <div>{pagination.currentPage + 1}/{pagination.totalPages}</div>

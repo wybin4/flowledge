@@ -8,6 +8,7 @@ import { EnhancedTablePage } from "@/components/TablePage/EnhancedTablePage/Enha
 import { TFunction } from "i18next";
 import { ApiIntegrationTableItem } from "@/api-integrations/types/ApiIntegrationTableItem";
 import { neuralApiClient } from "@/apiClient";
+import { EnhancedItemType } from "@/components/TablePage/EnhancedTablePage/types/EnhancedItemTypes";
 
 export const ApiIntegrationsTablePage = () => {
     const getHeaderItems = (
@@ -24,7 +25,12 @@ export const ApiIntegrationsTablePage = () => {
             prefix={apiIntegrationsPrefix}
             getHeaderItems={getHeaderItems}
             transformData={mapApiIntegrationToTable}
-            itemKeys={['name', 'status', 'user', 'createdAt']}
+            itemKeys={[
+                { name: 'name', type: EnhancedItemType.Text },
+                { name: 'status', type: EnhancedItemType.Text },
+                { name: 'user', type: EnhancedItemType.Text },
+                { name: 'createdAt', type: EnhancedItemType.Text },
+            ]}
             apiClient={neuralApiClient}
         />
     );

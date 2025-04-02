@@ -13,19 +13,24 @@ import { useTranslation } from "react-i18next";
 import { usePagination } from "@/hooks/usePagination";
 import { Identifiable } from "@/types/Identifiable";
 import { IconKey } from "@/hooks/useIcon";
-import { EnhancedTablePageItem } from "./EnhancedTablePageItem";
+import { EnhancedTablePageItem } from "./EnhancedTablePageItem/EnhancedTablePageItem";
 import { TablePageMode } from "@/types/TablePageMode";
 import { useGetEnhancedTablePageItems } from "./hooks/useGetEnhancedTablePageItems";
 import { ApiClient, FakeApiClient } from "@/types/ApiClient";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { EnhancedItemChildren } from "./types/EnhancedItemChildren";
+import cn from "classnames";
 
 interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
     pageSize?: number;
     transformData: (data: T, locale: string, t: TFunction) => U;
     getHeaderItems: (t: TFunction, setSortQuery: (query: string) => void) => Sortable[];
-    itemKeys: string[];
+    itemKeys: EnhancedItemChildren[];
     apiClient: ApiClient<T> | FakeApiClient<T>;
+    onItemClick?: (_id: string) => void;
+    className?: string;
+    tableStyles?: string;
 }
 
 export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable>({
@@ -35,6 +40,9 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
     getHeaderItems,
     itemKeys,
     apiClient,
+    onItemClick,
+    className,
+    tableStyles,
 }: EnhancedTablePageProps<T, U>) => {
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
@@ -84,13 +92,15 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
             }
             headerInfo={`${totalCount}`}
             headerChildrenPosition={ChildrenPosition.Right}
-            headerStyles={styles.container}
+            headerStyles={cn(styles.container, className)}
+            mainStyles={tableStyles}
             mainChildren={
                 <>
                     <TablePageSearch
                         query={searchQuery}
                         onChange={handleSearchChange}
                         placeholder={`${prefix}.placeholder`}
+                        className={className}
                     />
                     <TablePage
                         header={
@@ -98,6 +108,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
                                 items={headerItems}
                                 isTranslated={true}
                                 align='left'
+                                className={styles.header}
                             />
                         }
                         body={mappedData.map((item) =>
@@ -107,6 +118,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
                                 mode={TablePageMode.EDIT}
                                 itemKeys={itemKeys}
                                 prefix={prefix}
+                                onClick={onItemClick}
                             />
                         )}
                         pagination={{
@@ -117,6 +129,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
                             handlePreviousPage,
                         }}
                         bodyStyles={styles.body}
+                        tableStyles={cn(styles.table, className)}
                     />
                 </>
             }

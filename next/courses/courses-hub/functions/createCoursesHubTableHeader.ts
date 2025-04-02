@@ -4,6 +4,7 @@ import { coursesHubPrefix } from "@/helpers/prefixes";
 
 export const createCoursesHubTableHeader = (t: TFunction, onSort: (name: string, position?: SortablePosition) => void) => {
     const items = [
+        { name: 'imageUrl' },
         { name: 'title' },
         { name: 'creator' },
         {

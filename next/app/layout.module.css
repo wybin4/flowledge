@@ -10,3 +10,7 @@
 .expanded {
     margin-left: 10rem;
 }
+
+.expanded [data-pagination='left'] {
+    left: 19rem;
+}

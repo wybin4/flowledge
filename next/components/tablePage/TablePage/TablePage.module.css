@@ -1,6 +1,8 @@
 .container {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+
+    height: 100%;
 }
 
 .table {
@@ -11,11 +13,30 @@
 }
 
 .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    height: 100%;
+
     cursor: pointer;
 
     color: var(--light);
 
-    margin-left: -2rem;
+    position: fixed;
+    top: 50%;
+
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.buttonLeft {
+    left: 8rem;
+}
+
+.buttonRight {
+    right: 3rem;
 }
 
 .disabled {
@@ -28,7 +49,7 @@
     margin: 0 5rem 2rem 6rem;
 }
 
-.nothingContainer{
+.nothingContainer {
     height: 100%;
 
     display: flex;

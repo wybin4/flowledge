@@ -33,6 +33,15 @@ export const CoursesHubItem = ({ mode, _id }: CoursesHubItemProps) => {
                 };
                 return body;
             }}
+            createEmptyItem={() => ({
+                _id: "",
+                title: "",
+                description: "",
+                imageUrl: "",
+                u: fakeUser,
+                createdAt: "",
+                updatedAt: ""
+            })}
         />
     );
 };

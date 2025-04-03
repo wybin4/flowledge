@@ -3,6 +3,7 @@ import { TablePageMode } from "@/types/TablePageMode";
 import { useCallback } from "react";
 import { ApiClient, FakeApiClient } from "@/types/ApiClient";
 import { IconKey } from "@/hooks/useIcon";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useSaveEnhancedTablePageItem = <T, U>(
     mode: TablePageMode,
@@ -12,16 +13,19 @@ export const useSaveEnhancedTablePageItem = <T, U>(
     _id?: string
 ) => {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
-    const saveApiIntegration = useCallback(async (item: T | undefined) => {
+    const saveItem = useCallback(async (item: T | undefined) => {
         const method = mode === TablePageMode.CREATE ? 'POST' : 'PUT';
         const url = mode === TablePageMode.CREATE ? `${prefix}` : `${prefix}/${_id}`;
         if (item) {
             const body = transformItem(item);
             await apiClient<T>({ url, options: { method, body: JSON.stringify(body) } });
-            router.push(`/${prefix}`);
+            queryClient.invalidateQueries({ queryKey: [`${prefix}DataPage`] });
+            mode === TablePageMode.CREATE && queryClient.invalidateQueries({ queryKey: [`${prefix}TotalCount`] });
+            router.back();
         }
-    }, [mode]);
+    }, [mode, prefix]);
 
-    return saveApiIntegration;
+    return saveItem;
 };

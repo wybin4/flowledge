@@ -1,20 +1,25 @@
 "use client";
 
-import { Course } from "../../types/Course";
+import { Course } from "../../../types/Course";
 import { coursesHubPrefix } from "@/helpers/prefixes";
 import { userApiClient } from "@/apiClient";
 import { EnhancedItem } from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
 import { SettingType } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
-import { CourseToSave } from "../types/CourseToSave";
+import { CourseToSave } from "../../types/CourseToSave";
 import { fakeUser } from "@/helpers/fakeUser";
+import { useIcon } from "@/hooks/useIcon";
+import styles from "./CoursesHubItem.module.css";
 
 interface CoursesHubItemProps {
     mode: TablePageMode;
     _id?: string;
+    onBackButtonClick?: () => void;
 }
 
-export const CoursesHubItem = ({ mode, _id }: CoursesHubItemProps) => {
+export const CoursesHubItem = ({ mode, _id, onBackButtonClick }: CoursesHubItemProps) => {
+    const closeIcon = useIcon('close');
+
     return (
         <EnhancedItem<Course, CourseToSave>
             prefix={coursesHubPrefix}
@@ -42,6 +47,11 @@ export const CoursesHubItem = ({ mode, _id }: CoursesHubItemProps) => {
                 createdAt: "",
                 updatedAt: ""
             })}
+            onBackButtonClick={onBackButtonClick}
+            backButtonIcon={closeIcon}
+            hasBackButtonText={false}
+            backButtonStyles={styles.backButton}
+            containerStyles={styles.container}
         />
     );
 };

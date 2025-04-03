@@ -4,7 +4,7 @@ import { SettingType, SettingValue } from "@/types/Setting";
 import styles from "./EnhancedItem.module.css";
 import { useTranslation } from "react-i18next";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { TablePageMode } from "@/types/TablePageMode";
 import { useRouter } from "next/navigation";
 import { useIcon } from "@/hooks/useIcon";
@@ -24,9 +24,21 @@ interface EnhancedItemProps<T, U> {
     settingKeys: { name: string, type: SettingType }[];
     transformItemToSave: (item: T) => U;
     createEmptyItem: () => T;
+    onBackButtonClick?: () => void;
+    backButtonIcon?: ReactNode;
+    hasBackButtonText?: boolean;
+    backButtonStyles?: string;
+    containerStyles?: string;
 }
 
-export const EnhancedItem = <T, U>({ _id, mode, prefix, apiClient, settingKeys, transformItemToSave, createEmptyItem }: EnhancedItemProps<T, U>) => {
+export const EnhancedItem = <T, U>({
+    _id, mode, prefix,
+    apiClient,
+    settingKeys,
+    transformItemToSave, createEmptyItem,
+    onBackButtonClick, backButtonIcon, hasBackButtonText, backButtonStyles, 
+    containerStyles
+}: EnhancedItemProps<T, U>) => {
     const { t } = useTranslation();
     const [item, setItem] = useState<T | undefined>(undefined);
     const [initialValues, setInitialValues] = useState<T | undefined>(undefined);
@@ -34,7 +46,7 @@ export const EnhancedItem = <T, U>({ _id, mode, prefix, apiClient, settingKeys, 
     const iconArrowLeft = useIcon('left');
 
     const isEditMode = mode === TablePageMode.EDIT && _id;
-
+   
     const saveItem = useSaveEnhancedTablePageItem(mode, prefix, apiClient, transformItemToSave, _id);
     const deleteItem = useDeleteEnhancedTablePageItem(prefix, apiClient);
     const getItem = useGetEnhancedTablePageItem(prefix, apiClient, (item) => {
@@ -58,7 +70,7 @@ export const EnhancedItem = <T, U>({ _id, mode, prefix, apiClient, settingKeys, 
     };
 
     if (!item) {
-        return <div>Loading...</div>;
+        return <div>{t('loading')}</div>;
     }
 
     const getSettingType = (key: string) => {
@@ -95,9 +107,12 @@ export const EnhancedItem = <T, U>({ _id, mode, prefix, apiClient, settingKeys, 
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.backButton} onClick={() => router.back()}>
-                {iconArrowLeft} {t('back')}
+        <div className={cn(styles.container, containerStyles)}>
+            <div className={cn(styles.backButton, backButtonStyles)} onClick={() => {
+                onBackButtonClick?.();
+                router.back();
+            }}>
+                {backButtonIcon ? backButtonIcon : iconArrowLeft} {hasBackButtonText ? t('back') : ''}
             </div>
             <div className={styles.body}>
                 <h2 className={styles.title}>{mode === TablePageMode.CREATE ? t(`${prefix}.create`) : t(`${prefix}.edit`)}</h2>

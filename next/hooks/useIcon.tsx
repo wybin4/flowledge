@@ -16,9 +16,7 @@ import LeftIcon from "../assets/left.svg";
 import NothingIcon from "../assets/nothing.svg";
 import SearchIcon from "../assets/search.svg";
 import SeparatorIcon from "../assets/separator.svg";
-import CollapseIcon from "../assets/collapse.svg";
 import ExpandIcon from "../assets/expand.svg";
-import CollapseLittleIcon from "../assets/collapse-little.svg";
 import ExpandLittleIcon from "../assets/expand-little.svg";
 import LockedIcon from "../assets/locked.svg";
 import DefaultIcon from "../assets/default.svg";
@@ -44,6 +42,7 @@ import SecurityIcon from "../assets/security.svg";
 import CoursesHubIcon from "../assets/courses-hub.svg";
 import MarkIcon from "../assets/mark.svg";
 import UnmarkIcon from "../assets/unmark.svg";
+import CloseIcon from "../assets/close.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -96,6 +95,7 @@ const icons = {
 
     'mark': <MarkIcon />,
     'unmark': <UnmarkIcon />,
+    'close': <CloseIcon />,
 } as const;
 
 export type IconKey = keyof typeof icons;

@@ -23,9 +23,9 @@ export const usePagination = <T extends Identifiable>({
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState<T[]>([]);
     const [totalPages, setTotalPages] = useState(1);
-    const [totalCount, setTotalCount] = useState(0);
+    const [currentTotalCount, setCurrentTotalCount] = useState(0);
 
-    const { getDataPage, getTotalCount } = getDataPageHook;
+    const { getDataPage, getTotalCount, dataPage, totalCount } = getDataPageHook;
 
     if (setStateCallbacks && removeStateCallbacks) {
         useStateUpdate<T>(searchQuery, setData, setStateCallbacks, removeStateCallbacks);
@@ -33,16 +33,24 @@ export const usePagination = <T extends Identifiable>({
 
     useEffect(() => {
         const fetchData = async () => {
-            const dataPage = await getDataPage({ page: currentPage, pageSize: itemsPerPage, searchQuery, sortQuery });
-            setData(dataPage);
+            try {
+                const [newDataPage, newCount] = await Promise.all([
+                    getDataPage({ page: currentPage, pageSize: itemsPerPage, searchQuery, sortQuery }),
+                    getTotalCount({ searchQuery })
+                ]);
 
-            const count = await getTotalCount({ searchQuery });
-            setTotalCount(count);
-            setTotalPages(Math.ceil(count / itemsPerPage));
+                setData(newDataPage);
+                setCurrentTotalCount(newCount);
+                setTotalPages(Math.ceil(newCount / itemsPerPage));
+            } catch (error) {
+                setData([]);
+                setCurrentTotalCount(0);
+                setTotalPages(1);
+            }
         };
 
         fetchData();
-    }, [currentPage, itemsPerPage, searchQuery, sortQuery]);
+    }, [currentPage, itemsPerPage, searchQuery, sortQuery, getDataPage, getTotalCount, dataPage, totalCount]);
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
@@ -60,7 +68,7 @@ export const usePagination = <T extends Identifiable>({
         data,
         currentPage,
         totalPages,
-        totalCount,
+        totalCount: currentTotalCount,
         handleNextPage,
         handlePreviousPage,
     };

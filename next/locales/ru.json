@@ -202,5 +202,6 @@
     "mark-as-favorite": "добавить в избранное",
     "unmark-as-favorite": "удалить из избранного",
     "description": "описание",
-    "read-more": "читать далее"
+    "read-more": "читать далее",
+    "loading": "Загрузка..."
 }

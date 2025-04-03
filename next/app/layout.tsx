@@ -7,6 +7,9 @@ import { ReduxProvider } from "@/redux/provider";
 import Preload from "@/components/Preload";
 import { LanguageWrapper } from "@/user/wrappers/LanguageWrapper";
 import cn from "classnames";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -20,15 +23,17 @@ export default function RootLayout({
           <ReduxProvider>
             <LanguageWrapper>
               <ThemeWrapper>
-                <div className={styles.layoutContainer}>
-                  <LeftSidebar>
-                    {isExpanded => (
-                      <div className={cn(styles.contentWrapper, {
-                        [styles.expanded]: isExpanded
-                      })}>{children}</div>
-                    )}
-                  </LeftSidebar>
-                </div>
+                <QueryClientProvider client={queryClient}>
+                  <div className={styles.layoutContainer}>
+                    <LeftSidebar>
+                      {isExpanded => (
+                        <div className={cn(styles.contentWrapper, {
+                          [styles.expanded]: isExpanded
+                        })}>{children}</div>
+                      )}
+                    </LeftSidebar>
+                  </div>
+                </QueryClientProvider>
               </ThemeWrapper>
             </LanguageWrapper>
           </ReduxProvider>

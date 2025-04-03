@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { toggleSidebar, setSidebar } from "@/redux/sidebarSlice";
-
-type SidebarPosition = "left" | "right";
+import { SidebarPosition } from "@/types/SidebarPosition";
 
 export const useSidebar = (position: SidebarPosition) => {
     const dispatch = useDispatch();

@@ -201,5 +201,6 @@
     "mark-as-favorite": "mark as favorite",
     "unmark-as-favorite": "unmark as favorite",
     "description": "description",
-    "read-more": "read more"
+    "read-more": "read more",
+    "loading": "Loading..."
 }

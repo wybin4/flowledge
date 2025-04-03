@@ -12,8 +12,18 @@ import { EnhancedItemType } from "@/components/TablePage/EnhancedTablePage/types
 import RightSidebar from "@/components/Sidebar/RightSidebar";
 import cn from "classnames";
 import styles from "./CoursesHubTablePage.module.css";
+import { TablePageMode } from "@/types/TablePageMode";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CoursesHubItem } from "../CoursesHubItem/CoursesHubItem";
+import { useNonPersistentSidebar } from "@/hooks/useNonPersistentSidebar";
+import { useEffect, useState } from "react";
 
-export const CoursesHubTablePage = () => {
+export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
+    const [expanded, setExpanded] = useState<boolean>(false);
+    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
+
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const getHeaderItems = (
         t: TFunction, setSortQuery: (query: string) => void
     ) => createCoursesHubTableHeader(
@@ -23,9 +33,40 @@ export const CoursesHubTablePage = () => {
         }
     );
 
+    const updateState = (mode: string | null, id?: string) => {
+        const hasMode = !!mode;
+        setExpanded(hasMode);
+        setSelectedItemId(hasMode ? id : undefined);
+    };
+
+    const onItemClick = (_id?: string) => {
+        const currentMode = searchParams.get('mode');
+        if (currentMode) {
+            router.push(`/${coursesHubPrefix}`);
+            updateState(null);
+        } else {
+            router.push(`/${coursesHubPrefix}/?mode=${TablePageMode.EDIT}`);
+            updateState(TablePageMode.EDIT, _id);
+        }
+    };
+
+    useEffect(() => {
+        const currentMode = searchParams.get('mode');
+        updateState(currentMode, selectedItemId);
+    }, [searchParams.get('mode')]);
+
     return (
-        <RightSidebar content={classNames => <div>sdfsdfsdf</div>}>
-            {(isExpanded, onClick) => (
+        <RightSidebar
+            useSidebarHook={useNonPersistentSidebar}
+            expanded={expanded}
+            content={classNames => <div className={cn(classNames)}>{mode &&
+                <CoursesHubItem
+                    _id={selectedItemId}
+                    mode={mode}
+                    onBackButtonClick={() => updateState(null)}
+                />
+            }</div>}>
+            {(isExpanded, toggleSidebar) => (
                 <div>
                     <EnhancedTablePage<Course, CoursesHubTableItem>
                         prefix={coursesHubPrefix}
@@ -38,7 +79,10 @@ export const CoursesHubTablePage = () => {
                             { name: 'createdAt', type: EnhancedItemType.Text },
                         ]}
                         apiClient={userApiClient}
-                        onItemClick={onClick}
+                        onItemClick={(_id) => {
+                            toggleSidebar();
+                            onItemClick(_id);
+                        }}
                         className={cn({
                             [styles.elementsExpanded]: isExpanded
                         })}

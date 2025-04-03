@@ -1,4 +1,4 @@
-import { CoursesHubItem } from "@/courses/courses-hub/components/CoursesHubItem";
+import { CoursesHubItem } from "@/courses/courses-hub/components/CoursesHubItem/CoursesHubItem";
 import { TablePageMode } from "@/types/TablePageMode";
 
 export default async function CoursesHubItemPage({ params, searchParams }: { params: { id: string }, searchParams: { mode?: string } }) {

@@ -4,6 +4,7 @@ import styles from "./Sidebar.module.css";
 import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
+import { SidebarPosition } from "@/types/SidebarPosition";
 
 type RightSidebarClassNames = {
     containerClassName: string;
@@ -14,14 +15,17 @@ type RightSidebarClassNames = {
 type RightSidebarProps = {
     children: (isExpanded: boolean, onClick: () => void) => ReactNode;
     content: (classNames: RightSidebarClassNames) => ReactNode;
+    useSidebarHook?: (position: SidebarPosition, initialState?: boolean) => ReturnType<typeof useSidebar>;
+    expanded?: boolean;
 };
 
-export default function RightSidebar({ children }: RightSidebarProps) {
-    const { isExpanded, hydrated, toggleSidebar } = useSidebar('right');
+export default function RightSidebar({ children, content, useSidebarHook, expanded }: RightSidebarProps) {
+    const { isExpanded, hydrated, toggleSidebar } = useSidebarHook ? useSidebarHook('right', expanded) : useSidebar('right');
 
     if (!hydrated) {
         return null;
     }
+
     const classNames: RightSidebarClassNames = {
         containerClassName: styles.container,
         headerClassName: styles.header,
@@ -42,7 +46,7 @@ export default function RightSidebar({ children }: RightSidebarProps) {
                         [styles.collapsed]: !isExpanded,
                     })}
                 >
-                    content(classNames)
+                    {content(classNames)}
                 </div>
             </div>
             <div>{children(isExpanded, toggleSidebar)}</div>

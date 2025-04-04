@@ -12,10 +12,22 @@ import PageLayout from "../PageLayout/PageLayout";
 import { userApiClient } from "@/apiClient";
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { TablePageHeader } from "../TablePage/TablePageHeader/TablePageHeader";
+import { useGetEnhancedTablePageItems } from "../TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItems";
+import { GetDataPage } from "@/types/GetDataPage";
 
 export const PermissionsTablePage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const itemsPerPage = usePrivateSetting<number>('search.page-size') || 10;
+
+    const getDataPageHook = (paginationProps: GetDataPage) =>
+        useGetEnhancedTablePageItems<IPermission>(
+            'permissions',
+            {
+                getDataPage: (_, props) => getPermissionsPage(props),
+                getTotalCount: (_, props) => getTotalPermissionsCount(props)
+            },
+            paginationProps
+        );
 
     const {
         data,
@@ -26,10 +38,7 @@ export const PermissionsTablePage = () => {
         handlePreviousPage,
     } = usePagination<IPermission>({
         itemsPerPage,
-        getDataPageHook: {
-            getDataPage: getPermissionsPage,
-            getTotalCount: getTotalPermissionsCount
-        },
+        getDataPageHook,
         searchQuery,
         setStateCallbacks: Permissions.pushCallback.bind(Permissions),
         removeStateCallbacks: Permissions.popCallback.bind(Permissions),

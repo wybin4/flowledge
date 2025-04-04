@@ -35,6 +35,10 @@
     margin: 0 auto;
 }
 
+.header:first-child {
+    padding-left: 1rem !important;
+}
+
 .createButton {
     cursor: pointer;
 

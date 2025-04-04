@@ -144,7 +144,8 @@
         "creator": "creator",
         "createdAt": "created at",
         "description": "description",
-        "imageUrl": "course cover"
+        "imageUrl": "course cover",
+        "edit-content": "edit content"
     },
     "courses-list": {
         "menu": {

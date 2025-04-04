@@ -1,11 +1,8 @@
-import { CoursesHubItem } from "@/courses/courses-hub/components/CoursesHubItem/CoursesHubItem";
-import { TablePageMode } from "@/types/TablePageMode";
 
-export default async function CoursesHubItemPage({ params, searchParams }: { params: { id: string }, searchParams: { mode?: string } }) {
+export default async function CoursesHubSectionPage({ params }: { params: { id: string } }) {
     const { id } = await params;
-    const { mode } = await searchParams;
 
     return (
-        <CoursesHubItem mode={mode as TablePageMode} _id={id} />
+        <div>{id}</div>
     );
 }

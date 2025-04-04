@@ -25,6 +25,7 @@ interface EnhancedItemProps<T, U> {
     transformItemToSave: (item: T) => U;
     createEmptyItem: () => T;
     onBackButtonClick?: () => void;
+    additionalButtons?: { title: string, onClick: () => void, mode?: TablePageMode }[];
     backButtonIcon?: ReactNode;
     hasBackButtonText?: boolean;
     backButtonStyles?: string;
@@ -36,7 +37,8 @@ export const EnhancedItem = <T, U>({
     apiClient,
     settingKeys,
     transformItemToSave, createEmptyItem,
-    onBackButtonClick, backButtonIcon, hasBackButtonText, backButtonStyles, 
+    additionalButtons,
+    onBackButtonClick, backButtonIcon, hasBackButtonText, backButtonStyles,
     containerStyles
 }: EnhancedItemProps<T, U>) => {
     const { t } = useTranslation();
@@ -46,7 +48,7 @@ export const EnhancedItem = <T, U>({
     const iconArrowLeft = useIcon('left');
 
     const isEditMode = mode === TablePageMode.EDIT && _id;
-   
+
     const saveItem = useSaveEnhancedTablePageItem(mode, prefix, apiClient, transformItemToSave, _id);
     const deleteItem = useDeleteEnhancedTablePageItem(prefix, apiClient);
     const getItem = useGetEnhancedTablePageItem(prefix, apiClient, (item) => {
@@ -120,6 +122,15 @@ export const EnhancedItem = <T, U>({
                     {renderSettings()}
                 </div>
                 <div className={styles.buttonContainer}>
+                    {additionalButtons?.filter((button) => button.mode ? button.mode === mode : true).map((button) => (
+                        <button
+                            key={button.title}
+                            className={cn(styles.button, styles.saveButton)}
+                            onClick={button.onClick}
+                        >
+                            {button.title}
+                        </button>
+                    ))}
                     {isEditMode &&
                         <button className={cn(styles.button, styles.deleteButton)} onClick={() => deleteItem(_id)}>
                             {t(`${prefix}.delete`)}

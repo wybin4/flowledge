@@ -16,10 +16,11 @@ import { IconKey } from "@/hooks/useIcon";
 import { EnhancedTablePageItem } from "./EnhancedTablePageItem/EnhancedTablePageItem";
 import { TablePageMode } from "@/types/TablePageMode";
 import { useGetEnhancedTablePageItems } from "./hooks/useGetEnhancedTablePageItems";
-import { ApiClient, FakeApiClient } from "@/types/ApiClient";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { EnhancedItemChildren } from "./types/EnhancedItemChildren";
 import cn from "classnames";
+import { GetDataPage } from "@/types/GetDataPage";
+import { DataPageHookFunctions } from "@/types/DataPageHook";
 
 interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
@@ -27,10 +28,10 @@ interface EnhancedTablePageProps<T, U> {
     transformData: (data: T, locale: string, t: TFunction) => U;
     getHeaderItems: (t: TFunction, setSortQuery: (query: string) => void) => Sortable[];
     itemKeys: EnhancedItemChildren[];
-    apiClient: ApiClient<T> | FakeApiClient<T>;
     onItemClick?: (_id: string) => void;
     className?: string;
     tableStyles?: string;
+    getDataPageFunctions: DataPageHookFunctions<T>;
 }
 
 export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable>({
@@ -39,10 +40,10 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
     transformData,
     getHeaderItems,
     itemKeys,
-    apiClient,
     onItemClick,
     className,
     tableStyles,
+    getDataPageFunctions,
 }: EnhancedTablePageProps<T, U>) => {
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
@@ -51,7 +52,12 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
     const locale = useUserSetting<string>('language') || 'en';
     const router = useRouter();
 
-    const getDataPageHook = useGetEnhancedTablePageItems(prefix, apiClient);
+    const getDataPageHook =
+        (paginationProps: GetDataPage) => useGetEnhancedTablePageItems(
+            prefix,
+            getDataPageFunctions,
+            paginationProps
+        );
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const query = e.target.value;

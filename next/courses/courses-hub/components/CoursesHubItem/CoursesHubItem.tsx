@@ -10,6 +10,8 @@ import { CourseToSave } from "../../types/CourseToSave";
 import { fakeUser } from "@/helpers/fakeUser";
 import { useIcon } from "@/hooks/useIcon";
 import styles from "./CoursesHubItem.module.css";
+import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
 
 interface CoursesHubItemProps {
     mode: TablePageMode;
@@ -19,8 +21,14 @@ interface CoursesHubItemProps {
 
 export const CoursesHubItem = ({ mode, _id, onBackButtonClick }: CoursesHubItemProps) => {
     const closeIcon = useIcon('close');
+    const { t } = useTranslation();
+    const router = useRouter(); 
 
-    return (
+    const handleEditContent = () => {
+        router.push(`/${coursesHubPrefix}/${_id}`);
+    };
+
+    return (    
         <EnhancedItem<Course, CourseToSave>
             prefix={coursesHubPrefix}
             mode={mode}
@@ -52,6 +60,13 @@ export const CoursesHubItem = ({ mode, _id, onBackButtonClick }: CoursesHubItemP
             hasBackButtonText={false}
             backButtonStyles={styles.backButton}
             containerStyles={styles.container}
+            additionalButtons={[
+                {
+                    title: t(`${coursesHubPrefix}.edit-content`),
+                    onClick: handleEditContent,
+                    mode: TablePageMode.EDIT
+                }
+            ]}
         />
     );
 };

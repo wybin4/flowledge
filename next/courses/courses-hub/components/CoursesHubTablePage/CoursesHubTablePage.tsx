@@ -17,6 +17,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { CoursesHubItem } from "../CoursesHubItem/CoursesHubItem";
 import { useNonPersistentSidebar } from "@/hooks/useNonPersistentSidebar";
 import { useEffect, useState } from "react";
+import { getDataPageWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getDataPageWithApi";
+import { getTotalCountWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getTotalCountWithApi";
 
 export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
     const [expanded, setExpanded] = useState<boolean>(false);
@@ -51,8 +53,12 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
     };
 
     useEffect(() => {
-        const currentMode = searchParams.get('mode');
-        updateState(currentMode, selectedItemId);
+        if (!selectedItemId) {
+            router.push(`/${coursesHubPrefix}`);
+        } else {
+            const currentMode = searchParams.get('mode');
+            updateState(currentMode, selectedItemId);
+        }
     }, [searchParams.get('mode')]);
 
     return (
@@ -70,6 +76,10 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 <div>
                     <EnhancedTablePage<Course, CoursesHubTableItem>
                         prefix={coursesHubPrefix}
+                        getDataPageFunctions={{
+                            getDataPage: (prefix, params) => getDataPageWithApi(prefix, userApiClient, params),
+                            getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, userApiClient, params),
+                        }}
                         getHeaderItems={getHeaderItems}
                         transformData={mapCoursesHubToTable}
                         itemKeys={[
@@ -78,7 +88,6 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                             { name: 'creator', type: EnhancedItemType.Text },
                             { name: 'createdAt', type: EnhancedItemType.Text },
                         ]}
-                        apiClient={userApiClient}
                         onItemClick={(_id) => {
                             toggleSidebar();
                             onItemClick(_id);

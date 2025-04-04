@@ -1,9 +1,10 @@
 import { RemoveStateCallbacks, SetStateCallbacks } from "@/types/StateCallback";
 import { IPagination } from "@/types/Pagination";
 import { useState, useEffect } from "react";
-import { useStateUpdate } from "./useStateUpdate";
-import { DataPageHook } from "@/types/DataPageHook";
+import { DataPageHook, DataPageHookFunctions } from "@/types/DataPageHook";
 import { Identifiable } from "@/types/Identifiable";
+import { GetDataPage } from "@/types/GetDataPage";
+import { useStateUpdate } from "./useStateUpdate";
 
 export const usePagination = <T extends Identifiable>({
     itemsPerPage,
@@ -14,43 +15,32 @@ export const usePagination = <T extends Identifiable>({
     removeStateCallbacks
 }: {
     itemsPerPage: number;
-    getDataPageHook: DataPageHook<T>;
+    getDataPageHook: (paginationProps: GetDataPage) => DataPageHook<T>;
     searchQuery: string;
     sortQuery?: string;
     setStateCallbacks?: SetStateCallbacks<T>;
     removeStateCallbacks?: RemoveStateCallbacks<T>;
 }): IPagination<T> => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [data, setData] = useState<T[]>([]);
     const [totalPages, setTotalPages] = useState(1);
-    const [currentTotalCount, setCurrentTotalCount] = useState(0);
+    const [data, setData] = useState<T[]>([]);
 
-    const { getDataPage, getTotalCount, dataPage, totalCount } = getDataPageHook;
+    const { totalCount, data: dataPage } = getDataPageHook(
+        { page: currentPage, pageSize: itemsPerPage, searchQuery, sortQuery }
+    );
+
+    useEffect(() => {
+        setData(dataPage ?? []);
+        setTotalPages(Math.ceil(totalCount / itemsPerPage));
+    }, [dataPage]);
 
     if (setStateCallbacks && removeStateCallbacks) {
         useStateUpdate<T>(searchQuery, setData, setStateCallbacks, removeStateCallbacks);
     }
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [newDataPage, newCount] = await Promise.all([
-                    getDataPage({ page: currentPage, pageSize: itemsPerPage, searchQuery, sortQuery }),
-                    getTotalCount({ searchQuery })
-                ]);
-
-                setData(newDataPage);
-                setCurrentTotalCount(newCount);
-                setTotalPages(Math.ceil(newCount / itemsPerPage));
-            } catch (error) {
-                setData([]);
-                setCurrentTotalCount(0);
-                setTotalPages(1);
-            }
-        };
-
-        fetchData();
-    }, [currentPage, itemsPerPage, searchQuery, sortQuery, getDataPage, getTotalCount, dataPage, totalCount]);
+        setCurrentPage(1);
+    }, [searchQuery]);
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
@@ -68,7 +58,7 @@ export const usePagination = <T extends Identifiable>({
         data,
         currentPage,
         totalPages,
-        totalCount: currentTotalCount,
+        totalCount,
         handleNextPage,
         handlePreviousPage,
     };

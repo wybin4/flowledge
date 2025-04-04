@@ -144,7 +144,8 @@
         "creator": "создатель",
         "createdAt": "создан",
         "description": "описание",
-        "imageUrl": "обложка курса"
+        "imageUrl": "обложка курса",
+        "edit-content": "редактировать содержимое"
     },
     "courses-list": {
         "menu": {

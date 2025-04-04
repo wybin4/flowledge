@@ -20,10 +20,11 @@
 
 .buttonContainer {
     display: flex;
-    justify-content: flex-end;
-    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 1rem 1.5rem;
 
-    margin-top: 2rem;
+    margin-top: 1.3rem;
 }
 
 .button {

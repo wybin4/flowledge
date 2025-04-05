@@ -1,0 +1,40 @@
+.title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.action {
+    font-size: 0.875rem;
+
+    border: 1px solid var(--light);
+    border-radius: 10rem;
+
+    padding: 0.4rem 0.8rem;
+
+    cursor: pointer;
+}
+
+.action:hover {
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.description {
+    font-size: 0.875rem;
+    color: var(--description-text);
+}

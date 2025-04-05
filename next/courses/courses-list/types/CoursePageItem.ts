@@ -1,4 +1,4 @@
-import { SectionItem } from "./SectionItem";
+import { SectionItem } from "../../types/SectionItem";
 
 export interface CoursePageItem {
     _id: string;

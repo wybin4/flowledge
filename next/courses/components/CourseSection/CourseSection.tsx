@@ -1,18 +1,20 @@
-import { SectionItem } from "@/courses/courses-list/types/SectionItem";
+import { SectionItem } from "@/courses/types/SectionItem";
 import CollapsibleSection from "@/components/CollapsibleSection/CollapsibleSection";
 import CollapsibleSectionChild from "@/components/CollapsibleSection/CollapsibleSectionChild";
-import styles from "./CoursesListItemSection.module.css";
-import { CourseListImage } from "../CourseListImage/CourseListImage";
+import styles from "./CourseSection.module.css";
+import { CourseListImage } from "../../courses-list/components/CoursesListPageItem/CourseListImage/CourseListImage";
 import { useRouter } from "next/navigation";
+import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
 
-type CoursesListItemSectionProps = {
+type CourseSectionProps = {
     className?: string;
     section: SectionItem;
+    actions?: CollapsibleSectionActionProps[];
 }
 
-export const CoursesListItemSection = ({ className, section }: CoursesListItemSectionProps) => {
+export const CourseSection = ({ className, section, actions }: CourseSectionProps) => {
     const router = useRouter();
-    
+
     const sectionClassNames = {
         containerClassName: className,
         headerClassName: styles.header,
@@ -27,12 +29,27 @@ export const CoursesListItemSection = ({ className, section }: CoursesListItemSe
         additionalInfoClassName: styles.childAdditionalInfo
     };
 
+    const sectionActionsClassNames = {
+        className: styles.sectionAction,
+        titleClassName: styles.sectionActionTitle
+    };
+
+    const sectionActions = actions?.map((action) => ({
+        ...action,
+        ...sectionActionsClassNames
+    }));
+
     const defaultChildProps = { isActive: false };
 
     const onLessonClick = (id: string) => router.push(`${window.location.pathname}/${id}`);
 
     return (
-        <CollapsibleSection title={section.title} expandedByDefault={true} iconPrefix='-little' {...sectionClassNames}>
+        <CollapsibleSection
+            title={section.title}
+            expandedByDefault={true}
+            iconPrefix='-little'
+            actions={sectionActions}
+            {...sectionClassNames}>
             {section.lessons && section.lessons.length > 0 && section.lessons.map((lesson) => (
                 <CollapsibleSectionChild
                     id={lesson._id}
@@ -43,7 +60,13 @@ export const CoursesListItemSection = ({ className, section }: CoursesListItemSe
                     additionalInfo={lesson.additionalInfo}
                     isViewed={false}
                     isLocked={false}
-                    image={lesson.imageUrl && <CourseListImage imageUrl={lesson.imageUrl} title={lesson.title} size='medium' />}
+                    image={lesson.imageUrl &&
+                        <CourseListImage
+                            imageUrl={lesson.imageUrl}
+                            title={lesson.title}
+                            size='medium'
+                        />
+                    }
                     {...childClassNames}
                     {...defaultChildProps}
                 />

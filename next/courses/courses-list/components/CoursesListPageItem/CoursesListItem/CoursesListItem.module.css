@@ -1,0 +1,15 @@
+.container {
+    width: 90%;
+}
+
+.menuContainer {
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    gap: 1.5rem;
+}
+
+.actionsRight {
+    width: fit-content !important;
+
+    padding: 1rem;
+}

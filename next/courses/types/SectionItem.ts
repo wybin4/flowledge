@@ -1,4 +1,4 @@
-import { CourseLessonItem } from "./CourseLessonItem";
+import { CourseLessonItem } from "../courses-list/types/CourseLessonItem";
 
 export interface SectionItem {
     _id: string;

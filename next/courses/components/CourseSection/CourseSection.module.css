@@ -15,21 +15,29 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    cursor: pointer;
-
-    margin-top: 0.7rem;
-
-    padding: 0.75rem;
-    border-radius: 0.5rem;
 }
 
 .child:hover {
     background-color: var(--hover-dark);
 }
 
-.childTitle {
+.childTitle,
+.sectionActionTitle {
     font-size: 0.875rem;
+}
+
+.child,
+.sectionAction {
+    padding: 0.75rem;
+    margin-top: 0.7rem;
+
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+}
+
+.sectionAction:hover {
+    background-color: var(--hover-dark);
 }
 
 .childTime {

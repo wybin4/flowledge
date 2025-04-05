@@ -1,15 +1,9 @@
-.container {
-    width: 90%;
+.pointer {
+    cursor: pointer;
 }
 
-.itemContainer {
-    background-color: var(--card);
-    border: 1px solid var(--card-border);
-
-    border-radius: 1rem;
-
-    padding: 1rem;
-    margin-bottom: 1rem;
+.actionsTop {
+    padding-bottom: 1.5rem;
 }
 
 .header {
@@ -21,10 +15,6 @@
     margin-bottom: 1rem;
 
     font-size: 0.875rem;
-}
-
-.pointer {
-    cursor: pointer;
 }
 
 .item {
@@ -66,21 +56,3 @@
 
     margin-top: 0.4rem;
 }
-
-.actionsTop {
-    padding-bottom: 1.5rem;
-}
-
-.actionsRight {
-    width: fit-content !important;
-
-    padding: 1rem;
-}
-
-.menuContainer {
-    display: grid;
-    grid-template-columns: 4fr 1fr;
-    gap: 1.5rem;
-}
-
-

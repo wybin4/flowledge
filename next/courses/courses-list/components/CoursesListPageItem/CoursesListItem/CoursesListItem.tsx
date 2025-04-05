@@ -5,15 +5,16 @@ import { CoursePageItem } from "@/courses/courses-list/types/CoursePageItem";
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { coursesListPrefix } from "@/helpers/prefixes";
-import { CoursesListItemActions } from "./CoursesListItemActions/CoursesListItemActions";
+import { CoursesListItemActions } from "../CoursesListItemActions/CoursesListItemActions";
 import cn from "classnames";
-import { CoursesListItemDescription } from "./CoursesListItemDescription/CoursesListItemDescription";
-import { CoursesListItemMenu } from "./CoursesListItemMenu/CoursesListItemMenu";
+import { CoursesListItemDescription } from "../../../../components/CoursesListItemDescription/CoursesListItemDescription";
+import { CoursesListItemMenu } from "../CoursesListItemMenu/CoursesListItemMenu";
 import { CourseTabs } from "@/types/CourseTabs";
-import { CourseListImage } from "./CourseListImage/CourseListImage";
-import { CoursesListItemSection } from "./CoursesListItemSection/CoursesListItemSection";
-import { CoursesListItemTags } from "./CoursesListItemTags/CoursesListItemTags";
-import { CoursesListItemComments } from "./CoursesListItemComments/CoursesListItemComments";
+import { CoursesListItemTags } from "../CoursesListItemTags/CoursesListItemTags";
+import { CoursesListItemComments } from "../CoursesListItemComments/CoursesListItemComments";
+import { CoursesItemHeader } from "../../../../components/CoursesItemHeader/CoursesItemHeader";
+import defaultStyles from "@/courses/styles/Default.module.css";
+import { CourseSection } from "@/courses/components/CourseSection/CourseSection";
 
 type CoursesListItemProps = {
     course: CoursePageItem;
@@ -58,61 +59,42 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
     return (
         <>
             <div className={styles.container}>
-                <div className={cn(styles.itemContainer, {
-                    [styles.pointer]: pointer,
-                    [styles.actionsTop]: !isListPage,
-                })}>
-                    {!isListPage && <div className={styles.header}>
-                        <div>{header}</div>
-                        {actions}
-                    </div>}
-                    <div>
-                        <div className={styles.item} onClick={handleClick}>
-                            <div className={styles.itemHeader}>
-                                <CourseListImage
-                                    imageUrl={course.imageUrl}
-                                    title={course.title}
-                                    size={isListPage ? 'large' : 'xlarge'}
-                                />
-                                <div className={styles.title}>
-                                    <div className={styles.titleSubtext}>sometext</div>
-                                    <div className={styles.titleText}>{course.title}</div>
-                                    <div className={styles.titleProgress}>4%</div>
-                                </div>
-                            </div>
-                            {isListPage && actions}
-                        </div>
-                    </div>
-                </div>
+                <CoursesItemHeader
+                    course={course}
+                    isListPage={isListPage}
+                    pointer={pointer}
+                    handleClick={handleClick}
+                    actions={actions}
+                    header={header}
+                />
                 <div className={styles.menuContainer}>
                     <div>
                         {selectedMenuTab !== CourseTabs.Comments &&
                             <CoursesListItemDescription
                                 description={course.description}
-                                className={styles.itemContainer}
                                 isExpanded={selectedMenuTab === CourseTabs.About}
                                 onReadMore={onReadMore}
                             />
                         }
                         {selectedMenuTab === CourseTabs.About && course.tags && course.tags.length > 0 &&
-                            <CoursesListItemTags tags={course.tags} className={styles.itemContainer} />
+                            <CoursesListItemTags tags={course.tags} className={defaultStyles.itemContainer} />
                         }
                         {selectedMenuTab === CourseTabs.Lessons && course.sections && course.sections.length > 0 &&
                             course.sections.map(section => (
-                                <CoursesListItemSection
+                                <CourseSection
                                     key={section._id}
-                                    className={styles.itemContainer}
+                                    className={defaultStyles.itemContainer}
                                     section={section}
                                 />
                             ))
                         }
                         {selectedMenuTab === CourseTabs.Comments &&
-                            <CoursesListItemComments comments={course.comments ?? []} className={styles.itemContainer} />
+                            <CoursesListItemComments comments={course.comments ?? []} className={defaultStyles.itemContainer} />
                         }
                     </div>
                     {!isListPage &&
                         <CoursesListItemMenu
-                            className={styles.itemContainer}
+                            className={defaultStyles.itemContainer}
                             selectedTab={selectedMenuTab}
                             setSelectedTab={onMenuTabChange}
                         />

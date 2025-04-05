@@ -1,6 +1,6 @@
 import styles from "./CoursesListItemTags.module.css";
 import { useTranslation } from "react-i18next";
-import cn from "classnames";
+import { Tag } from "@/components/Tag/Tag";
 
 type CoursesListItemTagsProps = {
     className?: string;
@@ -15,9 +15,7 @@ export const CoursesListItemTags = ({ className, tags }: CoursesListItemTagsProp
             <div className={styles.title}>{t('courses-list.tags')}</div>
             <div className={styles.tagsContainer}>
                 {tags.map((tag) => (
-                    <div key={tag} className={styles.tag}>
-                        {tag}
-                    </div>
+                    <Tag key={tag} tag={tag} />
                 ))}
             </div>
         </div>

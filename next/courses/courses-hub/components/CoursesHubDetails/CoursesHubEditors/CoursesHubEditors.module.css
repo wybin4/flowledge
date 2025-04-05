@@ -1,0 +1,30 @@
+.avatar {
+    border-radius: 100%;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.editorContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.editorRoles {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+}
+
+.editorInfo {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.editorsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}

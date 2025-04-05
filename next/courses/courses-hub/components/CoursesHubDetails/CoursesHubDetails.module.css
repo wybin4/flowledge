@@ -1,0 +1,9 @@
+.sectionsContainer {
+    margin-top: 1.5rem;
+}
+
+.sectionsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

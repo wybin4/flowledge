@@ -118,6 +118,14 @@
             "description": "позволяет пользователю просматривать статистику всех курсов в системе."
         }
     },
+    "roles": {
+        "editor": "редактор",
+        "admin": "админ",
+        "creator": "создатель",
+        "owner": "владелец",
+        "moderator": "модератор",
+        "user": "пользователь"
+    },
     "api-integrations": {
         "name": "название",
         "secret": "секрет",
@@ -145,7 +153,22 @@
         "createdAt": "создан",
         "description": "описание",
         "imageUrl": "обложка курса",
-        "edit-content": "редактировать содержимое"
+        "edit-content": "редактировать содержимое",
+        "editors": "редакторы",
+        "add-editor": "добавить редактора",
+        "sections": "разделы",
+        "add-section": "добавить раздел",
+        "__count__sections_zero": "нет разделов",
+        "__count__sections_one": "{{count}} раздел",
+        "__count__sections_few": "{{count}} раздела",
+        "__count__sections_many": "{{count}} разделов",
+        "__count__sections_plural": "{{count}} разделов",
+        "__count__lessons_zero": "нет лекций",
+        "__count__lessons_one": "{{count}} лекция",
+        "__count__lessons_few": "{{count}} лекции",
+        "__count__lessons_many": "{{count}} лекций",
+        "__count__lessons_plural": "{{count}} лекций",
+        "add-lesson": "добавить лекцию"
     },
     "courses-list": {
         "menu": {

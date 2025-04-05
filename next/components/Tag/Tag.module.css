@@ -1,0 +1,24 @@
+.tag {
+    font-size: 0.875rem;
+
+    background-color: var(--hover-dark);
+
+    border: 1px solid var(--input-border);
+
+    cursor: pointer;
+}
+
+.tag:hover {
+    background-color: var(--input-border);
+}
+
+.medium {
+    padding: 0.2rem 0.5rem;
+
+    border-radius: 0.5rem;}
+
+.small {
+    padding: 0.1rem 0.4rem;
+
+    border-radius: 1rem;
+}

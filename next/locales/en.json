@@ -118,6 +118,14 @@
             "description": "allows the user to view statistics for all courses in the system."
         }
     },
+    "roles": {
+        "editor": "editor",
+        "admin": "admin",
+        "creator": "creator",
+        "owner": "owner",
+        "moderator": "moderator",
+        "user": "user"
+    },
     "api-integrations": {
         "name": "name",
         "secret": "secret",
@@ -145,7 +153,18 @@
         "createdAt": "created at",
         "description": "description",
         "imageUrl": "course cover",
-        "edit-content": "edit content"
+        "edit-content": "edit content",
+        "editors": "editors",
+        "add-editor": "add editor",
+        "sections": "sections",
+        "add-section": "add section",
+        "__count__sections_zero": "no sections",
+        "__count__sections_one": "{{count}} section",
+        "__count__sections_plural": "{{count}} sections",
+        "__count__lessons_zero": "no lessons",
+        "__count__lessons_one": "{{count}} lesson",
+        "__count__lessons_plural": "{{count}} lessons",
+        "add-lesson": "add lesson"
     },
     "courses-list": {
         "menu": {

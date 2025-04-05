@@ -4,10 +4,12 @@ import { useState } from "react";
 import { IconKey, useIcon } from "@/hooks/useIcon";
 import styles from "./CollapsibleSection.module.css";
 import cn from "classnames";
+import CollapsibleSectionAction, { CollapsibleSectionActionProps } from "./CollapsibleSectionAction";
 
 type CollapsibleSectionProps = {
     title: string;
     children: React.ReactNode;
+    actions?: CollapsibleSectionActionProps[];
     expandedByDefault: boolean;
     containerClassName?: string;
     headerClassName?: string;
@@ -16,7 +18,7 @@ type CollapsibleSectionProps = {
 };
 
 export default function CollapsibleSection({
-    title, expandedByDefault,
+    title, expandedByDefault, actions,
     children, iconPrefix = '',
     containerClassName, headerClassName, contentClassName
 }: CollapsibleSectionProps) {
@@ -36,6 +38,9 @@ export default function CollapsibleSection({
             <div className={cn(contentClassName, { [styles.hidden]: !isExpanded })}>
                 {children}
             </div>
+            {actions && actions.map((action) => (
+                <CollapsibleSectionAction key={action.title} {...action} />
+            ))}
         </div>
     );
 }

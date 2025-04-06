@@ -53,7 +53,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
     };
 
     useEffect(() => {
-        if (!selectedItemId) {
+        if (!selectedItemId && mode === TablePageMode.EDIT) {
             router.push(`/${coursesHubPrefix}`);
         } else {
             const currentMode = searchParams.get('mode');

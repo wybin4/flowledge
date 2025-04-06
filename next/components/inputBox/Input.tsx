@@ -1,6 +1,8 @@
 import { JSX, ReactNode, useMemo, useState } from "react";
 import styles from "./InputBox.module.css";
 import cn from "classnames";
+import { TopBottomIcon } from "@/components/TopBottomIcon/TopBottomIcon";
+import { TopBottomPosition } from "@/types/Sortable";
 
 type InputProps = {
     type: InputType;
@@ -26,7 +28,15 @@ export const Input = ({
     readOnly, disabled, extraContent
 }: InputProps) => {
     const [focused, setFocused] = useState<boolean>(false);
-  
+
+    const handleNumberChange = (icon?: TopBottomPosition) => {
+        onChange?.({
+            target: {
+                value: Number(value) + (icon === TopBottomPosition.TOP ? 1 : -1)
+            }
+        } as any)
+    };
+
     return useMemo(() => (
         <div className={cn(styles.inputContainer, className, {
             [styles.inputDisabled]: disabled || readOnly
@@ -40,7 +50,9 @@ export const Input = ({
             }
             <input
                 type={value ? type : 'text'}
-                className={cn(styles.input, inputClassName)}
+                className={cn(styles.input, inputClassName, {
+                    [styles.inputNoArrows]: type === 'number'
+                })}
                 value={value}
                 onFocus={() => !readOnly && setFocused(true)}
                 onBlur={() => {
@@ -56,6 +68,11 @@ export const Input = ({
                 disabled={disabled}
                 autoComplete="off"
             />
+            {type === 'number' && (
+                <div className={styles.numberControls}>
+                    <TopBottomIcon mode='separate' onClick={handleNumberChange} />
+                </div>
+            )}
             {extraContent?.(focused)}
         </div>
     ), [type, value, focused, extraContent]);

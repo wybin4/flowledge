@@ -1,15 +1,15 @@
-import { SortablePosition } from "@/types/Sortable";
+import { TopBottomPosition } from "@/types/Sortable";
 import { TFunction } from "i18next";
 import { coursesHubPrefix } from "@/helpers/prefixes";
 
-export const createCoursesHubTableHeader = (t: TFunction, onSort: (name: string, position?: SortablePosition) => void) => {
+export const createCoursesHubTableHeader = (t: TFunction, onSort: (name: string, position?: TopBottomPosition) => void) => {
     const items = [
         { name: 'imageUrl' },
         { name: 'title' },
         { name: 'creator' },
         {
             name: 'createdAt', isSortable: true,
-            onSort: (position?: SortablePosition) => {
+            onSort: (position?: TopBottomPosition) => {
                 onSort('createdAt', position);
             }
         }

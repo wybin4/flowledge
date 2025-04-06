@@ -13,6 +13,9 @@ import { handlePluralTranslation } from "@/helpers/handlePluralTranslation";
 import { useUserSetting } from "@/user/hooks/useUserSetting";
 import { Language } from "@/user/types/Language";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
+import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { useRouter } from "next/navigation";
 
 export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     const { t } = useTranslation();
@@ -23,10 +26,12 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     const countSectionsText = handlePluralTranslation(coursesHubPrefix, t, countSections, 'sections', locale);
     const countLessonsText = handlePluralTranslation(coursesHubPrefix, t, countLessons, 'lessons', locale);
 
+    const router = useRouter();
+
     const actions: CollapsibleSectionActionProps[] = [
         {
             title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
-            onClick: () => { }
+            onClick: () => { router.push(`/courses-hub/${course._id}?createLesson=true`); }
         }
     ];
 
@@ -34,6 +39,8 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
         <>
             <CoursesItemHeader
                 course={course}
+                header={<Breadcrumbs position={ChildrenPosition.Left} currentPathName={t(`${coursesHubPrefix}.current-course`)} />}
+                pointer={false}
             />
             <CoursesListItemDescription
                 description={course.description}
@@ -53,7 +60,7 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
                     onClick={() => { }}
                 />
                 {course.sections && course.sections.length > 0 && course.sections.map(section => (
-                    <CourseSection key={section._id} section={section} actions={actions} />
+                    <CourseSection key={section._id} section={section} actions={actions} className={styles.section}/>
                 ))}
             </div>
         </>

@@ -2,11 +2,13 @@ import { LessonPage } from "@/courses/courses-list/components/LessonPage/LessonP
 import { StuffTypes } from "@/stuff/types/StuffTypes";
 import { PageMode } from "@/types/PageMode";
 
-export default async function DynamicCourseListLessonPage({ params }: { params: { lesson: string } }) {
+export default async function DynamicCourseHubLessonPage({ params }: { params: { lesson: string } }) {
+    const { lesson } = await params;
+
     return (<LessonPage
-        mode={PageMode.Viewer}
+        mode={PageMode.Editor}
         lesson={{
-            _id: '1',
+            _id: lesson,
             title: "пример урока",
             time: "30 минут",
             synopsis: `

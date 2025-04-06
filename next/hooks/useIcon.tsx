@@ -43,6 +43,12 @@ import CoursesHubIcon from "../assets/courses-hub.svg";
 import MarkIcon from "../assets/mark.svg";
 import UnmarkIcon from "../assets/unmark.svg";
 import CloseIcon from "../assets/close.svg";
+import CheckIcon from "../assets/check.svg";
+import VideoIcon from "../assets/video.svg";
+import VideoUploadIcon from "../assets/video-upload.svg";
+import VideoUploadBorderIcon from "../assets/video-upload-border.svg";
+import TopIcon from "../assets/top.svg";
+import BottomIcon from "../assets/bottom.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -96,6 +102,14 @@ const icons = {
     'mark': <MarkIcon />,
     'unmark': <UnmarkIcon />,
     'close': <CloseIcon />,
+    'check': <CheckIcon />,
+
+    'video': <VideoIcon />,
+    'video-upload': <VideoUploadIcon />,
+    'video-upload-border': <VideoUploadBorderIcon />,
+
+    'top': <TopIcon />,
+    'bottom': <BottomIcon />,
 } as const;
 
 export type IconKey = keyof typeof icons;

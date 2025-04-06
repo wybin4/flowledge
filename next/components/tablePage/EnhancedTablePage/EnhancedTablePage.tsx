@@ -90,15 +90,17 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
         <PageLayout
             name={prefix}
             type='block'
-            headerChildren={
-                <div
-                    className={styles.createButton}
-                    onClick={handleCreate}>{t(`${prefix}.create`)}
-                </div>
-            }
-            headerInfo={`${totalCount}`}
-            headerChildrenPosition={ChildrenPosition.Right}
-            headerStyles={cn(styles.container, className)}
+            headerProps={{
+                headerChildren: (
+                    <div
+                        className={styles.createButton}
+                        onClick={handleCreate}>{t(`${prefix}.create`)}
+                    </div>
+                ),
+                headerInfo: `${totalCount}`,
+                headerChildrenPosition: ChildrenPosition.Right,
+                headerStyles: cn(styles.container, className)
+            }}
             mainStyles={tableStyles}
             mainChildren={
                 <>

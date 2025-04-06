@@ -9,8 +9,9 @@ import cn from "classnames";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useTranslation } from "react-i18next";
 
-export const Breadcrumbs = ({ position = ChildrenPosition.Top }: {
-    position?: ChildrenPosition.Top | ChildrenPosition.Left
+export const Breadcrumbs = ({ position = ChildrenPosition.Top, currentPathName }: {
+    position?: ChildrenPosition.Top | ChildrenPosition.Left,
+    currentPathName?: string
 }): ReactNode => {
     const pathname = usePathname();
     const pathSegments = pathname.split("/").filter(Boolean);
@@ -38,7 +39,7 @@ export const Breadcrumbs = ({ position = ChildrenPosition.Top }: {
                                     {translatedSegment}
                                 </Link>
                             ) : (
-                                <span className={styles.current}>{translatedSegment}</span>
+                                <span className={styles.current}>{currentPathName || translatedSegment}</span>
                             )}
                         </li>
                     );

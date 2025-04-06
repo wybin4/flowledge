@@ -21,23 +21,3 @@
     align-items: center;
     gap: 0.6rem;
 }
-
-.iconSort {
-    color: var(--toggle-bg);
-}
-
-.iconSort svg {
-    margin-bottom: -3.5px;
-}
-
-.iconSort:hover {
-    color: #656565;
-}
-
-.iconSortBottom path:first-child {
-    fill: var(--light);
-}
-
-.iconSortTop path:last-child {
-    fill: var(--light);
-}

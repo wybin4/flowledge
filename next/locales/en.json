@@ -164,7 +164,12 @@
         "__count__lessons_zero": "no lessons",
         "__count__lessons_one": "{{count}} lesson",
         "__count__lessons_plural": "{{count}} lessons",
-        "add-lesson": "add lesson"
+        "add-lesson": "add lesson",
+        "current-course": "current course",
+        "create-lesson": "create lesson",
+        "edit-lesson": "edit lesson",
+        "with-video": "upload video",
+        "without-video": "do not upload video"
     },
     "courses-list": {
         "menu": {
@@ -207,6 +212,14 @@
             "presentation": {
                 "name": "file types for presentations"
             }
+        },
+        "video": {
+            "name": "file types for videos"
+        },
+        "size": {
+            "name": "maximum file size",
+            "description": "set -1 to remove the file size limit",
+            "error": "the file size must be less than {{size}}"
         }
     },
     "security": {
@@ -222,5 +235,12 @@
     "unmark-as-favorite": "unmark as favorite",
     "description": "description",
     "read-more": "read more",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "video-upload": {
+        "placeholder": "drag and drop or select a file",
+        "formats": "supported formats:",
+        "uploading": "uploading",
+        "uploaded": "uploaded",
+        "error": "error"
+    }
 }

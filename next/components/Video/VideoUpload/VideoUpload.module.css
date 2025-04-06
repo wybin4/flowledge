@@ -1,0 +1,91 @@
+.title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.description {
+    font-size: 0.89rem;
+    font-weight: 400;
+    color: var(--description-text);
+
+    max-width: 18.875rem;
+}
+
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+
+    width: 22rem;
+    height: 11rem;
+
+    background-color: var(--button);
+
+    border-radius: 1.6875rem;
+
+    cursor: pointer;
+}
+
+.container:hover {
+    filter: brightness(0.9);
+}
+
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+
+    text-align: center;
+}
+
+.borderContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 22rem;
+    height: 11rem;
+}
+
+.borderContainer svg,
+.borderContainer svg path {
+    width: 22rem;
+    height: 11rem;
+
+    color: var(--input-border);
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.videoContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    color: var(--light);
+    background-color: var(--button);
+
+    border-radius: 1.4rem;
+    border: 1px solid var(--input-border);
+
+    padding: 0.7rem 1rem;
+
+    cursor: pointer;
+}
+
+.videoInfo {
+    color: var(--description-text);
+    font-size: 0.95rem;
+}
+
+.videoInfoContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}

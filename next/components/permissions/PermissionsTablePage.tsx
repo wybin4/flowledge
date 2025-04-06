@@ -67,7 +67,9 @@ export const PermissionsTablePage = () => {
         <PageLayout
             name='permissions'
             type='block'
-            headerInfo={`${totalCount}`}
+            headerProps={{
+                headerInfo: `${totalCount}`
+            }}
             mainChildren={
                 <>
                     <TablePageSearch query={searchQuery} onChange={handleSearchChange} placeholder='permissions.placeholder' />

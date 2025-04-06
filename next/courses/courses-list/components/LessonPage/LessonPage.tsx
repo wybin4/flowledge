@@ -5,7 +5,7 @@ import { useState } from "react";
 import { FiniteSelector } from "../../../../components/FiniteSelector/FiniteSelector";
 import { InputBoxWrapper } from "../../../../components/InputBox/InputBoxWrapper";
 import RightSidebar from "../../../../components/Sidebar/RightSidebar";
-import styles from "./LessonsPage.module.css";
+import styles from "./LessonPage.module.css";
 import { LessonTabs } from "@/types/LessonTabs";
 import cn from "classnames";
 import { MenuButton } from "../../../../components/MenuButton/MenuButton";
@@ -17,14 +17,13 @@ import { StuffItem } from "@/stuff/components/StuffItem";
 import { Stuff } from "@/stuff/types/Stuff";
 import { StuffTypes } from "@/stuff/types/StuffTypes";
 import CollapsibleSection from "@/components/CollapsibleSection/CollapsibleSection";
-import classNames from "classnames";
 
 export type LessonsPageProps = {
     mode: PageMode;
     lesson: LessonItem;
 };
 
-export const LessonsPage = ({ mode, lesson }: LessonsPageProps) => {
+export const LessonPage = ({ mode, lesson }: LessonsPageProps) => {
     const tabs = Object.values(LessonTabs);
     const [selectedTab, setSelectedTab] = useState<LessonTabs>(tabs[0]);
     const [markdownText, setMarkdownText] = useState<string>('');

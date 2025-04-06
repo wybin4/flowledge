@@ -75,7 +75,7 @@ class AdminApplication : CommandLineRunner {
 //               }
 //           }
 
-//           settingsRegistry.addGroup("file-upload") {
+           settingsRegistry.addGroup("file-upload") {
 //               addTab("stuff") {
 //                   addSetting("task", "*", SettingDetails(
 //                       type = SettingType.INPUT_TEXT,
@@ -84,7 +84,13 @@ class AdminApplication : CommandLineRunner {
 //                       type = SettingType.INPUT_TEXT,
 //                   ))
 //               }
-//           }
+//               addSetting("video", "*", SettingDetails(
+//                   type = SettingType.INPUT_TEXT,
+//               ))
+//              addSetting("size", 104857600, SettingDetails(
+//                   type = SettingType.INPUT_NUMBER,
+//               ))
+           }
 
 //           settingsRegistry.addGroup("security") {
 //               addSetting("link-restrictions", "[\"e.example.ru\"]", SettingDetails(

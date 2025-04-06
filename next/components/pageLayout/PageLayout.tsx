@@ -4,6 +4,7 @@ import { IconKey } from "@/hooks/useIcon";
 import cn from "classnames";
 import styles from "./PageLayout.module.css";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { PageLayoutHeader, PageLayoutHeaderProps } from "./PageLayoutHeader/PageLayoutHeader";
 
 interface PageLayoutProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     name: IconKey;
@@ -11,19 +12,15 @@ interface PageLayoutProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElemen
     mainChildren?: ReactNode;
     mainChildrenPosition?: ChildrenPosition.Right | ChildrenPosition.Bottom;
     mainStyles?: string;
-    headerChildrenPosition?: ChildrenPosition.Right | ChildrenPosition.Bottom;
-    headerStyles?: string;
-    headerChildren?: ReactNode;
     type?: 'flex' | 'block';
-    headerInfo?: string;
+    headerProps?: Omit<PageLayoutHeaderProps, 'name' | 'translateName'>;
 }
 
 export default function PageLayout({
     name, translateName = true,
     mainChildren, mainStyles,
-    headerChildren, headerStyles, headerInfo,
+    headerProps,
     mainChildrenPosition = ChildrenPosition.Right,
-    headerChildrenPosition = ChildrenPosition.Bottom,
     type = 'flex', className
 }: PageLayoutProps) {
     return (
@@ -31,19 +28,11 @@ export default function PageLayout({
             [styles.flex]: type === 'flex',
             [styles.mainChildrenBottom]: mainChildrenPosition === ChildrenPosition.Bottom,
         })}>
-            <div className={cn(styles.first, headerStyles, {
-                [styles.headerChildrenRight]: headerChildrenPosition === ChildrenPosition.Right
-            })}>
-                <div className={cn({
-                    [styles.headerContainer]: headerInfo,
-                })}>
-                    <PageHeader title={translateName ? `sidebar.${name}` : name} />
-                    {headerInfo && <div className={styles.headerInfo}>{headerInfo}</div>}
-                </div>
-                <div>
-                    {headerChildren}
-                </div>
-            </div>
+            <PageLayoutHeader
+                name={name}
+                translateName={translateName}
+                {...headerProps}
+            />
             <div className={cn(styles.second, mainStyles)}>{mainChildren}</div>
         </div>
     );

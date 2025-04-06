@@ -37,10 +37,10 @@ export default function CollapsibleSection({
             </div>
             <div className={cn(contentClassName, { [styles.hidden]: !isExpanded })}>
                 {children}
+                {actions && actions.map((action) => (
+                    <CollapsibleSectionAction key={action.title} {...action} />
+                ))}
             </div>
-            {actions && actions.map((action) => (
-                <CollapsibleSectionAction key={action.title} {...action} />
-            ))}
         </div>
     );
 }

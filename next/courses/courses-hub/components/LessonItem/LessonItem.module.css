@@ -1,0 +1,6 @@
+.videoSelector {
+    display: flex;
+    gap: 1rem;
+
+    max-width: 30%;
+}

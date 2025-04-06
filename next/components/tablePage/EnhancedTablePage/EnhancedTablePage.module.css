@@ -7,7 +7,13 @@
 }
 
 .table tbody tr {
+    color: var(--light);
+
     cursor: pointer;
+}
+
+.table tbody tr:hover {
+    color: var(--secondary-light);
 }
 
 .table {

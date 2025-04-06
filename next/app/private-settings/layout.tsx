@@ -10,13 +10,14 @@ export default function PrivateSettingsLayout({ children }: { children: React.Re
     return (
         <PageLayout
             name='private-settings'
-            headerChildren={
-                <>
-                    {tabs.map((st, index) => (
-                        <SettingsTab key={index} index={index} {...st} />
-                    ))}
-                </>
-            }
+            headerProps={{
+                headerChildren:
+                    <>
+                        {tabs.map((st, index) => (
+                            <SettingsTab key={index} index={index} {...st} />
+                        ))}
+                    </>
+            }}
             mainChildren={children}
         />
     );

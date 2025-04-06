@@ -8,9 +8,15 @@
     width: 70%;
 }
 
+.body h3 {
+    color: var(--light);
+}
+
 .title {
     margin-bottom: 0.7rem;
     margin-top: 0rem;
+
+    color: var(--light);
 }
 
 .settingsContainer {
@@ -66,6 +72,8 @@
     gap: 1rem;
 
     margin-bottom: 2rem;
+
+    color: var(--light);
 
     cursor: pointer;
 }

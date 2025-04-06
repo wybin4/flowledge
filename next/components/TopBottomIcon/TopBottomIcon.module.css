@@ -1,0 +1,41 @@
+.icon {
+    color: var(--toggle-bg);
+}
+
+.iconTogether {
+    cursor: pointer;
+}
+
+.iconTogether svg {
+    margin-bottom: -3.5px !important;
+}
+
+.icon:hover {
+    color: #656565;
+}
+
+.iconBottom path:first-child {
+    fill: var(--light);
+}
+
+.iconTop path:last-child {
+    fill: var(--light);
+}
+
+.separateIcon {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.separateIcon svg {
+    cursor: pointer;
+}
+
+.separateIcon svg:hover {
+    color: var(--light);
+}
+
+.separateIcon span {
+    display: flex;
+}

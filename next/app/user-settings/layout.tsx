@@ -10,13 +10,14 @@ export default function PublicSettingsLayout({ children }: { children: React.Rea
     return (
         <PageLayout
             name='user-settings'
-            headerChildren={
-                <>
-                    {tabs.map((st, index) => (
-                        <SettingsTab key={index} index={index} {...st} />
-                    ))}
-                </>
-            }
+            headerProps={{
+                headerChildren:
+                    <>
+                        {tabs.map((st, index) => (
+                            <SettingsTab key={index} index={index} {...st} />
+                        ))}
+                    </>
+            }}
             mainChildren={children}
         />
     );

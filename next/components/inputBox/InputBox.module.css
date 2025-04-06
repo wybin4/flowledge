@@ -84,3 +84,16 @@ input:-webkit-autofill:focus {
 .inputDisabled .inputIcon {
     color: var(--description-text) !important;
 }
+
+.inputNoArrows::-webkit-outer-spin-button,
+.inputNoArrows::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.numberControls {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}

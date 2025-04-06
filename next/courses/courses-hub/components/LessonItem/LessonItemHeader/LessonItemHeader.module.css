@@ -1,0 +1,35 @@
+.videoActions h3 {
+    font-weight: 600;
+}
+
+.videoActionsHeader {
+    margin: 0.8rem 0;
+    margin-top: 1.5rem;
+}
+
+.videoActionsHeader {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+}
+
+.videoActionsHeaderIcon svg {
+    margin-bottom: -4px;
+}
+
+.videoActionsHeaderDescription {
+    font-size: 0.9rem;
+    color: var(--description-text);
+}
+
+.videoActionsHeaderTitle {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.videoActionsHeader h3 {
+    margin: 0;
+}

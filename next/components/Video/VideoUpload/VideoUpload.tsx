@@ -1,36 +1,34 @@
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
-import { useState, useCallback, ReactNode } from "react";
+import { useState, ReactNode, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./VideoUpload.module.css";
 import { useIcon } from "@/hooks/useIcon";
 import cn from "classnames";
 import { getFileSize } from "@/helpers/getFileSize";
-import { FileLoader } from "@/components/Loader/FileLoader/FileLoader";
+import { VideoPreview } from "../VideoPreview/VideoPreview";
+import { getAllowedFileFormats } from "@/helpers/getAllowedFileFormats";
 
-export const VideoUpload = ({ childrenOnVideo }: { childrenOnVideo?: ReactNode }) => {
+type VideoUploadProps = {
+    childrenOnVideo?: ReactNode;
+    maxSize: number;
+};
+
+export const VideoUpload = ({ childrenOnVideo, maxSize }: VideoUploadProps) => {
     const { t } = useTranslation();
 
-    const videoIcon = useIcon('video');
+    const [video, setVideo] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState<boolean>(false);
+    const [isUploadError, setIsUploadError] = useState<boolean>(false);
+
     const videoUploadIcon = useIcon('video-upload');
     const videoUploadBorderIcon = useIcon('video-upload-border');
 
     const videoFileExtensionsString = usePrivateSetting<string>('file-upload.video');
-    const fileUploadMaxSize = usePrivateSetting<number>('file-upload.max-size') || 104857600;
 
-    const getAllowedFormats = useCallback(() => {
-        const allowedFileExtensions = videoFileExtensionsString?.split(',').map(f => f.trim()) || [];
-        return {
-            allowedFileExtensions,
-            acceptedMimeTypes: allowedFileExtensions.map(f => `video/${f}`).join(',')
-        };
-    }, [videoFileExtensionsString]);
-
-    const { allowedFileExtensions, acceptedMimeTypes } = getAllowedFormats();
-
-    const [video, setVideo] = useState<File | null>(null);
-    const [isUploading, setIsUploading] = useState<boolean>(false);
-    const [isUploaded, setIsUploaded] = useState<boolean>(false);
-    const [isUploadError, setIsUploadError] = useState<boolean>(false);
+    const { allowedFileExtensions, acceptedMimeTypes } = useMemo(
+        () => getAllowedFileFormats('video', videoFileExtensionsString),
+        [videoFileExtensionsString]
+    );
 
     const handleVideoUpload = async (file: File) => {
         if (!file) return;
@@ -42,7 +40,7 @@ export const VideoUpload = ({ childrenOnVideo }: { childrenOnVideo?: ReactNode }
             return;
         }
 
-        if (file.size > fileUploadMaxSize) {
+        if (file.size > maxSize) {
             setIsUploadError(true);
             return;
         }
@@ -89,30 +87,26 @@ export const VideoUpload = ({ childrenOnVideo }: { childrenOnVideo?: ReactNode }
                     <div className={styles.icon}>{videoUploadIcon}</div>
                     <div className={styles.titleContainer}>
                         <div className={styles.title}>{t('video-upload.placeholder')}</div>
-                        <div className={styles.description}>{t('video-upload.formats')} {allowedFileExtensions.join(', ')}</div>
+                        <div className={styles.description}>
+                            {t('video-upload.formats')} {videoFileExtensionsString}
+                        </div>
                     </div>
                     {isUploading && <div className={styles.status}>{t('video-upload.uploading')}</div>}
                 </label>
             }
             {isUploadError &&
                 <div className={styles.errorMessage}>
-                    {t('file-upload.size.error', { size: getFileSize(fileUploadMaxSize) })}
+                    {t('file-upload.size.error', { size: getFileSize(maxSize) })}
                 </div>
             }
             {video && (
                 <>
-                    <div className={styles.video}>
-                        <div className={styles.videoContainer}>
-                            {videoIcon}
-                            <div className={styles.videoInfoContainer}>
-                                <div className={styles.videoName}>{video.name}</div>
-                                <div className={styles.videoInfo}>
-                                    {getFileSize(video.size)} - {t('video-upload.uploading')} 45%...
-                                </div>
-                            </div>
-                        </div>
-                        <FileLoader />
-                    </div>
+                    <VideoPreview
+                        name={video.name}
+                        size={video.size}
+                        isUploading={isUploading}
+                        progress={45}
+                    />
                     {childrenOnVideo}
                 </>
             )}

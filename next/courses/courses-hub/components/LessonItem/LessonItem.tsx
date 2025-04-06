@@ -5,25 +5,43 @@ import { useTranslation } from "react-i18next";
 import { coursesHubPrefix } from "@/helpers/prefixes";
 import { PageLayoutHeader } from "@/components/PageLayout/PageLayoutHeader/PageLayoutHeader";
 import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import styles from "./LessonItem.module.css";
 import { useIcon } from "@/hooks/useIcon";
 import { VideoUpload } from "@/components/Video/VideoUpload/VideoUpload";
 import { InputBox } from "@/components/InputBox/InputBox";
 import { ToggleSwitch } from "@/components/ToggleSwitch/ToggleSwitch";
+import { LessonItemHeader } from "./LessonItemHeader/LessonItemHeader";
+import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
+import { getFileSize } from "@/helpers/getFileSize";
+
+const initialVideoActions: VideoAction[] = [
+    { label: 'generate-synopsis', value: true },
+    { label: 'generate-survey', value: true, dependsOn: 'generate-synopsis' },
+];
+
+type VideoAction = {
+    label: string;
+    value: boolean;
+    dependsOn?: string;
+};
 
 export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
     const { t } = useTranslation();
-    const isEditMode = mode === TablePageMode.EDIT;
+
     const [withVideo, setWithVideo] = useState<boolean>(true);
+    const [videoActions, setVideoActions] = useState<VideoAction[]>(initialVideoActions);
+
+    const fileUploadMaxSize = usePrivateSetting<number>('file-upload.max-size') || 104857600;
+
     const checkIcon = useIcon('check');
+    const infoIcon = useIcon('info');
+    const swapIcon = useIcon('swap');
+    const videoIcon = useIcon('video');
 
-    const [videoActions, setVideoActions] = useState<{ label: string, value: boolean, dependsOn?: string }[]>([
-        { label: 'generate-synopsis', value: true },
-        { label: 'generate-survey', value: true, dependsOn: 'generate-synopsis' },
-    ]);
+    const isEditMode = mode === TablePageMode.EDIT;
 
-    const toggleVideoAction = (label: string) => {
+    const toggleVideoAction = useCallback((label: string) => {
         setVideoActions(prev =>
             prev.map(action => {
                 if (action.label === label) {
@@ -35,9 +53,9 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
                 return action;
             })
         );
-    };
+    }, []);
 
-    const videoSelectorOptions = [
+    const videoSelectorOptions = useMemo(() => [
         {
             value: true,
             label: t(`${coursesHubPrefix}.with-video`)
@@ -46,11 +64,11 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
             value: false,
             label: t(`${coursesHubPrefix}.without-video`)
         }
-    ];
+    ], [t]);
 
-    const isDisabled = (action: { dependsOn?: string }) => {
+    const isDisabled = useCallback((action: { dependsOn?: string }) => {
         return action.dependsOn ? !videoActions.find(a => a.label === action.dependsOn)?.value : false;
-    };
+    }, [videoActions]);
 
     return (
         <>
@@ -72,9 +90,19 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
                 ))}
             </div>
             {withVideo && <>
-                <VideoUpload childrenOnVideo={
+                <LessonItemHeader
+                    title={t(`${coursesHubPrefix}.upload-video.name`)}
+                    description={t(`${coursesHubPrefix}.upload-video.description`, {
+                        size: getFileSize(fileUploadMaxSize)
+                    })}
+                    icon={videoIcon}
+                />
+                <VideoUpload maxSize={fileUploadMaxSize} childrenOnVideo={
                     <div className={styles.videoActions}>
-                        <h3>{t(`${coursesHubPrefix}.what-to-do-with-video`)}</h3>
+                        <LessonItemHeader
+                            title={t(`${coursesHubPrefix}.what-to-do-with-video`)}
+                            icon={swapIcon}
+                        />
                         {videoActions.map((action, index) => (
                             <InputBox
                                 key={index}
@@ -91,9 +119,12 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
                         ))}
                     </div>
                 } />
-
             </>}
+            <LessonItemHeader
+                title={t(`${coursesHubPrefix}.what-else.name`)}
+                description={t(`${coursesHubPrefix}.what-else.description`)}
+                icon={infoIcon}
+            />
         </>
     );
 };
-

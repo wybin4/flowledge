@@ -170,6 +170,10 @@
         "edit-lesson": "edit lesson",
         "with-video": "upload video",
         "without-video": "do not upload video",
+        "upload-video": {
+            "name": "upload video",
+            "description": "you can upload video with size less than {{size}}"
+        },
         "what-to-do-with-video": "what to do with video?",
         "generate-synopsis": {
             "name": "generate synopsis",
@@ -178,6 +182,10 @@
         "generate-survey": {
             "name": "generate survey",
             "description": "survey is generated from synopsis and video, and you can change it later"
+        },
+        "what-else": {
+            "name": "what else can be uploaded?",
+            "description": "you can upload <u>presentations</u>, <u>practical tasks</u>, <u>links</u> and other stuff"
         }
     },
     "courses-list": {

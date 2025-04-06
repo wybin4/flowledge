@@ -92,39 +92,8 @@
     display: none;
 }
 
-.videoContainer {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.videoInfo {
-    color: var(--description-text);
-    font-size: 0.95rem;
-}
-
-.videoInfoContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
 .errorMessage {
     color: var(--red);
     font-size: 0.875rem;
     margin-top: 0.5rem;
-}
-
-.video {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    color: var(--light);
-    background-color: var(--button);
-
-    border-radius: 1.4rem;
-    border: 1px solid var(--input-border);
-
-    padding: 0.7rem 1rem;
 }

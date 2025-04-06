@@ -49,6 +49,8 @@ import VideoUploadIcon from "../assets/video-upload.svg";
 import VideoUploadBorderIcon from "../assets/video-upload-border.svg";
 import TopIcon from "../assets/top.svg";
 import BottomIcon from "../assets/bottom.svg";
+import InfoIcon from "../assets/info.svg";
+import SwapIcon from "../assets/swap.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -110,6 +112,9 @@ const icons = {
 
     'top': <TopIcon />,
     'bottom': <BottomIcon />,
+
+    'info': <InfoIcon />,
+    'swap': <SwapIcon />,
 } as const;
 
 export type IconKey = keyof typeof icons;

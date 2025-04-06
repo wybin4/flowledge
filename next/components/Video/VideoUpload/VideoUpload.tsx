@@ -1,12 +1,13 @@
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
-import { useState, useCallback } from "react";
+import { useState, useCallback, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./VideoUpload.module.css";
 import { useIcon } from "@/hooks/useIcon";
 import cn from "classnames";
 import { getFileSize } from "@/helpers/getFileSize";
+import { FileLoader } from "@/components/Loader/FileLoader/FileLoader";
 
-export const VideoUpload = () => {
+export const VideoUpload = ({ childrenOnVideo }: { childrenOnVideo?: ReactNode }) => {
     const { t } = useTranslation();
 
     const videoIcon = useIcon('video');
@@ -70,12 +71,10 @@ export const VideoUpload = () => {
     };
 
     return (
-        <>
+        <div className={styles.container}>
             {!video &&
                 <label className={cn(
-                    styles.container,
-                    isUploading && styles.uploading,
-                    isUploaded && styles.uploaded,
+                    styles.uploadContainer,
                     isUploadError && styles.error
                 )}>
                     <input
@@ -92,28 +91,31 @@ export const VideoUpload = () => {
                         <div className={styles.title}>{t('video-upload.placeholder')}</div>
                         <div className={styles.description}>{t('video-upload.formats')} {allowedFileExtensions.join(', ')}</div>
                     </div>
-
                     {isUploading && <div className={styles.status}>{t('video-upload.uploading')}</div>}
-                    {isUploadError &&
-                        <div className={styles.errorMessage}>
-                            {t('video-upload.error')}
-                            <br />
-                            {t('file-upload.size.error', { size: getFileSize(fileUploadMaxSize) })}
-                        </div>
-                    }
                 </label>
             }
-            {video && (
-                <div className={styles.videoContainer}>
-                    {videoIcon}
-                    <div className={styles.videoInfoContainer}>
-                        <div className={styles.videoName}>{video.name}</div>
-                        <div className={styles.videoInfo}>
-                            {getFileSize(video.size)} - {t('video-upload.uploading')} 45%...
-                        </div>
-                    </div>
+            {isUploadError &&
+                <div className={styles.errorMessage}>
+                    {t('file-upload.size.error', { size: getFileSize(fileUploadMaxSize) })}
                 </div>
+            }
+            {video && (
+                <>
+                    <div className={styles.video}>
+                        <div className={styles.videoContainer}>
+                            {videoIcon}
+                            <div className={styles.videoInfoContainer}>
+                                <div className={styles.videoName}>{video.name}</div>
+                                <div className={styles.videoInfo}>
+                                    {getFileSize(video.size)} - {t('video-upload.uploading')} 45%...
+                                </div>
+                            </div>
+                        </div>
+                        <FileLoader />
+                    </div>
+                    {childrenOnVideo}
+                </>
             )}
-        </>
+        </div>
     );
 };

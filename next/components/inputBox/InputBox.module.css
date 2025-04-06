@@ -97,3 +97,14 @@ input:-webkit-autofill:focus {
     top: 50%;
     transform: translateY(-50%);
 }
+
+.description {
+    font-size: 0.9rem;
+    color: var(--description-text);
+}
+
+.nameContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}

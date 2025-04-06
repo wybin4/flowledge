@@ -59,7 +59,7 @@
 }
 
 .deleteButton:hover {
-    background-color: var(--dark-red);
+    background-color: var(--red-dark);
 }
 
 .saveButton:hover {

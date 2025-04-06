@@ -3,6 +3,18 @@
     font-weight: 600;
 }
 
+.error .title {
+    color: var(--red);
+}
+
+.icon {
+    color: var(--light);
+}
+
+.error .icon {
+    color: var(--red);
+}
+
 .description {
     font-size: 0.89rem;
     font-weight: 400;
@@ -11,7 +23,15 @@
     max-width: 18.875rem;
 }
 
+.error .description {
+    color: var(--red-description);
+}
+
 .container {
+    margin-top: 1.5rem;
+}
+
+.uploadContainer {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -29,7 +49,11 @@
     cursor: pointer;
 }
 
-.container:hover {
+.error {
+    background-color: var(--red-transparent);
+}
+
+.uploadContainer:hover {
     filter: brightness(0.9);
 }
 
@@ -59,6 +83,11 @@
     color: var(--input-border);
 }
 
+.error .borderContainer svg,
+.error .borderContainer svg path {
+    color: var(--red);
+}
+
 .hiddenInput {
     display: none;
 }
@@ -67,16 +96,6 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-
-    color: var(--light);
-    background-color: var(--button);
-
-    border-radius: 1.4rem;
-    border: 1px solid var(--input-border);
-
-    padding: 0.7rem 1rem;
-
-    cursor: pointer;
 }
 
 .videoInfo {
@@ -88,4 +107,24 @@
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
+}
+
+.errorMessage {
+    color: var(--red);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.video {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color: var(--light);
+    background-color: var(--button);
+
+    border-radius: 1.4rem;
+    border: 1px solid var(--input-border);
+
+    padding: 0.7rem 1rem;
 }

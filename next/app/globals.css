@@ -6,7 +6,9 @@
   --blue: #2A7CE1;
   --green: #37AA42;
   --red: #ed2236;
-  --dark-red: #d61c2e;
+  --red-dark: #d61c2e;
+  --red-description: rgba(198, 50, 65, 0.853);
+  --red-transparent: rgba(198, 50, 65, 0.129);
 
   --font-family-primary: "IBM Plex Mono", "Noto Sans Mono Variable", "Noto Sans Mono", monospace;
 }
@@ -25,6 +27,7 @@
   --toggle-checked: var(--dark);
   --button: #f4f4f4;
   --button-hover: #e8e8e8;
+  --button-transparent: rgba(255, 255, 255, 0.129);
   --sidebar: #EFEFEF;
   --sidebar-hover: rgba(0, 0, 0, 0.1);
   --card: rgb(243, 243, 243);
@@ -45,6 +48,7 @@
   --toggle-bg-enabled: #8a8a8a;
   --toggle-checked: var(--light);
   --button: #191919;
+  --button-transparent: rgba(255, 255, 255, 0.129);
   --button-hover: #2a2a2a;
   --sidebar: #101010;
   --sidebar-hover: rgba(255, 255, 255, 0.1);

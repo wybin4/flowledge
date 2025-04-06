@@ -169,7 +169,16 @@
         "create-lesson": "create lesson",
         "edit-lesson": "edit lesson",
         "with-video": "upload video",
-        "without-video": "do not upload video"
+        "without-video": "do not upload video",
+        "what-to-do-with-video": "what to do with video?",
+        "generate-synopsis": {
+            "name": "generate synopsis",
+            "description": "synopsis is generated from video, and you can change it later, including with the help of artificial intelligence and markdown formatting"
+        },
+        "generate-survey": {
+            "name": "generate survey",
+            "description": "survey is generated from synopsis and video, and you can change it later"
+        }
     },
     "courses-list": {
         "menu": {

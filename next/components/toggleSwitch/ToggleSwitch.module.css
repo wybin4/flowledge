@@ -50,3 +50,12 @@ input:checked+.slider:before {
     background-color: var(--dark);
     transform: translateX(1.18rem);
 }
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.disabled .slider {
+    cursor: not-allowed;
+}

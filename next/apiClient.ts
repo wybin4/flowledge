@@ -1,7 +1,9 @@
 import { ApiClientRequest } from "./types/ApiClient";
 
+export const userApiClientPrefix = 'http://localhost:8080/api';
+
 export const userApiClient = async <T>({ url, options }: ApiClientRequest): Promise<T> => {
-    const response = await fetch(`http://localhost:8080/api/${url}`, {
+    const response = await fetch(`${userApiClientPrefix}/${url}`, {
         ...options,
         headers: {
             'Content-Type': 'application/json',

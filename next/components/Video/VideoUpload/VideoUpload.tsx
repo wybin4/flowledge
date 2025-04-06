@@ -7,18 +7,29 @@ import cn from "classnames";
 import { getFileSize } from "@/helpers/getFileSize";
 import { VideoPreview } from "../VideoPreview/VideoPreview";
 import { getAllowedFileFormats } from "@/helpers/getAllowedFileFormats";
+import { fakeUser } from "@/helpers/fakeUser";
 
-type VideoUploadProps = {
+type VideoUploadProps<T> = {
+    isUploading: boolean;
+    setIsUploading: (isUploading: boolean) => void;
+    isUploadError: string | undefined;
+    setIsUploadError: (isUploadError: string | undefined) => void;
+    video: File | null;
+    setVideo: (video: File | null) => void;
     childrenOnVideo?: ReactNode;
     maxSize: number;
+    apiClientPrefix: string;
 };
 
-export const VideoUpload = ({ childrenOnVideo, maxSize }: VideoUploadProps) => {
+export const VideoUpload = <T,>({
+    video, setVideo,
+    isUploading, setIsUploading,
+    isUploadError, setIsUploadError,
+    childrenOnVideo, maxSize, apiClientPrefix
+}: VideoUploadProps<T>) => {
     const { t } = useTranslation();
 
-    const [video, setVideo] = useState<File | null>(null);
-    const [isUploading, setIsUploading] = useState<boolean>(false);
-    const [isUploadError, setIsUploadError] = useState<boolean>(false);
+    const [progress, setProgress] = useState<number>(0);
 
     const videoUploadIcon = useIcon('video-upload');
     const videoUploadBorderIcon = useIcon('video-upload-border');
@@ -30,39 +41,68 @@ export const VideoUpload = ({ childrenOnVideo, maxSize }: VideoUploadProps) => {
         [videoFileExtensionsString]
     );
 
+    const uploadVideo = async (file: File): Promise<T> => {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `${apiClientPrefix}/uploads.set`, true);
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('userId', fakeUser._id);
+
+            xhr.upload.onprogress = (event) => {
+                if (!event.lengthComputable) {
+                    return;
+                }
+                const progress = (event.loaded / event.total) * 100;
+                if (progress === 100) {
+                    return;
+                }
+
+                setProgress(Math.round(progress) || 0);
+            };
+
+            xhr.onerror = (error: any) => {
+                setProgress(0);
+                reject(new Error(error.message));
+            };
+
+            xhr.onload = async () => {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    const result = JSON.parse(xhr.responseText);
+                    resolve(result);
+                } else {
+                    reject(new Error(xhr.responseText));
+                }
+            };
+
+            xhr.send(formData);
+        });
+    };
+
     const handleVideoUpload = async (file: File) => {
         if (!file) return;
 
         const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
 
         if (!allowedFileExtensions.includes(fileExtension)) {
-            setIsUploadError(true);
+            setIsUploadError(t('video-upload.unsupported-format'));
             return;
         }
 
         if (file.size > maxSize) {
-            setIsUploadError(true);
+            setIsUploadError(t('file-upload.size.error', { size: getFileSize(maxSize) }));
             return;
         }
 
         try {
             setVideo(file);
             setIsUploading(true);
-            setIsUploadError(false);
+            setIsUploadError(undefined);
 
-            // Эмуляция загрузки на сервер
-            const formData = new FormData();
-            formData.append('video', file);
-
-            // await axios.post('/api/upload-video', formData, {
-            //     headers: {
-            //         'Content-Type': 'multipart/form-data'
-            //     }
-            // });
-
-            // setIsUploaded(true);
-        } catch (error) {
-            setIsUploadError(true);
+            await uploadVideo(file);
+        } catch (error: any) {
+            setIsUploadError(t('video-upload.upload-error', { error: error.message }));
         } finally {
             setIsUploading(false);
         }
@@ -70,7 +110,7 @@ export const VideoUpload = ({ childrenOnVideo, maxSize }: VideoUploadProps) => {
 
     return (
         <div className={styles.container}>
-            {!video &&
+            {(!video || isUploadError) &&
                 <label className={cn(
                     styles.uploadContainer,
                     isUploadError && styles.error
@@ -96,16 +136,16 @@ export const VideoUpload = ({ childrenOnVideo, maxSize }: VideoUploadProps) => {
             }
             {isUploadError &&
                 <div className={styles.errorMessage}>
-                    {t('file-upload.size.error', { size: getFileSize(maxSize) })}
+                    {isUploadError}
                 </div>
             }
-            {video && (
+            {video && !isUploadError && (
                 <>
                     <VideoPreview
                         name={video.name}
                         size={video.size}
                         isUploading={isUploading}
-                        progress={45}
+                        progress={progress}
                     />
                     {childrenOnVideo}
                 </>

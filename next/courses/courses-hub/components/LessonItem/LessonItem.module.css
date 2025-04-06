@@ -2,7 +2,7 @@
     display: flex;
     gap: 1rem;
 
-    max-width: 30%;
+    max-width: 40%;
 }
 
 .videoAction {
@@ -13,4 +13,12 @@
 
     cursor: default !important;
     padding: 1rem 0 !important;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+
+    margin-top: 1.5rem;
 }

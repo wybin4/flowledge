@@ -1,0 +1,52 @@
+.button {
+    padding: 0.625rem 1.25rem;
+
+    font-size: 1rem;
+    font-family: var(--font-family-primary);
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    border: none;
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+}
+
+.save,
+.edit {
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+.delete {
+    background-color: var(--red);
+    color: var(--light);
+}
+
+.delete:hover {
+    background-color: var(--red-dark);
+}
+
+.save:hover,
+.edit:hover {
+    background-color: var(--secondary-light);
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.underline {
+    background-color: transparent;
+
+    color: var(--light);
+    text-decoration: underline;
+    text-underline-offset: 0.25rem;
+}
+
+.underline:hover {
+    background-color: transparent;
+    color: var(--secondary-light);
+}

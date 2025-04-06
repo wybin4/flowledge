@@ -3,6 +3,8 @@
     align-items: center;
     justify-content: space-between;
 
+    max-width: 24rem;
+
     color: var(--light);
     background-color: var(--button);
 

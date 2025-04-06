@@ -16,6 +16,9 @@
 }
 
 .videoActionsHeaderIcon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+
     margin-bottom: -4px;
 }
 

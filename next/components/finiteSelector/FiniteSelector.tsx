@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./FiniteSelector.module.css";
 import cn from "classnames";
 import { ReactNode } from "react";
+import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 
 type FiniteSelectorProps = {
     value: string;
@@ -9,11 +10,11 @@ type FiniteSelectorProps = {
     label: string;
     onClick: () => void;
     className?: string;
-    mode?: 'border' | 'fill';
+    mode?: FillBorderUnderlineMode;
     icon?: ReactNode;
 };
 
-export const FiniteSelector = ({ value, selectedValue, label, onClick, className, mode = 'fill', icon }: FiniteSelectorProps) => {
+export const FiniteSelector = ({ value, selectedValue, label, onClick, className, mode = FillBorderUnderlineMode.FILL, icon }: FiniteSelectorProps) => {
     const { t } = useTranslation();
     const isActive = value === selectedValue;
 

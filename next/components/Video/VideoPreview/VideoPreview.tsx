@@ -22,7 +22,7 @@ export const VideoPreview = ({ name, size, isUploading, progress }: VideoPreview
                 <div className={styles.videoInfoContainer}>
                     <div className={styles.videoName}>{name}</div>
                     <div className={styles.videoInfo}>
-                        {getFileSize(size)}{isUploading ? `- ${t('video-upload.uploading')} ${progress}%...` : ''}
+                        {getFileSize(size)}{isUploading ? ` - ${t('video-upload.uploading')} ${progress}%...` : ''}
                     </div>
                 </div>
             </div>

@@ -186,6 +186,9 @@
         "what-else": {
             "name": "what else can be uploaded?",
             "description": "you can upload <u>presentations</u>, <u>practical tasks</u>, <u>links</u> and other stuff"
+        },
+        "you-can-add-video-later": {
+            "name": "you can add video later if you want"
         }
     },
     "courses-list": {
@@ -200,6 +203,8 @@
         "__count__comments_plural": "{{count}} comments"
     },
     "save": "save",
+    "save-draft": "save draft",
+    "create": "create",
     "back": "back",
     "lesson": {
         "synopsis": "synopsis",
@@ -257,7 +262,7 @@
         "placeholder": "drag and drop or select a file",
         "formats": "supported formats:",
         "uploading": "uploading",
-        "uploaded": "uploaded",
-        "error": "error"
+        "upload-error": "failed to upload video: {{error}}",
+        "unsupported-format": "unsupported format: "
     }
 }

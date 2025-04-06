@@ -9,6 +9,8 @@
 
 .icon {
     color: var(--light);
+
+    width: 2rem;
 }
 
 .error .icon {

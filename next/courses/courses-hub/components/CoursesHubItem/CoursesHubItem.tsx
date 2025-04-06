@@ -12,6 +12,7 @@ import { useIcon } from "@/hooks/useIcon";
 import styles from "./CoursesHubItem.module.css";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
+import { ButtonType } from "@/components/Button/Button";
 
 interface CoursesHubItemProps {
     mode: TablePageMode;
@@ -22,13 +23,13 @@ interface CoursesHubItemProps {
 export const CoursesHubItem = ({ mode, _id, onBackButtonClick }: CoursesHubItemProps) => {
     const closeIcon = useIcon('close');
     const { t } = useTranslation();
-    const router = useRouter(); 
+    const router = useRouter();
 
     const handleEditContent = () => {
         router.push(`/${coursesHubPrefix}/${_id}`);
     };
 
-    return (    
+    return (
         <EnhancedItem<Course, CourseToSave>
             prefix={coursesHubPrefix}
             mode={mode}
@@ -55,16 +56,19 @@ export const CoursesHubItem = ({ mode, _id, onBackButtonClick }: CoursesHubItemP
                 createdAt: "",
                 updatedAt: ""
             })}
-            onBackButtonClick={onBackButtonClick}
-            backButtonIcon={closeIcon}
-            hasBackButtonText={false}
-            backButtonStyles={styles.backButton}
+            backButton={{
+                onBackButtonClick: onBackButtonClick,
+                backButtonIcon: closeIcon,
+                hasBackButtonText: false,
+                backButtonStyles: styles.backButton
+            }}
             containerStyles={styles.container}
             additionalButtons={[
                 {
                     title: t(`${coursesHubPrefix}.edit-content`),
                     onClick: handleEditContent,
-                    mode: TablePageMode.EDIT
+                    mode: TablePageMode.EDIT,
+                    type: ButtonType.EDIT
                 }
             ]}
         />

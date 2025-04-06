@@ -4,17 +4,17 @@ import { SettingType, SettingValue } from "@/types/Setting";
 import styles from "./EnhancedItem.module.css";
 import { useTranslation } from "react-i18next";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { TablePageMode } from "@/types/TablePageMode";
-import { useRouter } from "next/navigation";
-import { useIcon } from "@/hooks/useIcon";
-import cn from "classnames";
 import { UpdatableSetting } from "@/hooks/useSettings";
 import { useSaveEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useSaveEnhancedTablePageItem";
 import { useDeleteEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useDeleteEnhancedTablePageItem";
 import { useGetEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItem";
 import { IconKey } from "@/hooks/useIcon";
 import { ApiClient, FakeApiClient } from "@/types/ApiClient";
+import { Button, ButtonType } from "@/components/Button/Button";
+import { ButtonBackProps } from "@/components/Button/ButtonBack/ButtonBack";
+import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 
 interface EnhancedItemProps<T, U> {
     _id?: string;
@@ -24,11 +24,8 @@ interface EnhancedItemProps<T, U> {
     settingKeys: { name: string, type: SettingType }[];
     transformItemToSave: (item: T) => U;
     createEmptyItem: () => T;
-    onBackButtonClick?: () => void;
-    additionalButtons?: { title: string, onClick: () => void, mode?: TablePageMode }[];
-    backButtonIcon?: ReactNode;
-    hasBackButtonText?: boolean;
-    backButtonStyles?: string;
+    additionalButtons?: { title: string, onClick: () => void, mode?: TablePageMode, type: ButtonType }[];
+    backButton?: ButtonBackProps;
     containerStyles?: string;
 }
 
@@ -38,14 +35,12 @@ export const EnhancedItem = <T, U>({
     settingKeys,
     transformItemToSave, createEmptyItem,
     additionalButtons,
-    onBackButtonClick, backButtonIcon, hasBackButtonText, backButtonStyles,
+    backButton,
     containerStyles
 }: EnhancedItemProps<T, U>) => {
     const { t } = useTranslation();
     const [item, setItem] = useState<T | undefined>(undefined);
     const [initialValues, setInitialValues] = useState<T | undefined>(undefined);
-    const router = useRouter();
-    const iconArrowLeft = useIcon('left');
 
     const isEditMode = mode === TablePageMode.EDIT && _id;
 
@@ -109,43 +104,22 @@ export const EnhancedItem = <T, U>({
     };
 
     return (
-        <div className={cn(styles.container, containerStyles)}>
-            <div className={cn(styles.backButton, backButtonStyles)} onClick={() => {
-                onBackButtonClick?.();
-                router.back();
-            }}>
-                {backButtonIcon ? backButtonIcon : iconArrowLeft} {hasBackButtonText ? t('back') : ''}
+        <ButtonBackContainer className={containerStyles} {...backButton}>
+            <h2 className={styles.title}>{mode === TablePageMode.CREATE ? t(`${prefix}.create`) : t(`${prefix}.edit`)}</h2>
+            <div className={styles.settingsContainer}>
+                {renderSettings()}
             </div>
-            <div className={styles.body}>
-                <h2 className={styles.title}>{mode === TablePageMode.CREATE ? t(`${prefix}.create`) : t(`${prefix}.edit`)}</h2>
-                <div className={styles.settingsContainer}>
-                    {renderSettings()}
-                </div>
-                <div className={styles.buttonContainer}>
-                    {additionalButtons?.filter((button) => button.mode ? button.mode === mode : true).map((button) => (
-                        <button
-                            key={button.title}
-                            className={cn(styles.button, styles.saveButton)}
-                            onClick={button.onClick}
-                        >
-                            {button.title}
-                        </button>
-                    ))}
-                    {isEditMode &&
-                        <button className={cn(styles.button, styles.deleteButton)} onClick={() => deleteItem(_id)}>
-                            {t(`${prefix}.delete`)}
-                        </button>
-                    }
-                    {hasChanges() && item &&
-                        <button
-                            className={cn(styles.button, styles.saveButton)}
-                            onClick={() => saveItem(item)}
-                        >
-                            {t(`${prefix}.save`)}
-                        </button>
-                    }
-                </div>
+            <div className={styles.buttonContainer}>
+                {additionalButtons?.filter((button) => button.mode ? button.mode === mode : true).map((button) => (
+                    <Button key={button.title} onClick={button.onClick} prefix={prefix} type={button.type} title={button.title} />
+                ))}
+                {isEditMode &&
+                    <Button onClick={() => deleteItem(_id)} prefix={prefix} type={ButtonType.DELETE} />
+                }
+                {hasChanges() && item &&
+                    <Button onClick={() => saveItem(item)} prefix={prefix} type={ButtonType.SAVE} />
+                }
             </div>
-        </div>
+        </ButtonBackContainer>
     );
 };

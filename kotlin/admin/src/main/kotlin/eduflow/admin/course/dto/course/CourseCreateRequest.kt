@@ -1,6 +1,6 @@
-package eduflow.admin.dto
+package eduflow.admin.course.dto
 
-import eduflow.admin.models.CourseCreatorModel
+import eduflow.admin.course.models.CourseCreatorModel
 
 data class CourseCreateRequest(
     val title: String,

@@ -1,9 +1,9 @@
-package eduflow.admin.controllers
+package eduflow.admin.course.controllers
 
-import eduflow.admin.dto.CourseCreateRequest
-import eduflow.admin.dto.CourseUpdateRequest
-import eduflow.admin.models.CourseModel
-import eduflow.admin.repositories.CourseRepository
+import eduflow.admin.course.dto.CourseCreateRequest
+import eduflow.admin.course.dto.CourseUpdateRequest
+import eduflow.admin.course.models.CourseModel
+import eduflow.admin.course.repositories.CourseRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
@@ -12,17 +12,17 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
-@RequestMapping("/api/courses-hub")
+@RequestMapping("/api")
 class CourseController(private val courseRepository: CourseRepository) {
 
-    @GetMapping("/{id}")
+    @GetMapping("/courses-hub.get/{id}")
     fun getCourseById(@PathVariable id: String): Mono<ResponseEntity<CourseModel>> {
         return courseRepository.findById(id)
             .map { ResponseEntity.ok(it) }
             .defaultIfEmpty(ResponseEntity.notFound().build())
     }
 
-    @GetMapping
+    @GetMapping("/courses-hub.get")
     fun getAllCourses(
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
@@ -41,13 +41,13 @@ class CourseController(private val courseRepository: CourseRepository) {
             .map { ResponseEntity.ok(it) }
     }
 
-    @GetMapping("/count")
+    @GetMapping("/courses-hub.count")
     fun getCoursesCount(@RequestParam(required = false) searchQuery: String?): Mono<ResponseEntity<Long>> {
         return courseRepository.countByTitleContainingIgnoreCase(searchQuery)
             .map { ResponseEntity.ok(it) }
     }
 
-    @PostMapping
+    @PostMapping("/courses-hub.create")
     fun createCourse(@RequestBody course: CourseCreateRequest): Mono<ResponseEntity<CourseModel>> {
         val newCourse = CourseModel(
             _id = UUID.randomUUID().toString(),
@@ -62,7 +62,7 @@ class CourseController(private val courseRepository: CourseRepository) {
             .map { ResponseEntity.ok(it) }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/courses-hub.update/{id}")
     fun updateCourse(@PathVariable id: String, @RequestBody course: CourseUpdateRequest): Mono<ResponseEntity<CourseModel>> {
         return courseRepository.findById(id)
             .flatMap { existingCourse ->
@@ -77,7 +77,7 @@ class CourseController(private val courseRepository: CourseRepository) {
             .defaultIfEmpty(ResponseEntity.notFound().build())
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/courses-hub.delete/{id}")
     fun deleteCourse(@PathVariable id: String): Mono<ResponseEntity<Void>> {
         return courseRepository.deleteById(id)
             .then(Mono.just<ResponseEntity<Void>>(ResponseEntity.noContent().build()))

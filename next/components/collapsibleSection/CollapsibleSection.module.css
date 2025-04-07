@@ -4,7 +4,7 @@
     overflow: hidden;
 }
 
-.header,
+.headerContent,
 .child {
     display: flex;
     justify-content: space-between;
@@ -28,4 +28,41 @@
 
 .expanded {
     transform: rotate(0deg);
+}
+
+.edit {
+    margin-top: -1rem;
+    margin-bottom: 0.6rem;
+}
+
+.titleEdit input {
+    background-color: transparent;
+    border: none;
+
+    font-size: 1rem;
+
+    padding-left: 0.3rem;
+}
+
+.editIcon {
+    font-size: 1.5rem;
+}
+
+.editIcon:hover {
+    color: var(--secondary-light);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header:hover .rightActions {
+    display: flex;
+}
+
+.rightActions {
+    display: none;
+    gap: 0.5rem;
 }

@@ -1,7 +1,7 @@
 import { CourseLessonItem } from "../courses-list/types/CourseLessonItem";
+import { Section } from "./Section";
 
 export interface SectionItem {
-    _id: string;
-    title: string;
+    section: Section;
     lessons?: CourseLessonItem[];
 }

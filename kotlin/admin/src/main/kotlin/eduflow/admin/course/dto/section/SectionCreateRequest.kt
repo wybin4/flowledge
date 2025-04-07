@@ -1,4 +1,6 @@
 package eduflow.admin.course.dto.section
 
-class SectionCreateRequest {
-}
+data class SectionCreateRequest (
+    val title: String,
+    val courseId: String
+)

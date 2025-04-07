@@ -24,6 +24,7 @@ import { DataPageHookFunctions } from "@/types/DataPageHook";
 
 interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
+    apiPrefix?: string;
     pageSize?: number;
     transformData: (data: T, locale: string, t: TFunction) => U;
     getHeaderItems: (t: TFunction, setSortQuery: (query: string) => void) => Sortable[];
@@ -36,6 +37,7 @@ interface EnhancedTablePageProps<T, U> {
 
 export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable>({
     prefix,
+    apiPrefix,
     pageSize,
     transformData,
     getHeaderItems,
@@ -52,9 +54,11 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
     const locale = useUserSetting<string>('language') || 'en';
     const router = useRouter();
 
+    const realPrefix = apiPrefix ?? prefix;
+
     const getDataPageHook =
         (paginationProps: GetDataPage) => useGetEnhancedTablePageItems(
-            prefix,
+            realPrefix,
             getDataPageFunctions,
             paginationProps
         );

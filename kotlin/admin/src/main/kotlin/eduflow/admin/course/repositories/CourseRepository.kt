@@ -1,8 +1,7 @@
-package eduflow.admin.repositories
+package eduflow.admin.course.repositories
 
-import eduflow.admin.models.CourseModel
+import eduflow.admin.course.models.CourseModel
 import org.springframework.data.domain.Pageable
-import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.data.repository.reactive.ReactiveSortingRepository
 import org.springframework.stereotype.Repository

@@ -16,8 +16,13 @@ import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/C
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { userApiClient } from "@/apiClient";
+import { Section } from "@/courses/types/Section";
 
 export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
+    const [newSection, setNewSection] = useState<string | undefined>(undefined);
+
     const { t } = useTranslation();
 
     const locale = useUserSetting<Language>('language') || Language.EN;
@@ -31,9 +36,54 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     const actions: CollapsibleSectionActionProps[] = [
         {
             title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
-            onClick: () => { router.push(`/courses-hub/${course._id}?createLesson=true`); }
+            onClick: () => { router.push(`/courses-hub/${course._id}?createLesson=true`); },
+            type: ChildrenPosition.Bottom
+        },
+        {
+            title: 'dsfsdf1',
+            onClick: () => { },
+            type: ChildrenPosition.Right
+        },
+        {
+            title: 'dsfsdf2',
+            onClick: () => { },
+            type: ChildrenPosition.Right
         }
     ];
+
+    const handleAddSection = () => {
+        setNewSection('');
+    };
+
+    const handleSaveNewSection = async (_id?: string) => {
+        const result = await userApiClient<Section>({
+            url: `${coursesHubPrefix}/sections.${_id ? `update/${_id}` : 'create'}`,
+            options: {
+                method: 'POST', body: JSON.stringify({
+                    title: newSection,
+                    courseId: course._id
+                })
+            }
+        });
+        if (result) {
+            if (_id) {
+                course.sections?.map(section => {
+                    if (section.section._id === result._id) {
+                        section.section.title = result.title;
+                    }
+                    return section;
+                });
+            } else {
+                course.sections?.push({
+                    section: {
+                        _id: result._id,
+                        title: result.title
+                    }, lessons: []
+                });
+            }
+            setNewSection(undefined);
+        }
+    };
 
     return (
         <>
@@ -57,10 +107,23 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
                     title={t(`${coursesHubPrefix}.sections`)}
                     description={`${countSectionsText} · ${countLessonsText}`}
                     action={`+ ${t(`${coursesHubPrefix}.add-section`)}`}
-                    onClick={() => { }}
+                    onClick={handleAddSection}
                 />
+                {newSection !== undefined &&
+                    <CourseSection
+                        section={newSection}
+                        className={styles.newSection}
+                        setNewSection={setNewSection}
+                        onSaveNewSection={() => handleSaveNewSection()}
+                    />
+                }
                 {course.sections && course.sections.length > 0 && course.sections.map(section => (
-                    <CourseSection key={section._id} section={section} actions={actions} className={styles.section}/>
+                    <CourseSection
+                        key={section.section._id}
+                        section={section}
+                        actions={actions}
+                        className={styles.section}
+                    />
                 ))}
             </div>
         </>

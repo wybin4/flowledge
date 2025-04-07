@@ -2,12 +2,12 @@ package eduflow.course
 
 import java.util.Date
 
-interface Course {
+interface CourseSubscription {
     val _id: String
-    val title: String
-    val description: String
-    val imageUrl: String?
-    val u: CourseCreator
+    val userId: String
+    val courseId: String
+    val isFavorite: Boolean?
+    val roles: List<String>?
     val createdAt: Date
     val updatedAt: Date
 }

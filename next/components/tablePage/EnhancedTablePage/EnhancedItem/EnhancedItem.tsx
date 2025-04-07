@@ -20,6 +20,7 @@ interface EnhancedItemProps<T, U> {
     _id?: string;
     mode: TablePageMode;
     prefix: IconKey;
+    apiPrefix?: string;
     apiClient: ApiClient<T> | FakeApiClient<T>;
     settingKeys: { name: string, type: SettingType }[];
     transformItemToSave: (item: T) => U;
@@ -30,7 +31,7 @@ interface EnhancedItemProps<T, U> {
 }
 
 export const EnhancedItem = <T, U>({
-    _id, mode, prefix,
+    _id, mode, prefix, apiPrefix,
     apiClient,
     settingKeys,
     transformItemToSave, createEmptyItem,
@@ -42,11 +43,13 @@ export const EnhancedItem = <T, U>({
     const [item, setItem] = useState<T | undefined>(undefined);
     const [initialValues, setInitialValues] = useState<T | undefined>(undefined);
 
+    const realPrefix = apiPrefix ?? prefix;
+
     const isEditMode = mode === TablePageMode.EDIT && _id;
 
-    const saveItem = useSaveEnhancedTablePageItem(mode, prefix, apiClient, transformItemToSave, _id);
-    const deleteItem = useDeleteEnhancedTablePageItem(prefix, apiClient);
-    const getItem = useGetEnhancedTablePageItem(prefix, apiClient, (item) => {
+    const saveItem = useSaveEnhancedTablePageItem(mode, realPrefix, apiClient, transformItemToSave, _id);
+    const deleteItem = useDeleteEnhancedTablePageItem(realPrefix, apiClient);
+    const getItem = useGetEnhancedTablePageItem(realPrefix, apiClient, (item) => {
         setItem(item);
         setInitialValues(item);
     });

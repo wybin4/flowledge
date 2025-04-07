@@ -1,4 +1,4 @@
 package eduflow.course
 
-class CourseSection {
+interface LessonTest {
 }

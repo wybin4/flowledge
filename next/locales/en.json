@@ -264,5 +264,6 @@
         "uploading": "uploading",
         "upload-error": "failed to upload video: {{error}}",
         "unsupported-format": "unsupported format: "
-    }
+    },
+    "type-here": "type here"
 }

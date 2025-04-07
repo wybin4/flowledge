@@ -1,10 +1,13 @@
 "use client";
 
+import { ChildrenPosition } from "@/types/ChildrenPosition";
+
 export type CollapsibleSectionActionProps = {
     title: string;
     onClick: () => void;
     className?: string;
     titleClassName?: string;
+    type: ChildrenPosition; 
 }
 
 export default function CollapsibleSectionAction({

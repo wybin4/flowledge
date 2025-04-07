@@ -1,4 +1,4 @@
-package eduflow.admin.models
+package eduflow.admin.course.models
 
 import eduflow.course.Course
 import eduflow.course.CourseCreator

@@ -32,6 +32,7 @@ export const CoursesHubItem = ({ mode, _id, onBackButtonClick }: CoursesHubItemP
     return (
         <EnhancedItem<Course, CourseToSave>
             prefix={coursesHubPrefix}
+            apiPrefix={`${coursesHubPrefix}/courses`}
             mode={mode}
             _id={_id}
             settingKeys={[

@@ -4,9 +4,9 @@ import eduflow.admin.course.dto.course.CourseListGetResponse
 import eduflow.admin.course.dto.course.hub.get.CourseHubGetResponse
 import eduflow.admin.course.dto.course.hub.get.id.CourseHubGetByIdBigResponse
 import eduflow.admin.course.dto.course.hub.get.id.CourseHubGetByIdSmallResponse
-import eduflow.admin.course.models.CourseModel
+import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.models.CourseSubscriptionModel
-import eduflow.admin.course.models.LessonModel
+import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.types.SectionWithLessons
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -19,7 +19,7 @@ interface CourseMapper {
     @Mapping(target = "sections", source = "sections")
     fun toHubGetByIdBigDto(
         model: CourseModel,
-        lessons: List<LessonModel> = emptyList(),
+        lessons: List<CourseLessonModel> = emptyList(),
         sections: List<SectionWithLessons> = emptyList()
     ): CourseHubGetByIdBigResponse {
         return CourseHubGetByIdBigResponse(

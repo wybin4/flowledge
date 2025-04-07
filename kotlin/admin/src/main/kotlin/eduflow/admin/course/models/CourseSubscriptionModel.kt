@@ -1,17 +1,16 @@
 package eduflow.admin.course.models
 
-import eduflow.course.Course
-import eduflow.course.CourseCreator
+import eduflow.course.CourseSubscription
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 
 @Document
-data class CourseModel(
+data class CourseSubscriptionModel(
     override val _id: String,
-    override val title: String,
-    override val description: String,
-    override val imageUrl: String? = null,
-    override val u: CourseCreator,
+    override val courseId: String,
     override val createdAt: Date,
-    override val updatedAt: Date
-) : Course
+    override val isFavorite: Boolean?,
+    override val roles: List<String>?,
+    override val updatedAt: Date,
+    override val userId: String,
+) : CourseSubscription

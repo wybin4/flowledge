@@ -1,10 +1,9 @@
 import { GetDataPage } from "@/types/GetDataPage";
 import { DataPageHook, DataPageHookFunctions } from "@/types/DataPageHook";
-import { IconKey } from "@/hooks/useIcon";
 import { useQuery } from '@tanstack/react-query';
 
 export const useGetEnhancedTablePageItems = <T,>(
-    prefix: IconKey,
+    prefix: string,
     { getDataPage, getTotalCount }: DataPageHookFunctions<T>,
     { page, pageSize, searchQuery, sortQuery }: GetDataPage
 ): DataPageHook<T> => {

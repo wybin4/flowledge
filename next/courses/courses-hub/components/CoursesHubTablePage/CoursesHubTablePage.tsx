@@ -76,6 +76,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 <div>
                     <EnhancedTablePage<Course, CoursesHubTableItem>
                         prefix={coursesHubPrefix}
+                        apiPrefix={`${coursesHubPrefix}/courses`}
                         getDataPageFunctions={{
                             getDataPage: (prefix, params) => getDataPageWithApi(prefix, userApiClient, params),
                             getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, userApiClient, params),

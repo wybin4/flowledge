@@ -1,23 +1,23 @@
 package eduflow.admin.course.controllers
 
 import eduflow.admin.course.dto.section.SectionCreateRequest
-import eduflow.admin.course.models.SectionModel
-import eduflow.admin.course.repositories.SectionRepository
+import eduflow.admin.course.models.CourseSectionModel
+import eduflow.admin.course.repositories.CourseSectionRepository
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
 @RequestMapping("/api/courses-hub")
-class SectionController(
-    private val sectionRepository: SectionRepository,
+class CourseSectionController(
+    private val sectionRepository: CourseSectionRepository,
 ) {
 
    @PostMapping("/sections.create")
-    fun createSection(@RequestBody section: SectionCreateRequest): Mono<SectionModel> {
-        val newSection = SectionModel(
+    fun createSection(@RequestBody section: SectionCreateRequest): Mono<CourseSectionModel> {
+        val newSection = CourseSectionModel(
             _id = UUID.randomUUID().toString(),
-            name = section.name,
+            title = section.title,
             courseId = section.courseId,
         )
         return sectionRepository.save(newSection)

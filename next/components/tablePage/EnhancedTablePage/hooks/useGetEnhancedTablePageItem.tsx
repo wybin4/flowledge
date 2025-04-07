@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { ApiClient } from "@/types/ApiClient";
 import { QueryParams } from "@/types/QueryParams";
-import { setQueryParams } from "@/helpers/setQueryParams";
+import { useGetItem } from "@/hooks/useGetItem";
 
 export const useGetEnhancedTablePageItem = <T,>(
     prefix: string,
@@ -10,9 +10,7 @@ export const useGetEnhancedTablePageItem = <T,>(
     queryParams?: QueryParams
 ) => {
     const getItem = useCallback(async (_id: string) => {
-        const item = await apiClient<T>(
-            { url: `${prefix}.get/${_id}${queryParams ? setQueryParams(queryParams) : ""}` }
-        );
+        const item = await useGetItem(prefix, apiClient, _id, queryParams);
         setItem(item);
     }, [setItem]);
 

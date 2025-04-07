@@ -19,19 +19,30 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { userApiClient } from "@/apiClient";
 import { Section } from "@/courses/types/Section";
+import { useIcon } from "@/hooks/useIcon";
+import { useSaveItem } from "@/hooks/useSaveItem";
+import { SectionToSave } from "../../types/SectionToSave";
+import { useDeleteItem } from "@/hooks/useDeleteItem";
+import { SectionItem } from "@/courses/types/SectionItem";
 
 export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
+    const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
 
     const { t } = useTranslation();
 
     const locale = useUserSetting<Language>('language') || Language.EN;
-    const countSections = course.sections?.length || 0;
-    const countLessons = course.sections?.reduce((acc, section) => acc + (section.lessons?.length || 0), 0) || 0;
+    const countSections = courseSections.length || 0;
+    const countLessons = courseSections.reduce((acc, section) => acc + (section.lessons?.length || 0), 0) || 0;
     const countSectionsText = handlePluralTranslation(coursesHubPrefix, t, countSections, 'sections', locale);
     const countLessonsText = handlePluralTranslation(coursesHubPrefix, t, countLessons, 'lessons', locale);
 
+    const sectionPrefix = `${coursesHubPrefix}/sections`;
+
     const router = useRouter();
+
+    const editIcon = useIcon('edit');
+    const deleteIcon = useIcon('delete');
 
     const actions: CollapsibleSectionActionProps[] = [
         {
@@ -40,13 +51,18 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
             type: ChildrenPosition.Bottom
         },
         {
-            title: 'dsfsdf1',
-            onClick: () => { },
-            type: ChildrenPosition.Right
+            icon: editIcon,
+            iconClassName: styles.editIcon,
+            type: ChildrenPosition.Right,
+            isEditTitle: true
         },
         {
-            title: 'dsfsdf2',
-            onClick: () => { },
+            icon: deleteIcon,
+            iconClassName: styles.deleteIcon,
+            onClick: async (_id) => {
+                _id && await useDeleteItem(sectionPrefix, userApiClient, _id);
+                setCourseSections(courseSections.filter(section => section.section._id !== _id));
+            },
             type: ChildrenPosition.Right
         }
     ];
@@ -56,32 +72,32 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     };
 
     const handleSaveNewSection = async (_id?: string) => {
-        const result = await userApiClient<Section>({
-            url: `${coursesHubPrefix}/sections.${_id ? `update/${_id}` : 'create'}`,
-            options: {
-                method: 'POST', body: JSON.stringify({
+        if (newSection) {
+            const result = await useSaveItem<Section, SectionToSave>({
+                isCreate: _id ? false : true,
+                prefix: sectionPrefix,
+                apiClient: userApiClient,
+                _id,
+                item: {
                     title: newSection,
                     courseId: course._id
-                })
+                } as unknown as Section
+            });
+            if (result) {
+                if (_id) {
+                    setCourseSections(courseSections.map(section => {
+                        if (section.section._id === result._id) {
+                            section.section.title = result.title;
+                        }
+                        return section;
+                    }));
+                } else {
+                    setCourseSections([...courseSections, {
+                        section: result, lessons: []
+                    }]);
+                }
+                setNewSection(undefined);
             }
-        });
-        if (result) {
-            if (_id) {
-                course.sections?.map(section => {
-                    if (section.section._id === result._id) {
-                        section.section.title = result.title;
-                    }
-                    return section;
-                });
-            } else {
-                course.sections?.push({
-                    section: {
-                        _id: result._id,
-                        title: result.title
-                    }, lessons: []
-                });
-            }
-            setNewSection(undefined);
         }
     };
 
@@ -117,12 +133,14 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
                         onSaveNewSection={() => handleSaveNewSection()}
                     />
                 }
-                {course.sections && course.sections.length > 0 && course.sections.map(section => (
+                {courseSections && courseSections.length > 0 && courseSections.map(section => (
                     <CourseSection
                         key={section.section._id}
                         section={section}
                         actions={actions}
                         className={styles.section}
+                        setNewSection={setNewSection}
+                        onSaveNewSection={() => handleSaveNewSection()}
                     />
                 ))}
             </div>

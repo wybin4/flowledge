@@ -9,64 +9,70 @@ import { useTranslation } from "react-i18next";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 
 type CollapsibleSectionProps = {
+    _id?: string;
     title: string;
     setTitle?: (title: string) => void;
+    onTitleSave?: () => void;
     children?: React.ReactNode;
     actions?: CollapsibleSectionActionProps[];
-    onEdit?: () => void;
-    isOnlyEdit?: boolean;
     expandedByDefault: boolean;
     containerClassName?: string;
     headerClassName?: string;
     contentClassName?: string;
     iconPrefix?: string;
+    isEdit?: boolean;
 };
 
 export default function CollapsibleSection({
-    title, expandedByDefault, actions, isOnlyEdit,
+    _id, title, expandedByDefault, actions,
     children, iconPrefix = '',
-    onEdit, setTitle,
+    onTitleSave, setTitle, isEdit,
     containerClassName, headerClassName, contentClassName,
 }: CollapsibleSectionProps) {
-    const [isEdit, setIsEdit] = useState<boolean>(isOnlyEdit ?? false);
+    const [isEditTitle, setIsEditTitle] = useState(isEdit);
+
     const { t } = useTranslation();
 
     const [isExpanded, setIsExpanded] = useState(expandedByDefault);
 
     const expandIcon = useIcon(`expand${iconPrefix}` as IconKey);
+    const checkIcon = useIcon('check');
 
     const bottomActions = actions?.filter(action => action.type === ChildrenPosition.Bottom);
     const rightActions = actions?.filter(action => action.type === ChildrenPosition.Right);
 
     return (
         <div
-            className={cn(containerClassName, { [styles.edit]: isEdit })}
+            className={cn(containerClassName, { [styles.edit]: isEditTitle })}
         >
             <div className={styles.header}>
                 <div
                     className={cn(styles.headerContent, headerClassName)}
-                    onClick={() => !isEdit && setIsExpanded((prev) => !prev)}
+                    onClick={() => !isEditTitle && setIsExpanded((prev) => !prev)}
                 >
-                    <h3 className={cn({ [styles.titleEdit]: isEdit })}>{
-                        isEdit ?
+                    <h3 className={cn({ [styles.titleEdit]: isEditTitle })}>{
+                        isEditTitle ?
                             <input type='text' value={title} onChange={(e) => setTitle?.(e.target.value)} placeholder={t('type-here')} />
                             : title
                     }</h3>
-                    {!isEdit && <div className={cn(styles.icon, { [styles.expanded]: isExpanded })}>{expandIcon}</div>}
-                    {isEdit && <div onClick={onEdit} className={cn(styles.icon, styles.editIcon)}>+</div>}
+                    {!isEditTitle && <div className={cn(styles.actionIcon, { [styles.expanded]: isExpanded })}>{expandIcon}</div>}
+                    {isEditTitle && <div onClick={onTitleSave} className={cn(styles.actionIcon, styles.editIcon)}>
+                        {rightActions?.length ? checkIcon : '+'}
+                    </div>}
                 </div>
                 <div className={styles.rightActions}>
-                    {rightActions && rightActions.map((action) => (
-                        <div>
-                            {action.title}
-                        </div>
+                    {rightActions && rightActions.map((action, index) => (
+                        <CollapsibleSectionAction _id={_id} key={index} onClick={action.isEditTitle ? () => {
+                            onTitleSave?.();
+                            setIsEditTitle(true);
+                        } : undefined} {...action} />
                     ))}
                 </div>
             </div>
             <div className={cn(contentClassName, { [styles.hidden]: !isExpanded })}>
                 {children}
-                {bottomActions && bottomActions.map((action) => (
-                    <CollapsibleSectionAction key={action.title} {...action} />
+                {bottomActions && bottomActions.map((action, index) => (
+                    <CollapsibleSectionAction key={index} {...action} />
                 ))}
             </div>
         </div>

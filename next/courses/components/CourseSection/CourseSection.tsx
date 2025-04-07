@@ -5,12 +5,11 @@ import styles from "./CourseSection.module.css";
 import { CourseListImage } from "../../courses-list/components/CoursesListPageItem/CourseListImage/CourseListImage";
 import { useRouter } from "next/navigation";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
-import { SectionToSave } from "@/courses/courses-hub/types/SectionToSave";
 
 type CourseSectionProps = {
     className?: string;
-    section: SectionItem | SectionToSave;
-    setNewSection?: (section: SectionToSave) => void;
+    section: SectionItem | string;
+    setNewSection?: (section: string) => void;
     onSaveNewSection?: () => void;
     actions?: CollapsibleSectionActionProps[];
 }
@@ -50,11 +49,11 @@ export const CourseSection = ({ className, section, actions, setNewSection, onSa
         return (
             <CollapsibleSection
                 title={section}
-                setTitle={(name) => setNewSection?.(name)}
                 expandedByDefault={false}
                 iconPrefix='-little'
-                isOnlyEdit={true}
-                onEdit={onSaveNewSection}
+                setTitle={(name) => setNewSection?.(name)}
+                onTitleSave={onSaveNewSection}
+                isEditTitle={true}
                 {...sectionClassNames}>
             </CollapsibleSection>
         )
@@ -63,10 +62,13 @@ export const CourseSection = ({ className, section, actions, setNewSection, onSa
     if (typeof section === 'object' && 'section' in section) {
         return (
             <CollapsibleSection
+                _id={section.section._id}
                 title={section.section.title}
                 expandedByDefault={true}
                 iconPrefix='-little'
                 actions={sectionActions}
+                setTitle={(name) => setNewSection?.(name)}
+                onTitleSave={onSaveNewSection}
                 {...sectionClassNames}>
                 {section.lessons && section.lessons.length > 0 && section.lessons.map((lesson) => (
                     <CollapsibleSectionChild

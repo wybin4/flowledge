@@ -11,3 +11,26 @@
 .section {
     margin-bottom: 1.5rem;
 }
+
+.deleteIcon {
+    color: var(--red);
+}
+
+.deleteIcon:hover {
+    color: var(--red-dark);
+}
+
+.editIcon:hover {
+    color: var(--secondary-light);
+}
+
+.editIcon, .deleteIcon {
+    width: 1.1rem;
+    height: 1.1rem;
+
+    cursor: pointer;
+}
+
+.editIcon {
+    margin-right: 0.2rem;
+}

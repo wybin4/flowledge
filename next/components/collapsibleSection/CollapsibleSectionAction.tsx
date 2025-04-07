@@ -1,21 +1,27 @@
 "use client";
 
 import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { JSX } from "react";
 
 export type CollapsibleSectionActionProps = {
-    title: string;
-    onClick: () => void;
+    _id?: string;
+    title?: string;
+    icon?: JSX.Element;
+    onClick?: (_id?: string) => void;
     className?: string;
     titleClassName?: string;
-    type: ChildrenPosition; 
+    iconClassName?: string;
+    type: ChildrenPosition;
+    isEditTitle?: boolean;
 }
 
 export default function CollapsibleSectionAction({
-    title, onClick, className, titleClassName
+    _id, title, icon, onClick, className, titleClassName, iconClassName, isEditTitle
 }: CollapsibleSectionActionProps) {
     return (
-        <div className={className} onClick={onClick}>
-            <div className={titleClassName}>{title}</div>
+        <div className={title ? className : ''} onClick={() => onClick?.(_id)}>
+            {title && <div className={titleClassName}>{title}</div>}
+            {icon && <div className={iconClassName}>{icon}</div>}
         </div>
     );
 }

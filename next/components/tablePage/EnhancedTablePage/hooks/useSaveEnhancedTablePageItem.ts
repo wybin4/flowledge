@@ -3,6 +3,7 @@ import { TablePageMode } from "@/types/TablePageMode";
 import { useCallback } from "react";
 import { ApiClient, FakeApiClient } from "@/types/ApiClient";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSaveItem } from "@/hooks/useSaveItem";
 
 export const useSaveEnhancedTablePageItem = <T, U>(
     mode: TablePageMode,
@@ -15,13 +16,11 @@ export const useSaveEnhancedTablePageItem = <T, U>(
     const queryClient = useQueryClient();
 
     const saveItem = useCallback(async (item: T | undefined) => {
-        const method = mode === TablePageMode.CREATE ? 'POST' : 'PUT';
-        const url = mode === TablePageMode.CREATE ? `${prefix}.create` : `${prefix}.update/${_id}`;
-        if (item) {
-            const body = transformItem(item);
-            await apiClient<T>({ url, options: { method, body: JSON.stringify(body) } });
+        const isCreate = mode === TablePageMode.CREATE;
+        const result = await useSaveItem({ isCreate, prefix, apiClient, transformItem, _id, item });
+        if (result) {
             queryClient.invalidateQueries({ queryKey: [`${prefix}DataPage`] });
-            mode === TablePageMode.CREATE && queryClient.invalidateQueries({ queryKey: [`${prefix}TotalCount`] });
+            isCreate && queryClient.invalidateQueries({ queryKey: [`${prefix}TotalCount`] });
             router.back();
         }
     }, [mode, prefix]);

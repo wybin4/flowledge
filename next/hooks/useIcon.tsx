@@ -44,6 +44,8 @@ import MarkIcon from "../assets/mark.svg";
 import UnmarkIcon from "../assets/unmark.svg";
 import CloseIcon from "../assets/close.svg";
 import CheckIcon from "../assets/check.svg";
+import RoundCheckIcon from "../assets/round-check.svg";
+import OkIcon from "../assets/ok.svg";
 import VideoIcon from "../assets/video.svg";
 import VideoUploadIcon from "../assets/video-upload.svg";
 import VideoUploadBorderIcon from "../assets/video-upload-border.svg";
@@ -51,6 +53,8 @@ import TopIcon from "../assets/top.svg";
 import BottomIcon from "../assets/bottom.svg";
 import InfoIcon from "../assets/info.svg";
 import SwapIcon from "../assets/swap.svg";
+import EditIcon from "../assets/edit.svg";
+import DeleteIcon from "../assets/delete.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -104,7 +108,9 @@ const icons = {
     'mark': <MarkIcon />,
     'unmark': <UnmarkIcon />,
     'close': <CloseIcon />,
+    'ok': <OkIcon />,   
     'check': <CheckIcon />,
+    'round-check': <RoundCheckIcon />,
 
     'video': <VideoIcon />,
     'video-upload': <VideoUploadIcon />,
@@ -115,6 +121,9 @@ const icons = {
 
     'info': <InfoIcon />,
     'swap': <SwapIcon />,
+
+    'edit': <EditIcon />,
+    'delete': <DeleteIcon />,
 } as const;
 
 export type IconKey = keyof typeof icons;

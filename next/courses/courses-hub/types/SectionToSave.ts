@@ -1,1 +1,4 @@
-export type SectionToSave = string;
+export type SectionToSave = {
+    title: string;
+    courseId: string;
+}

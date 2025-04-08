@@ -42,7 +42,7 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
 
     const fileUploadMaxSize = usePrivateSetting<number>('file-upload.max-size') || 104857600;
 
-    const checkIcon = useIcon('check');
+    const checkIcon = useIcon('round-check');
     const infoIcon = useIcon('info');
     const swapIcon = useIcon('swap');
     const videoUploadIcon = useIcon('video-upload');
@@ -84,75 +84,77 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
 
     return (
         <ButtonBackContainer>
-            <PageLayoutHeader
-                name={isEditMode ? `${coursesHubPrefix}.edit-lesson` : `${coursesHubPrefix}.create-lesson`}
-                translateName={false}
-            />
-            <div className={styles.videoSelector}>
-                {videoSelectorOptions.map(option => (
-                    <FiniteSelector
-                        key={option.label}
-                        value={option.value.toString()}
-                        selectedValue={withVideo.toString()}
-                        label={option.label}
-                        onClick={() => setWithVideo(option.value)}
-                        mode={FillBorderUnderlineMode.BORDER}
-                        icon={checkIcon}
+            <div className={styles.content}>
+                <PageLayoutHeader
+                    name={isEditMode ? `${coursesHubPrefix}.edit-lesson` : `${coursesHubPrefix}.create-lesson`}
+                    translateName={false}
+                />
+                <div className={styles.videoSelector}>
+                    {videoSelectorOptions.map(option => (
+                        <FiniteSelector
+                            key={option.label}
+                            value={option.value.toString()}
+                            selectedValue={withVideo.toString()}
+                            label={option.label}
+                            onClick={() => setWithVideo(option.value)}
+                            mode={FillBorderUnderlineMode.BORDER}
+                            icon={checkIcon}
+                        />
+                    ))}
+                </div>
+                {withVideo && <>
+                    <LessonItemHeader
+                        title={t(`${coursesHubPrefix}.upload-video.name`)}
+                        description={t(`${coursesHubPrefix}.upload-video.description`, {
+                            size: getFileSize(fileUploadMaxSize)
+                        })}
+                        icon={videoUploadIcon}
                     />
-                ))}
-            </div>
-            {withVideo && <>
+                    <VideoUpload
+                        isUploading={isVideoUploading}
+                        setIsUploading={setIsVideoUploading}
+                        isUploadError={isVideoUploadError}
+                        setIsUploadError={setIsVideoUploadError}
+                        video={video}
+                        setVideo={setVideo}
+                        maxSize={fileUploadMaxSize}
+                        apiClientPrefix={userApiClientPrefix}
+                        childrenOnVideo={
+                            <>
+                                <div className={styles.videoActions}>
+                                    <LessonItemHeader
+                                        title={t(`${coursesHubPrefix}.what-to-do-with-video`)}
+                                        icon={swapIcon}
+                                    />
+                                    {videoActions.map((action, index) => (
+                                        <InputBox
+                                            key={index}
+                                            name={`${coursesHubPrefix}.${action.label}.name`}
+                                            className={styles.videoAction}
+                                            description={`${coursesHubPrefix}.${action.label}.description`}
+                                        >
+                                            <ToggleSwitch
+                                                isChecked={action.value}
+                                                onToggle={() => toggleVideoAction(action.label)}
+                                                disabled={isDisabled(action)}
+                                            />
+                                        </InputBox>
+                                    ))}
+                                </div>
+                            </>
+                        }
+                    />
+                </>}
                 <LessonItemHeader
-                    title={t(`${coursesHubPrefix}.upload-video.name`)}
-                    description={t(`${coursesHubPrefix}.upload-video.description`, {
-                        size: getFileSize(fileUploadMaxSize)
-                    })}
-                    icon={videoUploadIcon}
+                    title={t(`${coursesHubPrefix}.what-else.name`)}
+                    description={t(`${coursesHubPrefix}.what-else.description`)}
+                    icon={infoIcon}
                 />
-                <VideoUpload
-                    isUploading={isVideoUploading}
-                    setIsUploading={setIsVideoUploading}
-                    isUploadError={isVideoUploadError}
-                    setIsUploadError={setIsVideoUploadError}
-                    video={video}
-                    setVideo={setVideo}
-                    maxSize={fileUploadMaxSize}
-                    apiClientPrefix={userApiClientPrefix}
-                    childrenOnVideo={
-                        <>
-                            <div className={styles.videoActions}>
-                                <LessonItemHeader
-                                    title={t(`${coursesHubPrefix}.what-to-do-with-video`)}
-                                    icon={swapIcon}
-                                />
-                                {videoActions.map((action, index) => (
-                                    <InputBox
-                                        key={index}
-                                        name={`${coursesHubPrefix}.${action.label}.name`}
-                                        className={styles.videoAction}
-                                        description={`${coursesHubPrefix}.${action.label}.description`}
-                                    >
-                                        <ToggleSwitch
-                                            isChecked={action.value}
-                                            onToggle={() => toggleVideoAction(action.label)}
-                                            disabled={isDisabled(action)}
-                                        />
-                                    </InputBox>
-                                ))}
-                            </div>
-                        </>
-                    }
-                />
-            </>}
-            <LessonItemHeader
-                title={t(`${coursesHubPrefix}.what-else.name`)}
-                description={t(`${coursesHubPrefix}.what-else.description`)}
-                icon={infoIcon}
-            />
-            {!withVideo && <LessonItemHeader
-                title={t(`${coursesHubPrefix}.you-can-add-video-later.name`)}
-                icon={infoIcon}
-            />}
+                {!withVideo && <LessonItemHeader
+                    title={t(`${coursesHubPrefix}.you-can-add-video-later.name`)}
+                    icon={infoIcon}
+                />}
+            </div>
             <div className={styles.buttonContainer}>
                 <Button
                     onClick={saveItem}

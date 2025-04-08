@@ -22,3 +22,7 @@
 
     margin-top: 1.5rem;
 }
+
+.content {
+    min-height: 83vh;
+}

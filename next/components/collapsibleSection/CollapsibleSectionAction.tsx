@@ -12,11 +12,10 @@ export type CollapsibleSectionActionProps = {
     titleClassName?: string;
     iconClassName?: string;
     type: ChildrenPosition;
-    isEditTitle?: boolean;
 }
 
 export default function CollapsibleSectionAction({
-    _id, title, icon, onClick, className, titleClassName, iconClassName, isEditTitle
+    _id, title, icon, onClick, className, titleClassName, iconClassName
 }: CollapsibleSectionActionProps) {
     return (
         <div className={title ? className : ''} onClick={() => onClick?.(_id)}>

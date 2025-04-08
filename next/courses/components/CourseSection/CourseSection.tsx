@@ -5,6 +5,7 @@ import styles from "./CourseSection.module.css";
 import { CourseListImage } from "../../courses-list/components/CoursesListPageItem/CourseListImage/CourseListImage";
 import { useRouter } from "next/navigation";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
 
 type CourseSectionProps = {
     className?: string;
@@ -12,9 +13,10 @@ type CourseSectionProps = {
     setNewSection?: (section: string) => void;
     onSaveNewSection?: () => void;
     actions?: CollapsibleSectionActionProps[];
+    onClick?: () => void;
 }
 
-export const CourseSection = ({ className, section, actions, setNewSection, onSaveNewSection }: CourseSectionProps) => {
+export const CourseSection = ({ className, section, actions, setNewSection, onSaveNewSection, onClick }: CourseSectionProps) => {
     const router = useRouter();
 
     const sectionClassNames = {
@@ -31,14 +33,20 @@ export const CourseSection = ({ className, section, actions, setNewSection, onSa
         additionalInfoClassName: styles.childAdditionalInfo
     };
 
-    const sectionActionsClassNames = {
-        className: styles.sectionAction,
+    const sectionActionsClassNamesBottom = {
+        className: styles.sectionActionBottom,
+        titleClassName: styles.sectionActionTitle
+    };
+
+    const sectionActionsClassNamesRight = {
+        className: styles.sectionActionRight,
         titleClassName: styles.sectionActionTitle
     };
 
     const sectionActions = actions?.map((action) => ({
         ...action,
-        ...sectionActionsClassNames
+        ...(action.type === ChildrenPosition.Bottom ? sectionActionsClassNamesBottom : {}),
+        ...(action.type === ChildrenPosition.Right ? sectionActionsClassNamesRight : {})
     }));
 
     const defaultChildProps = { isActive: false };
@@ -62,13 +70,11 @@ export const CourseSection = ({ className, section, actions, setNewSection, onSa
     if (typeof section === 'object' && 'section' in section) {
         return (
             <CollapsibleSection
-                _id={section.section._id}
                 title={section.section.title}
                 expandedByDefault={true}
                 iconPrefix='-little'
                 actions={sectionActions}
-                setTitle={(name) => setNewSection?.(name)}
-                onTitleSave={onSaveNewSection}
+                onClick={onClick}
                 {...sectionClassNames}>
                 {section.lessons && section.lessons.length > 0 && section.lessons.map((lesson) => (
                     <CollapsibleSectionChild

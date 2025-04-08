@@ -27,7 +27,7 @@
 }
 
 .child,
-.sectionAction {
+.sectionActionBottom {
     padding: 0.75rem;
     margin-top: 0.7rem;
 
@@ -36,8 +36,17 @@
     cursor: pointer;
 }
 
-.sectionAction:hover {
+.sectionActionBottom:hover {
     background-color: var(--hover-dark);
+}
+
+.sectionActionRight {
+    cursor: pointer;
+}
+
+.sectionActionRight:hover {
+    color: var(--secondary-light);
+    text-decoration: underline;
 }
 
 .childTime {

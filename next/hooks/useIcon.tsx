@@ -55,6 +55,7 @@ import InfoIcon from "../assets/info.svg";
 import SwapIcon from "../assets/swap.svg";
 import EditIcon from "../assets/edit.svg";
 import DeleteIcon from "../assets/delete.svg";
+import GhostIcon from "../assets/ghost.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -124,6 +125,7 @@ const icons = {
 
     'edit': <EditIcon />,
     'delete': <DeleteIcon />,
+    'ghost': <GhostIcon />,
 } as const;
 
 export type IconKey = keyof typeof icons;

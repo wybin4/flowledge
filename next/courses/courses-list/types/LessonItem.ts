@@ -18,5 +18,5 @@ export interface LessonStuff {
     file?: {
         name: string;
         url: string;
-    }; // TODO: replace to file
+    };
 }

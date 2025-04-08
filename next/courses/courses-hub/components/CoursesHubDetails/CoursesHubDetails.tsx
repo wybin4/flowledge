@@ -19,11 +19,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { userApiClient } from "@/apiClient";
 import { Section } from "@/courses/types/Section";
-import { useIcon } from "@/hooks/useIcon";
 import { useSaveItem } from "@/hooks/useSaveItem";
 import { SectionToSave } from "../../types/SectionToSave";
-import { useDeleteItem } from "@/hooks/useDeleteItem";
 import { SectionItem } from "@/courses/types/SectionItem";
+import RightSidebar from "@/components/Sidebar/RightSidebar";
+import cn from "classnames";
+import { useNonPersistentSidebar } from "@/hooks/useNonPersistentSidebar";
 
 export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
@@ -41,29 +42,11 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
 
     const router = useRouter();
 
-    const editIcon = useIcon('edit');
-    const deleteIcon = useIcon('delete');
-
-    const actions: CollapsibleSectionActionProps[] = [
+    const bottomActions: CollapsibleSectionActionProps[] = [
         {
             title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
             onClick: () => { router.push(`/courses-hub/${course._id}?createLesson=true`); },
             type: ChildrenPosition.Bottom
-        },
-        {
-            icon: editIcon,
-            iconClassName: styles.editIcon,
-            type: ChildrenPosition.Right,
-            isEditTitle: true
-        },
-        {
-            icon: deleteIcon,
-            iconClassName: styles.deleteIcon,
-            onClick: async (_id) => {
-                _id && await useDeleteItem(sectionPrefix, userApiClient, _id);
-                setCourseSections(courseSections.filter(section => section.section._id !== _id));
-            },
-            type: ChildrenPosition.Right
         }
     ];
 
@@ -102,48 +85,57 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     };
 
     return (
-        <>
-            <CoursesItemHeader
-                course={course}
-                header={<Breadcrumbs position={ChildrenPosition.Left} currentPathName={t(`${coursesHubPrefix}.current-course`)} />}
-                pointer={false}
-            />
-            <CoursesListItemDescription
-                description={course.description}
-                isExpanded={true}
-            />
-            <CoursesHubDetailsHeader
-                title={t(`${coursesHubPrefix}.editors`)}
-                action={`+ ${t(`${coursesHubPrefix}.add-editor`)}`}
-                onClick={() => { }}
-            />
-            {course.editors && course.editors.length > 0 && <CoursesHubEditors editors={course.editors} />}
-            <div className={styles.sectionsContainer}>
-                <CoursesHubDetailsHeader
-                    title={t(`${coursesHubPrefix}.sections`)}
-                    description={`${countSectionsText} · ${countLessonsText}`}
-                    action={`+ ${t(`${coursesHubPrefix}.add-section`)}`}
-                    onClick={handleAddSection}
-                />
-                {newSection !== undefined &&
-                    <CourseSection
-                        section={newSection}
-                        className={styles.newSection}
-                        setNewSection={setNewSection}
-                        onSaveNewSection={() => handleSaveNewSection()}
+        <RightSidebar
+            useSidebarHook={useNonPersistentSidebar}
+            content={classNames => <div className={cn(classNames)}>sdfsdf</div>}
+        >
+            {(isExpanded, onClick) => (
+                <div className={cn({ [styles.expanded]: isExpanded })}>
+                    <CoursesItemHeader
+                        course={course}
+                        header={<Breadcrumbs position={ChildrenPosition.Left} currentPathName={t(`${coursesHubPrefix}.current-course`)} />}
+                        pointer={false}
                     />
-                }
-                {courseSections && courseSections.length > 0 && courseSections.map(section => (
-                    <CourseSection
-                        key={section.section._id}
-                        section={section}
-                        actions={actions}
-                        className={styles.section}
-                        setNewSection={setNewSection}
-                        onSaveNewSection={() => handleSaveNewSection()}
+                    <CoursesListItemDescription
+                        description={course.description}
+                        isExpanded={true}
                     />
-                ))}
-            </div>
-        </>
+                    <CoursesHubDetailsHeader
+                        title={t(`${coursesHubPrefix}.editors`)}
+                        action={`+ ${t(`${coursesHubPrefix}.add-editor`)}`}
+                        onClick={() => { }}
+                    />
+                    {course.editors && course.editors.length > 0 && <CoursesHubEditors editors={course.editors} />}
+                    <div className={styles.sectionsContainer}>
+                        <CoursesHubDetailsHeader
+                            title={t(`${coursesHubPrefix}.sections`)}
+                            description={`${countSectionsText} · ${countLessonsText}`}
+                            action={`+ ${t(`${coursesHubPrefix}.add-section`)}`}
+                            onClick={handleAddSection}
+                        />
+                        {newSection !== undefined &&
+                            <CourseSection
+                                section={newSection}
+                                className={styles.newSection}
+                                setNewSection={setNewSection}
+                                onSaveNewSection={() => handleSaveNewSection()}
+                            />
+                        }
+                        {courseSections && courseSections.length > 0 && courseSections.map(section => (
+                            <CourseSection
+                                key={section.section._id}
+                                section={section}
+                                actions={[...bottomActions, {
+                                    title: t('edit'),
+                                    type: ChildrenPosition.Right,
+                                    onClick
+                                }]}
+                                className={styles.section}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+        </RightSidebar>
     );
 };

@@ -15,6 +15,7 @@ import { ApiClient, FakeApiClient } from "@/types/ApiClient";
 import { Button, ButtonType } from "@/components/Button/Button";
 import { ButtonBackProps } from "@/components/Button/ButtonBack/ButtonBack";
 import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
+import { QueryParams } from "@/types/QueryParams";
 
 interface EnhancedItemProps<T, U> {
     _id?: string;
@@ -28,11 +29,12 @@ interface EnhancedItemProps<T, U> {
     additionalButtons?: { title: string, onClick: () => void, mode?: TablePageMode, type: ButtonType }[];
     backButton?: ButtonBackProps;
     containerStyles?: string;
+    queryParams?: QueryParams;
 }
 
 export const EnhancedItem = <T, U>({
     _id, mode, prefix, apiPrefix,
-    apiClient,
+    apiClient, queryParams,
     settingKeys,
     transformItemToSave, createEmptyItem,
     additionalButtons,
@@ -52,7 +54,7 @@ export const EnhancedItem = <T, U>({
     const getItem = useGetEnhancedTablePageItem(realPrefix, apiClient, (item) => {
         setItem(item);
         setInitialValues(item);
-    });
+    }, queryParams);
 
     useEffect(() => {
         if (isEditMode) {

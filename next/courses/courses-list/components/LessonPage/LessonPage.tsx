@@ -4,7 +4,7 @@ import { StuffUpload } from "@/stuff/components/StuffUpload";
 import { useState } from "react";
 import { FiniteSelector } from "../../../../components/FiniteSelector/FiniteSelector";
 import { InputBoxWrapper } from "../../../../components/InputBox/InputBoxWrapper";
-import RightSidebar from "../../../../components/Sidebar/RightSidebar";
+import RightSidebar from "../../../../components/Sidebar/RightSidebar/RightSidebar";
 import styles from "./LessonPage.module.css";
 import { LessonTabs } from "@/types/LessonTabs";
 import cn from "classnames";

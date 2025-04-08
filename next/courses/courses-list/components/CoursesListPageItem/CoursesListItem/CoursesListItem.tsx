@@ -82,7 +82,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                         {selectedMenuTab === CourseTabs.Lessons && course.sections && course.sections.length > 0 &&
                             course.sections.map(section => (
                                 <CourseSection
-                                    key={section._id}
+                                    key={section.section._id}
                                     className={defaultStyles.itemContainer}
                                     section={section}
                                 />

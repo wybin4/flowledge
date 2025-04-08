@@ -156,7 +156,13 @@
         "edit-content": "edit content",
         "editors": "editors",
         "add-editor": "add editor",
-        "sections": "sections",
+        "sections": {
+            "name": "sections",
+            "edit": "edit section",
+            "add": "add section",
+            "title": "section",
+            "isVisible": "is visible"
+        },
         "add-section": "add section",
         "__count__sections_zero": "no sections",
         "__count__sections_one": "{{count}} section",

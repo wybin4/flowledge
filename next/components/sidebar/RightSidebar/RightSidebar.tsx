@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "./Sidebar.module.css";
+import styles from "../Sidebar.module.css";
 import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";

@@ -10,23 +10,25 @@ import { UpdatableSetting } from "@/hooks/useSettings";
 import { useSaveEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useSaveEnhancedTablePageItem";
 import { useDeleteEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useDeleteEnhancedTablePageItem";
 import { useGetEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItem";
-import { IconKey } from "@/hooks/useIcon";
 import { ApiClient, FakeApiClient } from "@/types/ApiClient";
 import { Button, ButtonType } from "@/components/Button/Button";
 import { ButtonBackProps } from "@/components/Button/ButtonBack/ButtonBack";
 import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 import { QueryParams } from "@/types/QueryParams";
 
+export type EnhancedItemAdditionalButton = { title: string, onClick: () => void, mode?: TablePageMode, type: ButtonType };
+export type EnhancedItemSettingKey = { name: string, type: SettingType };
+
 interface EnhancedItemProps<T, U> {
     _id?: string;
     mode: TablePageMode;
-    prefix: IconKey;
+    prefix: string;
     apiPrefix?: string;
     apiClient: ApiClient<T> | FakeApiClient<T>;
-    settingKeys: { name: string, type: SettingType }[];
+    settingKeys: EnhancedItemSettingKey[];
     transformItemToSave: (item: T) => U;
     createEmptyItem: () => T;
-    additionalButtons?: { title: string, onClick: () => void, mode?: TablePageMode, type: ButtonType }[];
+    additionalButtons?: EnhancedItemAdditionalButton[];
     backButton?: ButtonBackProps;
     containerStyles?: string;
     queryParams?: QueryParams;

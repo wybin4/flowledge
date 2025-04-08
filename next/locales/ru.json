@@ -156,7 +156,13 @@
         "edit-content": "редактировать содержимое",
         "editors": "редакторы",
         "add-editor": "добавить редактора",
-        "sections": "разделы",
+        "sections": {
+            "name": "разделы",
+            "edit": "редактировать раздел",
+            "add": "добавить раздел",
+            "title": "название раздела",
+            "isVisible": "видимый"
+        },
         "add-section": "добавить раздел",
         "__count__sections_zero": "нет разделов",
         "__count__sections_one": "{{count}} раздел",

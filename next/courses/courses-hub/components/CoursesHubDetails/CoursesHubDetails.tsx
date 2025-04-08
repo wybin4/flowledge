@@ -5,7 +5,7 @@ import { CoursesListItemDescription } from "@/courses/components/CoursesListItem
 import { CoursesHubEditors } from "./CoursesHubEditors/CoursesHubEditors";
 import { CoursesHubDetail } from "../../types/CoursesHubDetails";
 import { CourseSection } from "@/courses/components/CourseSection/CourseSection";
-import { coursesHubPrefix } from "@/helpers/prefixes";
+import { coursesHubPrefix, coursesHubSectionsPrefixApi, coursesHubSectionsPrefixTranslate } from "@/helpers/prefixes";
 import { useTranslation } from "react-i18next";
 import styles from "./CoursesHubDetails.module.css";
 import { CoursesHubDetailsHeader } from "./CoursesHubDetailsHeader/CoursesHubDetailsHeader";
@@ -22,13 +22,17 @@ import { Section } from "@/courses/types/Section";
 import { useSaveItem } from "@/hooks/useSaveItem";
 import { SectionToSave } from "../../types/SectionToSave";
 import { SectionItem } from "@/courses/types/SectionItem";
-import RightSidebar from "@/components/Sidebar/RightSidebar";
+import RightSidebar from "@/components/Sidebar/RightSidebar/RightSidebar";
 import cn from "classnames";
 import { useNonPersistentSidebar } from "@/hooks/useNonPersistentSidebar";
+import RightSidebarModal from "@/components/Sidebar/RightSidebar/RightSidebarModal";
+import { TablePageMode } from "@/types/TablePageMode";
+import { SettingType } from "@/types/Setting";
 
 export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
+    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
 
     const { t } = useTranslation();
 
@@ -37,8 +41,6 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     const countLessons = courseSections.reduce((acc, section) => acc + (section.lessons?.length || 0), 0) || 0;
     const countSectionsText = handlePluralTranslation(coursesHubPrefix, t, countSections, 'sections', locale);
     const countLessonsText = handlePluralTranslation(coursesHubPrefix, t, countLessons, 'lessons', locale);
-
-    const sectionPrefix = `${coursesHubPrefix}/sections`;
 
     const router = useRouter();
 
@@ -58,7 +60,7 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
         if (newSection) {
             const result = await useSaveItem<Section, SectionToSave>({
                 isCreate: _id ? false : true,
-                prefix: sectionPrefix,
+                prefix: coursesHubSectionsPrefixApi,
                 apiClient: userApiClient,
                 _id,
                 item: {
@@ -87,7 +89,40 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
     return (
         <RightSidebar
             useSidebarHook={useNonPersistentSidebar}
-            content={classNames => <div className={cn(classNames)}>sdfsdf</div>}
+            content={classNames => <div className={cn(classNames)}>
+                <RightSidebarModal<Section, SectionToSave>
+                    prefix={coursesHubSectionsPrefixTranslate}
+                    apiPrefix={coursesHubSectionsPrefixApi}
+                    queryParams={{ isSmall: true }}
+                    mode={TablePageMode.EDIT}
+                    _id={selectedItemId}
+                    settingKeys={[
+                        { name: 'title', type: SettingType.InputText },
+                        { name: 'isVisible', type: SettingType.Radio }
+                    ]}
+                    apiClient={userApiClient}
+                    transformItemToSave={(item) => {
+                        const { title, courseId, isVisible } = item;
+                        const body = { title, courseId, isVisible };
+                        return body;
+                    }}
+                    createEmptyItem={() => ({
+                        _id: "",
+                        title: "",
+                        courseId: course._id,
+                        isVisible: false
+                    })}
+                    onBackButtonClick={() => setSelectedItemId(undefined)}
+                    additionalButtons={[
+                        // {
+                        //     title: t(`${coursesHubPrefix}.edit-content`),
+                        //     onClick: handleEditContent,
+                        //     mode: TablePageMode.EDIT,
+                        //     type: ButtonType.EDIT
+                        // }
+                    ]}
+                />
+            </div>}
         >
             {(isExpanded, onClick) => (
                 <div className={cn({ [styles.expanded]: isExpanded })}>
@@ -108,7 +143,7 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
                     {course.editors && course.editors.length > 0 && <CoursesHubEditors editors={course.editors} />}
                     <div className={styles.sectionsContainer}>
                         <CoursesHubDetailsHeader
-                            title={t(`${coursesHubPrefix}.sections`)}
+                            title={t(coursesHubSectionsPrefixTranslate)}
                             description={`${countSectionsText} · ${countLessonsText}`}
                             action={`+ ${t(`${coursesHubPrefix}.add-section`)}`}
                             onClick={handleAddSection}
@@ -128,7 +163,10 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
                                 actions={[...bottomActions, {
                                     title: t('edit'),
                                     type: ChildrenPosition.Right,
-                                    onClick
+                                    onClick: () => {
+                                        setSelectedItemId(section.section._id);
+                                        onClick();
+                                    }
                                 }]}
                                 className={styles.section}
                             />

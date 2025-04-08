@@ -103,3 +103,27 @@
 }
 
 /* RightSidebar styles end */
+
+/* RightSidebarModal styles start */
+
+.rightSidebarModal {
+    position: relative;
+    width: 85%;
+
+    padding: 2rem;
+}
+
+.rightSidebarModal input,
+.rightSidebarModal div {
+    width: 100%;
+}
+
+.rightSidebarModal .backButton {
+    position: absolute;
+
+    right: 2rem;
+
+    width: 5% !important;
+}
+
+/* RightSidebarModal styles end */

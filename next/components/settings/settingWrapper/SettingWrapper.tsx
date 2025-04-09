@@ -8,6 +8,7 @@ import { SelectorSetting, SettingType, SettingValue, SettingValueType } from "@/
 import { SettingRadio } from "../SettingRadio/SettingRadio";
 import { SettingCode } from "../SettingCode/SettingCode";
 import { UpdatableSetting } from "@/hooks/useSettings";
+import cn from "classnames";
 
 export type SettingWrapperProps = {
     setting: SettingValue;
@@ -39,7 +40,15 @@ export const SettingWrapper = memo(({ setting, handleSave, debounceTime = 1000, 
                         return null;
                 }
             })()}
-            {setting.i18nDescription && t(setting.i18nDescription) !== setting.i18nDescription && <p className={styles.description}>{t(setting.i18nDescription)}</p>}
+            {
+                setting.i18nDescription &&
+                t(setting.i18nDescription) !== setting.i18nDescription &&
+                <p className={cn(styles.description, {
+                    [styles.descriptionWithoutWrapper]: !withWrapper
+                })}>
+                    {t(setting.i18nDescription)}
+                </p>
+            }
         </div>
     );
 }, (prevProps, nextProps) =>

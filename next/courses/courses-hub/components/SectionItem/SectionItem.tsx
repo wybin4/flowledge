@@ -3,7 +3,7 @@
 import { Course } from "../../../types/Course";
 import { coursesHubPrefix } from "@/helpers/prefixes";
 import { userApiClient } from "@/apiClient";
-import { EnhancedItem } from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
+import EnhancedItem from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
 import { SettingType } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
 import { CourseToSave } from "../../types/CourseToSave";

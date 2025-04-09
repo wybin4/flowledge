@@ -16,8 +16,13 @@ import EnhancedItemBody from "./EnhancedItemBody";
 import { Identifiable } from "@/types/Identifiable";
 import { TablePageActionType } from "@/types/TablePageActionType";
 
-export type EnhancedItemAdditionalButton = { title: string, onClick: () => void, mode?: TablePageMode, type: ButtonType };
-export type EnhancedItemSettingKey = { name: string, type: SettingType };
+export type EnhancedItemAdditionalButton = {
+    title: string;
+    onClick: () => void;
+    mode?: TablePageMode;
+    type: ButtonType;
+};
+export type EnhancedItemSettingKey = { name: string, type: SettingType, hasDescription?: boolean };
 
 export interface EnhancedItemProps<T, U> {
     _id?: string;
@@ -108,6 +113,7 @@ const EnhancedItem = <T extends Identifiable, U>({
                 additionalButtons={additionalButtons}
                 isEditMode={isEditMode}
                 hasChanges={hasChanges()}
+                deleteItemDescription={t(`${prefix}.delete-description`)}
             />
         </ButtonBackContainer>
     );

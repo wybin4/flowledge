@@ -21,6 +21,7 @@ type EnhancedItemBodyProps<T> = {
     item: T;
     setItem: Dispatch<SetStateAction<T | undefined>>;
     deleteItem: (_id: string) => Promise<void>;
+    deleteItemDescription?: string;
     saveItem: (item: T | undefined) => Promise<void>;
 };
 
@@ -29,7 +30,8 @@ const EnhancedItemBody = <T extends Identifiable,>({
     title, mode, prefix,
     settingKeys, additionalButtons,
     isEditMode, hasChanges,
-    deleteItem, saveItem
+    deleteItem, deleteItemDescription,
+    saveItem
 }: EnhancedItemBodyProps<T>) => {
     const getSettingType = useCallback((key: string) => {
         return settingKeys.find((setting) => setting.name === key)?.type;
@@ -37,10 +39,13 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
     const renderSetting = useCallback((key: string) => {
         const value = item?.[key as keyof T];
+        const hasDescription = settingKeys.find((setting) => setting.name === key)?.hasDescription;
 
         return {
             setting: {
-                _id: key, i18nLabel: `${prefix}.${key}`,
+                _id: key,
+                i18nLabel: hasDescription ? `${prefix}.${key}.name` : `${prefix}.${key}`,
+                i18nDescription: hasDescription ? `${prefix}.${key}.description` : undefined,
                 value,
                 packageValue: value,
                 type: getSettingType(key)
@@ -71,7 +76,12 @@ const EnhancedItemBody = <T extends Identifiable,>({
                     <Button key={button.title} onClick={button.onClick} prefix={prefix} type={button.type} title={button.title} />
                 ))}
                 {isEditMode &&
-                    <Button onClick={() => deleteItem(item._id)} prefix={prefix} type={ButtonType.DELETE} />
+                    <div className={styles.deleteContainer}>
+                        <Button onClick={() => deleteItem(item._id)} prefix={prefix} type={ButtonType.DELETE} />
+                        {deleteItemDescription &&
+                            <div className={styles.description}>{deleteItemDescription}</div>
+                        }
+                    </div>
                 }
                 {hasChanges && item &&
                     <Button onClick={() => saveItem(item)} prefix={prefix} type={ButtonType.SAVE} />

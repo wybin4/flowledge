@@ -21,7 +21,9 @@ class CourseSectionController(
             _id = UUID.randomUUID().toString(),
             title = section.title,
             courseId = section.courseId,
-            isVisible = section.isVisible
+            isVisible = section.isVisible,
+            createdAt = Date(),
+            updatedAt = Date()
         )
         return sectionRepository.save(newSection)
     }
@@ -34,8 +36,8 @@ class CourseSectionController(
         return sectionRepository.findById(id)
             .flatMap { existingSection: CourseSectionModel ->
                 val updatedSection = existingSection.copy(
-                    title = request.title,
-                    isVisible = request.isVisible
+                    title = request.title ?: existingSection.title,
+                    isVisible = request.isVisible ?: existingSection.isVisible
                 )
                 sectionRepository.save(updatedSection)
                     .map { savedSection: CourseSectionModel ->

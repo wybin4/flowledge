@@ -1,3 +1,7 @@
 .description{
     color: var(--description-text);
 }
+
+.descriptionWithoutWrapper {
+    margin-top: -0.5rem;
+}

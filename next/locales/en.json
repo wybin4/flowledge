@@ -164,7 +164,11 @@
             "cancel": "do not add section",
             "delete": "delete section",
             "title": "section",
-            "isVisible": "is visible"
+            "isVisible": {
+                "name": "is visible",
+                "description": "invisible section is not shown in the course, but can be seen by course editors"
+            },
+            "delete-description": "be careful! when a section is deleted, all lessons and materials in it are also deleted"
         },
         "__count__sections_zero": "no sections",
         "__count__sections_one": "{{count}} section",
@@ -197,7 +201,8 @@
         },
         "you-can-add-video-later": {
             "name": "you can add video later if you want"
-        }
+        },
+        "delete-description": "be careful! when a course is deleted, all materials in it are also deleted"
     },
     "courses-list": {
         "menu": {

@@ -10,6 +10,7 @@ type ButtonProps = {
     title?: string;
     disabled?: boolean;
     mode?: FillBorderUnderlineMode;
+    className?: string;
 };
 
 export enum ButtonType {
@@ -18,9 +19,9 @@ export enum ButtonType {
     SAVE = 'save'
 }
 
-export const Button = ({ onClick, prefix, type, title, disabled, mode = FillBorderUnderlineMode.FILL }: ButtonProps) => {
+export const Button = ({ onClick, prefix, type, title, disabled, mode = FillBorderUnderlineMode.FILL, className }: ButtonProps) => {
     const { t } = useTranslation();
-    return <button className={cn(styles.button, styles[type], disabled && styles.disabled, styles[mode])} onClick={onClick}>
+    return <button className={cn(styles.button, styles[type], disabled && styles.disabled, styles[mode], className)} onClick={onClick}>
         {title ? title : t(`${prefix}.${type}`)}
     </button>
 };

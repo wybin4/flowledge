@@ -114,7 +114,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     _id={selectedItemId}
                     settingKeys={[
                         { name: 'title', type: SettingType.InputText },
-                        { name: 'isVisible', type: SettingType.Radio }
+                        { name: 'isVisible', type: SettingType.Radio, hasDescription: true }
                     ]}
                     apiClient={userApiClient}
                     transformItemToSave={(item) => {
@@ -133,14 +133,6 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                         setIsExpanded(false);
                     }}
                     isBackWithRouter={false}
-                    additionalButtons={[
-                        // {
-                        //     title: t(`${coursesHubPrefix}.edit-content`),
-                        //     onClick: handleEditContent,
-                        //     mode: TablePageMode.EDIT,
-                        //     type: ButtonType.EDIT
-                        // }
-                    ]}
                     onActionCallback={(type, item) => {
                         setSelectedItemId(undefined);
                         setIsExpanded(false);

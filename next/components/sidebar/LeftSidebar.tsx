@@ -1,11 +1,11 @@
 "use client";
 
 import styles from "./Sidebar.module.css";
-import SidebarIcon from "./LeftSidebarIcon/leftSidebarIcon";
 import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
-import { apiIntegrationsPrefix } from "@/helpers/prefixes";
+import { apiIntegrationsPrefix, coursesHubPrefix, coursesListPrefix, permissionsPrefix, privateSettingsPrefix, profilePrefix, userSettingsPrefix } from "@/helpers/prefixes";
+import LeftSidebarIcon from "./LeftSidebarIcon/LeftSidebarIcon";
 
 export default function LeftSidebar({ children }: { children: (isExpanded: boolean) => ReactNode }) {
     const { isExpanded, hydrated, toggleSidebar } = useSidebar('left');
@@ -32,12 +32,12 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
 
                     <div className={styles.nav}>
                         <div>
-                            <SidebarIcon isExpanded={isExpanded} name='profile' />
-                            <SidebarIcon isExpanded={isExpanded} name='courses-list' />
-                            <SidebarIcon isExpanded={isExpanded} name='courses-hub' />
+                            <LeftSidebarIcon isExpanded={isExpanded} name={profilePrefix} />
+                            <LeftSidebarIcon isExpanded={isExpanded} name={coursesListPrefix} />
+                            <LeftSidebarIcon isExpanded={isExpanded} name={coursesHubPrefix} />
                         </div>
                         <div>
-                            <SidebarIcon
+                            <LeftSidebarIcon
                                 name='resize'
                                 isExpanded={isExpanded}
                                 onClick={toggleSidebar}
@@ -47,10 +47,10 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
                                 i18nAdditionalKey={isExpanded ? 'collapse' : 'expand'}
                                 isRedirectable={false}
                             />
-                            <SidebarIcon isExpanded={isExpanded} name='user-settings' />
-                            <SidebarIcon isExpanded={isExpanded} name={apiIntegrationsPrefix} />
-                            <SidebarIcon isExpanded={isExpanded} name='private-settings' />
-                            <SidebarIcon isExpanded={isExpanded} name='permissions' />
+                            <LeftSidebarIcon isExpanded={isExpanded} name={userSettingsPrefix} />
+                            <LeftSidebarIcon isExpanded={isExpanded} name={apiIntegrationsPrefix} />
+                            <LeftSidebarIcon isExpanded={isExpanded} name={privateSettingsPrefix} />
+                            <LeftSidebarIcon isExpanded={isExpanded} name={permissionsPrefix} />
                         </div>
                     </div>
                 </div>

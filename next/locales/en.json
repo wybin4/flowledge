@@ -202,7 +202,17 @@
         "you-can-add-video-later": {
             "name": "you can add video later if you want"
         },
-        "delete-description": "be careful! when a course is deleted, all materials in it are also deleted"
+        "delete-description": "be careful! when a course is deleted, all materials in it are also deleted",
+        "title-length": {
+            "name": "title length",
+            "description": "length of names of entities in the courses hub in the format (min, max)",
+            "error": "name must be longer than {{min}} characters and shorter than {{max}} characters"
+        },
+        "title-regex": {
+            "name": "title regex",
+            "description": "regex for names of entities in the courses hub",
+            "error": "name can contain only {{start}} {{end}}"
+        }
     },
     "courses-list": {
         "menu": {
@@ -280,5 +290,14 @@
     },
     "type-here": "type here",
     "edit": "edit",
-    "invisible": "invisible"
+    "invisible": "invisible",
+    "and": "and",
+    "latin-letters": "latin letters",
+    "cyrillic-letters": "cyrillic letters",
+    "digits": "digits",
+    "underscore": "underscore",
+    "dash": "dash",
+    "at": "at (@)",
+    "dot": "dot",
+    "spaces": "spaces"
 }

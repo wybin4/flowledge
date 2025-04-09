@@ -6,7 +6,6 @@ import { CourseListImage } from "../../courses-list/components/CoursesListPageIt
 import { useRouter } from "next/navigation";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
-import cn from "classnames";
 import { useTranslation } from "react-i18next";
 
 type CourseSectionProps = {
@@ -15,9 +14,13 @@ type CourseSectionProps = {
     setNewSection?: (section: string) => void;
     onSaveNewSection?: () => void;
     actions?: CollapsibleSectionActionProps[];
+    validateSectionTitle?: (title: string) => boolean;
+    sectionTitleError?: string;
 }
 
-export const CourseSection = ({ className, section, actions, setNewSection, onSaveNewSection }: CourseSectionProps) => {
+export const CourseSection = ({
+    className, section, actions, setNewSection, onSaveNewSection, validateSectionTitle, sectionTitleError
+}: CourseSectionProps) => {
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -54,7 +57,7 @@ export const CourseSection = ({ className, section, actions, setNewSection, onSa
     const defaultChildProps = { isActive: false };
 
     const onLessonClick = (id: string) => router.push(`${window.location.pathname}/${id}`);
-
+    
     if (typeof section === 'string') {
         return (
             <CollapsibleSection
@@ -64,6 +67,8 @@ export const CourseSection = ({ className, section, actions, setNewSection, onSa
                 setTitle={(name) => setNewSection?.(name)}
                 onTitleSave={onSaveNewSection}
                 isEditTitle={true}
+                validateTitle={validateSectionTitle}
+                titleError={sectionTitleError}
                 {...sectionClassNames}>
             </CollapsibleSection>
         )

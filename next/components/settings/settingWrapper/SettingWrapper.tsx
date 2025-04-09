@@ -15,11 +15,12 @@ export type SettingWrapperProps = {
     handleSave: (setting: UpdatableSetting) => void;
     debounceTime?: number;
     withWrapper?: boolean;
+    validateError?: string;
 }
 
-export const SettingWrapper = memo(({ setting, handleSave, debounceTime = 1000, withWrapper = true }: SettingWrapperProps) => {
+export const SettingWrapper = memo(({ setting, handleSave, debounceTime = 1000, withWrapper = true, validateError }: SettingWrapperProps) => {
     const { t } = useTranslation();
-
+  
     return (
         <div>
             <h3>{setting.type !== SettingType.Radio && t(setting.i18nLabel)}</h3>
@@ -31,7 +32,13 @@ export const SettingWrapper = memo(({ setting, handleSave, debounceTime = 1000, 
                     case SettingType.InputPassword:
                     case SettingType.InputText:
                     case SettingType.InputNumber:
-                        return <SettingInput handleSave={handleSave} setting={setting} debounceTime={debounceTime} />;
+                        return (
+                            <SettingInput
+                                handleSave={handleSave}
+                                setting={setting}
+                                debounceTime={debounceTime}
+                            />
+                        );
                     case SettingType.Radio:
                         return <SettingRadio handleSave={handleSave} setting={setting} withWrapper={withWrapper} />
                     case SettingType.Code:
@@ -49,9 +56,11 @@ export const SettingWrapper = memo(({ setting, handleSave, debounceTime = 1000, 
                     {t(setting.i18nDescription)}
                 </p>
             }
+            {validateError !== '' && <div className={styles.error}>{validateError}</div>}
         </div>
     );
 }, (prevProps, nextProps) =>
     prevProps.setting.value === nextProps.setting.value &&
-    prevProps.setting._id === nextProps.setting._id
+    prevProps.setting._id === nextProps.setting._id &&
+    prevProps.validateError === nextProps.validateError
 );

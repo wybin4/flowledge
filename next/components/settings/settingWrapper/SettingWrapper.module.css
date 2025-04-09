@@ -5,3 +5,11 @@
 .descriptionWithoutWrapper {
     margin-top: -0.5rem;
 }
+
+.error {
+    color: var(--red);
+    
+    font-size: 0.9375rem;
+
+    margin-top: 0.5rem;
+}

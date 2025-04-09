@@ -4,7 +4,7 @@ import { SettingType } from "@/types/Setting";
 import { useTranslation } from "react-i18next";
 import { memo, useCallback, useEffect, useState } from "react";
 import { TablePageMode } from "@/types/TablePageMode";
-import { useSaveEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useSaveEnhancedTablePageItem";
+import { TransformItemToSave, useSaveEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useSaveEnhancedTablePageItem";
 import { useDeleteEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useDeleteEnhancedTablePageItem";
 import { useGetEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItem";
 import { ApiClient, FakeApiClient } from "@/types/ApiClient";
@@ -15,6 +15,7 @@ import { QueryParams } from "@/types/QueryParams";
 import EnhancedItemBody from "./EnhancedItemBody";
 import { Identifiable } from "@/types/Identifiable";
 import { TablePageActionType } from "@/types/TablePageActionType";
+import { areEnhancedItemPropsEqual } from "./areEnhancedItemPropsEqual";
 
 export type EnhancedItemAdditionalButton = {
     title: string;
@@ -22,7 +23,7 @@ export type EnhancedItemAdditionalButton = {
     mode?: TablePageMode;
     type: ButtonType;
 };
-export type EnhancedItemSettingKey = { name: string, type: SettingType, hasDescription?: boolean };
+export type EnhancedItemSettingKey = { name: string, type: SettingType, hasDescription?: boolean, error?: string };
 
 export interface EnhancedItemProps<T, U> {
     _id?: string;
@@ -31,7 +32,7 @@ export interface EnhancedItemProps<T, U> {
     apiPrefix?: string;
     apiClient: ApiClient<T> | FakeApiClient<T>;
     settingKeys: EnhancedItemSettingKey[];
-    transformItemToSave: (item: T) => U;
+    transformItemToSave: TransformItemToSave<T, U>;
     createEmptyItem: () => T;
     useGetItemHook?: (callback: (item: T) => void) => (_id: string) => void;
     additionalButtons?: EnhancedItemAdditionalButton[];
@@ -119,8 +120,6 @@ const EnhancedItem = <T extends Identifiable, U>({
     );
 };
 
-const EnhancedItemComponent = memo(EnhancedItem, (prevProps, nextProps) =>
-    prevProps._id === nextProps._id && prevProps.mode === nextProps.mode
-) as typeof EnhancedItem;
+const EnhancedItemComponent = memo(EnhancedItem, areEnhancedItemPropsEqual) as typeof EnhancedItem;
 
 export default EnhancedItemComponent;

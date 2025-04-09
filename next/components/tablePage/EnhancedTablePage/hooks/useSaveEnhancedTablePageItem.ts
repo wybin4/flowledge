@@ -7,6 +7,8 @@ import { useSaveItem } from "@/hooks/useSaveItem";
 import { TablePageActionType } from "@/types/TablePageActionType";
 import { TablePageActionCallback } from "@/components/TablePage/EnhancedTablePage/types/TablePageActionCallback";
 
+export type TransformItemToSave<T, U> = (item: T) => U;
+
 export const useSaveEnhancedTablePageItem = <T, U>(
     mode: TablePageMode,
     prefix: string,

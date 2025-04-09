@@ -5,6 +5,7 @@ import styles from "../Sidebar.module.css";
 import { useIcon } from "@/hooks/useIcon";
 import { memo } from "react";
 import { Identifiable } from "@/types/Identifiable";
+import { areEnhancedItemPropsEqual } from "@/components/TablePage/EnhancedTablePage/EnhancedItem/areEnhancedItemPropsEqual";
 
 type RightSidebarModalProps<T, U> = Omit<EnhancedItemProps<T, U>, 'backButton'> & {
     onBackButtonClick?: () => void;
@@ -30,7 +31,7 @@ export const RightSidebarModal = <T extends Identifiable, U>({ onBackButtonClick
 };
 
 const RightSidebarModalComponent = memo(RightSidebarModal, (prevProps, nextProps) => {
-    return prevProps._id === nextProps._id && prevProps.mode === nextProps.mode;
+    return areEnhancedItemPropsEqual(prevProps, nextProps)
 }) as typeof RightSidebarModal;
 
 export default RightSidebarModalComponent;

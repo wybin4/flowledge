@@ -104,3 +104,11 @@
 .tagTitle {
     margin-top: -2px;
 }
+
+.titleError {
+    color: var(--red);
+    font-size: 0.875rem;
+
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+}

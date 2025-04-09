@@ -9,8 +9,9 @@ import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrap
 import { UpdatableSetting } from "@/hooks/useSettings";
 import { SettingValue } from "@/types/Setting";
 import { Identifiable } from "@/types/Identifiable";
+import { areEnhancedItemBodyPropsEqual } from "./areEnhancedItemPropsEqual";
 
-type EnhancedItemBodyProps<T> = {
+export type EnhancedItemBodyProps<T> = {
     title: string;
     mode: TablePageMode;
     prefix: string;
@@ -61,7 +62,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
         const settings = settingKeys.map((key) => renderSetting(key.name));
 
         return settings.map(({ setting }, index) => (
-            <SettingWrapper key={index} debounceTime={0} withWrapper={false} setting={setting} handleSave={(newValue) => {
+            <SettingWrapper key={index} validateError={settingKeys[index].error} debounceTime={0} withWrapper={false} setting={setting} handleSave={(newValue) => {
                 handleSave({ id: setting._id, value: newValue.value });
             }} />
         ));
@@ -93,7 +94,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
 const EnhancedItemBodyComponent = memo(
     EnhancedItemBody,
-    (prevProps, nextProps) => JSON.stringify(prevProps.item) === JSON.stringify(nextProps.item)
+    (prevProps, nextProps) => areEnhancedItemBodyPropsEqual(prevProps, nextProps)
 ) as typeof EnhancedItemBody;
 
 export default EnhancedItemBodyComponent;

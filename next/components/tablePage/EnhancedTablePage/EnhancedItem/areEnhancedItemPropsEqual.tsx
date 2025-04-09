@@ -1,0 +1,17 @@
+import { EnhancedItemProps, EnhancedItemSettingKey } from "./EnhancedItem"
+import { EnhancedItemBodyProps } from "./EnhancedItemBody"
+
+const areSettingKeysEqual = (prevKeys: EnhancedItemSettingKey[], nextKeys: EnhancedItemSettingKey[]) => {
+    return prevKeys.every((key, index) => key.error === nextKeys[index].error)
+}
+
+export const areEnhancedItemPropsEqual = <T, U>(prevProps: EnhancedItemProps<T, U>, nextProps: EnhancedItemProps<T, U>) => {
+    return prevProps._id === nextProps._id &&
+        prevProps.mode === nextProps.mode &&
+        areSettingKeysEqual(prevProps.settingKeys, nextProps.settingKeys);
+}
+
+export const areEnhancedItemBodyPropsEqual = <T,>(prevProps: EnhancedItemBodyProps<T>, nextProps: EnhancedItemBodyProps<T>) => {
+    return JSON.stringify(prevProps.item) === JSON.stringify(nextProps.item) &&
+        areSettingKeysEqual(prevProps.settingKeys, nextProps.settingKeys);
+}

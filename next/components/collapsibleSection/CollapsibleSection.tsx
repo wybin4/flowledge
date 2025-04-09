@@ -13,7 +13,7 @@ export enum CollapsibleSectionTagType {
     Warning = 'warning',
 }
 
-type CollapsibleSectionProps<T> = {
+type CollapsibleSectionProps = {
     title: string;
     titleTags?: {
         title: string;
@@ -29,14 +29,17 @@ type CollapsibleSectionProps<T> = {
     contentClassName?: string;
     iconPrefix?: string;
     isEditTitle?: boolean;
+    validateTitle?: (title: string) => boolean;
+    titleError?: string;
 };
 
-export default function CollapsibleSection<T>({
+export default function CollapsibleSection({
     expandedByDefault, actions,
     children, iconPrefix = '',
     title, titleTags, onTitleSave, setTitle, isEditTitle,
     containerClassName, headerClassName, contentClassName,
-}: CollapsibleSectionProps<T>) {
+    validateTitle, titleError
+}: CollapsibleSectionProps) {
     const { t } = useTranslation();
 
     const [isExpanded, setIsExpanded] = useState(expandedByDefault);
@@ -45,6 +48,16 @@ export default function CollapsibleSection<T>({
 
     const bottomActions = actions?.filter(action => action.type === ChildrenPosition.Bottom);
     const rightActions = actions?.filter(action => action.type === ChildrenPosition.Right);
+
+    const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle?.(e.target.value);
+    };
+
+    const handleSaveTitle = () => {
+        if (validateTitle && validateTitle(title)) {
+            onTitleSave?.();
+        }
+    };
 
     return (
         <div
@@ -58,7 +71,7 @@ export default function CollapsibleSection<T>({
                     <h3 className={cn(styles.titleContainer, { [styles.titleEdit]: isEditTitle })}>
                         <div>{
                             isEditTitle ?
-                                <input type='text' value={title} onChange={(e) => setTitle?.(e.target.value)} placeholder={t('type-here')} />
+                                <input type='text' value={title} onChange={handleChangeTitle} placeholder={t('type-here')} />
                                 : title
                         }</div>
                         {titleTags && titleTags.map((tag, index) => (
@@ -68,7 +81,7 @@ export default function CollapsibleSection<T>({
                         ))}
                     </h3>
                     {!isEditTitle && <div className={cn(styles.actionIcon, { [styles.expanded]: isExpanded })}>{expandIcon}</div>}
-                    {isEditTitle && <div onClick={onTitleSave} className={cn(styles.actionIcon, styles.editIcon)}>+</div>}
+                    {isEditTitle && <div onClick={handleSaveTitle} className={cn(styles.actionIcon, styles.editIcon)}>+</div>}
                 </div>
                 <div className={styles.rightActions}>
                     {rightActions && rightActions.map((action, index) => (
@@ -76,6 +89,7 @@ export default function CollapsibleSection<T>({
                     ))}
                 </div>
             </div>
+            {titleError !== '' && <div className={styles.titleError}>{titleError}</div>}
             <div className={cn(contentClassName, { [styles.hidden]: !isExpanded })}>
                 {children}
                 {bottomActions && bottomActions.map((action, index) => (

@@ -29,15 +29,26 @@ import { RightSidebarModal } from "@/components/Sidebar/RightSidebar/RightSideba
 import { TablePageMode } from "@/types/TablePageMode";
 import { SettingType } from "@/types/Setting";
 import { TablePageActionType } from "@/types/TablePageActionType";
+import { getItemsFromStringRange } from "@/helpers/getItemsFromStringRange";
+import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
+import { getErrorByRegex } from "@/helpers/getErrorByRegex";
 
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
 
+    const [sectionTitleError, setSectionTitleError] = useState<string>('');
+
     const { t } = useTranslation();
 
     const locale = useUserSetting<Language>('language') || Language.EN;
+    const titleLength = usePrivateSetting<string>(`${coursesHubPrefix}.title-length`) || '(3,100)';
+    const titleRegex = usePrivateSetting<string>(`${coursesHubPrefix}.title-regex`) || '[a-zA-Z0-9_]+';
+
+    const { min: minTitleLength, max: maxTitleLength } = getItemsFromStringRange(titleLength);
+    const getTitleRegexError = getErrorByRegex(titleRegex, coursesHubPrefix, t);
+
     const countSections = courseSections.length || 0;
     const countLessons = courseSections.reduce((acc, section) => acc + (section.lessons?.length || 0), 0) || 0;
     const countSectionsText = handlePluralTranslation(coursesHubPrefix, t, countSections, 'sections', locale);
@@ -55,10 +66,24 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
 
     const handleAddSection = () => {
         setNewSection('');
+        setSectionTitleError('');
     };
 
     const handleCancelNewSection = () => {
         setNewSection(undefined);
+        setSectionTitleError('');
+    };
+
+    const validateSectionTitle = (title: string) => {
+        if (title.length < minTitleLength || title.length > maxTitleLength) {
+            setSectionTitleError(t(`${coursesHubPrefix}.title-length.error`, { min: minTitleLength, max: maxTitleLength }));
+            return false;
+        }
+        if (getTitleRegexError(title)) {
+            setSectionTitleError(getTitleRegexError(title));
+            return false;
+        }
+        return true;
     };
 
     const handleSaveNewSection = async (_id?: string) => {
@@ -101,6 +126,11 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
         };
     }, [selectedItemId]);
 
+    const clearState = useCallback(() => {
+        setSelectedItemId(undefined);
+        setSectionTitleError('');
+    }, []);
+
     return (
         <RightSidebar
             useSidebarHook={useNonPersistentSidebar}
@@ -113,12 +143,15 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     mode={TablePageMode.EDIT}
                     _id={selectedItemId}
                     settingKeys={[
-                        { name: 'title', type: SettingType.InputText },
+                        { name: 'title', type: SettingType.InputText, error: sectionTitleError },
                         { name: 'isVisible', type: SettingType.Radio, hasDescription: true }
                     ]}
                     apiClient={userApiClient}
                     transformItemToSave={(item) => {
                         const { title, courseId, isVisible } = item;
+                        if (!validateSectionTitle(title)) {
+                            throw new Error('Invalid section title');
+                        }
                         const body = { title, courseId, isVisible };
                         return body;
                     }}
@@ -129,12 +162,12 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                         isVisible: false
                     })}
                     onBackButtonClick={() => {
-                        setSelectedItemId(undefined);
+                        clearState();
                         setIsExpanded(false);
                     }}
                     isBackWithRouter={false}
                     onActionCallback={(type, item) => {
-                        setSelectedItemId(undefined);
+                        clearState();
                         setIsExpanded(false);
                         if (type === TablePageActionType.DELETE) {
                             setCourseSections(courseSections.filter(section => section.section._id !== selectedItemId));
@@ -176,6 +209,8 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                         />
                         {newSection !== undefined &&
                             <CourseSection
+                                validateSectionTitle={validateSectionTitle}
+                                sectionTitleError={sectionTitleError}
                                 section={newSection}
                                 className={styles.newSection}
                                 setNewSection={setNewSection}

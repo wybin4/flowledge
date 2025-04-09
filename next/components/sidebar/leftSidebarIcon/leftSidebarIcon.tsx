@@ -1,7 +1,7 @@
 "use client";
 
 import { DetailedHTMLProps, HTMLAttributes, ReactNode, memo } from "react";
-import styles from "./leftSidebarIcon.module.css";
+import styles from "./LeftSidebarIcon.module.css";
 import cn from 'classnames';
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";

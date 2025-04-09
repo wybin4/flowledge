@@ -160,10 +160,11 @@
             "name": "разделы",
             "edit": "редактировать раздел",
             "add": "добавить раздел",
+            "cancel": "не добавлять раздел",
+            "delete": "удалить раздел",
             "title": "название раздела",
             "isVisible": "видимый"
         },
-        "add-section": "добавить раздел",
         "__count__sections_zero": "нет разделов",
         "__count__sections_one": "{{count}} раздел",
         "__count__sections_few": "{{count}} раздела",

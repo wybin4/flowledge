@@ -16,7 +16,7 @@ import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/C
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { memo, useState, useCallback } from "react";
 import { userApiClient } from "@/apiClient";
 import { Section } from "@/courses/types/Section";
 import { useSaveItem } from "@/hooks/useSaveItem";
@@ -25,11 +25,11 @@ import { SectionItem } from "@/courses/types/SectionItem";
 import RightSidebar from "@/components/Sidebar/RightSidebar/RightSidebar";
 import cn from "classnames";
 import { useNonPersistentSidebar } from "@/hooks/useNonPersistentSidebar";
-import RightSidebarModal from "@/components/Sidebar/RightSidebar/RightSidebarModal";
+import { RightSidebarModal } from "@/components/Sidebar/RightSidebar/RightSidebarModal";
 import { TablePageMode } from "@/types/TablePageMode";
 import { SettingType } from "@/types/Setting";
 
-export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
+export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
@@ -56,6 +56,10 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
         setNewSection('');
     };
 
+    const handleCancelNewSection = () => {
+        setNewSection(undefined);
+    };
+
     const handleSaveNewSection = async (_id?: string) => {
         if (newSection) {
             const result = await useSaveItem<Section, SectionToSave>({
@@ -65,7 +69,8 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
                 _id,
                 item: {
                     title: newSection,
-                    courseId: course._id
+                    courseId: course._id,
+                    isVisible: false
                 } as unknown as Section
             });
             if (result) {
@@ -86,11 +91,21 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
         }
     };
 
+    const useGetItemHook = useCallback((callback: (item: Section) => void) => {
+        return (_id: string) => {
+            const section = courseSections.find(section => section.section._id === selectedItemId);
+            if (section) {
+                callback(section.section);
+            }
+        };
+    }, [selectedItemId]);
+    
     return (
         <RightSidebar
             useSidebarHook={useNonPersistentSidebar}
-            content={classNames => <div className={cn(classNames)}>
+            content={(classNames, setIsExpanded) => <div className={cn(classNames)}>
                 <RightSidebarModal<Section, SectionToSave>
+                    useGetItemHook={useGetItemHook}
                     prefix={coursesHubSectionsPrefixTranslate}
                     apiPrefix={coursesHubSectionsPrefixApi}
                     queryParams={{ isSmall: true }}
@@ -112,7 +127,11 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
                         courseId: course._id,
                         isVisible: false
                     })}
-                    onBackButtonClick={() => setSelectedItemId(undefined)}
+                    onBackButtonClick={() => {
+                        setSelectedItemId(undefined);
+                        setIsExpanded(false);
+                    }}
+                    isBackWithRouter={false}
                     additionalButtons={[
                         // {
                         //     title: t(`${coursesHubPrefix}.edit-content`),
@@ -143,10 +162,10 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
                     {course.editors && course.editors.length > 0 && <CoursesHubEditors editors={course.editors} />}
                     <div className={styles.sectionsContainer}>
                         <CoursesHubDetailsHeader
-                            title={t(coursesHubSectionsPrefixTranslate)}
+                            title={t(`${coursesHubSectionsPrefixTranslate}.name`)}
                             description={`${countSectionsText} · ${countLessonsText}`}
-                            action={`+ ${t(`${coursesHubPrefix}.add-section`)}`}
-                            onClick={handleAddSection}
+                            action={newSection !== undefined ? `- ${t(`${coursesHubSectionsPrefixTranslate}.cancel`)}` : `+ ${t(`${coursesHubSectionsPrefixTranslate}.add`)}`}
+                            onClick={newSection !== undefined ? handleCancelNewSection : handleAddSection}
                         />
                         {newSection !== undefined &&
                             <CourseSection
@@ -176,4 +195,6 @@ export const CoursesHubDetails = ({ course }: { course: CoursesHubDetail }) => {
             )}
         </RightSidebar>
     );
-};
+}, (prevProps, nextProps) => {
+    return JSON.stringify(prevProps.course) === JSON.stringify(nextProps.course);
+});

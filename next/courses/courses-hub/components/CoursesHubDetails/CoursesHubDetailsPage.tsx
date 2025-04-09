@@ -3,8 +3,7 @@
 import { TablePageMode } from "@/types/TablePageMode";
 import { LessonItem } from "../LessonItem/LessonItem";
 import { CoursesHubDetails } from "./CoursesHubDetails";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useCallback, useState, memo } from "react";
 import { CoursesHubDetail } from "../../types/CoursesHubDetails";
 import { useGetEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItem";
 import { userApiClient } from "@/apiClient";
@@ -17,16 +16,16 @@ type CoursesHubDetailsPageProps = {
     isCreateLesson?: boolean;
 };
 
-export const CoursesHubDetailsPage = ({ courseId, isCreateLesson }: CoursesHubDetailsPageProps) => {
+export const CoursesHubDetailsPage = memo(({ courseId, isCreateLesson }: CoursesHubDetailsPageProps) => {
     const [course, setCourse] = useState<CoursesHubDetail | undefined>(undefined);
     const { t } = useTranslation();
 
-    const getItem = useGetEnhancedTablePageItem<CoursesHubDetail>(
+    const getItem = useCallback(useGetEnhancedTablePageItem<CoursesHubDetail>(
         `${coursesHubPrefix}/courses` as IconKey, userApiClient, (item) => {
             setCourse(item);
         },
         { isSmall: isCreateLesson ?? false }
-    );
+    ), [isCreateLesson]);
 
     useEffect(() => {
         getItem(courseId);
@@ -41,5 +40,7 @@ export const CoursesHubDetailsPage = ({ courseId, isCreateLesson }: CoursesHubDe
     }
 
     return <CoursesHubDetails course={course} />;
-};
+}, (prevProps, nextProps) => {
+    return prevProps.courseId === nextProps.courseId && prevProps.isCreateLesson === nextProps.isCreateLesson;
+});
 

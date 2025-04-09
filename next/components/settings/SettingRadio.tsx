@@ -22,4 +22,4 @@ export const SettingRadio = memo(({ setting, handleSave }: SettingWrapperProps) 
             </InputBox>
         </InputBoxWrapper>
     );
-});
+}, (prevProps, nextProps) => JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting));

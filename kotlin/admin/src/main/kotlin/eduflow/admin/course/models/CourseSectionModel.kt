@@ -5,5 +5,6 @@ import eduflow.course.CourseSection
 data class CourseSectionModel (
     override val _id: String,
     override val courseId: String,
-    override val title: String
+    override val title: String,
+    override val isVisible: Boolean
 ): CourseSection

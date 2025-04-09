@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { JSX, ReactNode, useState } from "react";
 import { IconKey, useIcon } from "@/hooks/useIcon";
 import styles from "./CollapsibleSection.module.css";
 import cn from "classnames";
@@ -8,11 +8,12 @@ import CollapsibleSectionAction, { CollapsibleSectionActionProps } from "./Colla
 import { useTranslation } from "react-i18next";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 
-type CollapsibleSectionProps = {
+type CollapsibleSectionProps<T> = {
     title: string;
+    titleIcons?: JSX.Element[];
     setTitle?: (title: string) => void;
     onTitleSave?: () => void;
-    children?: React.ReactNode;
+    children?: ReactNode;
     actions?: CollapsibleSectionActionProps[];
     expandedByDefault: boolean;
     containerClassName?: string;
@@ -20,16 +21,14 @@ type CollapsibleSectionProps = {
     contentClassName?: string;
     iconPrefix?: string;
     isEditTitle?: boolean;
-    onClick?: () => void;
 };
 
-export default function CollapsibleSection({
-    title, expandedByDefault, actions,
+export default function CollapsibleSection<T>({
+    expandedByDefault, actions,
     children, iconPrefix = '',
-    onTitleSave, setTitle, isEditTitle,
+    title, titleIcons, onTitleSave, setTitle, isEditTitle,
     containerClassName, headerClassName, contentClassName,
-    onClick,
-}: CollapsibleSectionProps) {
+}: CollapsibleSectionProps<T>) {
     const { t } = useTranslation();
 
     const [isExpanded, setIsExpanded] = useState(expandedByDefault);
@@ -38,7 +37,7 @@ export default function CollapsibleSection({
 
     const bottomActions = actions?.filter(action => action.type === ChildrenPosition.Bottom);
     const rightActions = actions?.filter(action => action.type === ChildrenPosition.Right);
-    console.log(rightActions);
+
     return (
         <div
             className={cn(containerClassName, { [styles.edit]: isEditTitle })}
@@ -48,11 +47,16 @@ export default function CollapsibleSection({
                     className={cn(styles.headerContent, headerClassName)}
                     onClick={() => !isEditTitle && setIsExpanded((prev) => !prev)}
                 >
-                    <h3 className={cn({ [styles.titleEdit]: isEditTitle })}>{
-                        isEditTitle ?
-                            <input type='text' value={title} onChange={(e) => setTitle?.(e.target.value)} placeholder={t('type-here')} />
-                            : title
-                    }</h3>
+                    <h3 className={cn(styles.titleContainer, { [styles.titleEdit]: isEditTitle })}>
+                        <div>{
+                            isEditTitle ?
+                                <input type='text' value={title} onChange={(e) => setTitle?.(e.target.value)} placeholder={t('type-here')} />
+                                : title
+                        }</div>
+                        {titleIcons && titleIcons.map((icon, index) => (
+                            <div key={index}>{icon}</div>
+                        ))}
+                    </h3>
                     {!isEditTitle && <div className={cn(styles.actionIcon, { [styles.expanded]: isExpanded })}>{expandIcon}</div>}
                     {isEditTitle && <div onClick={onTitleSave} className={cn(styles.actionIcon, styles.editIcon)}>+</div>}
                 </div>

@@ -31,4 +31,4 @@ export const SettingSelector = memo(({ setting, handleSave }: SettingSelectorPro
             ) : null}
         </InputBoxWrapper>
     );
-});
+}, (prevProps, nextProps) => JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting));

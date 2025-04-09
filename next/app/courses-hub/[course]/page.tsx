@@ -1,4 +1,3 @@
-import { CoursesHubDetails } from "@/courses/courses-hub/components/CoursesHubDetails/CoursesHubDetails";
 import { TablePageMode } from "@/types/TablePageMode";
 import { LessonItem } from "@/courses/courses-hub/components/LessonItem/LessonItem";
 import { CoursesHubDetailsPage } from "@/courses/courses-hub/components/CoursesHubDetails/CoursesHubDetailsPage";

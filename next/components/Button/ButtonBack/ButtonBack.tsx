@@ -10,16 +10,19 @@ export type ButtonBackProps = {
     backButtonIcon?: ReactNode;
     hasBackButtonText?: boolean;
     backButtonStyles?: string;
+    isBackWithRouter?: boolean;
 }
 
-export const ButtonBack = ({ onBackButtonClick, backButtonIcon, hasBackButtonText = true, backButtonStyles }: ButtonBackProps) => {
+export const ButtonBack = ({ onBackButtonClick, backButtonIcon, hasBackButtonText = true, backButtonStyles, isBackWithRouter = true }: ButtonBackProps) => {
     const router = useRouter();
     const iconArrowLeft = useIcon('left');
 
     return (
         <div className={cn(styles.backButton, backButtonStyles)} onClick={() => {
             onBackButtonClick?.();
-            router.back();
+            if (isBackWithRouter) {
+                router.back();
+            }
         }}>
             {backButtonIcon ? backButtonIcon : iconArrowLeft} {hasBackButtonText ? t('back') : ''}
         </div>

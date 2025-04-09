@@ -1,4 +1,4 @@
-import { JSX, ReactNode, useMemo, useState } from "react";
+import { JSX, memo, ReactNode, useMemo, useState } from "react";
 import styles from "./InputBox.module.css";
 import cn from "classnames";
 import { TopBottomIcon } from "@/components/TopBottomIcon/TopBottomIcon";
@@ -22,7 +22,7 @@ type InputProps = {
 
 export type InputType = 'number' | 'text' | 'password';
 
-export const Input = ({
+export const Input = memo(({
     type, value, placeholder, className, onChange, onClick,
     icon, onClickIcon, iconClassName, inputClassName,
     readOnly, disabled, extraContent
@@ -36,7 +36,7 @@ export const Input = ({
             }
         } as any)
     };
-
+    
     return useMemo(() => (
         <div className={cn(styles.inputContainer, className, {
             [styles.inputDisabled]: disabled || readOnly
@@ -76,4 +76,9 @@ export const Input = ({
             {extraContent?.(focused)}
         </div>
     ), [type, value, focused, extraContent]);
-};
+}, (prevProps, nextProps) =>
+    prevProps.value === nextProps.value &&
+    prevProps.disabled === nextProps.disabled &&
+    prevProps.readOnly === nextProps.readOnly &&
+    prevProps.type === nextProps.type
+);

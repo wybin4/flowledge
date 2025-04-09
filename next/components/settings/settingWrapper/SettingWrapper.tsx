@@ -40,4 +40,4 @@ export const SettingWrapper = memo(({ setting, handleSave }: SettingWrapperProps
             {setting.i18nDescription && t(setting.i18nDescription) !== setting.i18nDescription && <p className={styles.description}>{t(setting.i18nDescription)}</p>}
         </div>
     );
-});
+}, (prevProps, nextProps) => JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting));

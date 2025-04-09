@@ -6,6 +6,8 @@ import { CourseListImage } from "../../courses-list/components/CoursesListPageIt
 import { useRouter } from "next/navigation";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
+import cn from "classnames";
+import { useIcon } from "@/hooks/useIcon";
 
 type CourseSectionProps = {
     className?: string;
@@ -18,10 +20,14 @@ type CourseSectionProps = {
 
 export const CourseSection = ({ className, section, actions, setNewSection, onSaveNewSection, onClick }: CourseSectionProps) => {
     const router = useRouter();
+    const ghostIcon = useIcon('ghost');
 
     const sectionClassNames = {
         containerClassName: className,
-        headerClassName: styles.header,
+        headerClassName: cn(
+            styles.header, {
+            [styles.invisible]: typeof section === 'object' && !section.section.isVisible
+        }),
         contentClassName: styles.content
     };
 
@@ -71,10 +77,10 @@ export const CourseSection = ({ className, section, actions, setNewSection, onSa
         return (
             <CollapsibleSection
                 title={section.section.title}
+                titleIcons={[...(!section.section.isVisible ? [ghostIcon] : [])]}
                 expandedByDefault={true}
                 iconPrefix='-little'
                 actions={sectionActions}
-                onClick={onClick}
                 {...sectionClassNames}>
                 {section.lessons && section.lessons.length > 0 && section.lessons.map((lesson) => (
                     <CollapsibleSectionChild

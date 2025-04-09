@@ -1,20 +1,19 @@
 "use client";
 
-import { SettingType, SettingValue } from "@/types/Setting";
-import styles from "./EnhancedItem.module.css";
+import { SettingType } from "@/types/Setting";
 import { useTranslation } from "react-i18next";
-import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { TablePageMode } from "@/types/TablePageMode";
-import { UpdatableSetting } from "@/hooks/useSettings";
 import { useSaveEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useSaveEnhancedTablePageItem";
 import { useDeleteEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useDeleteEnhancedTablePageItem";
 import { useGetEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItem";
 import { ApiClient, FakeApiClient } from "@/types/ApiClient";
-import { Button, ButtonType } from "@/components/Button/Button";
+import { ButtonType } from "@/components/Button/Button";
 import { ButtonBackProps } from "@/components/Button/ButtonBack/ButtonBack";
 import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 import { QueryParams } from "@/types/QueryParams";
+import EnhancedItemBody from "./EnhancedItemBody";
+import { Identifiable } from "@/types/Identifiable";
 
 export type EnhancedItemAdditionalButton = { title: string, onClick: () => void, mode?: TablePageMode, type: ButtonType };
 export type EnhancedItemSettingKey = { name: string, type: SettingType };
@@ -28,17 +27,19 @@ interface EnhancedItemProps<T, U> {
     settingKeys: EnhancedItemSettingKey[];
     transformItemToSave: (item: T) => U;
     createEmptyItem: () => T;
+    useGetItemHook?: (callback: (item: T) => void) => (_id: string) => void;
     additionalButtons?: EnhancedItemAdditionalButton[];
     backButton?: ButtonBackProps;
     containerStyles?: string;
     queryParams?: QueryParams;
 }
 
-export const EnhancedItem = <T, U>({
+const EnhancedItem = <T extends Identifiable, U>({
     _id, mode, prefix, apiPrefix,
     apiClient, queryParams,
     settingKeys,
     transformItemToSave, createEmptyItem,
+    useGetItemHook,
     additionalButtons,
     backButton,
     containerStyles
@@ -49,84 +50,62 @@ export const EnhancedItem = <T, U>({
 
     const realPrefix = apiPrefix ?? prefix;
 
-    const isEditMode = mode === TablePageMode.EDIT && _id;
+    const isEditMode = mode === TablePageMode.EDIT && !!_id;
 
     const saveItem = useSaveEnhancedTablePageItem(mode, realPrefix, apiClient, transformItemToSave, _id);
     const deleteItem = useDeleteEnhancedTablePageItem(realPrefix, apiClient);
-    const getItem = useGetEnhancedTablePageItem(realPrefix, apiClient, (item) => {
-        setItem(item);
-        setInitialValues(item);
-    }, queryParams);
+
+    const setItemAndInitialValues = (newItem: T) => {
+        setItem(newItem);
+        setInitialValues(newItem);
+    };
+
+    const getItem = useGetItemHook ?
+        useGetItemHook(setItemAndInitialValues) :
+        useGetEnhancedTablePageItem(
+            realPrefix, apiClient, setItemAndInitialValues, queryParams
+        );
+
 
     useEffect(() => {
         if (isEditMode) {
             getItem(_id);
         } else {
             const newItem = createEmptyItem();
-            setItem(newItem as T);
-            setInitialValues(newItem as T);
+            setItemAndInitialValues(newItem as T);
         }
     }, [_id, mode]);
 
-    const hasChanges = () => {
+    const hasChanges = useCallback(() => {
         if (!initialValues || !item) return false;
         return JSON.stringify(initialValues) !== JSON.stringify(item);
-    };
+    }, [JSON.stringify(initialValues), JSON.stringify(item)]);
 
     if (!item) {
         return <div>{t('loading')}</div>;
     }
 
-    const getSettingType = (key: string) => {
-        return settingKeys.find((setting) => setting.name === key)?.type;
-    };
-
-    const renderSetting = (key: string) => {
-        const value = item[key as keyof T];
-        return {
-            setting: {
-                _id: key, i18nLabel: `${prefix}.${key}`,
-                value,
-                packageValue: value,
-                type: getSettingType(key)
-            } as SettingValue
-        };
-    };
-
-    const handleSave = (setting: UpdatableSetting) => {
-        setItem((prev) => {
-            if (!prev) return prev;
-            return { ...prev, [setting.id]: setting.value };
-        });
-    };
-
-    const renderSettings = () => {
-        const settings = settingKeys.map((key) => renderSetting(key.name));
-
-        return settings.map(({ setting }, index) => (
-            <SettingWrapper key={index} setting={setting} handleSave={(newValue) => {
-                handleSave({ id: setting._id, value: newValue.value });
-            }} />
-        ));
-    };
-
     return (
         <ButtonBackContainer className={containerStyles} {...backButton}>
-            <h2 className={styles.title}>{mode === TablePageMode.CREATE ? t(`${prefix}.create`) : t(`${prefix}.edit`)}</h2>
-            <div className={styles.settingsContainer}>
-                {renderSettings()}
-            </div>
-            <div className={styles.buttonContainer}>
-                {additionalButtons?.filter((button) => button.mode ? button.mode === mode : true).map((button) => (
-                    <Button key={button.title} onClick={button.onClick} prefix={prefix} type={button.type} title={button.title} />
-                ))}
-                {isEditMode &&
-                    <Button onClick={() => deleteItem(_id)} prefix={prefix} type={ButtonType.DELETE} />
-                }
-                {hasChanges() && item &&
-                    <Button onClick={() => saveItem(item)} prefix={prefix} type={ButtonType.SAVE} />
-                }
-            </div>
+            <EnhancedItemBody<T>
+                item={item}
+                setItem={setItem}
+                deleteItem={deleteItem}
+                saveItem={saveItem}
+                title={isEditMode ? t(`${prefix}.edit`) : t(`${prefix}.create`)}
+                mode={mode}
+                prefix={prefix}
+                settingKeys={settingKeys}
+                additionalButtons={additionalButtons}
+                isEditMode={isEditMode}
+                hasChanges={hasChanges()}
+            />
         </ButtonBackContainer>
     );
 };
+
+const EnhancedItemComponent = memo(EnhancedItem, (prevProps, nextProps) =>
+    prevProps._id === nextProps._id && prevProps.mode === nextProps.mode
+) as typeof EnhancedItem;
+
+export default EnhancedItemComponent;

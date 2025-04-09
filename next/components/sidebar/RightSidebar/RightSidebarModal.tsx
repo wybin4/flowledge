@@ -1,11 +1,13 @@
 "use client";
 
+import EnhancedItem, { EnhancedItemSettingKey, EnhancedItemAdditionalButton } from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
 import styles from "../Sidebar.module.css";
 import { useIcon } from "@/hooks/useIcon";
-import { EnhancedItem, EnhancedItemAdditionalButton, EnhancedItemSettingKey } from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
 import { ApiClient } from "@/types/ApiClient";
 import { QueryParams } from "@/types/QueryParams";
 import { TablePageMode } from "@/types/TablePageMode";
+import { memo } from "react";
+import { Identifiable } from "@/types/Identifiable";
 
 export type RightSidebarModalProps<T, U> = {
     prefix: string;
@@ -13,18 +15,20 @@ export type RightSidebarModalProps<T, U> = {
     queryParams?: QueryParams;
     mode: TablePageMode;
     _id?: string;
+    useGetItemHook?: (callback: (item: T) => void) => (_id: string) => void;
     settingKeys: EnhancedItemSettingKey[];
     apiClient: ApiClient<T>;
     transformItemToSave: (item: T) => U;
     createEmptyItem: () => T;
     onBackButtonClick?: () => void;
+    isBackWithRouter?: boolean;
     additionalButtons: EnhancedItemAdditionalButton[];
 };
 
-export default function RightSidebarModal<T, U>({
-    prefix, apiPrefix, queryParams, mode, _id, settingKeys, apiClient,
-    transformItemToSave, createEmptyItem, onBackButtonClick, additionalButtons
-}: RightSidebarModalProps<T, U>) {
+export const RightSidebarModal = <T extends Identifiable, U>({
+    prefix, apiPrefix, queryParams, mode, _id, useGetItemHook, settingKeys, apiClient,
+    transformItemToSave, createEmptyItem, onBackButtonClick, isBackWithRouter, additionalButtons
+}: RightSidebarModalProps<T, U>) => {
     const closeIcon = useIcon('close');
 
     return (
@@ -34,6 +38,7 @@ export default function RightSidebarModal<T, U>({
             queryParams={queryParams}
             mode={mode}
             _id={_id}
+            useGetItemHook={useGetItemHook}
             settingKeys={settingKeys}
             apiClient={apiClient}
             transformItemToSave={transformItemToSave}
@@ -42,10 +47,17 @@ export default function RightSidebarModal<T, U>({
                 onBackButtonClick: onBackButtonClick,
                 backButtonIcon: closeIcon,
                 hasBackButtonText: false,
-                backButtonStyles: styles.backButton
+                backButtonStyles: styles.backButton,
+                isBackWithRouter: isBackWithRouter
             }}
             containerStyles={styles.rightSidebarModal}
             additionalButtons={additionalButtons}
         />
     );
-}
+};
+
+const RightSidebarModalComponent = memo(RightSidebarModal, (prevProps, nextProps) => {
+    return prevProps._id === nextProps._id && prevProps.mode === nextProps.mode;
+}) as typeof RightSidebarModal;
+
+export default RightSidebarModalComponent;

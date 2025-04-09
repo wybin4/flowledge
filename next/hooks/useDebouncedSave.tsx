@@ -5,13 +5,14 @@ export function useDebouncedSave<T>(value: T, delay: number, onSave: (value: T) 
 
     useEffect(() => {
         const handler = setTimeout(() => {
-            onSave(debouncedValue);
+            setDebouncedValue(value);
+            onSave(value);
         }, delay);
 
         return () => {
             clearTimeout(handler);
         };
-    }, [debouncedValue, delay, onSave]);
+    }, [value, delay, onSave]);
 
     const updateValue = useCallback((newValue: T) => {
         setDebouncedValue(newValue);

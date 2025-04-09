@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { getDataPageWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getDataPageWithApi";
 import { getTotalCountWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getTotalCountWithApi";
 import { ButtonType } from "@/components/Button/Button";
-import RightSidebarModal from "@/components/Sidebar/RightSidebar/RightSidebarModal";
+import { RightSidebarModal } from "@/components/Sidebar/RightSidebar/RightSidebarModal";
 import { fakeUser } from "@/helpers/fakeUser";
 import { SettingType } from "@/types/Setting";
 import { CourseToSave } from "../../types/CourseToSave";

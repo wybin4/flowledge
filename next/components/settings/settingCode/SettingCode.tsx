@@ -43,4 +43,4 @@ export const SettingCode = memo(({ setting, handleSave }: SettingWrapperProps) =
             )}
         </FocusableContainer>
     );
-});
+}, (prevProps, nextProps) => JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting));

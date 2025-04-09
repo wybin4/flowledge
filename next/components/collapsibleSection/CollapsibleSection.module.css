@@ -70,3 +70,13 @@
 .rightActions .actionIcon svg {
     margin-bottom: -3px;
 }
+
+.titleContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.titleIcon {
+    cursor: pointer;
+}

@@ -14,7 +14,7 @@ type RightSidebarClassNames = {
 
 type RightSidebarProps = {
     children: (isExpanded: boolean, onClick: () => void) => ReactNode;
-    content: (classNames: RightSidebarClassNames) => ReactNode;
+    content: (classNames: RightSidebarClassNames, setIsExpanded: (isExpanded: boolean) => void) => ReactNode;
     useSidebarHook?: (position: SidebarPosition, initialState?: boolean) => ReturnType<typeof useSidebar>;
     expanded?: boolean;
 };
@@ -46,7 +46,7 @@ export default function RightSidebar({ children, content, useSidebarHook, expand
                         [styles.collapsed]: !isExpanded,
                     })}
                 >
-                    {content(classNames)}
+                    {content(classNames, toggleSidebar)}
                 </div>
             </div>
             <div>{children(isExpanded, toggleSidebar)}</div>

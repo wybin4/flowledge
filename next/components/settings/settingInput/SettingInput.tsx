@@ -35,6 +35,7 @@ export const SettingInput = memo(({ setting, handleSave }: SettingWrapperProps) 
         if (setting.type === SettingType.InputNumber) {
             value = +value;
         }
+
         setInputValue(value);
     };
 
@@ -48,4 +49,4 @@ export const SettingInput = memo(({ setting, handleSave }: SettingWrapperProps) 
             iconClassName={cn({ [styles.inputIconPointer]: isPassword })}
         />
     );
-});
+}, (prevProps, nextProps) => JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting));

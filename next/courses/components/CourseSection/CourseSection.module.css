@@ -65,3 +65,8 @@
     font-size: 0.85rem;
     color: var(--description-text);
 }
+
+.invisible h3 {
+    text-decoration: line-through;
+    color: var(--description-text);
+}

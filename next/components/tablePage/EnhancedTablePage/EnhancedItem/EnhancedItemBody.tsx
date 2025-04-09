@@ -56,7 +56,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
         const settings = settingKeys.map((key) => renderSetting(key.name));
 
         return settings.map(({ setting }, index) => (
-            <SettingWrapper key={index} setting={setting} handleSave={(newValue) => {
+            <SettingWrapper key={index} debounceTime={0} withWrapper={false} setting={setting} handleSave={(newValue) => {
                 handleSave({ id: setting._id, value: newValue.value });
             }} />
         ));

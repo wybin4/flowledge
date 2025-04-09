@@ -28,6 +28,7 @@ import { useNonPersistentSidebar } from "@/hooks/useNonPersistentSidebar";
 import { RightSidebarModal } from "@/components/Sidebar/RightSidebar/RightSidebarModal";
 import { TablePageMode } from "@/types/TablePageMode";
 import { SettingType } from "@/types/Setting";
+import { TablePageActionType } from "@/types/TablePageActionType";
 
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
@@ -99,7 +100,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
             }
         };
     }, [selectedItemId]);
-    
+
     return (
         <RightSidebar
             useSidebarHook={useNonPersistentSidebar}
@@ -140,6 +141,20 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                         //     type: ButtonType.EDIT
                         // }
                     ]}
+                    onActionCallback={(type, item) => {
+                        setSelectedItemId(undefined);
+                        setIsExpanded(false);
+                        if (type === TablePageActionType.DELETE) {
+                            setCourseSections(courseSections.filter(section => section.section._id !== selectedItemId));
+                        } else if (type === TablePageActionType.EDIT) {
+                            setCourseSections(courseSections.map(section => {
+                                if (section.section._id === selectedItemId && item) {
+                                    section.section = item;
+                                }
+                                return section;
+                            }));
+                        }
+                    }}
                 />
             </div>}
         >

@@ -74,9 +74,33 @@
 .titleContainer {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 1.3rem;
 }
 
 .titleIcon {
     cursor: pointer;
+}
+
+.tag {
+    font-size: 0.875rem;
+    font-weight: 400;
+
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+}
+
+.tag:hover {
+    filter: brightness(0.9);
+}
+
+.info {
+    background-color: var(--button);
+}
+
+.warning {
+    background-color: var(--red);
+}
+
+.tagTitle {
+    margin-top: -2px;
 }

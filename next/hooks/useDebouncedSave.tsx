@@ -1,22 +1,28 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
-export function useDebouncedSave<T>(value: T, delay: number, onSave: (value: T) => void) {
-    const [debouncedValue, setDebouncedValue] = useState(value);
+export function useDebouncedSave<T>(
+    initialValue: T,
+    delay: number,
+    onSave: (value: T) => void
+): [T, (newValue: T) => void] {
+    const [inputValue, setInputValue] = useState(initialValue);
+    const [lastSavedValue, setLastSavedValue] = useState(initialValue);
 
     useEffect(() => {
+        if (inputValue === lastSavedValue) return;
+
         const handler = setTimeout(() => {
-            setDebouncedValue(value);
-            onSave(value);
+            onSave(inputValue);
+            setLastSavedValue(inputValue);
         }, delay);
 
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [value, delay, onSave]);
+        return () => clearTimeout(handler);
+    }, [inputValue, lastSavedValue, delay, onSave]);
 
-    const updateValue = useCallback((newValue: T) => {
-        setDebouncedValue(newValue);
-    }, []);
+    useEffect(() => {
+        setInputValue(initialValue);
+        setLastSavedValue(initialValue);
+    }, [initialValue]);
 
-    return [debouncedValue, updateValue] as const;
+    return [inputValue, setInputValue];
 }

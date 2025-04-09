@@ -14,11 +14,12 @@ import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackCo
 import { QueryParams } from "@/types/QueryParams";
 import EnhancedItemBody from "./EnhancedItemBody";
 import { Identifiable } from "@/types/Identifiable";
+import { TablePageActionType } from "@/types/TablePageActionType";
 
 export type EnhancedItemAdditionalButton = { title: string, onClick: () => void, mode?: TablePageMode, type: ButtonType };
 export type EnhancedItemSettingKey = { name: string, type: SettingType };
 
-interface EnhancedItemProps<T, U> {
+export interface EnhancedItemProps<T, U> {
     _id?: string;
     mode: TablePageMode;
     prefix: string;
@@ -32,6 +33,8 @@ interface EnhancedItemProps<T, U> {
     backButton?: ButtonBackProps;
     containerStyles?: string;
     queryParams?: QueryParams;
+    isBackWithRouter?: boolean;
+    onActionCallback?: (type: TablePageActionType, item?: T) => void;
 }
 
 const EnhancedItem = <T extends Identifiable, U>({
@@ -42,7 +45,9 @@ const EnhancedItem = <T extends Identifiable, U>({
     useGetItemHook,
     additionalButtons,
     backButton,
-    containerStyles
+    containerStyles,
+    isBackWithRouter = true,
+    onActionCallback
 }: EnhancedItemProps<T, U>) => {
     const { t } = useTranslation();
     const [item, setItem] = useState<T | undefined>(undefined);
@@ -52,8 +57,12 @@ const EnhancedItem = <T extends Identifiable, U>({
 
     const isEditMode = mode === TablePageMode.EDIT && !!_id;
 
-    const saveItem = useSaveEnhancedTablePageItem(mode, realPrefix, apiClient, transformItemToSave, _id);
-    const deleteItem = useDeleteEnhancedTablePageItem(realPrefix, apiClient);
+    const saveItem = useSaveEnhancedTablePageItem(
+        mode, realPrefix, apiClient, transformItemToSave, _id, onActionCallback, isBackWithRouter
+    );
+    const deleteItem = useDeleteEnhancedTablePageItem(
+        realPrefix, apiClient, onActionCallback, isBackWithRouter
+    );
 
     const setItemAndInitialValues = (newItem: T) => {
         setItem(newItem);

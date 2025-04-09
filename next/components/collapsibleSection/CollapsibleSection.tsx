@@ -8,9 +8,17 @@ import CollapsibleSectionAction, { CollapsibleSectionActionProps } from "./Colla
 import { useTranslation } from "react-i18next";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 
+export enum CollapsibleSectionTagType {
+    Info = 'info',
+    Warning = 'warning',
+}
+
 type CollapsibleSectionProps<T> = {
     title: string;
-    titleIcons?: JSX.Element[];
+    titleTags?: {
+        title: string;
+        type: CollapsibleSectionTagType;
+    }[];
     setTitle?: (title: string) => void;
     onTitleSave?: () => void;
     children?: ReactNode;
@@ -26,7 +34,7 @@ type CollapsibleSectionProps<T> = {
 export default function CollapsibleSection<T>({
     expandedByDefault, actions,
     children, iconPrefix = '',
-    title, titleIcons, onTitleSave, setTitle, isEditTitle,
+    title, titleTags, onTitleSave, setTitle, isEditTitle,
     containerClassName, headerClassName, contentClassName,
 }: CollapsibleSectionProps<T>) {
     const { t } = useTranslation();
@@ -53,8 +61,10 @@ export default function CollapsibleSection<T>({
                                 <input type='text' value={title} onChange={(e) => setTitle?.(e.target.value)} placeholder={t('type-here')} />
                                 : title
                         }</div>
-                        {titleIcons && titleIcons.map((icon, index) => (
-                            <div key={index}>{icon}</div>
+                        {titleTags && titleTags.map((tag, index) => (
+                            <div key={index} className={cn(styles.tag, styles[tag.type])}>
+                                <div className={styles.tagTitle}>{tag.title}</div>
+                            </div>
                         ))}
                     </h3>
                     {!isEditTitle && <div className={cn(styles.actionIcon, { [styles.expanded]: isExpanded })}>{expandIcon}</div>}

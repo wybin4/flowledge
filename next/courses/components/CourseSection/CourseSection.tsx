@@ -1,5 +1,5 @@
 import { SectionItem } from "@/courses/types/SectionItem";
-import CollapsibleSection from "@/components/CollapsibleSection/CollapsibleSection";
+import CollapsibleSection, { CollapsibleSectionTagType } from "@/components/CollapsibleSection/CollapsibleSection";
 import CollapsibleSectionChild from "@/components/CollapsibleSection/CollapsibleSectionChild";
 import styles from "./CourseSection.module.css";
 import { CourseListImage } from "../../courses-list/components/CoursesListPageItem/CourseListImage/CourseListImage";
@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import cn from "classnames";
-import { useIcon } from "@/hooks/useIcon";
+import { useTranslation } from "react-i18next";
 
 type CourseSectionProps = {
     className?: string;
@@ -15,19 +15,15 @@ type CourseSectionProps = {
     setNewSection?: (section: string) => void;
     onSaveNewSection?: () => void;
     actions?: CollapsibleSectionActionProps[];
-    onClick?: () => void;
 }
 
-export const CourseSection = ({ className, section, actions, setNewSection, onSaveNewSection, onClick }: CourseSectionProps) => {
+export const CourseSection = ({ className, section, actions, setNewSection, onSaveNewSection }: CourseSectionProps) => {
     const router = useRouter();
-    const ghostIcon = useIcon('ghost');
+    const { t } = useTranslation();
 
     const sectionClassNames = {
         containerClassName: className,
-        headerClassName: cn(
-            styles.header, {
-            [styles.invisible]: typeof section === 'object' && !section.section.isVisible
-        }),
+        headerClassName: styles.header,
         contentClassName: styles.content
     };
 
@@ -77,7 +73,9 @@ export const CourseSection = ({ className, section, actions, setNewSection, onSa
         return (
             <CollapsibleSection
                 title={section.section.title}
-                titleIcons={[...(!section.section.isVisible ? [ghostIcon] : [])]}
+                titleTags={[...(!section.section.isVisible ? [{
+                    title: t('invisible'), type: CollapsibleSectionTagType.Warning
+                }] : [])]}
                 expandedByDefault={true}
                 iconPrefix='-little'
                 actions={sectionActions}

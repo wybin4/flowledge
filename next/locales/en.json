@@ -160,6 +160,7 @@
             "name": "sections",
             "edit": "edit section",
             "add": "add section",
+            "save": "save section",
             "cancel": "do not add section",
             "delete": "delete section",
             "title": "section",
@@ -273,5 +274,6 @@
         "unsupported-format": "unsupported format: "
     },
     "type-here": "type here",
-    "edit": "edit"
+    "edit": "edit",
+    "invisible": "invisible"
 }

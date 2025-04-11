@@ -1,16 +1,16 @@
 import { useCallback } from "react";
-import { ApiClient } from "@/types/ApiClient";
 import { QueryParams } from "@/types/QueryParams";
 import { useGetItem } from "@/hooks/useGetItem";
+import { ApiClientMethods } from "@/apiClient";
 
 export const useGetEnhancedTablePageItem = <T,>(
     prefix: string,
-    apiClient: ApiClient<T>,
+    apiClient: ApiClientMethods,
     setItem: (item: T) => void,
     queryParams?: QueryParams
 ) => {
     const getItem = useCallback(async (_id: string) => {
-        const item = await useGetItem(prefix, apiClient, _id, queryParams);
+        const item = await useGetItem<T>(prefix, apiClient, _id, queryParams);
         setItem(item);
     }, [setItem]);
 

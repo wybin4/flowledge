@@ -17,7 +17,7 @@ import { getFileSize } from "@/helpers/getFileSize";
 import { Button, ButtonType } from "@/components/Button/Button";
 import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
-import { userApiClientPrefix } from "@/apiClient";
+import { integrationApiClient, neuralApiClient, userApiClientPrefix } from "@/apiClient";
 
 const initialVideoActions: VideoAction[] = [
     { label: 'generate-synopsis', value: true },
@@ -34,6 +34,7 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
     const { t } = useTranslation();
 
     const [video, setVideo] = useState<File | null>(null);
+    const [videoId, setVideoId] = useState<string | undefined>(undefined);
     const [isVideoUploading, setIsVideoUploading] = useState<boolean>(false);
     const [isVideoUploadError, setIsVideoUploadError] = useState<string | undefined>(undefined);
 
@@ -78,8 +79,38 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
         return action.dependsOn ? !videoActions.find(a => a.label === action.dependsOn)?.value : false;
     }, [videoActions]);
 
-    const saveItem = useCallback(() => {
-        console.log('saveItem');
+    const saveItem = useCallback(async (videoId?: string) => {
+        if (!videoId) {
+            return;
+        }
+
+        try {
+            // Первый запрос к neuralApiClient
+            const { transcription } = await neuralApiClient.post('synopsis.create', {
+                fileId: videoId
+            });
+
+            // Проверяем успешность первого запроса
+            if (!transcription) {
+                throw new Error('Не удалось получить синопсис');
+            }
+            console.log(transcription)
+
+            const { result } = await integrationApiClient.post('survey.create', {
+                integration_id: "67e82f27f026b5eeb6f74713",
+                context: {
+                    text: transcription,
+                    num_questions: 5
+                }
+            });
+
+            console.log('Результат опроса:', result);
+            // return surveyResponse.data;
+
+        } catch (error) {
+            console.error('Ошибка при сохранении:', error);
+            throw error;
+        }
     }, []);
 
     return (
@@ -111,6 +142,7 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
                         icon={videoUploadIcon}
                     />
                     <VideoUpload
+                        setId={setVideoId}
                         isUploading={isVideoUploading}
                         setIsUploading={setIsVideoUploading}
                         isUploadError={isVideoUploadError}
@@ -157,7 +189,7 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
             </div>
             <div className={styles.buttonContainer}>
                 <Button
-                    onClick={saveItem}
+                    onClick={() => { }}
                     prefix={coursesHubPrefix}
                     type={ButtonType.SAVE}
                     title={t('save-draft')}
@@ -165,11 +197,11 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
                     mode={FillBorderUnderlineMode.UNDERLINE}
                 />
                 <Button
-                    onClick={saveItem}
+                    onClick={() => saveItem(videoId)}
                     prefix={coursesHubPrefix}
                     type={ButtonType.SAVE}
-                    title={isEditMode ? t('save') : t('create')}
-                    disabled={withVideo && (!video || !!isVideoUploadError || isVideoUploading)}
+                    title={t('next')}
+                    disabled={withVideo && (!video || !!isVideoUploadError || isVideoUploading || !videoId)}
                 />
             </div>
         </ButtonBackContainer>

@@ -7,16 +7,16 @@ export default async function CoursesHubSectionPage({
     searchParams
 }: {
     params: { course: string };
-    searchParams?: { createLesson?: string };
+    searchParams?: { uploadVideo?: string };
 }) {
     const { course } = params;
-    const createLesson = searchParams?.createLesson === 'true';
+    const uploadVideo = searchParams?.uploadVideo === 'true';
 
-    if (createLesson) {
+    if (uploadVideo) {
         return <LessonItem mode={TablePageMode.CREATE} />;
     }
 
     return (
-        <CoursesHubDetailsPage courseId={course} isCreateLesson={createLesson} />
+        <CoursesHubDetailsPage courseId={course} isUploadVideo={uploadVideo} />
     );
 }

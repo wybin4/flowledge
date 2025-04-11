@@ -299,5 +299,6 @@
     "dash": "dash",
     "at": "at (@)",
     "dot": "dot",
-    "spaces": "spaces"
+    "spaces": "spaces",
+    "next": "next"
 }

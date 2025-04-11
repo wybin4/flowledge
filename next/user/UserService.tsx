@@ -22,7 +22,7 @@ class UserService extends EventEmitter {
     }
 
     async fetchUser() {
-        const user = await userApiClient<User>({ url: `users.get?id=${this.userId}` });
+        const user = await userApiClient.get<User>(`users.get?id=${this.userId}`);
         this.setUserState(user);
     }
 
@@ -59,12 +59,7 @@ class UserService extends EventEmitter {
 
     async updateUserSetting(setting: UpdatableSetting): Promise<void> {
         try {
-            await userApiClient({
-                url: `users.set-setting?userId=${this.userId}`,
-                options: {
-                    method: 'POST', body: JSON.stringify(setting)
-                }
-            });
+            await userApiClient.post(`users.set-setting?userId=${this.userId}`, JSON.stringify(setting));
         } catch (error: any) {
             return error.message;
         }

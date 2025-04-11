@@ -103,14 +103,14 @@ class AdminApplication : CommandLineRunner {
 //               ))
 //           }
 
-            settingsRegistry.addGroup("courses-hub") {
+//            settingsRegistry.addGroup("courses-hub") {
 //                addSetting("title-length", "(3, 100)", SettingDetails(
 //                    type = SettingType.INPUT_TEXT,
 //                ))
 //                addSetting("title-regex", "[a-zA-Zа-яА-Я0-9_]+", SettingDetails(
 //                    type = SettingType.INPUT_TEXT,
 //                ))
-            }
+//            }
        }
     }
 }

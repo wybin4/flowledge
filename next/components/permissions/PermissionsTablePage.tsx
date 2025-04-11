@@ -53,10 +53,7 @@ export const PermissionsTablePage = () => {
 
     const handleAddRole = async (permissionId: string, roleId: string) => {
         try {
-            await userApiClient({
-                url: `permissions.toggle-role?id=${permissionId}&value=${roleId}`,
-                options: { method: 'POST' }
-            });
+            await userApiClient.post(`permissions.toggle-role?id=${permissionId}&value=${roleId}`, {});
 
         } catch (error) {
             console.error('Не удалось добавить роль:', error);

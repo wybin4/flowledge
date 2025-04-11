@@ -9,7 +9,7 @@ import { VideoPreview } from "../VideoPreview/VideoPreview";
 import { getAllowedFileFormats } from "@/helpers/getAllowedFileFormats";
 import { fakeUser } from "@/helpers/fakeUser";
 
-type VideoUploadProps<T> = {
+type VideoUploadProps = {
     isUploading: boolean;
     setIsUploading: (isUploading: boolean) => void;
     isUploadError: string | undefined;
@@ -19,14 +19,19 @@ type VideoUploadProps<T> = {
     childrenOnVideo?: ReactNode;
     maxSize: number;
     apiClientPrefix: string;
+    setId: (videoId: string) => void;
 };
 
-export const VideoUpload = <T,>({
-    video, setVideo,
+type UploadedVideo = {
+    fileId: string;
+};
+
+export const VideoUpload = ({
+    video, setVideo, setId,
     isUploading, setIsUploading,
     isUploadError, setIsUploadError,
     childrenOnVideo, maxSize, apiClientPrefix
-}: VideoUploadProps<T>) => {
+}: VideoUploadProps) => {
     const { t } = useTranslation();
 
     const [progress, setProgress] = useState<number>(0);
@@ -41,7 +46,7 @@ export const VideoUpload = <T,>({
         [videoFileExtensionsString]
     );
 
-    const uploadVideo = async (file: File): Promise<T> => {
+    const uploadVideo = async (file: File): Promise<UploadedVideo> => {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', `${apiClientPrefix}/uploads.set`, true);
@@ -100,7 +105,9 @@ export const VideoUpload = <T,>({
             setIsUploading(true);
             setIsUploadError(undefined);
 
-            await uploadVideo(file);
+            const video = await uploadVideo(file);
+            setId(video.fileId);
+            return;
         } catch (error: any) {
             setIsUploadError(t('video-upload.upload-error', { error: error.message }));
         } finally {

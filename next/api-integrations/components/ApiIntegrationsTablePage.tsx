@@ -7,7 +7,7 @@ import { apiIntegrationsPrefix } from "@/helpers/prefixes";
 import { EnhancedTablePage } from "@/components/TablePage/EnhancedTablePage/EnhancedTablePage";
 import { TFunction } from "i18next";
 import { ApiIntegrationTableItem } from "@/api-integrations/types/ApiIntegrationTableItem";
-import { neuralApiClient } from "@/apiClient";
+import { integrationApiClient } from "@/apiClient";
 import { EnhancedItemType } from "@/components/TablePage/EnhancedTablePage/types/EnhancedItemTypes";
 import { getDataPageWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getDataPageWithApi";
 import { getTotalCountWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getTotalCountWithApi";
@@ -26,8 +26,8 @@ export const ApiIntegrationsTablePage = () => {
         <EnhancedTablePage<ApiIntegration, ApiIntegrationTableItem>
             prefix={apiIntegrationsPrefix}
             getDataPageFunctions={{
-                getDataPage: (prefix, params) => getDataPageWithApi(prefix, neuralApiClient, params),
-                getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, neuralApiClient, params),
+                getDataPage: (prefix, params) => getDataPageWithApi(prefix, integrationApiClient, params),
+                getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, integrationApiClient, params),
             }}
             getHeaderItems={getHeaderItems}
             transformData={mapApiIntegrationToTable}

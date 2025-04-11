@@ -1,4 +1,4 @@
-import { ApiClient, FakeApiClient } from "@/types/ApiClient";
+import { ApiClientMethods } from "@/apiClient";
 
 export const useSaveItem = async<T, U>({
     isCreate,
@@ -10,7 +10,7 @@ export const useSaveItem = async<T, U>({
 }: {
     isCreate: boolean,
     prefix: string,
-    apiClient: ApiClient<T> | FakeApiClient<T>,
+    apiClient: ApiClientMethods,
     transformItem?: (item: T) => U,
     _id?: string,
     item: T | undefined
@@ -19,7 +19,7 @@ export const useSaveItem = async<T, U>({
     const url = isCreate ? `${prefix}.create` : `${prefix}.update/${_id}`;
     if (item) {
         const body = transformItem ? transformItem(item) : item;
-        return await apiClient<T>({ url, options: { method, body: JSON.stringify(body) } });
+        return await apiClient.post<T>(url, { method, body: JSON.stringify(body) });
     }
     return undefined;
 }   

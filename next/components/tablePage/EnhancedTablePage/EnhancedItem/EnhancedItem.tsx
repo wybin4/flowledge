@@ -7,7 +7,6 @@ import { TablePageMode } from "@/types/TablePageMode";
 import { TransformItemToSave, useSaveEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useSaveEnhancedTablePageItem";
 import { useDeleteEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useDeleteEnhancedTablePageItem";
 import { useGetEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItem";
-import { ApiClient, FakeApiClient } from "@/types/ApiClient";
 import { ButtonType } from "@/components/Button/Button";
 import { ButtonBackProps } from "@/components/Button/ButtonBack/ButtonBack";
 import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
@@ -16,6 +15,7 @@ import EnhancedItemBody from "./EnhancedItemBody";
 import { Identifiable } from "@/types/Identifiable";
 import { TablePageActionType } from "@/types/TablePageActionType";
 import { areEnhancedItemPropsEqual } from "./areEnhancedItemPropsEqual";
+import { ApiClientMethods } from "@/apiClient";
 
 export type EnhancedItemAdditionalButton = {
     title: string;
@@ -30,7 +30,7 @@ export interface EnhancedItemProps<T, U> {
     mode: TablePageMode;
     prefix: string;
     apiPrefix?: string;
-    apiClient: ApiClient<T> | FakeApiClient<T>;
+    apiClient: ApiClientMethods;
     settingKeys: EnhancedItemSettingKey[];
     transformItemToSave: TransformItemToSave<T, U>;
     createEmptyItem: () => T;

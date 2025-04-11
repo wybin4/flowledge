@@ -1,5 +1,4 @@
-import { ApiClient } from "@/types/ApiClient";
+import { ApiClientMethods } from "@/apiClient";
 
-export const useDeleteItem = <T,>(prefix: string, apiClient: ApiClient<T>, _id: string) => apiClient<T>(
-    { url: `${prefix}.delete/${_id}`, options: { method: 'DELETE' } }
-);
+export const useDeleteItem = <T,>(prefix: string, apiClient: ApiClientMethods, _id: string) =>
+    apiClient.delete<T>(`${prefix}.delete/${_id}`);

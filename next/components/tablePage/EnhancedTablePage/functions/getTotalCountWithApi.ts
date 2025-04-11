@@ -1,9 +1,7 @@
-import { ApiClient } from "@/types/ApiClient";
+import { ApiClientMethods } from "@/apiClient";
 import { GetTotalCountPage } from "@/types/GetTotalCountPage";
 
-export const getTotalCountWithApi = async (prefix: string, apiClient: ApiClient<number>, { searchQuery }: GetTotalCountPage) => {
-    const response = await apiClient<number>({
-        url: `${prefix}.count?searchQuery=${searchQuery}`
-    });
+export const getTotalCountWithApi = async (prefix: string, apiClient: ApiClientMethods, { searchQuery }: GetTotalCountPage) => {
+    const response = await apiClient.get<number>(`${prefix}.count?searchQuery=${searchQuery}`);
     return typeof response === 'number' ? response : 0;
 };

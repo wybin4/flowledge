@@ -59,7 +59,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
     const bottomActions: CollapsibleSectionActionProps[] = [
         {
             title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
-            onClick: () => { router.push(`/courses-hub/${course._id}?createLesson=true`); },
+            onClick: () => { router.push(`/courses-hub/${course._id}?uploadVideo=true`); },
             type: ChildrenPosition.Bottom
         }
     ];

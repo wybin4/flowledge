@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
+import subprocess
 
 # 8001
 app = FastAPI(
@@ -186,7 +187,7 @@ class ExecuteScriptRequest(BaseModel):
     integration_id: str
     context: Dict[str, Any]
 
-@app.post("/execute-script")
+@app.post("/survey.create")
 async def execute_script_route(request: ExecuteScriptRequest):
     """
     Извлекает скрипт из базы данных по идентификатору интеграции и выполняет его.

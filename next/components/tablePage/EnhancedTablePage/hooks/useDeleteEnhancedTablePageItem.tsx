@@ -1,13 +1,13 @@
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { ApiClient } from "@/types/ApiClient";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteItem } from "@/hooks/useDeleteItem";
 import { TablePageActionCallback } from "@/components/TablePage/EnhancedTablePage/types/TablePageActionCallback";
 import { TablePageActionType } from "@/types/TablePageActionType";
+import { ApiClientMethods } from "@/apiClient";
 
 export const useDeleteEnhancedTablePageItem = <T,>(
-    prefix: string, apiClient: ApiClient<T>, callback?: TablePageActionCallback<T>, isBackWithRouter = true
+    prefix: string, apiClient: ApiClientMethods, callback?: TablePageActionCallback<T>, isBackWithRouter = true
 ) => {
     const router = useRouter();
     const queryClient = useQueryClient();

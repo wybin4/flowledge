@@ -13,10 +13,10 @@ import { IconKey } from "@/hooks/useIcon";
 
 type CoursesHubDetailsPageProps = {
     courseId: string;
-    isCreateLesson?: boolean;
+    isUploadVideo?: boolean;
 };
 
-export const CoursesHubDetailsPage = memo(({ courseId, isCreateLesson }: CoursesHubDetailsPageProps) => {
+export const CoursesHubDetailsPage = memo(({ courseId, isUploadVideo }: CoursesHubDetailsPageProps) => {
     const [course, setCourse] = useState<CoursesHubDetail | undefined>(undefined);
     const { t } = useTranslation();
 
@@ -24,14 +24,14 @@ export const CoursesHubDetailsPage = memo(({ courseId, isCreateLesson }: Courses
         `${coursesHubPrefix}/courses` as IconKey, userApiClient, (item) => {
             setCourse(item);
         },
-        { isSmall: isCreateLesson ?? false }
-    ), [isCreateLesson]);
+        { isSmall: isUploadVideo ?? false }
+    ), [isUploadVideo]);
 
     useEffect(() => {
         getItem(courseId);
     }, [courseId]);
 
-    if (isCreateLesson) {
+    if (isUploadVideo) {
         return <LessonItem mode={TablePageMode.CREATE} />;
     }
 
@@ -41,6 +41,6 @@ export const CoursesHubDetailsPage = memo(({ courseId, isCreateLesson }: Courses
 
     return <CoursesHubDetails course={course} />;
 }, (prevProps, nextProps) => {
-    return prevProps.courseId === nextProps.courseId && prevProps.isCreateLesson === nextProps.isCreateLesson;
+    return prevProps.courseId === nextProps.courseId && prevProps.isUploadVideo === nextProps.isUploadVideo;
 });
 

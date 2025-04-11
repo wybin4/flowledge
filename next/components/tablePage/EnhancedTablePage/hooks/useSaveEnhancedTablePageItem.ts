@@ -1,18 +1,18 @@
 import { useRouter } from "next/navigation";
 import { TablePageMode } from "@/types/TablePageMode";
 import { useCallback } from "react";
-import { ApiClient, FakeApiClient } from "@/types/ApiClient";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSaveItem } from "@/hooks/useSaveItem";
 import { TablePageActionType } from "@/types/TablePageActionType";
 import { TablePageActionCallback } from "@/components/TablePage/EnhancedTablePage/types/TablePageActionCallback";
+import { ApiClientMethods } from "@/apiClient";
 
 export type TransformItemToSave<T, U> = (item: T) => U;
 
 export const useSaveEnhancedTablePageItem = <T, U>(
     mode: TablePageMode,
     prefix: string,
-    apiClient: ApiClient<T> | FakeApiClient<T>,
+    apiClient: ApiClientMethods,
     transformItem: (item: T) => U,
     _id?: string,
     callback?: TablePageActionCallback<T>,

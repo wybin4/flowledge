@@ -170,6 +170,10 @@
             },
             "delete-description": "be careful! when a section is deleted, all lessons and materials in it are also deleted"
         },
+        "lessons": {
+            "survey-loading": "loading survey...",
+            "synopsis-loading": "loading synopsis..."
+        },
         "__count__sections_zero": "no sections",
         "__count__sections_one": "{{count}} section",
         "__count__sections_plural": "{{count}} sections",

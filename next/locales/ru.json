@@ -170,6 +170,10 @@
             },
             "delete-description": "осторожно! при удалении раздела все лекции и материалы в нём также будут удалены"
         },
+        "lessons": {
+            "survey-loading": "загружаем тест...",
+            "synopsis-loading": "загружаем конспект..."
+        },
         "__count__sections_zero": "нет разделов",
         "__count__sections_one": "{{count}} раздел",
         "__count__sections_few": "{{count}} раздела",

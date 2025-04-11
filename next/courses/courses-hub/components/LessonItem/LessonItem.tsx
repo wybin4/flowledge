@@ -2,10 +2,10 @@
 
 import { TablePageMode } from "@/types/TablePageMode";
 import { useTranslation } from "react-i18next";
-import { coursesHubPrefix } from "@/helpers/prefixes";
+import { coursesHubLessonsPrefixTranslate, coursesHubPrefix } from "@/helpers/prefixes";
 import { PageLayoutHeader } from "@/components/PageLayout/PageLayoutHeader/PageLayoutHeader";
 import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import styles from "./LessonItem.module.css";
 import { useIcon } from "@/hooks/useIcon";
 import { VideoUpload } from "@/components/Video/VideoUpload/VideoUpload";
@@ -18,16 +18,23 @@ import { Button, ButtonType } from "@/components/Button/Button";
 import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import { integrationApiClient, neuralApiClient, userApiClientPrefix } from "@/apiClient";
+import { SynopsisCreateResponse } from "../../types/SynopsisCreateResponse";
+import { SurveyCreateResponse } from "../../types/SurveyCreateResponse";
+
+enum VideoActionType {
+    Synopsis = 'generate-synopsis',
+    Survey = 'generate-survey'
+};
 
 const initialVideoActions: VideoAction[] = [
-    { label: 'generate-synopsis', value: true },
-    { label: 'generate-survey', value: true, dependsOn: 'generate-synopsis' },
+    { label: VideoActionType.Synopsis, value: true },
+    { label: VideoActionType.Survey, value: true, dependsOn: VideoActionType.Synopsis },
 ];
 
 type VideoAction = {
-    label: string;
+    label: VideoActionType;
     value: boolean;
-    dependsOn?: string;
+    dependsOn?: VideoActionType;
 };
 
 export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
@@ -40,6 +47,8 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
 
     const [withVideo, setWithVideo] = useState<boolean>(true);
     const [videoActions, setVideoActions] = useState<VideoAction[]>(initialVideoActions);
+
+    const [loadingString, setLoadingString] = useState<string | undefined>(undefined);
 
     const fileUploadMaxSize = usePrivateSetting<number>('file-upload.max-size') || 104857600;
 
@@ -63,7 +72,7 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
             })
         );
     }, []);
-
+   
     const videoSelectorOptions = useMemo(() => [
         {
             value: true,
@@ -84,34 +93,46 @@ export const LessonItem = ({ mode }: { mode: TablePageMode }) => {
             return;
         }
 
+        const createSynopsis = videoActions.find(va => va.label === VideoActionType.Synopsis);
+        const createSurvey = videoActions.find(va => va.label === VideoActionType.Survey);
+       
+        if (!createSynopsis || !createSynopsis.value) {
+            return; // TODO: go next
+        }
+
         try {
-            // Первый запрос к neuralApiClient
-            const { transcription } = await neuralApiClient.post('synopsis.create', {
+            setLoadingString(`${coursesHubLessonsPrefixTranslate}.synopsis-loading`);
+            const { transcription } = await neuralApiClient.post<SynopsisCreateResponse>('synopsis.create', {
                 fileId: videoId
             });
 
-            // Проверяем успешность первого запроса
             if (!transcription) {
-                throw new Error('Не удалось получить синопсис');
+                throw new Error('Не удалось получить конспект');
             }
             console.log(transcription)
 
-            const { result } = await integrationApiClient.post('survey.create', {
-                integration_id: "67e82f27f026b5eeb6f74713",
-                context: {
-                    text: transcription,
-                    num_questions: 5
-                }
-            });
+            if (createSurvey && createSurvey.value) {
+                setLoadingString(`${coursesHubLessonsPrefixTranslate}.survey-loading`);
+                const { result } = await integrationApiClient.post<SurveyCreateResponse>('survey.create', {
+                    integration_id: "67e82f27f026b5eeb6f74713",
+                    context: {
+                        text: transcription,
+                        num_questions: 5
+                    }
+                });
+                console.log('Результат опроса:', result);
+            }
 
-            console.log('Результат опроса:', result);
-            // return surveyResponse.data;
-
+            setLoadingString(undefined);
         } catch (error) {
             console.error('Ошибка при сохранении:', error);
             throw error;
         }
-    }, []);
+    }, [JSON.stringify(videoActions)]);
+
+    if (loadingString) {
+        return <div>{t(loadingString)}</div>;
+    }
 
     return (
         <ButtonBackContainer>

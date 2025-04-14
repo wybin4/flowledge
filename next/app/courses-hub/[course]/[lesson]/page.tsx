@@ -2,8 +2,18 @@ import { LessonPage } from "@/courses/courses-list/components/LessonPage/LessonP
 import { StuffTypes } from "@/stuff/types/StuffTypes";
 import { PageMode } from "@/types/PageMode";
 
-export default async function DynamicCourseHubLessonPage({ params }: { params: { lesson: string } }) {
+export default async function DynamicCourseHubLessonPage({
+    params, searchParams
+}: {
+    params: { lesson: string };
+    searchParams?: { details?: boolean };
+}) {
     const { lesson } = await params;
+    const details = await searchParams?.details === true;
+
+    if (details) {
+        
+    }
 
     return (<LessonPage
         mode={PageMode.Editor}

@@ -1,5 +1,5 @@
 import { TablePageMode } from "@/types/TablePageMode";
-import { LessonItem } from "@/courses/courses-hub/components/LessonItem/LessonItem";
+import { CreateLessonDraft } from "@/courses/courses-hub/components/CreateLessonDraft/CreateLessonDraft";
 import { CoursesHubDetailsPage } from "@/courses/courses-hub/components/CoursesHubDetails/CoursesHubDetailsPage";
 
 export default async function CoursesHubSectionPage({
@@ -7,16 +7,16 @@ export default async function CoursesHubSectionPage({
     searchParams
 }: {
     params: { course: string };
-    searchParams?: { uploadVideo?: string };
+    searchParams?: { sectionId?: string };
 }) {
-    const { course } = params;
-    const uploadVideo = searchParams?.uploadVideo === 'true';
+    const { course } = await params;
+    const sectionId = await searchParams?.sectionId;
 
-    if (uploadVideo) {
-        return <LessonItem mode={TablePageMode.CREATE} />;
+    if (sectionId) {
+        return <CreateLessonDraft mode={TablePageMode.CREATE} sectionId={sectionId} />;
     }
 
     return (
-        <CoursesHubDetailsPage courseId={course} isUploadVideo={uploadVideo} />
+        <CoursesHubDetailsPage courseId={course} sectionId={sectionId} />
     );
 }

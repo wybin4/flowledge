@@ -1,13 +1,13 @@
 import { JSX } from "react";
-import styles from "./LessonItemHeader.module.css";
+import styles from "./CreateLessonDraftHeader.module.css";
 
-type LessonItemHeaderProps = {
+type CreateLessonDraftHeaderProps = {
     title: string;
     description?: string;
     icon: JSX.Element;
 };
 
-export const LessonItemHeader = ({ title, description, icon }: LessonItemHeaderProps) => {
+export const CreateLessonDraftHeader = ({ title, description, icon }: CreateLessonDraftHeaderProps) => {
     return (
         <div className={styles.videoActionsHeader}>
             <div className={styles.videoActionsHeaderTitle}>

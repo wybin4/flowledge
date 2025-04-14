@@ -36,7 +36,7 @@ import { getErrorByRegex } from "@/helpers/getErrorByRegex";
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
-    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
+    const [selectedSectionIdToEdit, setSelectedSectionIdToEdit] = useState<string | undefined>(undefined);
 
     const [sectionTitleError, setSectionTitleError] = useState<string>('');
 
@@ -55,14 +55,6 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
     const countLessonsText = handlePluralTranslation(coursesHubPrefix, t, countLessons, 'lessons', locale);
 
     const router = useRouter();
-
-    const bottomActions: CollapsibleSectionActionProps[] = [
-        {
-            title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
-            onClick: () => { router.push(`/courses-hub/${course._id}?uploadVideo=true`); },
-            type: ChildrenPosition.Bottom
-        }
-    ];
 
     const handleAddSection = () => {
         setNewSection('');
@@ -119,15 +111,15 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
 
     const useGetItemHook = useCallback((callback: (item: Section) => void) => {
         return (_id: string) => {
-            const section = courseSections.find(section => section.section._id === selectedItemId);
+            const section = courseSections.find(section => section.section._id === selectedSectionIdToEdit);
             if (section) {
                 callback(section.section);
             }
         };
-    }, [selectedItemId]);
+    }, [selectedSectionIdToEdit]);
 
     const clearState = useCallback(() => {
-        setSelectedItemId(undefined);
+        setSelectedSectionIdToEdit(undefined);
         setSectionTitleError('');
     }, []);
 
@@ -141,7 +133,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     apiPrefix={coursesHubSectionsPrefixApi}
                     queryParams={{ isSmall: true }}
                     mode={TablePageMode.EDIT}
-                    _id={selectedItemId}
+                    _id={selectedSectionIdToEdit}
                     settingKeys={[
                         { name: 'title', type: SettingType.InputText, error: sectionTitleError },
                         { name: 'isVisible', type: SettingType.Radio, hasDescription: true }
@@ -170,10 +162,10 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                         clearState();
                         setIsExpanded(false);
                         if (type === TablePageActionType.DELETE) {
-                            setCourseSections(courseSections.filter(section => section.section._id !== selectedItemId));
+                            setCourseSections(courseSections.filter(section => section.section._id !== selectedSectionIdToEdit));
                         } else if (type === TablePageActionType.EDIT) {
                             setCourseSections(courseSections.map(section => {
-                                if (section.section._id === selectedItemId && item) {
+                                if (section.section._id === selectedSectionIdToEdit && item) {
                                     section.section = item;
                                 }
                                 return section;
@@ -221,13 +213,20 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                             <CourseSection
                                 key={section.section._id}
                                 section={section}
-                                actions={[...bottomActions, {
+                                actions={[{
                                     title: t('edit'),
                                     type: ChildrenPosition.Right,
                                     onClick: () => {
-                                        setSelectedItemId(section.section._id);
+                                        setSelectedSectionIdToEdit(section.section._id);
                                         onClick();
                                     }
+                                },
+                                {
+                                    title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
+                                    onClick: () => { 
+                                        router.push(`/courses-hub/${course._id}?sectionId=${section.section._id}`);
+                                     },
+                                    type: ChildrenPosition.Bottom
                                 }]}
                                 className={styles.section}
                             />

@@ -1,3 +1,3 @@
 export type SurveyCreateResponse = {
-    result?: string;
+    survey?: string;
 }

@@ -7,13 +7,16 @@ import java.util.*
 @Document
 data class CourseLessonModel(
     override val _id: String,
-    override val imageUrl: String?,
-    override val time: String,
+    override val imageUrl: String? = null,
+    override val time: String? = null,
     override val title: String,
-    override val courseId: String?,
-    override val sectionId: String?,
+    override val courseId: String? = null,
+    override val sectionId: String? = null,
     override val isVisible: Boolean,
-    override val videoId: String?,
+    override val videoId: String? = null,
     override val createdAt: Date,
     override val updatedAt: Date,
+    override val surveyText: String? = null,
+    override val synopsis: String? = null,
+    override val isDraft: Boolean? = null,
 ) : CourseLesson

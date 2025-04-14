@@ -39,13 +39,16 @@ class CourseHubController(
 
                     false -> {
                         val sectionsMono = sectionRepository.findByCourseId(id).collectList()
-                        val lessonsMono = lessonRepository.findByCourseId(id).collectList()
+                        val lessonsMono = sectionsMono.flatMap { sections ->
+                            val sectionIds = sections.map { it._id }
+                            lessonRepository.findByCourseIdOrSectionIds(id, sectionIds).collectList()
+                        }
 
                         sectionsMono.zipWith(lessonsMono)
                             .flatMap { tuple ->
                                 val sections = tuple.t1
                                 val allLessons = tuple.t2
-                                
+
                                 val lessonsInSections = sections.map { section ->
                                     SectionWithLessons(
                                         section = section,

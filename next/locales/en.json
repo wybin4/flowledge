@@ -172,7 +172,8 @@
         },
         "lessons": {
             "survey-loading": "loading survey...",
-            "synopsis-loading": "loading synopsis..."
+            "synopsis-loading": "loading synopsis...",
+            "create": "create lesson..."
         },
         "__count__sections_zero": "no sections",
         "__count__sections_one": "{{count}} section",
@@ -199,6 +200,7 @@
             "name": "generate survey",
             "description": "survey is generated from synopsis and video, and you can change it later"
         },
+        "questions": "number of survey questions",
         "what-else": {
             "name": "what else can be uploaded?",
             "description": "you can upload <u>presentations</u>, <u>practical tasks</u>, <u>links</u> and other stuff"

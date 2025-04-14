@@ -1,3 +1,3 @@
 export type SynopsisCreateResponse = {
-    transcription?: string;
+    synopsis?: string;
 }

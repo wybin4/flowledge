@@ -207,7 +207,7 @@ async def execute_script_route(request: ExecuteScriptRequest):
         result = execute_script(script, api_key, request.context)
         
         return {
-            "result": result
+            "survey": result
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Произошла ошибка: {str(e)}")

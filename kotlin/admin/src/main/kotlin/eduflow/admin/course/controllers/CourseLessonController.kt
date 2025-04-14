@@ -1,9 +1,11 @@
 package eduflow.admin.course.controllers
 
-import eduflow.admin.course.dto.lesson.LessonCreateRequest
+import eduflow.admin.course.dto.lesson.LessonCreateDraftRequest
+import eduflow.admin.course.dto.lesson.LessonCreateResponse
 import eduflow.admin.course.dto.lesson.LessonUpdateRequest
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.repositories.CourseLessonRepository
+import eduflow.user.Language
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -16,20 +18,53 @@ class CourseLessonController(
 ) {
 
    @PostMapping("/lessons.create")
-    fun createLesson(@RequestBody lesson: LessonCreateRequest): Mono<CourseLessonModel> {
-        val newLesson = CourseLessonModel(
-            _id = UUID.randomUUID().toString(),
-            title = lesson.title,
-            courseId = lesson.courseId,
-            sectionId = lesson.sectionId,
-            videoId = lesson.videoId,
-            isVisible = lesson.isVisible,
-            imageUrl = lesson.imageUrl,
-            time = lesson.time,
-            createdAt = Date(),
-            updatedAt = Date()
-        )
-        return lessonRepository.save(newLesson)
+    fun createLesson(
+        @RequestParam(required = false) draft: Boolean?,
+        @RequestBody lesson: LessonCreateDraftRequest
+    ): Mono<LessonCreateResponse> {
+        if (draft == true) {
+            if (lesson.videoId == null && (lesson.synopsis != null || lesson.survey != null)) {
+                throw IllegalArgumentException("synopsis and surveyText require videoId")
+            }
+            if (lesson.survey != null && lesson.synopsis == null) {
+                throw IllegalArgumentException("surveyText requires synopsis")
+            }
+
+            val locale = Language.RU // TODO: get from user document
+
+            val draftCount = if (lesson.courseId != null) {
+                lessonRepository.countByCourseIdAndIsDraft(lesson.courseId, true).block() ?: 0
+            } else if (lesson.sectionId != null) {
+                lessonRepository.countBySectionIdAndIsDraft(lesson.sectionId, true).block() ?: 0
+            } else {
+                throw IllegalArgumentException("Either courseId or sectionId must be provided")
+            }
+
+            val title = when (locale) {
+                Language.RU -> "черновик лекции ${draftCount + 1}"
+                Language.EN -> "draft lecture ${draftCount + 1}"
+                else -> "Draft lecture ${draftCount + 1}"
+            }
+
+            val newLesson = CourseLessonModel(
+                _id = UUID.randomUUID().toString(),
+                title = title,
+                courseId = lesson.courseId,
+                sectionId = lesson.sectionId,
+                videoId = lesson.videoId,
+                isVisible = lesson.isVisible ?: false,
+                synopsis = lesson.synopsis,
+                surveyText = lesson.survey,
+                createdAt = Date(),
+                updatedAt = Date(),
+                isDraft = true
+            )
+
+            return lessonRepository.save(newLesson)
+            .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
+        } else {
+            TODO()
+        }
     }
 
     @PutMapping("/lessons.update/{id}")

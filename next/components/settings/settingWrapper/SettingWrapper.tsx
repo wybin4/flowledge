@@ -16,13 +16,18 @@ export type SettingWrapperProps = {
     debounceTime?: number;
     withWrapper?: boolean;
     validateError?: string;
+    className?: string;
 }
 
-export const SettingWrapper = memo(({ setting, handleSave, debounceTime = 1000, withWrapper = true, validateError }: SettingWrapperProps) => {
+export const SettingWrapper = memo(({
+    setting, handleSave, className,
+    debounceTime = 1000, withWrapper = true,
+    validateError
+}: SettingWrapperProps) => {
     const { t } = useTranslation();
-  
+
     return (
-        <div>
+        <div className={className}>
             <h3>{setting.type !== SettingType.Radio && t(setting.i18nLabel)}</h3>
             {(() => {
                 switch (setting.type) {

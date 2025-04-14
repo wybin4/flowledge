@@ -142,7 +142,7 @@ async def create_synopsis(request: CreateSynopsisRequest):
             os.remove(chunk_path)
 
         return {
-            "transcription": full_transcription,
+            "synopsis": full_transcription,
             "filename": file.filename
         }
 

@@ -21,10 +21,10 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
             mode={mode}
             _id={_id}
             settingKeys={[
-                { name: 'enabled', type: SettingType.Radio },
-                { name: 'name', type: SettingType.InputText },
-                { name: 'secret', type: SettingType.InputPassword },
-                { name: 'script', type: SettingType.Code }
+                { name: 'enabled', types: [SettingType.Radio] },
+                { name: 'name', types: [SettingType.InputText] },
+                { name: 'secret', types: [SettingType.InputPassword] },
+                { name: 'script', types: [SettingType.Code] }
             ]}
             apiClient={neuralApiClient}
             transformItemToSave={(item) => {

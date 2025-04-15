@@ -173,7 +173,13 @@
         "lessons": {
             "survey-loading": "loading survey...",
             "synopsis-loading": "loading synopsis...",
-            "create": "create lesson..."
+            "creating": "create lesson...",
+            "create": "add information about the lecture",
+            "title": "lesson title",
+            "time": {
+                "name": "lesson reading/watching time",
+                "description": "can be filled in automatically by video if exists"
+            }
         },
         "__count__sections_zero": "no sections",
         "__count__sections_one": "{{count}} section",
@@ -286,7 +292,7 @@
     "unmark-as-favorite": "unmark as favorite",
     "description": "description",
     "read-more": "read more",
-    "loading": "Loading...",
+    "loading": "loading...",
     "video-upload": {
         "placeholder": "drag and drop or select a file",
         "formats": "supported formats:",
@@ -306,5 +312,8 @@
     "at": "at (@)",
     "dot": "dot",
     "spaces": "spaces",
-    "next": "next"
+    "next": "next",
+    "minutes-abbr": "min",
+    "hours-abbr": "h",
+    "time-unit-selection": "choose time unit"
 }

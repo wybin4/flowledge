@@ -84,9 +84,9 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                     mode={mode}
                     _id={selectedItemId}
                     settingKeys={[
-                        { name: 'title', type: SettingType.InputText },
-                        { name: 'description', type: SettingType.InputText },
-                        { name: 'imageUrl', type: SettingType.InputText },
+                        { name: 'title', types: [SettingType.InputText] },
+                        { name: 'description', types: [SettingType.InputText] },
+                        { name: 'imageUrl', types: [SettingType.InputText] },
                     ]}
                     apiClient={userApiClient}
                     transformItemToSave={(item) => {

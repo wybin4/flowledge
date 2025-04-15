@@ -135,8 +135,8 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     mode={TablePageMode.EDIT}
                     _id={selectedSectionIdToEdit}
                     settingKeys={[
-                        { name: 'title', type: SettingType.InputText, error: sectionTitleError },
-                        { name: 'isVisible', type: SettingType.Radio, hasDescription: true }
+                        { name: 'title', types: [SettingType.InputText], error: sectionTitleError },
+                        { name: 'isVisible', types: [SettingType.Radio], hasDescription: true }
                     ]}
                     apiClient={userApiClient}
                     transformItemToSave={(item) => {
@@ -223,9 +223,9 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                 },
                                 {
                                     title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
-                                    onClick: () => { 
+                                    onClick: () => {
                                         router.push(`/courses-hub/${course._id}?sectionId=${section.section._id}`);
-                                     },
+                                    },
                                     type: ChildrenPosition.Bottom
                                 }]}
                                 className={styles.section}

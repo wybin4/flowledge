@@ -1,7 +1,7 @@
 "use client";
 
 import { TablePageMode } from "@/types/TablePageMode";
-import { CreateLessonDraft } from "../CreateLessonDraft/CreateLessonDraft";
+import { CreateLessonDraft } from "../CreateLesson/CreateLessonDraft/CreateLessonDraft";
 import { CoursesHubDetails } from "./CoursesHubDetails";
 import { useEffect, useCallback, useState, memo } from "react";
 import { CoursesHubDetail } from "../../types/CoursesHubDetails";

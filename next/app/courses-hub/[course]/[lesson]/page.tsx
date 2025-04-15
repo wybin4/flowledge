@@ -1,3 +1,4 @@
+import { CreateLessonDetails } from "@/courses/courses-hub/components/CreateLesson/CreateLessonDetails/CreateLessonDetails";
 import { LessonPage } from "@/courses/courses-list/components/LessonPage/LessonPage";
 import { StuffTypes } from "@/stuff/types/StuffTypes";
 import { PageMode } from "@/types/PageMode";
@@ -9,10 +10,10 @@ export default async function DynamicCourseHubLessonPage({
     searchParams?: { details?: boolean };
 }) {
     const { lesson } = await params;
-    const details = await searchParams?.details === true;
+    const details = await searchParams?.details;
 
-    if (details) {
-        
+    if (!!details) {
+        return (<CreateLessonDetails />);
     }
 
     return (<LessonPage

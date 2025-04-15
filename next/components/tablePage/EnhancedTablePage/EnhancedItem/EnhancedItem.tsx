@@ -1,6 +1,6 @@
 "use client";
 
-import { SettingType } from "@/types/Setting";
+import { SettingOption, SettingType, SettingValue } from "@/types/Setting";
 import { useTranslation } from "react-i18next";
 import { memo, useCallback, useEffect, useState } from "react";
 import { TablePageMode } from "@/types/TablePageMode";
@@ -16,6 +16,7 @@ import { Identifiable } from "@/types/Identifiable";
 import { TablePageActionType } from "@/types/TablePageActionType";
 import { areEnhancedItemPropsEqual } from "./areEnhancedItemPropsEqual";
 import { ApiClientMethods } from "@/apiClient";
+import { MultiSettingWrapperAdditionalProps } from "@/components/Settings/SettingWrapper/MultiSettingWrapper";
 
 export type EnhancedItemAdditionalButton = {
     title: string;
@@ -23,7 +24,14 @@ export type EnhancedItemAdditionalButton = {
     mode?: TablePageMode;
     type: ButtonType;
 };
-export type EnhancedItemSettingKey = { name: string, type: SettingType, hasDescription?: boolean, error?: string };
+
+export type EnhancedItemSettingKey = {
+    name: string;
+    types: SettingType[];
+    additionalProps?: MultiSettingWrapperAdditionalProps;
+    hasDescription?: boolean;
+    error?: string;
+};
 
 export interface EnhancedItemProps<T, U> {
     _id?: string;

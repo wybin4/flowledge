@@ -10,6 +10,7 @@ import { UpdatableSetting } from "@/hooks/useSettings";
 import { SettingValue } from "@/types/Setting";
 import { Identifiable } from "@/types/Identifiable";
 import { areEnhancedItemBodyPropsEqual } from "./areEnhancedItemPropsEqual";
+import { MultiSettingWrapper, MultiSettingWrapperSetting } from "@/components/Settings/SettingWrapper/MultiSettingWrapper";
 
 export type EnhancedItemBodyProps<T> = {
     title: string;
@@ -34,13 +35,16 @@ const EnhancedItemBody = <T extends Identifiable,>({
     deleteItem, deleteItemDescription,
     saveItem
 }: EnhancedItemBodyProps<T>) => {
-    const getSettingType = useCallback((key: string) => {
-        return settingKeys.find((setting) => setting.name === key)?.type;
-    }, [JSON.stringify(settingKeys)]);
-
-    const renderSetting = useCallback((key: string) => {
+    const getSetting = useCallback((key: string) => {
         const value = item?.[key as keyof T];
-        const hasDescription = settingKeys.find((setting) => setting.name === key)?.hasDescription;
+        const props = settingKeys.find((setting) => setting.name === key);
+
+        if (!props) {
+            return { setting: undefined, isMulti: false };
+        }
+
+        const { hasDescription, additionalProps, types } = props;
+        const isMulti = (types?.length || 0) > 1;
 
         return {
             setting: {
@@ -49,8 +53,11 @@ const EnhancedItemBody = <T extends Identifiable,>({
                 i18nDescription: hasDescription ? `${prefix}.${key}.description` : undefined,
                 value,
                 packageValue: value,
-                type: getSettingType(key)
-            } as SettingValue
+                type: !isMulti ? types?.[0] : undefined,
+            },
+            types,
+            additionalProps,
+            isMulti
         };
     }, [JSON.stringify(item)]);
 
@@ -59,13 +66,37 @@ const EnhancedItemBody = <T extends Identifiable,>({
     };
 
     const renderSettings = () => {
-        const settings = settingKeys.map((key) => renderSetting(key.name));
+        const settings = settingKeys.map((key) => getSetting(key.name));
 
-        return settings.map(({ setting }, index) => (
-            <SettingWrapper key={index} validateError={settingKeys[index].error} debounceTime={0} withWrapper={false} setting={setting} handleSave={(newValue) => {
-                handleSave({ id: setting._id, value: newValue.value });
-            }} />
-        ));
+        return settings.map(({ setting, isMulti, types, additionalProps }, index) => {
+            if (setting) {
+                if (isMulti) {
+                    return (
+                        <MultiSettingWrapper
+                            key={index}
+                            setting={setting as MultiSettingWrapperSetting}
+                            additionalProps={additionalProps}
+                            types={types}
+                            handleSave={(newValue) => {
+                                handleSave({ id: setting._id, value: newValue.value });
+                            }}
+                        />
+                    );
+                } else {
+                    return (<SettingWrapper
+                        key={index}
+                        validateError={settingKeys[index].error}
+                        debounceTime={0}
+                        withWrapper={true}
+                        setting={setting as SettingValue}
+                        handleSave={(newValue) => {
+                            handleSave({ id: setting._id, value: newValue.value });
+                        }}
+                    />);
+                }
+            }
+            return null;
+        });
     };
 
     return (

@@ -110,41 +110,45 @@ class CreateSynopsisRequest(BaseModel):
 @app.post("/synopsis.create")
 async def create_synopsis(request: CreateSynopsisRequest):
     """Получает файл из GridFS по fileId, извлекает аудио, разбивает на чанки, обрабатывает параллельно и объединяет результат"""
-    fileId = request.fileId
-    try:
-        # Получаем файл из GridFS
-        file = await fs.open_download_stream(ObjectId(fileId))
-        if not file:
-            raise HTTPException(status_code=404, detail="Файл не найден")
-        print(file)
-        # Сохраняем файл временно для обработки
-        video_path = os.path.join(UPLOAD_DIR, file.filename)
-        with open(video_path, "wb") as buffer:
-            buffer.write(await file.read())
+    return {
+        "synopsis":  "Чтобы научиться ходить – надо ходить, чтобы научиться подтягиваться – надо подтягиваться, чтобы научиться решать задачи по физике – надо решать задачи по физике. Так говорил преподаватель физики в моём университете, и эта аналогия применима и к программированию. Можно сколько угодно упираться в сухую теорию, но без применения своих знаний на практике научиться программировать невозможно. В этой статье я подобрал несколько проектов для начинающих python-разработчиков. Эти проекты помогут закрепить теорию, применить полученные знания на практике и набить руку в написании кода. Некоторые из них даже можно добавить в будущее портфолио. Я объясню, чем хорош каждый проект, какие навыки и темы он позволяет проработать, а также сориентирую какие библиотеки и технологии можно использовать для его реализации. Цель данного 'топа' – это не создание самого оригинального портфолио и не перечисление уникальных проектов. Цель статьи разобраться в простых вещах, технологиях и темах, которые помогут развить практические навыки программирования. Поэтому не стоит ждать здесь сборку Оптимуса Прайма, программирование Звезды смерти и создание двигателя на китовом жире. Мы пройдёмся по простым, но в тоже время базовым вещам. Ведь как говорил один мой приятель: «Всё великое начинается с малого».",
+        "filename": "234"
+    }
+    # fileId = request.fileId
+    # try:
+    #     # Получаем файл из GridFS
+    #     file = await fs.open_download_stream(ObjectId(fileId))
+    #     if not file:
+    #         raise HTTPException(status_code=404, detail="Файл не найден")
+    #     print(file)
+    #     # Сохраняем файл временно для обработки
+    #     video_path = os.path.join(UPLOAD_DIR, file.filename)
+    #     with open(video_path, "wb") as buffer:
+    #         buffer.write(await file.read())
 
-        # Обработка файла
-        audio_path = video_path.rsplit(".", 1)[0] + ".wav"
-        extract_audio(video_path, audio_path)
-        chunk_paths = split_audio(audio_path)
+    #     # Обработка файла
+    #     audio_path = video_path.rsplit(".", 1)[0] + ".wav"
+    #     extract_audio(video_path, audio_path)
+    #     chunk_paths = split_audio(audio_path)
 
-        print(audio_path)
+    #     print(audio_path)
 
-        # Обработка чанков в несколько потоков
-        with ThreadPoolExecutor() as executor:
-            transcriptions = list(executor.map(transcribe_audio_whisper, chunk_paths))
-            punctuated_texts = list(executor.map(add_punctuation, transcriptions))
+    #     # Обработка чанков в несколько потоков
+    #     with ThreadPoolExecutor() as executor:
+    #         transcriptions = list(executor.map(transcribe_audio_whisper, chunk_paths))
+    #         punctuated_texts = list(executor.map(add_punctuation, transcriptions))
 
-        full_transcription = " ".join(punctuated_texts)
+    #     full_transcription = " ".join(punctuated_texts)
 
-        os.remove(video_path)
-        os.remove(audio_path) 
-        for chunk_path in chunk_paths:
-            os.remove(chunk_path)
+    #     os.remove(video_path)
+    #     os.remove(audio_path) 
+    #     for chunk_path in chunk_paths:
+    #         os.remove(chunk_path)
 
-        return {
-            "synopsis": full_transcription,
-            "filename": file.filename
-        }
+    #     return {
+    #         "synopsis": full_transcription,
+    #         "filename": file.filename
+    #     }
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=str(e))

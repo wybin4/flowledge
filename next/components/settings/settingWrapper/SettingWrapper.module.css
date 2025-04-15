@@ -1,4 +1,4 @@
-.description{
+.description {
     color: var(--description-text);
 }
 
@@ -8,8 +8,14 @@
 
 .error {
     color: var(--red);
-    
+
     font-size: 0.9375rem;
 
     margin-top: 0.5rem;
+}
+
+.multiContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 5rem;
 }

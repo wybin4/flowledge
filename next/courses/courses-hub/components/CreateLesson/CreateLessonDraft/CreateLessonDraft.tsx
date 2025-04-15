@@ -18,9 +18,9 @@ import { Button, ButtonType } from "@/components/Button/Button";
 import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import { integrationApiClient, neuralApiClient, userApiClient, userApiClientPrefix } from "@/apiClient";
-import { SynopsisCreateResponse } from "../../types/SynopsisCreateResponse";
-import { SurveyCreateResponse } from "../../types/SurveyCreateResponse";
-import { LessonToSaveOnVideoUploadRequest, LessonToSaveOnVideoUploadResponse } from "../../types/LessonToSave";
+import { SynopsisCreateResponse } from "../../../types/SynopsisCreateResponse";
+import { SurveyCreateResponse } from "../../../types/SurveyCreateResponse";
+import { LessonToSaveOnDraftRequest, LessonToSaveOnDraftResponse } from "../../../types/LessonToSave";
 import { usePathname, useRouter } from "next/navigation";
 import { SettingType, SettingValueType } from "@/types/Setting";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
@@ -73,8 +73,8 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
 
     const fileUploadMaxSize = usePrivateSetting<number>('file-upload.max-size') || 104857600;
 
-    const saveLesson = (body?: LessonToSaveOnVideoUploadRequest) =>
-        userApiClient.post<LessonToSaveOnVideoUploadResponse>(
+    const saveLesson = (body?: LessonToSaveOnDraftRequest) =>
+        userApiClient.post<LessonToSaveOnDraftResponse>(
             `${coursesHubLessonsPrefixApi}.create?draft=true`, body
         );
 
@@ -192,12 +192,12 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
                     survey = result.survey;
                 }
             }
-           
-            setLoadingString(`${coursesHubLessonsPrefixTranslate}.create`);
+
+            setLoadingString(`${coursesHubLessonsPrefixTranslate}.creating`);
 
             const result = await saveLesson({ videoId, survey, synopsis, isVisible, sectionId });
             lessonId = result.lessonId;
-            
+
             if (lessonId) {
                 console.log(currentPath)
                 router.push(`${currentPath}/${lessonId}?details=true`)

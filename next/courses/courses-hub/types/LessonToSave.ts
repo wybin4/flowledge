@@ -1,4 +1,4 @@
-export type LessonToSaveOnVideoUploadRequest = {
+export type LessonToSaveOnDraftRequest = {
     videoId?: string;
     synopsis?: string;
     survey?: string;
@@ -6,6 +6,12 @@ export type LessonToSaveOnVideoUploadRequest = {
     sectionId: string;
 }
 
-export type LessonToSaveOnVideoUploadResponse = {
+export type LessonToSaveOnDraftResponse = {
     lessonId: string;
+}
+
+export type LessonToSaveOnDetailsRequest = {
+    _id: string;
+    title: string;
+    time: string;
 }

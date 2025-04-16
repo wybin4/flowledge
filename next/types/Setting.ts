@@ -20,12 +20,12 @@ type BaseSetting<T> = {
     i18nDescription?: string;
     value: T;
     packageValue: T;
+    placeholder?: string;
 };
 
 export type SelectorSetting<T> = BaseSetting<T> & {
     type: SettingType.SelectorFinite | SettingType.SelectorInfinite;
     options: SettingOption[];
-    placeholder?: string;
 };
 
 export type InputTextSetting<T> = BaseSetting<T> & {
@@ -40,7 +40,9 @@ export type InputNumberSetting<T> = BaseSetting<T> & {
 };
 
 export type Setting<T> = SelectorSetting<T> | InputTextSetting<T> | InputNumberSetting<T> | BaseSetting<T>;
-export type SettingValueType = string | number | boolean;
+export type SimpleSettingValueType = string | number | boolean;
+export type ComplexSettingValueType = Record<string, SimpleSettingValueType>;
+export type SettingValueType = SimpleSettingValueType | ComplexSettingValueType;
 export type SettingValue = Setting<SettingValueType>;
 
 export type SettingsTab = {

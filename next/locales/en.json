@@ -178,8 +178,9 @@
             "title": "lesson title",
             "time": {
                 "name": "lesson reading/watching time",
-                "description": "can be filled in automatically by video if exists"
-            }
+                "description": "can be detected in automatically by video if exists"
+            },
+            "save": "next"
         },
         "__count__sections_zero": "no sections",
         "__count__sections_one": "{{count}} section",
@@ -315,5 +316,6 @@
     "next": "next",
     "minutes-abbr": "min",
     "hours-abbr": "h",
-    "time-unit-selection": "choose time unit"
+    "time-unit-selection": "choose time unit",
+    "auto-detect": "auto detect"
 }

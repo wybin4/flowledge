@@ -1,5 +1,5 @@
 "use client";
-import { memo } from "react";
+import { memo, ReactNode } from "react";
 import { SettingType, SettingValue } from "@/types/Setting";
 import { UpdatableSetting } from "@/hooks/useSettings";
 import { SettingWrapperContainer } from "./SettingWrapperContainer";
@@ -12,12 +12,14 @@ export interface SettingWrapperProps {
     withWrapper?: boolean;
     validateError?: string;
     className?: string;
+    headerChildren?: ReactNode;
+    disabled?: boolean;
 }
 
 export const SettingWrapper = memo(({
     setting, handleSave, className,
     debounceTime = 1000, withWrapper = true,
-    validateError
+    validateError, disabled
 }: SettingWrapperProps) => {
     return (
         <SettingWrapperContainer
@@ -29,6 +31,7 @@ export const SettingWrapper = memo(({
         >
             <SettingWrapperBody
                 setting={setting}
+                disabled={disabled}
                 handleSave={handleSave}
                 debounceTime={debounceTime}
                 withWrapper={withWrapper}
@@ -36,7 +39,7 @@ export const SettingWrapper = memo(({
         </SettingWrapperContainer>
     );
 }, (prevProps, nextProps) =>
-    prevProps.setting.value === nextProps.setting.value &&
+    JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
     prevProps.setting._id === nextProps.setting._id &&
     prevProps.validateError === nextProps.validateError
 );

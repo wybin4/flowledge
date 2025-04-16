@@ -41,6 +41,6 @@ export const SettingRadio = memo(({ setting, handleSave, withWrapper = true }: S
         </InputBox>
     );
 }, (prevProps, nextProps) =>
-    prevProps.setting.value === nextProps.setting.value &&
+    JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
     prevProps.setting._id === nextProps.setting._id
 );

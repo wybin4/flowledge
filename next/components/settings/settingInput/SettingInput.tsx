@@ -8,7 +8,7 @@ import { usePasswordInput } from "@/hooks/usePasswordInput";
 import { Input, InputType } from "@/components/InputBox/Input";
 import { useDebouncedSave } from "@/hooks/useDebouncedSave";
 
-export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000 }: SettingWrapperProps) => {
+export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000, disabled }: SettingWrapperProps) => {
     const isPassword = setting.type === SettingType.InputPassword;
     const passwordInputProps = usePasswordInput();
 
@@ -46,7 +46,9 @@ export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000 }: 
             onChange={handleChange}
             icon={icon}
             onClickIcon={onClickIcon}
+            placeholder={setting.placeholder}
             iconClassName={cn({ [styles.inputIconPointer]: isPassword })}
+            disabled={disabled}
         />
     );
 }, (prevProps, nextProps) => JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting));

@@ -1,7 +1,7 @@
-import { CallbackUsage, RemoveStateCallbacks, SetStateCallbacks } from "@/types/StateCallback";
+import { RemoveStateCallbacks, SetStateCallbacks } from "@/types/StateCallback";
 import { SettingValue, SettingValueType } from "@/types/Setting";
 import { notFound } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useStateUpdate } from "./useStateUpdate";
 
 export type UpdatableSetting = {

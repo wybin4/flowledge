@@ -1,19 +1,18 @@
 import { memo } from "react";
 import SelectorInfiniteIcon from "../../../assets/selector-infinite.svg";
-import { SelectorSetting, SettingValueType, SettingType, SettingOption, Setting } from "@/types/Setting";
+import { SelectorSetting, SettingType, SimpleSettingValueType } from "@/types/Setting";
 import { InputBox } from "@/components/InputBox/InputBox";
 import { InputBoxWrapper } from "@/components/InputBox/InputBoxWrapper";
-import { UpdatableSetting } from "@/hooks/useSettings";
 import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
+import { SettingWrapperProps } from "../SettingWrapper/SettingWrapper";
 
-type SettingSelectorProps = {
-    setting: SelectorSetting<SettingValueType>;
-    handleSave: (setting: UpdatableSetting) => void;
+interface SettingSelectorProps extends SettingWrapperProps {
+    setting: SelectorSetting<SimpleSettingValueType>;
 }
 
-export const SettingSelector = memo(({ setting, handleSave }: SettingSelectorProps) => {
+export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingSelectorProps) => {
     return (
-        <InputBoxWrapper>
+        <InputBoxWrapper disabled={disabled}>
             {setting.type === SettingType.SelectorFinite ? (
                 setting.options.map(option => (
                     <FiniteSelector
@@ -25,7 +24,10 @@ export const SettingSelector = memo(({ setting, handleSave }: SettingSelectorPro
                     />
                 ))
             ) : setting.type === SettingType.SelectorInfinite ? (
-                <InputBox name={setting.placeholder || ''} icon={<SelectorInfiniteIcon />}>
+                <InputBox
+                    name={setting.placeholder || ''}
+                    icon={<SelectorInfiniteIcon />}
+                >
                     <div>{setting.value}</div>
                 </InputBox>
             ) : null}

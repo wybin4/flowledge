@@ -2,7 +2,7 @@
 import { memo } from "react";
 import { SettingSelector } from "../SettingSelector/SettingSelector";
 import { SettingInput } from "../SettingInput/SettingInput";
-import { SelectorSetting, SettingType, SettingValueType } from "@/types/Setting";
+import { SelectorSetting, SettingType, SimpleSettingValueType } from "@/types/Setting";
 import { SettingRadio } from "../SettingRadio/SettingRadio";
 import { SettingCode } from "../SettingCode/SettingCode";
 import { SettingWrapperProps } from "./SettingWrapper";
@@ -10,13 +10,19 @@ import { SettingWrapperProps } from "./SettingWrapper";
 export interface SettingWrapperBodyProps extends Omit<SettingWrapperProps, 'validateError' | 'className'> { }
 
 export const SettingWrapperBody = memo(({
-    setting, handleSave,
+    setting, handleSave, disabled,
     debounceTime = 1000, withWrapper = true,
 }: SettingWrapperBodyProps) => {
     switch (setting.type) {
         case SettingType.SelectorFinite:
         case SettingType.SelectorInfinite:
-            return <SettingSelector handleSave={handleSave} setting={setting as SelectorSetting<SettingValueType>} />;
+            return (
+                <SettingSelector
+                    handleSave={handleSave}
+                    setting={setting as SelectorSetting<SimpleSettingValueType>}
+                    disabled={disabled}
+                />
+            );
         case SettingType.InputPassword:
         case SettingType.InputText:
         case SettingType.InputNumber:
@@ -25,6 +31,7 @@ export const SettingWrapperBody = memo(({
                     handleSave={handleSave}
                     setting={setting}
                     debounceTime={debounceTime}
+                    disabled={disabled}
                 />
             );
         case SettingType.Radio:
@@ -35,6 +42,6 @@ export const SettingWrapperBody = memo(({
             return null;
     }
 }, (prevProps, nextProps) =>
-    prevProps.setting.value === nextProps.setting.value &&
+    JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
     prevProps.setting._id === nextProps.setting._id
 );

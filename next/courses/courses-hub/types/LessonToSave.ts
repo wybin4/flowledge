@@ -10,8 +10,14 @@ export type LessonToSaveOnDraftResponse = {
     lessonId: string;
 }
 
+export type LessonToSaveOnDetailsRequestTime = {
+    time?: number;
+    timeUnit?: string;
+    autoDetect?: boolean;
+}
+
 export type LessonToSaveOnDetailsRequest = {
     _id: string;
     title: string;
-    time: string;
+    time: LessonToSaveOnDetailsRequestTime;
 }

@@ -72,13 +72,20 @@ input:-webkit-autofill:focus {
     border: solid 2px var(--light);
 }
 
+.inputWrapperDisabled,
 .inputDisabled input {
     border: none !important;
 }
 
+.inputWrapperDisabled,
 .inputDisabled .input {
     background-color: var(--input-border) !important;
     color: var(--description-text) !important;
+}
+
+.inputWrapperDisabled div,
+.inputDisabled svg {
+    cursor: auto !important;
 }
 
 .inputDisabled .inputIcon {

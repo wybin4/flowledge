@@ -12,7 +12,12 @@ interface InputBoxProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>
     endClassName?: string;
 };
 
-export const InputBox = ({ name = '', children, icon, style, className, description, nameNode, endClassName }: InputBoxProps) => {
+export const InputBox = ({
+    name = '', icon, description,
+    nameNode,
+    children,
+    className, endClassName, style,
+}: InputBoxProps) => {
     const { t } = useTranslation();
     return (
         <div className={cn(styles.item, className)} style={style}>

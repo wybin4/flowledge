@@ -199,8 +199,7 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
             lessonId = result.lessonId;
 
             if (lessonId) {
-                console.log(currentPath)
-                router.push(`${currentPath}/${lessonId}?details=true`)
+                router.push(`${currentPath}/${lessonId}?details=true&hasVideo=${!!videoId}`)
             } else {
                 console.error('Ошибка при сохранении');
             }

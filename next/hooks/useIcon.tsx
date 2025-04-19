@@ -44,7 +44,10 @@ import MarkIcon from "../assets/mark.svg";
 import UnmarkIcon from "../assets/unmark.svg";
 import CloseIcon from "../assets/close.svg";
 import CheckIcon from "../assets/check.svg";
+import RoundIcon from "../assets/round.svg";
+import RoundFilledIcon from "../assets/round.svg";
 import RoundCheckIcon from "../assets/round-check.svg";
+import RoundCheckFilledIcon from "../assets/round-check-filled.svg";
 import OkIcon from "../assets/ok.svg";
 import VideoIcon from "../assets/video.svg";
 import VideoUploadIcon from "../assets/video-upload.svg";
@@ -56,6 +59,7 @@ import SwapIcon from "../assets/swap.svg";
 import EditIcon from "../assets/edit.svg";
 import DeleteIcon from "../assets/delete.svg";
 import GhostIcon from "../assets/ghost.svg";
+import DraggableIcon from "../assets/draggable.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -109,9 +113,12 @@ const icons = {
     'mark': <MarkIcon />,
     'unmark': <UnmarkIcon />,
     'close': <CloseIcon />,
-    'ok': <OkIcon />,   
+    'ok': <OkIcon />,
     'check': <CheckIcon />,
+    'round': <RoundIcon />,
+    'round-filled': <RoundFilledIcon />,
     'round-check': <RoundCheckIcon />,
+    'round-check-filled': <RoundCheckFilledIcon />,
 
     'video': <VideoIcon />,
     'video-upload': <VideoUploadIcon />,
@@ -126,6 +133,8 @@ const icons = {
     'edit': <EditIcon />,
     'delete': <DeleteIcon />,
     'ghost': <GhostIcon />,
+
+    'draggable': <DraggableIcon />,
 } as const;
 
 export type IconKey = keyof typeof icons;

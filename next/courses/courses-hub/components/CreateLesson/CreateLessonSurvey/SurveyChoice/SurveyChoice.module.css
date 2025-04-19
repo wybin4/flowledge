@@ -1,0 +1,45 @@
+.itemContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    width: 100%;
+
+    margin-right: 0.5rem;
+}
+
+.itemDelete {
+    color: var(--red);
+
+    cursor: pointer;
+}
+
+.itemDelete:hover {
+    color: var(--red-dark);
+}
+
+.bodyContainer {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.incorrectIcon {
+    color: var(--description-text);
+}
+
+.correctionIcon {
+    cursor: pointer;
+}
+
+.correctionIcon:hover {
+    filter: brightness(85%);
+}
+
+.correctIcon {
+    color: var(--green);
+}

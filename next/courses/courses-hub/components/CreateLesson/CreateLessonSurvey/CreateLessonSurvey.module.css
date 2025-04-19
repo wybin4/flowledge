@@ -2,6 +2,10 @@
     padding: 1rem 2rem;
 }
 
+.container [role='button'] {
+    width: 100%;
+}
+
 .titleContainer {
     display: flex;
     justify-content: space-between;
@@ -22,44 +26,17 @@
     color: var(--secondary-light)
 }
 
-.questionContainer {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-
-    background-color: var(--hover-dark);
-
-    border: solid 1px var(--input-border);
-    border-radius: 0.75rem;
-
-    padding: 1rem;
-    margin: 1rem 0rem;
-
-    cursor: pointer;
+.expanded {
+    width: 58%;
 }
 
-.questionContainer:hover {
-    filter: brightness(80%);
+.container div {
+    font-size: 0.875rem;
 }
 
-.questionNumber {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    width: 1.3rem;
-    height: 1.3rem;
-
-    background-color: var(--button-tip);
-
-    border-radius: 0.8rem;
-}
-
-.questionText {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    padding-right: 0.7rem;
+.container textarea,
+.container textarea:hover,
+.container input,
+.container input:hover {
+    border: none !important;
 }

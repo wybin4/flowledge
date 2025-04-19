@@ -141,7 +141,8 @@ body {
   color: var(--dark);
 }
 
-input {
+input,
+textarea {
   width: 100%;
   box-sizing: border-box;
 
@@ -164,9 +165,14 @@ input {
   text-overflow: ellipsis;
 }
 
-input:focus {
+input:focus,
+textarea:focus {
   border: solid 2px var(--light);
   color: var(--light);
+}
+
+textarea {
+  resize: none;
 }
 
 .code-mirror-focused .ͼ1 .cm-foldPlaceholder {

@@ -115,3 +115,12 @@ input:-webkit-autofill:focus {
     flex-direction: column;
     gap: 0.2rem;
 }
+
+.textarea {
+    height: 8rem;
+    z-index: 1;
+}
+
+.hasNoIcon {
+    padding: 0.9rem 1rem .9rem 1.3rem !important;
+}

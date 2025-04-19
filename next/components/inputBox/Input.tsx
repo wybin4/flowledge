@@ -36,7 +36,7 @@ export const Input = memo(({
             }
         } as any)
     };
-   
+
     return useMemo(() => (
         <div data-type='input-container' className={cn(styles.inputContainer, className, {
             [styles.inputDisabled]: disabled || readOnly
@@ -51,7 +51,8 @@ export const Input = memo(({
             <input
                 type={value ? type : 'text'}
                 className={cn(styles.input, inputClassName, {
-                    [styles.inputNoArrows]: type === 'number'
+                    [styles.inputNoArrows]: type === 'number',
+                    [styles.hasNoIcon]: icon === undefined
                 })}
                 value={value}
                 onFocus={() => !readOnly && setFocused(true)}

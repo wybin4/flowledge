@@ -320,6 +320,11 @@
     "auto-detect": "auto detect",
     "questions": {
         "name": "questions",
-        "add": "add question"
+        "index": "question",
+        "add": "add question",
+        "choices": {
+            "name": "choices",
+            "add": "add choice"
+        }
     }
 }

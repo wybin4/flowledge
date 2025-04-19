@@ -1,0 +1,13 @@
+.icon {
+    color: var(--light);
+
+    margin-top: -1px;
+
+    cursor: move;
+}
+
+.list {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

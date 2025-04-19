@@ -4,6 +4,7 @@ import { SettingType, SettingValue } from "@/types/Setting";
 import { UpdatableSetting } from "@/hooks/useSettings";
 import { SettingWrapperContainer } from "./SettingWrapperContainer";
 import { SettingWrapperBody } from "./SettingWrapperBody";
+import { areSettingWrapperContainerPropsEqual, areSettingWrapperPropsEqual } from "./areSettingWrapperPropsEqual";
 
 export interface SettingWrapperProps {
     setting: SettingValue;
@@ -39,7 +40,6 @@ export const SettingWrapper = memo(({
         </SettingWrapperContainer>
     );
 }, (prevProps, nextProps) =>
-    JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
-    prevProps.setting._id === nextProps.setting._id &&
-    prevProps.validateError === nextProps.validateError
+    areSettingWrapperPropsEqual(prevProps, nextProps) &&
+    areSettingWrapperContainerPropsEqual(prevProps, nextProps)
 );

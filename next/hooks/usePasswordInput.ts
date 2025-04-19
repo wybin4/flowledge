@@ -7,7 +7,6 @@ export const usePasswordInput = () => {
     const icon = useIcon(hide ? 'password-hide' : 'password-show');
 
     const togglePassword = () => {
-        console.log('sdfsf')
         setHide(prev => !prev)
     };
 

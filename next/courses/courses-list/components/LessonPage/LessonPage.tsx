@@ -17,6 +17,7 @@ import { StuffItem } from "@/stuff/components/StuffItem";
 import { Stuff } from "@/stuff/types/Stuff";
 import { StuffTypes } from "@/stuff/types/StuffTypes";
 import CollapsibleSection from "@/components/CollapsibleSection/CollapsibleSection";
+import { useRouter } from "next/navigation";
 
 export type LessonsPageProps = {
     mode: PageMode;
@@ -28,6 +29,8 @@ export const LessonPage = ({ mode, lesson }: LessonsPageProps) => {
     const [selectedTab, setSelectedTab] = useState<LessonTabs>(tabs[0]);
     const [markdownText, setMarkdownText] = useState<string>('');
     const isEditorMode = mode === PageMode.Editor;
+
+    const router = useRouter();
 
     const onDownloadStuff = (stuff: LessonStuff) => {
         if (stuff.type === StuffTypes.Link) {
@@ -84,7 +87,12 @@ export const LessonPage = ({ mode, lesson }: LessonsPageProps) => {
                                     value={tab}
                                     selectedValue={selectedTab}
                                     label={`lesson.${tab}`}
-                                    onClick={() => setSelectedTab(tab)}
+                                    onClick={() => {
+                                        setSelectedTab(tab);
+                                        if (tab === LessonTabs.Survey) {
+                                            router.push('?survey=true');
+                                        }
+                                    }}
                                     className={styles.tab}
                                 />
                             )}

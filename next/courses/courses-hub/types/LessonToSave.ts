@@ -1,4 +1,13 @@
-export type LessonToSaveOnDraftRequest = {
+export enum LessonSaveType {
+    Draft = 'DRAFT',
+    Details = 'DETAILS',
+}
+
+interface LessonToSaveRequest {
+    type: LessonSaveType;
+}
+
+export interface LessonToSaveOnDraftRequest extends LessonToSaveRequest {
     videoId?: string;
     synopsis?: string;
     survey?: string;
@@ -16,7 +25,12 @@ export type LessonToSaveOnDetailsRequestTime = {
     autoDetect?: boolean;
 }
 
-export type LessonToSaveOnDetailsRequest = {
+export interface LessonToSaveOnDetailsRequest extends
+    LessonToSaveRequest,
+    Omit<LessonToSaveOnDetails, 'time'>,
+    LessonToSaveOnDetailsRequestTime { }
+
+export type LessonToSaveOnDetails = {
     _id: string;
     title: string;
     time: LessonToSaveOnDetailsRequestTime;

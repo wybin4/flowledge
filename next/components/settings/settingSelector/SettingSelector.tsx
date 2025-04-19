@@ -33,4 +33,7 @@ export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingS
             ) : null}
         </InputBoxWrapper>
     );
-}, (prevProps, nextProps) => JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting));
+}, (prevProps, nextProps) =>
+    JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting) &&
+    prevProps.disabled === nextProps.disabled
+);

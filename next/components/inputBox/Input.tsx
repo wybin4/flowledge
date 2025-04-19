@@ -36,7 +36,7 @@ export const Input = memo(({
             }
         } as any)
     };
-    
+   
     return useMemo(() => (
         <div data-type='input-container' className={cn(styles.inputContainer, className, {
             [styles.inputDisabled]: disabled || readOnly

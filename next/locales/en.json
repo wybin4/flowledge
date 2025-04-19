@@ -317,5 +317,9 @@
     "minutes-abbr": "min",
     "hours-abbr": "h",
     "time-unit-selection": "choose time unit",
-    "auto-detect": "auto detect"
+    "auto-detect": "auto detect",
+    "questions": {
+        "name": "questions",
+        "add": "add question"
+    }
 }

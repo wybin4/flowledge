@@ -8,8 +8,8 @@ import java.util.*
 data class CourseLessonModel(
     override val _id: String,
     override val imageUrl: String? = null,
-    override val time: String? = null,
-    override val title: String,
+    override var time: String? = null,
+    override var title: String,
     override val courseId: String? = null,
     override val sectionId: String? = null,
     override val isVisible: Boolean,
@@ -18,5 +18,5 @@ data class CourseLessonModel(
     override val updatedAt: Date,
     override val surveyText: String? = null,
     override val synopsis: String? = null,
-    override val isDraft: Boolean? = null,
+    override var isDraft: Boolean? = null,
 ) : CourseLesson

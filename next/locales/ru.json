@@ -322,5 +322,9 @@
     "minutes-abbr": "мин",
     "hours-abbr": "ч",
     "time-unit-selection": "выберите единицу времени",
-    "auto-detect": "автоопределение"
+    "auto-detect": "автоопределение",
+    "questions": {
+        "name": "вопросы",
+        "add": "добавить вопрос"
+    }
 }

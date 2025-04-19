@@ -20,7 +20,7 @@ import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import { integrationApiClient, neuralApiClient, userApiClient, userApiClientPrefix } from "@/apiClient";
 import { SynopsisCreateResponse } from "../../../types/SynopsisCreateResponse";
 import { SurveyCreateResponse } from "../../../types/SurveyCreateResponse";
-import { LessonToSaveOnDraftRequest, LessonToSaveOnDraftResponse } from "../../../types/LessonToSave";
+import { LessonSaveType, LessonToSaveOnDraftRequest, LessonToSaveOnDraftResponse } from "../../../types/LessonToSave";
 import { usePathname, useRouter } from "next/navigation";
 import { SettingType, SettingValueType } from "@/types/Setting";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
@@ -75,7 +75,7 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
 
     const saveLesson = (body?: LessonToSaveOnDraftRequest) =>
         userApiClient.post<LessonToSaveOnDraftResponse>(
-            `${coursesHubLessonsPrefixApi}.create?draft=true`, body
+            `${coursesHubLessonsPrefixApi}.create`, body
         );
 
     const checkIcon = useIcon('round-check');
@@ -154,7 +154,7 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
             if (createSurvey && createSurvey.value) {
                 setLoadingString(`${coursesHubLessonsPrefixTranslate}.survey-loading`);
                 const { survey: surveyResult } = await integrationApiClient.post<SurveyCreateResponse>('survey.create', {
-                    integration_id: "67e82f27f026b5eeb6f74713",
+                    integration_id: "67e82f27f026b5eeb6f74713", // TODO
                     context: {
                         text: synopsis,
                         num_questions: 5
@@ -195,7 +195,10 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
 
             setLoadingString(`${coursesHubLessonsPrefixTranslate}.creating`);
 
-            const result = await saveLesson({ videoId, survey, synopsis, isVisible, sectionId });
+            const result = await saveLesson({ 
+                videoId, survey, synopsis, isVisible, sectionId,
+                type: LessonSaveType.Draft
+             });
             lessonId = result.lessonId;
 
             if (lessonId) {

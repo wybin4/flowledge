@@ -1,0 +1,15 @@
+package eduflow.admin.course.dto.lesson.create
+
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type"
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = LessonAddDetailsRequest::class, name = "DETAILS"),
+    JsonSubTypes.Type(value = LessonCreateDraftRequest::class, name = "DRAFT")
+)
+sealed class LessonCreateRequest

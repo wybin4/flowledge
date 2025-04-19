@@ -38,7 +38,7 @@ export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000, di
 
         setInputValue(value);
     };
-
+    
     return (
         <Input
             type={type as InputType}
@@ -51,4 +51,7 @@ export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000, di
             disabled={disabled}
         />
     );
-}, (prevProps, nextProps) => JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting));
+}, (prevProps, nextProps) =>
+    JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting) &&
+    prevProps.disabled === nextProps.disabled
+);

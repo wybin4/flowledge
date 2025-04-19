@@ -1,11 +1,12 @@
 "use client";
-import { memo } from "react";
-import { ComplexSettingValueType, SettingOption, SettingType, SettingValue, SettingValueType } from "@/types/Setting";
+import { memo, useState } from "react";
+import { ComplexSettingValueType, SettingOption, SettingType, SettingValue } from "@/types/Setting";
 import { SettingWrapperContainer } from "./SettingWrapperContainer";
-import { SettingWrapperBody } from "./SettingWrapperBody";
 import styles from "./SettingWrapper.module.css";
 import { SettingWrapperProps } from "./SettingWrapper";
 import { UpdatableSetting } from "@/hooks/useSettings";
+import { areSettingWrapperContainerPropsEqual } from "./areSettingWrapperPropsEqual";
+import { MultiSettingWrapperBodyRenderer } from "./MultiSettingWrapperBodyRenderer";
 
 export type MultiSettingWrapperPlaceholder = (type: SettingType) => string;
 export type MultiSettingWrapperAdditionalPropsLabel = (val: number) => string | undefined;
@@ -27,58 +28,35 @@ export interface MultiSettingWrapperProps extends Omit<SettingWrapperProps, 'set
 }
 
 export const MultiSettingWrapper = memo(({
-    setting: settingProps, types, additionalProps,
+    setting, types, additionalProps,
     handleSave, className,
     debounceTime = 1000,
     validateError
 }: MultiSettingWrapperProps) => {
+    const [settingProps, setSettingProps] = useState<MultiSettingWrapperSetting>(setting);
+    const hasHeaderChildren = !!types.filter(type => type === SettingType.Radio).length;
+
     const multiHandleSave = (
         newValue: UpdatableSetting,
         labeled?: string
     ) => {
         if (labeled) {
             const updatedSetting = {
-                id: newValue.id,
+                ...newValue,
                 value: {
                     ...settingProps.value,
                     [labeled]: newValue.value,
                 }
-            };
+            } as UpdatableSetting;
+            setSettingProps(prev => ({
+                ...prev,
+                value: {
+                    ...prev.value,
+                    [labeled]: newValue.value,
+                } as ComplexSettingValueType
+            }));
             handleSave(updatedSetting);
         }
-    };
-
-    const renderSettingWrapperBody = (type: SettingType, index: number, body: boolean) => {
-        const { placeholder, disable, label, ...rest } = additionalProps || {};
-        const isRadio = type === SettingType.Radio;
-        const setting = {
-            ...settingProps, type,
-            [isRadio ? 'i18nLabel' : 'placeholder']: placeholder?.(type),
-            ...rest
-        };
-
-        if ((body && type === SettingType.Radio) || (!body && type !== SettingType.Radio)) {
-            return null;
-        }
-
-        const labeled = label?.(index) || '';
-        
-        return (
-            <SettingWrapperBody
-                key={index}
-                debounceTime={debounceTime}
-                withWrapper={false}
-                setting={{
-                    ...setting, type,
-                    value: settingProps.value[labeled],
-                    packageValue: settingProps.packageValue[labeled],
-                    [isRadio ? 'i18nLabel' : 'placeholder']: placeholder?.(type),
-                    ...rest
-                }}
-                handleSave={(newValue) => multiHandleSave(newValue, labeled)}
-                disabled={disable?.(setting)}
-            />
-        );
     };
 
     return (
@@ -88,11 +66,36 @@ export const MultiSettingWrapper = memo(({
             validateError={validateError}
             className={className}
             headerChildren={
-                types.map((type, index) => renderSettingWrapperBody(type, index, false)).filter(i => !!i)
+                hasHeaderChildren && types
+                    .map((type, index) => (
+                        <MultiSettingWrapperBodyRenderer
+                            key={index}
+                            type={type}
+                            index={index}
+                            body={false}
+                            settingProps={settingProps}
+                            additionalProps={additionalProps}
+                            debounceTime={debounceTime}
+                            multiHandleSave={multiHandleSave}
+                        />))
+                    .filter(i => !!i)
             }
         >
             <div className={styles.multiContainer}>
-                {types.map((type, index) => renderSettingWrapperBody(type, index, true)).filter(i => !!i)}
+                {types
+                    .map((type, index) => (
+                        <MultiSettingWrapperBodyRenderer
+                            key={index}
+                            type={type}
+                            index={index}
+                            body={true}
+                            settingProps={settingProps}
+                            additionalProps={additionalProps}
+                            debounceTime={debounceTime}
+                            multiHandleSave={multiHandleSave}
+                        />))
+                    .filter(i => !!i)
+                }
             </div>
         </SettingWrapperContainer>
     );
@@ -100,5 +103,5 @@ export const MultiSettingWrapper = memo(({
     JSON.stringify(prevProps.types) === JSON.stringify(nextProps.types) &&
     JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
     prevProps.setting._id === nextProps.setting._id &&
-    prevProps.validateError === nextProps.validateError
+    (areSettingWrapperContainerPropsEqual as any)(prevProps, nextProps)
 );

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./SettingWrapper.module.css";
 import cn from "classnames";
 import { SettingWrapperProps } from "./SettingWrapper";
+import { areSettingWrapperContainerPropsEqual } from "./areSettingWrapperPropsEqual";
 
 export interface SettingWrapperContainerProps extends Pick<
     SettingWrapperProps, 'className' | 'withWrapper' | 'validateError' | 'headerChildren'
@@ -40,6 +41,4 @@ export const SettingWrapperContainer = memo(({
             {validateError !== '' && <div className={styles.error}>{validateError}</div>}
         </div>
     );
-}, (prevProps, nextProps) =>
-    prevProps.validateError === nextProps.validateError
-);
+}, areSettingWrapperContainerPropsEqual as any);

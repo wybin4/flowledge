@@ -64,7 +64,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
     const handleSave = (setting: UpdatableSetting) => {
         setItem(prev => (prev ? { ...prev, [setting.id]: setting.value } : prev));
     };
-
+    
     const renderSettings = () => {
         const settings = settingKeys.map((key) => getSetting(key.name));
 

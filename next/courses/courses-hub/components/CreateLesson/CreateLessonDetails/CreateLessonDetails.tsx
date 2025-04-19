@@ -2,10 +2,12 @@
 
 import { userApiClient } from "@/apiClient";
 import EnhancedItem from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
-import { LessonToSaveOnDetailsRequest, LessonToSaveOnDetailsRequestTime } from "@/courses/courses-hub/types/LessonToSave";
-import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
+import { LessonSaveType, LessonToSaveOnDetails, LessonToSaveOnDetailsRequest, LessonToSaveOnDetailsRequestTime } from "@/courses/courses-hub/types/LessonToSave";
+import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate, coursesHubSectionsPrefixTranslate } from "@/helpers/prefixes";
 import { SettingType, SettingValue } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
+import { TimeUnit } from "@/types/TimeUnit";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
 export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: boolean }) => {
@@ -15,8 +17,11 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
     const minutesVal = t('minutes-abbr');
     const hoursVal = t('hours-abbr');
 
+    const router = useRouter();
+    const pathname = usePathname();
+
     return (
-        <EnhancedItem<LessonToSaveOnDetailsRequest, LessonToSaveOnDetailsRequest>
+        <EnhancedItem<LessonToSaveOnDetails, LessonToSaveOnDetailsRequest>
             mode={TablePageMode.CREATE}
             prefix={translationPrefix}
             apiPrefix={coursesHubLessonsPrefixApi}
@@ -28,7 +33,7 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
                     types: [
                         SettingType.InputNumber,
                         SettingType.SelectorInfinite,
-                        ...(hasVideo ? [SettingType.Radio] : [])
+                        // ...(hasVideo ? [SettingType.Radio] : []) TODO: fix it
                     ],
                     hasDescription: true,
                     additionalProps: {
@@ -55,11 +60,10 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
                             }
                         },
                         options: [
-                            { label: minutesVal, value: minutesVal },
-                            { label: hoursVal, value: hoursVal }
+                            { label: minutesVal, value: TimeUnit.MINS },
+                            { label: hoursVal, value: TimeUnit.HOURS }
                         ],
                         disable: (setting: SettingValue) => {
-                            console.warn('pl1', (setting.value as LessonToSaveOnDetailsRequestTime)['autoDetect'])
                             const isAutoDetectEnabled = (setting.value as LessonToSaveOnDetailsRequestTime)['autoDetect'];
                             if (setting.type !== SettingType.Radio && isAutoDetectEnabled) {
                                 return true;
@@ -69,14 +73,19 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
                     }
                 }
             ]}
-            transformItemToSave={item => item}
+            transformItemToSave={item => {
+                const { _id, title, time } = item;
+                return { _id, title, ...time, type: LessonSaveType.Details }
+            }}
+            onActionCallback={() => router.replace(pathname)}
+            isBackWithRouter={false}
             createEmptyItem={() => ({
                 _id,
                 title: '',
                 time: {
-                    time: undefined,
-                    timeUnit: minutesVal,
-                    autoDetect: true
+                    time: 0,
+                    timeUnit: TimeUnit.MINS,
+                    autoDetect: false
                 }
             })}
         />

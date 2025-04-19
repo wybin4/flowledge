@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   mongo:
-    image: mongo:latest
+    image: sha256:ab6556e6d71d9773dd74002db924dc637abb49d079d6ef945982af3078fdf22c
     container_name: mongo
     environment:
       MONGO_INITDB_REPLICA_SET: rs0

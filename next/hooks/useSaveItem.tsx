@@ -19,7 +19,7 @@ export const useSaveItem = async<T, U>({
     const url = isCreate ? `${prefix}.create` : `${prefix}.update/${_id}`;
     if (item) {
         const body = transformItem ? transformItem(item) : item;
-        return await apiClient.post<T>(url, { method, body: JSON.stringify(body) });
+        return await apiClient.post<T>(url, body);
     }
     return undefined;
 }   

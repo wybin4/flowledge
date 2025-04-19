@@ -50,6 +50,7 @@
   --button: #191919;
   --button-transparent: rgba(255, 255, 255, 0.129);
   --button-hover: #2a2a2a;
+  --button-tip: rgb(79 79 79);
   --sidebar: #101010;
   --sidebar-hover: rgba(255, 255, 255, 0.1);
   --card: rgb(12, 12, 12);

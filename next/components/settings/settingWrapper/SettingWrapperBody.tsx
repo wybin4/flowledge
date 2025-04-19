@@ -6,6 +6,7 @@ import { SelectorSetting, SettingType, SimpleSettingValueType } from "@/types/Se
 import { SettingRadio } from "../SettingRadio/SettingRadio";
 import { SettingCode } from "../SettingCode/SettingCode";
 import { SettingWrapperProps } from "./SettingWrapper";
+import { areSettingWrapperPropsEqual } from "./areSettingWrapperPropsEqual";
 
 export interface SettingWrapperBodyProps extends Omit<SettingWrapperProps, 'validateError' | 'className'> { }
 
@@ -41,7 +42,4 @@ export const SettingWrapperBody = memo(({
         default:
             return null;
     }
-}, (prevProps, nextProps) =>
-    JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
-    prevProps.setting._id === nextProps.setting._id
-);
+}, areSettingWrapperPropsEqual);

@@ -7,9 +7,10 @@ import { useIcon } from '@/hooks/useIcon';
 type SortableItemProps = {
     id: string;
     children: (node: ReactNode) => ReactNode;
+    className?: string;
 };
 
-export const SortableItem = ({ id, children }: SortableItemProps) => {
+export const SortableItem = ({ id, children, className }: SortableItemProps) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
     const draggableIcon = useIcon('draggable');
 
@@ -19,7 +20,7 @@ export const SortableItem = ({ id, children }: SortableItemProps) => {
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes}>
+        <div ref={setNodeRef} className={className} style={style} {...attributes}>
             {children(<div className={styles.icon} {...listeners}>{draggableIcon}</div>)}
         </div>
     );

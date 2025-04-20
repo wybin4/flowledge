@@ -322,9 +322,13 @@
         "name": "questions",
         "index": "question",
         "add": "add question",
+        "delete": "delete question",
         "choices": {
             "name": "choices",
             "add": "add choice"
         }
+    },
+    "survey": {
+        "to-lesson": "survey to lesson"
     }
 }

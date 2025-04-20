@@ -22,6 +22,12 @@ type RightSidebarProps = {
 export default function RightSidebar({ children, content, useSidebarHook, expanded }: RightSidebarProps) {
     const { isExpanded, hydrated, toggleSidebar } = useSidebarHook ? useSidebarHook('right', expanded) : useSidebar('right');
 
+    if (isExpanded) {
+        document.body.classList.add('no-scroll');
+    } else {
+        document.body.classList.remove('no-scroll');
+    }
+
     if (!hydrated) {
         return null;
     }

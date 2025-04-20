@@ -23,10 +23,6 @@
     left: 0;
 }
 
-.right .item {
-    right: 0;
-}
-
 .left .expanded {
     width: 16rem;
 }
@@ -48,6 +44,12 @@
 }
 
 /* RightSidebar styles start */
+
+.right .item {
+    right: 0;
+
+    overflow-y: scroll;
+}
 
 .right .expanded {
     width: 30rem;

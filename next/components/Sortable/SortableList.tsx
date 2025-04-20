@@ -11,11 +11,12 @@ type SortableListProps<T extends Identifiable> = {
     setItems: (items: T[]) => void;
     renderItem: (item: T, index: number) => ReactNode;
     buttonPosition?: ChildrenPosition;
+    className?: string;
 };
 
 export const SortableList = <T extends Identifiable>({
     items, setItems,
-    renderItem,
+    renderItem, className,
     buttonPosition = ChildrenPosition.Right
 }: SortableListProps<T>) => {
     const sensors = useSensors(
@@ -40,7 +41,7 @@ export const SortableList = <T extends Identifiable>({
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={items.map(item => item._id)} strategy={verticalListSortingStrategy}>
                 {items.map((item, index) => (
-                    <SortableItem key={item._id} id={item._id}>{
+                    <SortableItem key={item._id} id={item._id} className={className}>{
                         button => (
                             <div className={styles.list}>
                                 {buttonPosition === ChildrenPosition.Left && button}

@@ -65,6 +65,10 @@ body {
   font-family: "IBM Plex Mono", "Noto Sans Mono Variable", "Noto Sans Mono", monospace;
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
 @media (max-width: 1950px) {
 
   html,

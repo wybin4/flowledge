@@ -1,11 +1,18 @@
 import { useIcon } from "@/hooks/useIcon";
 import styles from "./MenuButton.module.css";
 import cn from "classnames";
+import { ItemSize } from "@/types/ItemSize";
 
-export const MenuButton = ({ isExpanded, onClick }: { isExpanded: boolean, onClick: () => void }) => {
+type MenuButtonProps = {
+    isExpanded: boolean;
+    onClick: () => void;
+    size?: ItemSize;
+};
+
+export const MenuButton = ({ isExpanded, onClick, size = ItemSize.Big }: MenuButtonProps) => {
     const icon = useIcon('menu');
     return (
-        <div className={styles.container}>
+        <div className={cn(styles.container, styles[size])}>
             <div onClick={onClick} className={cn(styles.icon, {
                 [styles.expanded]: isExpanded
             })}>

@@ -1,5 +1,6 @@
 .container {
     padding: 1rem 2rem;
+    margin-top: -1.45rem;
 }
 
 .container [role='button'] {
@@ -27,7 +28,13 @@
 }
 
 .expanded {
-    width: 58%;
+    width: 62%;
+    height: 93vh;
+
+    padding-left: 0.5rem;
+    padding-right: 3.5rem;
+
+    overflow: scroll;
 }
 
 .container div {
@@ -39,4 +46,20 @@
 .container input,
 .container input:hover {
     border: none !important;
+}
+
+.questionContainer {
+    margin-left: -7px;
+}
+
+.titleContainer h2 {
+    margin: 0;
+}
+
+.mb {
+    margin-bottom: 2.5rem;
+}
+
+.mt {
+    margin-top: 2.5rem;
 }

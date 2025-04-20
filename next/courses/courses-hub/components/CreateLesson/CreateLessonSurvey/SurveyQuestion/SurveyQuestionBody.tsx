@@ -1,50 +1,79 @@
 import { TextArea } from "@/components/InputBox/TextArea";
 import { t } from "i18next";
-import { SurveyQuestionItem, SurveyQuestionItemType } from "./SurveyQuestionItem";
+import { SurveyQuestionItem } from "./SurveyQuestionItem";
 import styles from "./SurveyQuestion.module.css";
 import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
-import { SurveyChoice } from "@/courses/courses-hub/types/SurveyChoice";
 import { SortableList } from "@/components/Sortable/SortableList";
 import { SurveyChoiceBody } from "../SurveyChoice/SurveyChoiceBody";
+import cn from "classnames";
+import { useEffect } from "react";
+import { useSurveyChoices } from "@/courses/courses-hub/hooks/useSurveyChoices";
+import { ItemSize } from "@/types/ItemSize";
 
 type SurveyQuestionBodyProps = {
     number: number;
     question: SurveyQuestion;
-    setQuestion: (newQuestion: SurveyQuestion) => void;
+    setQuestion: (newQuestion?: SurveyQuestion, _id?: string) => void;
+    canDeleteQuestions: boolean;
 };
 
-export const SurveyQuestionBody = ({ number, question, setQuestion }: SurveyQuestionBodyProps) => {
-    const handleTextChange = (text: string) => {
+export const SurveyQuestionBody = ({
+    number,
+    question, setQuestion,
+    canDeleteQuestions
+}: SurveyQuestionBodyProps) => {
+    const {
+        choices, setChoices,
+        canAddChoices, canDeleteChoices,
+        handleAddChoice, handleDeleteChoice
+    } = useSurveyChoices(question.choices);
+
+    useEffect(() => {
+        setQuestion({ ...question, choices });
+    }, [JSON.stringify(choices)]);
+
+    const handleQuestionTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const text = e.target.value;
         setQuestion({ ...question, text });
     };
 
-    const handleChoicesChange = (newChoices: SurveyChoice[]) => {
-        setQuestion({ ...question, choices: newChoices });
-    };
+    const handleDeleteQuestion = () => canDeleteQuestions && setQuestion(undefined, question._id);
 
-    const handleAddChoice = () => {
-        const newChoice: SurveyChoice = {
-            _id: String(Date.now()),
-            text: '',
-            isCorrect: false,
-        };
-        handleChoicesChange([...question.choices, newChoice]);
-    };
-    
     return (
         <SurveyQuestionItem
+            _id={question._id}
             number={number}
-            type={SurveyQuestionItemType.Big}
+            size={ItemSize.Big}
+            handleDelete={handleDeleteQuestion}
+            deleteClassNames={cn({
+                [styles.locked]: !canDeleteQuestions
+            })}
             children={
                 <>
-                    <TextArea value={question.text} />
-                    <div>{t('questions.choices.name')}</div>
+                    <TextArea value={question.text} onChange={handleQuestionTextChange} />
+                    {!!choices.length && <div>{t('questions.choices.name')}</div>}
                     <SortableList
-                        items={question.choices}
-                        setItems={handleChoicesChange}
-                        renderItem={item => <SurveyChoiceBody choice={item} />}
+                        items={choices}
+                        setItems={setChoices}
+                        renderItem={item =>
+                            <SurveyChoiceBody
+                                setChoices={setChoices}
+                                onDelete={handleDeleteChoice}
+                                deleteClassNames={cn({
+                                    [styles.locked]: !canDeleteChoices
+                                })}
+                                choice={item}
+                            />
+                        }
                     />
-                    <div className={styles.addChoice}>{t('questions.choices.add')}</div>
+                    <div
+                        onClick={handleAddChoice}
+                        className={cn(styles.action, {
+                            [styles.locked]: !canAddChoices
+                        })}
+                    >
+                        {t('questions.choices.add')}
+                    </div>
                 </>
             }
         />

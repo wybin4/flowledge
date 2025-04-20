@@ -8,19 +8,20 @@ export default async function DynamicCourseHubLessonPage({
     params, searchParams
 }: {
     params: { lesson: string };
-    searchParams?: { details?: string, hasVideo?: string, survey?: string };
+    searchParams?: { details?: string, hasVideo?: string, survey?: string, questionId?: string };
 }) {
     const { lesson } = await params;
     const details = await searchParams?.details || 'false';
     const hasVideo = await searchParams?.hasVideo || 'false';
     const survey = await searchParams?.survey || 'false';
+    const questionId = await searchParams?.questionId;
 
     if (JSON.parse(details) === true) {
         return (<CreateLessonDetails _id={lesson} hasVideo={JSON.parse(hasVideo) === true} />);
     }
 
     if (JSON.parse(survey) === true) {
-        return (<CreateLessonSurvey />);
+        return (<CreateLessonSurvey selectedQuestionId={questionId} />);
     }
 
     return (<LessonPage

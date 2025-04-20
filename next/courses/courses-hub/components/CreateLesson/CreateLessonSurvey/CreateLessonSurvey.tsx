@@ -10,68 +10,104 @@ import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
 import { SurveyQuestionBody } from "./SurveyQuestion/SurveyQuestionBody";
 import { SortableList } from "@/components/Sortable/SortableList";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { useScrollToElement } from "@/hooks/useScrollToElement";
+import { useAddQuestionToUrl } from "@/courses/courses-hub/hooks/useAddQuestionToUrl";
+import { MenuButton } from "@/components/MenuButton/MenuButton";
+import { ItemSize } from "@/types/ItemSize";
 
-export const CreateLessonSurvey = () => {
+type CreateLessonSurveyProps = {
+    selectedQuestionId?: string;
+};
+
+export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyProps) => {
+    const handleScrollToQuestion = useAddQuestionToUrl();
+
     const [questions, setQuestions] = useState<SurveyQuestion[]>([{
         _id: '1',
         text: "какую цель преследует статья с проектами для начинающих python-разработчиков?",
         choices: [{
-            _id: '1',
+            _id: '1111',
             text: "1",
             isCorrect: true
         }, {
-            _id: '2',
+            _id: '2222',
             text: "2",
         }, {
-            _id: '3',
+            _id: '3333',
             text: "3",
         }, {
-            _id: '4',
+            _id: '4444',
             text: "4",
         }]
     }, {
         _id: '2',
         text: "что помогут сделать предложенные в статье проекты для начинающих python-разработчиков?",
         choices: [{
-            _id: '5',
+            _id: '5555',
             text: "1",
         }, {
-            _id: '6',
+            _id: '6666',
             text: "2",
         }, {
-            _id: '7',
+            _id: '7777',
             text: "3",
             isCorrect: true
         }, {
-            _id: '8',
+            _id: '8888',
             text: "4",
         }]
     }]);
 
+    const canDeleteQuestions = questions.length > 1;
+
     const { t } = useTranslation();
 
-    const handleSetQuestion = (newQuestion: SurveyQuestion) => {
+    const handleSetQuestion = (newQuestion?: SurveyQuestion, _id?: string) => {
         setQuestions(prevQuestions => {
-            const updatedQuestions = prevQuestions.map(question =>
-                question._id === newQuestion._id ? newQuestion : question
-            );
-            return updatedQuestions;
+            if (_id) {
+                return prevQuestions.filter(question => question._id !== _id);
+            } else if (newQuestion) {
+                return prevQuestions.map(question =>
+                    question._id === newQuestion._id ? newQuestion : question
+                );
+            }
+            return prevQuestions;
         });
     }
 
+    const handleAddQuestion = () => {
+        const newId = String(Date.now())
+        const newQuestion: SurveyQuestion = {
+            _id: newId,
+            text: t('type-here'),
+            choices: []
+        };
+        setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
+        handleScrollToQuestion(newId);
+    };
+
+    useScrollToElement(selectedQuestionId);
+
     return (
-        <RightSidebar content={classNames =>
+        <RightSidebar content={_ =>
             <div className={styles.container}>
-                <div className={styles.titleContainer}>
+                <div className={cn(styles.titleContainer, styles.mt)}>
                     <div className={styles.titleText}>{t('questions.name')} ({questions.length})</div>
-                    <div className={styles.titleButton}>{t('questions.add')}</div>
+                    <div
+                        onClick={handleAddQuestion}
+                        className={styles.titleButton}
+                    >
+                        {t('questions.add')}
+                    </div>
                 </div>
                 <SortableList
                     items={questions}
                     setItems={setQuestions}
                     buttonPosition={ChildrenPosition.Left}
+                    className={styles.questionContainer}
                     renderItem={(item, index) => (
                         <SurveyQuestionItem
+                            _id={item._id}
                             text={item.text}
                             number={index + 1}
                             key={index}
@@ -83,13 +119,17 @@ export const CreateLessonSurvey = () => {
             <div className={cn(styles.container, {
                 [styles.expanded]: isExpanded
             })}>
-                <button onClick={toggleSidebar}>toggle</button>
+                <div className={cn(styles.titleContainer, styles.mb)}>
+                    <h2>{t('survey.to-lesson')}</h2>
+                    <MenuButton size={ItemSize.Little} isExpanded={isExpanded} onClick={toggleSidebar} />
+                </div>
                 {questions.map((question, index) => (
                     <SurveyQuestionBody
                         key={index}
                         number={index + 1}
                         question={question}
                         setQuestion={handleSetQuestion}
+                        canDeleteQuestions={canDeleteQuestions}
                     />
                 ))}
             </div>

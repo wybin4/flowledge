@@ -10,26 +10,31 @@
 
     padding: 1rem;
     margin: 1rem 0rem;
-
 }
 
 .little {
     width: 82%;
-}
-
-.body {
-    display: flex;
-    align-items: center;
-}
-
-.little .body {
-
-    gap: 2rem;
 
     cursor: pointer;
 }
 
-.big .body {
+.little .title {
+    width: 100%;
+
+    gap: 2rem;
+}
+
+.body,
+.title {
+    display: flex;
+    align-items: center;
+}
+
+.body {
+    justify-content: space-between;
+}
+
+.big .title {
     gap: 1rem;
 }
 
@@ -38,7 +43,7 @@
     font-size: 0.875rem;
 }
 
-.little .body:hover {
+.little .title:hover {
     filter: brightness(80%);
 }
 
@@ -64,10 +69,16 @@
     padding-right: 0.7rem;
 }
 
-.addChoice {
+.action {
     text-decoration: underline;
 
     margin: 0.2rem 0;
 
     cursor: pointer;
+}
+
+.locked {
+    color: var(--description-text) !important;
+    text-decoration: none;
+    cursor: not-allowed !important;
 }

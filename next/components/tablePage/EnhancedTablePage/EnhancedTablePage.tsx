@@ -15,12 +15,13 @@ import { Identifiable } from "@/types/Identifiable";
 import { IconKey } from "@/hooks/useIcon";
 import { EnhancedTablePageItem } from "./EnhancedTablePageItem/EnhancedTablePageItem";
 import { TablePageMode } from "@/types/TablePageMode";
-import { useGetEnhancedTablePageItems } from "./hooks/useGetEnhancedTablePageItems";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { EnhancedItemChildren } from "./types/EnhancedItemChildren";
 import cn from "classnames";
 import { GetDataPage } from "@/types/GetDataPage";
 import { DataPageHookFunctions } from "@/types/DataPageHook";
+import { useGetItems } from "@/hooks/useGetItems";
+import { useEnhancedPagination } from "@/hooks/useEnhancedPagination";
 
 interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
@@ -48,20 +49,12 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
     getDataPageFunctions,
 }: EnhancedTablePageProps<T, U>) => {
     const { t } = useTranslation();
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const [sortQuery, setSortQuery] = useState<string>('');
-    const itemsPerPage = pageSize ? pageSize : usePrivateSetting<number>('search.page-size') || 10;
     const locale = useUserSetting<string>('language') || 'en';
     const router = useRouter();
 
     const realPrefix = apiPrefix ?? prefix;
-
-    const getDataPageHook =
-        (paginationProps: GetDataPage) => useGetEnhancedTablePageItems(
-            realPrefix,
-            getDataPageFunctions,
-            paginationProps
-        );
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const query = e.target.value;
@@ -81,9 +74,9 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
         totalCount,
         handleNextPage,
         handlePreviousPage,
-    } = usePagination<T>({
-        itemsPerPage,
-        getDataPageHook,
+    } = useEnhancedPagination<T>({
+        getDataPageFunctions,
+        apiPrefix: realPrefix,
         searchQuery,
         sortQuery,
     });

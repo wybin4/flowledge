@@ -1,11 +1,11 @@
-import { CoursePageItem } from "@/courses/courses-list/types/CoursePageItem";
+import { CourseItem } from "@/courses/courses-list/types/CourseItem";
 import styles from "./CoursesListItemDescription.module.css";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
 import defaultStyles from "@/courses/styles/Default.module.css";
 
 type CoursesListItemDescriptionProps = {
-    description: CoursePageItem['description'];
+    description: CourseItem['description'];
     isExpanded: boolean;
     onReadMore?: () => void;
 }

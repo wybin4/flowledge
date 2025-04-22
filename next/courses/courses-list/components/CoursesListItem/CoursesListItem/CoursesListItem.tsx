@@ -1,30 +1,31 @@
 "use client";
 
 import styles from "./CoursesListItem.module.css";
-import { CoursePageItem } from "@/courses/courses-list/types/CoursePageItem";
+import { CourseItem } from "@/courses/courses-list/types/CourseItem";
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { coursesListPrefix } from "@/helpers/prefixes";
+import { coursesListPrefix, coursesListPrefixApi } from "@/helpers/prefixes";
 import { CoursesListItemActions } from "../CoursesListItemActions/CoursesListItemActions";
 import cn from "classnames";
 import { CoursesListItemDescription } from "../../../../components/CoursesListItemDescription/CoursesListItemDescription";
 import { CoursesListItemMenu } from "../CoursesListItemMenu/CoursesListItemMenu";
 import { CourseTabs } from "@/types/CourseTabs";
 import { CoursesListItemTags } from "../CoursesListItemTags/CoursesListItemTags";
-import { CoursesListItemComments } from "../CoursesListItemComments/CoursesListItemComments";
 import { CoursesItemHeader } from "../../../../components/CoursesItemHeader/CoursesItemHeader";
 import defaultStyles from "@/courses/styles/Default.module.css";
 import { CourseSection } from "@/courses/components/CourseSection/CourseSection";
+import { CoursesListItemComments } from "../CoursesListItemComments/CoursesListItemComments";
+import { userApiClient } from "@/apiClient";
+import { ToggleFavouriteRequest } from "@/courses/courses-list/types/ToggleFavourite";
 
 type CoursesListItemProps = {
-    course: CoursePageItem;
+    course: CourseItem;
     header?: ReactNode;
     pointer?: boolean;
     isListPage: boolean;
 }
 
 export const CoursesListItem = ({ isListPage, course, header, pointer = true }: CoursesListItemProps) => {
-    const [isFavorite, setIsFavorite] = useState<boolean>(course.favorite ?? false);
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedMenuTab, setSelectedMenuTab] = useState<CourseTabs>(CourseTabs.Lessons);
@@ -43,9 +44,20 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
         router.push(pathnamePrefix);
     }
 
-    const actions = <CoursesListItemActions isFavorite={isFavorite} setIsFavorite={setIsFavorite} isExpanded={!isListPage} className={cn({
-        [styles.actionsRight]: isListPage,
-    })} />;
+    const handleToggleFavourite = (isFavourite: boolean) =>
+        userApiClient.post<ToggleFavouriteRequest>(
+            `${coursesListPrefixApi}.toggle-favourite/${course._id}`, { isFavourite }
+        );
+
+    const actions = (
+        <CoursesListItemActions
+            isFavourite={course.isFavourite ?? false}
+            setIsFavourite={handleToggleFavourite}
+            isExpanded={!isListPage}
+            className={cn({
+                [styles.actionsRight]: isListPage,
+            })} />
+    );
 
     const onReadMore = () => {
         router.push(`?tab=${CourseTabs.About}`);
@@ -69,7 +81,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                 />
                 <div className={styles.menuContainer}>
                     <div>
-                        {selectedMenuTab !== CourseTabs.Comments &&
+                        {!isListPage && selectedMenuTab !== CourseTabs.Comments &&
                             <CoursesListItemDescription
                                 description={course.description}
                                 isExpanded={selectedMenuTab === CourseTabs.About}

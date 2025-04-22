@@ -9,5 +9,5 @@ export type DataPageHook<T> = {
 
 export type DataPageHookFunctions<T> = {
     getDataPage: (prefix: string, params: GetDataPage) => Promise<T[]> | T[];
-    getTotalCount: (prefix: string, params: GetTotalCountPage) => Promise<number> | number;
+    getTotalCount?: (prefix: string, params: GetTotalCountPage) => Promise<number> | number;
 };

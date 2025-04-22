@@ -2,7 +2,6 @@
 
 import { getPermissionsPage, getTotalPermissionsCount, Permissions } from "@/collections/Permissions";
 import { Roles } from "@/collections/Roles";
-import { usePagination } from "@/hooks/usePagination";
 import { IPermission } from "@/types/Permission";
 import { TablePage } from "../TablePage/TablePage/TablePage";
 import { PermissionsItem } from "./permissionsItem/PermissionsItem";
@@ -10,24 +9,12 @@ import { useState } from "react";
 import { TablePageSearch } from "../TablePage/TablePage/TablePageSearch";
 import PageLayout from "../PageLayout/PageLayout";
 import { userApiClient } from "@/apiClient";
-import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { TablePageHeader } from "../TablePage/TablePageHeader/TablePageHeader";
-import { useGetEnhancedTablePageItems } from "../TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItems";
-import { GetDataPage } from "@/types/GetDataPage";
+import { useEnhancedPagination } from "@/hooks/useEnhancedPagination";
+import { permissionsPrefix } from "@/helpers/prefixes";
 
 export const PermissionsTablePage = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const itemsPerPage = usePrivateSetting<number>('search.page-size') || 10;
-
-    const getDataPageHook = (paginationProps: GetDataPage) =>
-        useGetEnhancedTablePageItems<IPermission>(
-            'permissions',
-            {
-                getDataPage: (_, props) => getPermissionsPage(props),
-                getTotalCount: (_, props) => getTotalPermissionsCount(props)
-            },
-            paginationProps
-        );
 
     const {
         data,
@@ -36,9 +23,12 @@ export const PermissionsTablePage = () => {
         totalCount,
         handleNextPage,
         handlePreviousPage,
-    } = usePagination<IPermission>({
-        itemsPerPage,
-        getDataPageHook,
+    } = useEnhancedPagination<IPermission>({
+        apiPrefix: permissionsPrefix,
+        getDataPageFunctions: {
+            getDataPage: (_, props) => getPermissionsPage(props),
+            getTotalCount: (_, props) => getTotalPermissionsCount(props)
+        },
         searchQuery,
         setStateCallbacks: Permissions.pushCallback.bind(Permissions),
         removeStateCallbacks: Permissions.popCallback.bind(Permissions),

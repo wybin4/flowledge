@@ -1,4 +1,4 @@
-import { CoursesListItem } from "@/courses/courses-list/components/CoursesListPageItem/CoursesListItem/CoursesListItem";
+import { CoursesListItem } from "@/courses/courses-list/components/CoursesListItem/CoursesListItem/CoursesListItem";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 
@@ -22,8 +22,12 @@ export default async function DynamicCourseListSectionPage({ params }: { params:
                     `,
                     sections: [
                         {
-                            _id: '1',
-                            title: 'работа со смыслами',
+                            section: {
+                                _id: '1',
+                                title: 'работа со смыслами',
+                                courseId: '1',
+                                isVisible: false
+                            },
                             lessons: [
                                 {
                                     _id: '1',
@@ -42,8 +46,12 @@ export default async function DynamicCourseListSectionPage({ params }: { params:
                             ],
                         },
                         {
-                            _id: '2',
-                            title: 'работа с текстом',
+                            section: {
+                                _id: '2',
+                                title: 'работа с текстом',
+                                courseId: '2',
+                                isVisible: false
+                            },
                             lessons: [
                                 {
                                     _id: '1',

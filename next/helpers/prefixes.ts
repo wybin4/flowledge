@@ -5,6 +5,7 @@ export const coursesHubSectionsPrefixApi = 'courses-hub/sections';
 export const coursesHubLessonsPrefixTranslate = 'courses-hub.lessons';
 export const coursesHubLessonsPrefixApi = 'courses-hub/lessons';
 export const coursesListPrefix = 'courses-list';
+export const coursesListPrefixApi = 'courses-list/courses';
 export const rolesPrefix = 'roles';
 export const permissionsPrefix = 'permissions';
 export const userSettingsPrefix = 'user-settings';

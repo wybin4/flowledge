@@ -2,7 +2,7 @@ import { GetDataPage } from "@/types/GetDataPage";
 import { DataPageHook, DataPageHookFunctions } from "@/types/DataPageHook";
 import { useQuery } from '@tanstack/react-query';
 
-export const useGetEnhancedTablePageItems = <T,>(
+export const useGetItems = <T,>(
     prefix: string,
     { getDataPage, getTotalCount }: DataPageHookFunctions<T>,
     { page, pageSize, searchQuery, sortQuery }: GetDataPage
@@ -14,7 +14,8 @@ export const useGetEnhancedTablePageItems = <T,>(
 
     const { data: totalCount, isLoading: isTotalCountLoading } = useQuery<number, Error>({
         queryKey: [`${prefix}TotalCount`, page, searchQuery],
-        queryFn: () => getTotalCount(prefix, { searchQuery })
+        queryFn: () => getTotalCount!(prefix, { searchQuery }),
+        enabled: !!getTotalCount
     });
 
     return {

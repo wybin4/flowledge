@@ -8,9 +8,8 @@ import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.repositories.CourseLessonRepository
 import eduflow.admin.course.repositories.CourseRepository
 import eduflow.admin.course.repositories.CourseSectionRepository
+import eduflow.admin.course.services.CourseService
 import eduflow.admin.course.types.SectionWithLessons
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -19,6 +18,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/courses-hub")
 class CourseHubController(
+    private val courseService: CourseService,
     private val courseRepository: CourseRepository,
     private val courseMapper: CourseMapper,
     private val sectionRepository: CourseSectionRepository,
@@ -82,15 +82,14 @@ class CourseHubController(
         @RequestParam(required = false) searchQuery: String?,
         @RequestParam(required = false) sortQuery: String?
     ): Mono<ResponseEntity<List<CourseModel>>> {
-        val (sortField, sortOrder) = if (sortQuery.isNullOrEmpty()) {
-            "createdAt" to Sort.Direction.DESC
-        } else {
-            sortQuery.split(":").let { it[0] to if (it.getOrElse(1) { "bottom" } == "top") Sort.Direction.ASC else Sort.Direction.DESC }
-        }
-        val pageable = PageRequest.of(page - 1, pageSize, Sort.by(sortOrder, sortField))
+         val options = mapOf(
+            "page" to page as Any,
+            "pageSize" to pageSize as Any,
+            "searchQuery" to searchQuery as Any,
+            "sortQuery" to sortQuery as Any
+        )
 
-        return courseRepository.findByTitleContainingIgnoreCase(searchQuery ?: "", pageable)
-            .collectList()
+        return courseService.getCourses(options)
             .map { ResponseEntity.ok(it) }
     }
 

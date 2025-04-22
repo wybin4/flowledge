@@ -1,14 +1,14 @@
 "use client";
 
-import { CoursePageItem } from "@/courses/courses-list/types/CoursePageItem";
+import { CourseItem } from "@/courses/courses-list/types/CourseItem";
 import { ReactNode } from "react";
 import cn from "classnames";
-import { CourseListImage } from "../../courses-list/components/CoursesListPageItem/CourseListImage/CourseListImage";
+import { CourseListImage } from "../../courses-list/components/CoursesListItem/CourseListImage/CourseListImage";
 import styles from "./CoursesItemHeader.module.css";
 import defaultStyles from "@/courses/styles/Default.module.css";
 
 type CoursesItemHeaderProps = {
-    course: CoursePageItem;
+    course: CourseItem;
     header?: ReactNode;
     pointer?: boolean;
     isListPage?: boolean;

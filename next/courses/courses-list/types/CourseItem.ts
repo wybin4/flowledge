@@ -1,11 +1,11 @@
 import { SectionItem } from "../../types/SectionItem";
 
-export interface CoursePageItem {
+export interface CourseItem {
     _id: string;
     title: string;
     imageUrl: string;
     description?: string;
-    favorite?: boolean;
+    isFavourite?: boolean;
     sections?: SectionItem[];
     tags?: string[];
     comments?: string[];

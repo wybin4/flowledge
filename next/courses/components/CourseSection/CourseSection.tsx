@@ -2,7 +2,7 @@ import { SectionItem } from "@/courses/types/SectionItem";
 import CollapsibleSection, { CollapsibleSectionTagType } from "@/components/CollapsibleSection/CollapsibleSection";
 import CollapsibleSectionChild from "@/components/CollapsibleSection/CollapsibleSectionChild";
 import styles from "./CourseSection.module.css";
-import { CourseListImage } from "../../courses-list/components/CoursesListPageItem/CourseListImage/CourseListImage";
+import { CourseListImage } from "../../courses-list/components/CoursesListItem/CourseListImage/CourseListImage";
 import { useRouter } from "next/navigation";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
@@ -57,7 +57,7 @@ export const CourseSection = ({
     const defaultChildProps = { isActive: false };
 
     const onLessonClick = (id: string) => router.push(`${window.location.pathname}/${id}`);
-    
+
     if (typeof section === 'string') {
         return (
             <CollapsibleSection

@@ -1,10 +1,17 @@
 import { RemoveStateCallbacks, SetStateCallbacks } from "@/types/StateCallback";
 import { IPagination } from "@/types/Pagination";
 import { useState, useEffect } from "react";
-import { DataPageHook, DataPageHookFunctions } from "@/types/DataPageHook";
+import { DataPageHook } from "@/types/DataPageHook";
 import { Identifiable } from "@/types/Identifiable";
 import { GetDataPage } from "@/types/GetDataPage";
 import { useStateUpdate } from "./useStateUpdate";
+
+export type PaginationHook<T extends Identifiable> = {
+    searchQuery: string;
+    sortQuery?: string;
+    setStateCallbacks?: SetStateCallbacks<T>;
+    removeStateCallbacks?: RemoveStateCallbacks<T>;
+};
 
 export const usePagination = <T extends Identifiable>({
     itemsPerPage,
@@ -16,11 +23,7 @@ export const usePagination = <T extends Identifiable>({
 }: {
     itemsPerPage: number;
     getDataPageHook: (paginationProps: GetDataPage) => DataPageHook<T>;
-    searchQuery: string;
-    sortQuery?: string;
-    setStateCallbacks?: SetStateCallbacks<T>;
-    removeStateCallbacks?: RemoveStateCallbacks<T>;
-}): IPagination<T> => {
+} & PaginationHook<T>): IPagination<T> => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [data, setData] = useState<T[]>([]);

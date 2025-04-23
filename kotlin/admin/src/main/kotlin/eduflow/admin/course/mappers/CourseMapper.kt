@@ -1,9 +1,8 @@
 package eduflow.admin.course.mappers
 
-import eduflow.admin.course.dto.course.CourseListGetResponse
+import eduflow.admin.course.dto.course.get.CourseGetByIdBigResponse
 import eduflow.admin.course.dto.course.hub.get.CourseHubGetResponse
-import eduflow.admin.course.dto.course.hub.get.id.CourseHubGetByIdBigResponse
-import eduflow.admin.course.dto.course.hub.get.id.CourseHubGetByIdSmallResponse
+import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.models.CourseModel
@@ -15,28 +14,36 @@ import org.mapstruct.Mapping
 interface CourseMapper {
     fun toHubGetDto(model: CourseModel): CourseHubGetResponse
 
-    @Mapping(target = "lessons", source = "lessons")
-    @Mapping(target = "sections", source = "sections")
-    fun toHubGetByIdBigDto(
+    @Mapping(target = "_id", source = "model._id")
+    fun toGetByIdBigDto(
         model: CourseModel,
         lessons: List<CourseLessonModel> = emptyList(),
-        sections: List<SectionWithLessons> = emptyList()
-    ): CourseHubGetByIdBigResponse {
-        return CourseHubGetByIdBigResponse(
+        sections: List<SectionWithLessons> = emptyList(),
+        subscription: CourseSubscriptionModel?
+    ): CourseGetByIdBigResponse {
+        return CourseGetByIdBigResponse(
             _id = model._id,
             title = model.title,
             imageUrl = model.imageUrl,
+            description = model.description,
             lessons = lessons,
             sections = sections,
+            isFavourite = subscription?.isFavourite ?: false,
         )
     }
 
-    fun toHubGetByIdSmallDto(model: CourseModel): CourseHubGetByIdSmallResponse
-
     @Mapping(target = "_id", source = "model._id")
-    @Mapping(
-        target = "isFavorite",
-        expression = "java( (subscription != null) ? subscription.isFavorite() : false )"
-    )
-    fun toListGetDto(model: CourseModel, subscription: CourseSubscriptionModel?): CourseListGetResponse
+    fun toGetSmallDto(
+        model: CourseModel,
+        subscription: CourseSubscriptionModel?
+    ): CourseGetByIdSmallResponse {
+        return CourseGetByIdSmallResponse(
+            _id = model._id,
+            title = model.title,
+            imageUrl = model.imageUrl,
+            description = model.description,
+            isFavourite = subscription?.isFavourite ?: false,
+        )
+    }
+
 }

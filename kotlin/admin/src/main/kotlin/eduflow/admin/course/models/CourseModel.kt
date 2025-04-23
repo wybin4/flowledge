@@ -13,6 +13,5 @@ data class CourseModel(
     override val imageUrl: String? = null,
     override val u: CourseCreator,
     override val createdAt: Date,
-    override val updatedAt: Date,
-    override var isFavourite: Boolean? = null
+    override val updatedAt: Date
 ) : Course

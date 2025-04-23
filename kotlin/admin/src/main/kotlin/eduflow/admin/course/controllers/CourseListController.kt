@@ -1,17 +1,24 @@
 package eduflow.admin.course.controllers
 
+import eduflow.admin.course.dto.course.get.CourseGetByIdResponse
+import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
+import eduflow.admin.course.dto.course.list.ToggleFavouriteRequest
 import eduflow.admin.course.models.CourseModel
+import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.repositories.CourseRepository
+import eduflow.admin.course.repositories.CourseSubscriptionRepository
 import eduflow.admin.course.services.CourseService
+import eduflow.course.CourseSubscription
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
+import java.util.*
 
 @RestController
 @RequestMapping("/api/courses-list")
 class CourseListController(
     private val courseService: CourseService,
-    private val courseRepository: CourseRepository
+    private val courseSubscriptionRepository: CourseSubscriptionRepository
 ) {
     @GetMapping("/courses.get")
     fun getAllCourses(
@@ -19,7 +26,7 @@ class CourseListController(
         @RequestParam(defaultValue = "10") pageSize: Int,
         @RequestParam(required = false) searchQuery: String?,
         @RequestParam(required = false) sortQuery: String?
-    ): Mono<ResponseEntity<List<CourseModel>>> {
+    ): Mono<ResponseEntity<List<CourseGetByIdSmallResponse>>> {
          val options = mapOf(
             "page" to page as Any,
             "pageSize" to pageSize as Any,
@@ -27,19 +34,42 @@ class CourseListController(
             "sortQuery" to sortQuery as Any
         )
 
-        return courseService.getCourses(options)
+        return courseService.getCourses(options, "test_id") // TODO()
             .map { ResponseEntity.ok(it) }
+    }
+
+    @GetMapping("/courses.get/{id}")
+    fun getCourseById(@PathVariable id: String): Mono<ResponseEntity<out CourseGetByIdResponse>> {
+        return courseService.getCourseById(id, false, "test_id") // TODO()
     }
 
     @PostMapping("/courses.toggle-favourite/{id}")
     fun toggleFavouriteCourse(
-        @PathVariable id: String
+        @PathVariable id: String,
+        @RequestBody body: ToggleFavouriteRequest
     ): Mono<ResponseEntity<Unit>> {
-        return courseRepository.findById(id)
-            .flatMap { course ->
-                course.isFavourite = course.isFavourite?.not() ?: true
-                courseRepository.save(course).thenReturn(Unit)
+        val userId = body.userId
+        val isFavourite = body.isFavourite
+
+        return courseSubscriptionRepository.findByCourseIdAndUserId(id, userId)
+            .switchIfEmpty(
+                courseSubscriptionRepository.save(
+                    CourseSubscriptionModel(
+                        _id = UUID.randomUUID().toString(),
+                        userId = userId,
+                        courseId = id,
+                        isSubscribed = false,
+                        isFavourite = isFavourite,
+                        roles = null,
+                        createdAt = Date(),
+                        updatedAt = Date()
+                    )
+                )
+            )
+            .map { subscription ->
+                subscription.isFavourite = isFavourite
+                courseSubscriptionRepository.save(subscription)
+                ResponseEntity.ok(Unit)
             }
-            .map { ResponseEntity.ok(it) }
     }
 }

@@ -2,14 +2,11 @@ package eduflow.admin.course.controllers
 
 import eduflow.admin.course.dto.course.CourseCreateRequest
 import eduflow.admin.course.dto.CourseUpdateRequest
-import eduflow.admin.course.dto.course.hub.get.id.CourseHubGetByIdResponse
-import eduflow.admin.course.mappers.CourseMapper
+import eduflow.admin.course.dto.course.get.CourseGetByIdResponse
+import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
 import eduflow.admin.course.models.CourseModel
-import eduflow.admin.course.repositories.CourseLessonRepository
 import eduflow.admin.course.repositories.CourseRepository
-import eduflow.admin.course.repositories.CourseSectionRepository
 import eduflow.admin.course.services.CourseService
-import eduflow.admin.course.types.SectionWithLessons
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -19,60 +16,15 @@ import java.util.*
 @RequestMapping("/api/courses-hub")
 class CourseHubController(
     private val courseService: CourseService,
-    private val courseRepository: CourseRepository,
-    private val courseMapper: CourseMapper,
-    private val sectionRepository: CourseSectionRepository,
-    private val lessonRepository: CourseLessonRepository
+    private val courseRepository: CourseRepository
 ) {
 
     @GetMapping("/courses.get/{id}")
     fun getCourseById(
         @PathVariable id: String,
         @RequestParam(name = "isSmall", required = true) isSmall: Boolean
-    ): Mono<ResponseEntity<out CourseHubGetByIdResponse>> {
-        return courseRepository.findById(id)
-            .flatMap { course ->
-                when (isSmall) {
-                    true -> Mono.just(
-                        ResponseEntity.ok(courseMapper.toHubGetByIdSmallDto(course))
-                    )
-
-                    false -> {
-                        val sectionsMono = sectionRepository.findByCourseId(id).collectList()
-                        val lessonsMono = sectionsMono.flatMap { sections ->
-                            val sectionIds = sections.map { it._id }
-                            lessonRepository.findByCourseIdOrSectionIds(id, sectionIds).collectList()
-                        }
-
-                        sectionsMono.zipWith(lessonsMono)
-                            .flatMap { tuple ->
-                                val sections = tuple.t1
-                                val allLessons = tuple.t2
-
-                                val lessonsInSections = sections.map { section ->
-                                    SectionWithLessons(
-                                        section = section,
-                                        lessons = allLessons
-                                            .filter { lesson -> lesson.sectionId == section._id }
-                                    )
-                                }
-
-                                val standaloneLessons = allLessons
-                                    .filter { lesson -> lesson.sectionId == null }
-
-                                Mono.just(
-                                    courseMapper.toHubGetByIdBigDto(
-                                        model = course,
-                                        sections = lessonsInSections,
-                                        lessons = standaloneLessons
-                                    )
-                                )
-                            }
-                            .map { ResponseEntity.ok(it) }
-                    }
-                }
-            }
-            .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
+    ): Mono<ResponseEntity<out CourseGetByIdResponse>> {
+        return courseService.getCourseById(id, isSmall)
     }
 
     @GetMapping("/courses.get")
@@ -81,7 +33,7 @@ class CourseHubController(
         @RequestParam(defaultValue = "10") pageSize: Int,
         @RequestParam(required = false) searchQuery: String?,
         @RequestParam(required = false) sortQuery: String?
-    ): Mono<ResponseEntity<List<CourseModel>>> {
+    ): Mono<ResponseEntity<List<CourseGetByIdSmallResponse>>> {
          val options = mapOf(
             "page" to page as Any,
             "pageSize" to pageSize as Any,

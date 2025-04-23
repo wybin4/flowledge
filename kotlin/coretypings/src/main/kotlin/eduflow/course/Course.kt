@@ -10,5 +10,4 @@ interface Course {
     val u: CourseCreator
     val createdAt: Date
     val updatedAt: Date
-    val isFavourite: Boolean?
 }

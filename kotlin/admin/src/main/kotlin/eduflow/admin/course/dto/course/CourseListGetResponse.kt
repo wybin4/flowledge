@@ -4,5 +4,5 @@ data class CourseListGetResponse(
     val _id: String,
     val title: String,
     val imageUrl: String? = null,
-    val isFavorite: Boolean? = null,
+    val isFavourite: Boolean? = null,
 )

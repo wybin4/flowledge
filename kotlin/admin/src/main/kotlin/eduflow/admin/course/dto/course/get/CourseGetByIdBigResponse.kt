@@ -1,12 +1,14 @@
-package eduflow.admin.course.dto.course.hub.get.id
+package eduflow.admin.course.dto.course.get
 
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.types.SectionWithLessons
 
-data class CourseHubGetByIdBigResponse(
+data class CourseGetByIdBigResponse(
     override val _id: String,
     override val title: String,
     override val imageUrl: String? = null,
+    override val description: String,
     val sections: List<SectionWithLessons>,
     val lessons: List<CourseLessonModel>,
-): CourseHubGetByIdResponse
+    val isFavourite: Boolean? = null,
+): CourseGetByIdResponse

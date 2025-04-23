@@ -18,7 +18,7 @@ export const CoursesListInfinitePage = () => {
         },
         searchQuery
     });
-
+    console.log(data)
     return (
         <>
             {data.map((item, index) => (

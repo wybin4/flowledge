@@ -6,7 +6,8 @@ interface CourseSubscription {
     val _id: String
     val userId: String
     val courseId: String
-    val isFavorite: Boolean?
+    val isFavourite: Boolean?
+    val isSubscribed: Boolean?
     val roles: List<String>?
     val createdAt: Date
     val updatedAt: Date

@@ -17,6 +17,7 @@ import { CourseSection } from "@/courses/components/CourseSection/CourseSection"
 import { CoursesListItemComments } from "../CoursesListItemComments/CoursesListItemComments";
 import { userApiClient } from "@/apiClient";
 import { ToggleFavouriteRequest } from "@/courses/courses-list/types/ToggleFavourite";
+import { fakeUser } from "@/helpers/fakeUser";
 
 type CoursesListItemProps = {
     course: CourseItem;
@@ -29,6 +30,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedMenuTab, setSelectedMenuTab] = useState<CourseTabs>(CourseTabs.Lessons);
+    const [isFavourite, setIsFavourite] = useState(course.isFavourite ?? false);
     const pathnamePrefix = `${coursesListPrefix}/${course._id}`;
 
     useEffect(() => {
@@ -44,14 +46,19 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
         router.push(pathnamePrefix);
     }
 
-    const handleToggleFavourite = (isFavourite: boolean) =>
+    const handleToggleFavourite = (newIsFavourite: boolean) => {
+        setIsFavourite(newIsFavourite);
         userApiClient.post<ToggleFavouriteRequest>(
-            `${coursesListPrefixApi}.toggle-favourite/${course._id}`, { isFavourite }
+            `${coursesListPrefixApi}.toggle-favourite/${course._id}`, {
+            isFavourite: newIsFavourite,
+            userId: fakeUser._id
+        }
         );
+    }
 
     const actions = (
         <CoursesListItemActions
-            isFavourite={course.isFavourite ?? false}
+            isFavourite={isFavourite}
             setIsFavourite={handleToggleFavourite}
             isExpanded={!isListPage}
             className={cn({

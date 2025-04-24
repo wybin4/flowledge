@@ -1,5 +1,6 @@
 export const apiIntegrationsPrefix = 'api-integrations';
 export const coursesHubPrefix = 'courses-hub';
+export const coursesHubPrefixApi = 'courses-hub/courses';
 export const coursesHubSectionsPrefixTranslate = 'courses-hub.sections';
 export const coursesHubSectionsPrefixApi = 'courses-hub/sections';
 export const coursesHubLessonsPrefixTranslate = 'courses-hub.lessons';

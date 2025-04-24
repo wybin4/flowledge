@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useTranslation } from "react-i18next";
+import { useTranslatedTime } from "@/hooks/useTranslatedTime";
 
 type CourseSectionProps = {
     className?: string;
@@ -23,6 +24,7 @@ export const CourseSection = ({
 }: CourseSectionProps) => {
     const router = useRouter();
     const { t } = useTranslation();
+    const translateTime = useTranslatedTime();
 
     const sectionClassNames = {
         containerClassName: className,
@@ -73,7 +75,7 @@ export const CourseSection = ({
             </CollapsibleSection>
         )
     }
-
+    console.log(translateTime('6 MINS'))
     if (typeof section === 'object' && 'section' in section) {
         return (
             <CollapsibleSection
@@ -85,16 +87,18 @@ export const CourseSection = ({
                 iconPrefix='-little'
                 actions={sectionActions}
                 {...sectionClassNames}>
-                {section.lessons && section.lessons.length > 0 && section.lessons.map((lesson) => (
+                {(section.lessons && section.lessons.length > 0) ? section.lessons.map((lesson) => (
                     <CollapsibleSectionChild
                         id={lesson._id}
                         onClick={onLessonClick}
                         key={lesson._id}
                         title={lesson.title}
-                        time={lesson.time}
+                        time={translateTime(lesson.time) || lesson.time}
                         additionalInfo={lesson.additionalInfo}
                         isViewed={false}
-                        isLocked={false}
+                        titleTags={[...(!lesson.isVisible ? [{
+                            title: t('invisible'), type: CollapsibleSectionTagType.Warning
+                        }] : [])]}
                         image={lesson.imageUrl &&
                             <CourseListImage
                                 imageUrl={lesson.imageUrl}
@@ -105,7 +109,7 @@ export const CourseSection = ({
                         {...childClassNames}
                         {...defaultChildProps}
                     />
-                ))}
+                )) : undefined}
             </CollapsibleSection>
         );
     }

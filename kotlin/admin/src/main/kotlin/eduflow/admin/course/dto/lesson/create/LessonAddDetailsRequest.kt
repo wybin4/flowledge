@@ -7,5 +7,6 @@ data class LessonAddDetailsRequest (
     val title: String,
     val time: String?,
     val timeUnit: TimeUnit,
-    val autoDetect: Boolean
+    val autoDetect: Boolean,
+    val imageUrl: String?
 ): LessonCreateRequest()

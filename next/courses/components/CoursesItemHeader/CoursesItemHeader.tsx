@@ -35,7 +35,7 @@ export const CoursesItemHeader = ({ isListPage = false, course, header, pointer 
                             size={isListPage ? 'large' : 'xlarge'}
                         />
                         <div className={styles.title}>
-                            <div className={styles.titleSubtext}>sometext</div>
+                            <div className={styles.titleSubtext}>{course.tags?.join(', ')}</div>
                             <div className={styles.titleText}>{course.title}</div>
                             <div className={styles.titleProgress}>4%</div>
                         </div>

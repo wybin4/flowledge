@@ -28,6 +28,7 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
             apiClient={userApiClient}
             settingKeys={[
                 { name: 'title', types: [SettingType.InputText] },
+                { name: 'imageUrl', types: [SettingType.InputText] },
                 {
                     name: 'time',
                     types: [

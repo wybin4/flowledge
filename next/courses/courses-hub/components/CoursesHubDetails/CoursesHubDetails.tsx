@@ -44,7 +44,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
 
     const locale = useUserSetting<Language>('language') || Language.EN;
     const titleLength = usePrivateSetting<string>(`${coursesHubPrefix}.title-length`) || '(3,100)';
-    const titleRegex = usePrivateSetting<string>(`${coursesHubPrefix}.title-regex`) || '[a-zA-Z0-9_]+';
+    const titleRegex = usePrivateSetting<string>(`${coursesHubPrefix}.title-regex`) || '[a-zA-Z0-9_ .!]+';
 
     const { min: minTitleLength, max: maxTitleLength } = getItemsFromStringRange(titleLength);
     const getTitleRegexError = getErrorByRegex(titleRegex, coursesHubPrefix, t);

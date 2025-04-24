@@ -28,7 +28,7 @@ class CourseSectionController(
         return sectionRepository.save(newSection)
     }
 
-    @PutMapping("/sections.update/{id}")
+    @PostMapping("/sections.update/{id}")
     fun updateSectionTitle(
         @PathVariable id: String,
         @RequestBody request: SectionUpdateRequest

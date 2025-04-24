@@ -7,7 +7,7 @@ import java.util.*
 @Document
 data class CourseLessonModel(
     override val _id: String,
-    override val imageUrl: String? = null,
+    override var imageUrl: String? = null,
     override var time: String? = null,
     override var title: String,
     override val courseId: String? = null,

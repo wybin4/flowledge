@@ -9,5 +9,9 @@ import reactor.core.publisher.Flux
 @Repository
 interface CourseSectionRepository : ReactiveMongoRepository<CourseSectionModel, String>,
     ReactiveSortingRepository<CourseSectionModel, String> {
+    fun findByCourseIdAndIsVisible(
+        courseId: String, isVisible: Boolean? = false
+    ): Flux<CourseSectionModel>
+
     fun findByCourseId(courseId: String): Flux<CourseSectionModel>
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { JSX, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { IconKey, useIcon } from "@/hooks/useIcon";
 import styles from "./CollapsibleSection.module.css";
 import cn from "classnames";
 import CollapsibleSectionAction, { CollapsibleSectionActionProps } from "./CollapsibleSectionAction";
 import { useTranslation } from "react-i18next";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
+import CollapsibleSectionTitleTags, { CollapsibleSectionTitleTag } from "./CollapsibleSectionTitleTags";
 
 export enum CollapsibleSectionTagType {
     Info = 'info',
@@ -15,10 +16,7 @@ export enum CollapsibleSectionTagType {
 
 type CollapsibleSectionProps = {
     title: string;
-    titleTags?: {
-        title: string;
-        type: CollapsibleSectionTagType;
-    }[];
+    titleTags?: CollapsibleSectionTitleTag[];
     setTitle?: (title: string) => void;
     onTitleSave?: () => void;
     children?: ReactNode;
@@ -74,11 +72,7 @@ export default function CollapsibleSection({
                                 <input type='text' value={title} onChange={handleChangeTitle} placeholder={t('type-here')} />
                                 : title
                         }</div>
-                        {titleTags && titleTags.map((tag, index) => (
-                            <div key={index} className={cn(styles.tag, styles[tag.type])}>
-                                <div className={styles.tagTitle}>{tag.title}</div>
-                            </div>
-                        ))}
+                        {titleTags && <CollapsibleSectionTitleTags titleTags={titleTags} />}
                     </h3>
                     {!isEditTitle && <div className={cn(styles.actionIcon, { [styles.expanded]: isExpanded })}>{expandIcon}</div>}
                     {isEditTitle && <div onClick={handleSaveTitle} className={cn(styles.actionIcon, styles.editIcon)}>+</div>}
@@ -90,7 +84,10 @@ export default function CollapsibleSection({
                 </div>
             </div>
             {titleError !== '' && <div className={styles.titleError}>{titleError}</div>}
-            <div className={cn(contentClassName, { [styles.hidden]: !isExpanded })}>
+            <div className={cn(contentClassName, { 
+                [styles.hidden]: !isExpanded ,
+                [styles.containerWithItems]: children !== undefined && isExpanded
+            })}>
                 {children}
                 {bottomActions && bottomActions.map((action, index) => (
                     <CollapsibleSectionAction key={index} {...action} />

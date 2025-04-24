@@ -85,19 +85,38 @@ class CourseService(
                 } else {
                     Mono.empty()
                 }
+
                 when (isSmall) {
-                    true -> subscription.flatMap { sub ->
-                        println(sub)
+                   true -> subscription
+                    .flatMap { sub ->
                         Mono.just(
                             ResponseEntity.ok(courseMapper.toGetSmallDto(course, sub))
                         )
                     }
+                    .switchIfEmpty(
+                        Mono.just(
+                            ResponseEntity.ok(courseMapper.toGetSmallDto(course, null))
+                        )
+                    )
 
                     false -> {
-                        val sectionsMono = sectionRepository.findByCourseId(id).collectList()
+                        val isVisible = userId != null
+                        val sectionsMono = if (isVisible) {
+                            sectionRepository.findByCourseIdAndIsVisible(id, isVisible).collectList()
+                        } else {
+                            sectionRepository.findByCourseId(id).collectList()
+                        }
                         val lessonsMono = sectionsMono.flatMap { sections ->
                             val sectionIds = sections.map { it._id }
-                            lessonRepository.findByCourseIdOrSectionIds(id, sectionIds).collectList()
+                            if (isVisible) {
+                                lessonRepository.findByCourseIdOrSectionIdsAndIsVisible(
+                                    id, sectionIds, isVisible
+                                ).collectList()
+                            } else {
+                                lessonRepository.findByCourseIdOrSectionIds(
+                                    id, sectionIds
+                                ).collectList()
+                            }
                         }
 
                         sectionsMono.zipWith(lessonsMono)
@@ -116,16 +135,26 @@ class CourseService(
                                 val standaloneLessons = allLessons
                                     .filter { lesson -> lesson.sectionId == null }
 
-                                subscription.flatMap { sub ->
-                                    Mono.just(
-                                        courseMapper.toGetByIdBigDto(
-                                            model = course,
-                                            sections = lessonsInSections,
-                                            lessons = standaloneLessons,
-                                            subscription = sub
+                                 subscription
+                                    .flatMap { sub ->
+                                        Mono.just(
+                                            courseMapper.toGetByIdBigDto(
+                                                model = course,
+                                                sections = lessonsInSections,
+                                                lessons = standaloneLessons,
+                                                subscription = sub
+                                            ) as CourseGetByIdResponse
+                                        )
+                                    }
+                                    .switchIfEmpty(
+                                        Mono.just(
+                                            courseMapper.toGetByIdBigDto(
+                                                model = course,
+                                                sections = lessonsInSections,
+                                                lessons = standaloneLessons
+                                            ) as CourseGetByIdResponse
                                         )
                                     )
-                                }
                             }
                             .map { ResponseEntity.ok(it) }
                     }

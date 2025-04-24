@@ -23,6 +23,7 @@ export type LessonToSaveOnDetailsRequestTime = {
     time?: number;
     timeUnit?: string;
     autoDetect?: boolean;
+    imageUrl?: string;
 }
 
 export interface LessonToSaveOnDetailsRequest extends
@@ -34,4 +35,5 @@ export type LessonToSaveOnDetails = {
     _id: string;
     title: string;
     time: LessonToSaveOnDetailsRequestTime;
+    imageUrl?: string;
 }

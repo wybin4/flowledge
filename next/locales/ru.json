@@ -176,6 +176,7 @@
             "creating": "создаем лекцию...",
             "create": "дополнить информацию о лекции",
             "title": "название лекции",
+            "imageUrl": "обложка лекции",
             "time": {
                 "name": "время прочтения/просмотра лекции",
                 "description": "может быть определено автоматически по видео, если оно есть"
@@ -240,8 +241,8 @@
         "tags": "теги",
         "__count__comments_zero": "начать обсуждение",
         "__count__comments_one": "{{count}} комментарий",
-        "__count__comments_two": "{{count}} комментария",
-        "__count__comments_plural": "{{count}} комментариев"
+        "__count__comments_few": "{{count}} комментария",
+        "__count__comments_many": "{{count}} комментариев"
     },
     "save": "сохранить",
     "save-draft": "сохранить черновик",

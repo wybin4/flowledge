@@ -15,17 +15,22 @@ interface CourseMapper {
     fun toHubGetDto(model: CourseModel): CourseHubGetResponse
 
     @Mapping(target = "_id", source = "model._id")
+    @Mapping(
+        target = "isFavourite",
+        expression = "java(subscription != null ? subscription.isFavourite() : false)"
+    )
     fun toGetByIdBigDto(
         model: CourseModel,
         lessons: List<CourseLessonModel> = emptyList(),
         sections: List<SectionWithLessons> = emptyList(),
-        subscription: CourseSubscriptionModel?
+        subscription: CourseSubscriptionModel? = null
     ): CourseGetByIdBigResponse {
         return CourseGetByIdBigResponse(
             _id = model._id,
             title = model.title,
             imageUrl = model.imageUrl,
             description = model.description,
+            tags = model.tags,
             lessons = lessons,
             sections = sections,
             isFavourite = subscription?.isFavourite ?: false,
@@ -33,17 +38,25 @@ interface CourseMapper {
     }
 
     @Mapping(target = "_id", source = "model._id")
+    @Mapping(target = "title", source = "model.title")
+    @Mapping(target = "imageUrl", source = "model.imageUrl")
+    @Mapping(target = "description", source = "model.description")
+    @Mapping(target = "tags", source = "model.tags")
+    @Mapping(
+        target = "u",
+        expression = "java(subscription == null ? model.getU() : null)"
+    )
+    @Mapping(
+        target = "createdAt",
+        expression = "java(subscription == null ? model.getCreatedAt() : null)"
+    )
+    @Mapping(
+        target = "isFavourite",
+        expression = "java(subscription != null ? subscription.isFavourite() : false)"
+    )
     fun toGetSmallDto(
         model: CourseModel,
-        subscription: CourseSubscriptionModel?
-    ): CourseGetByIdSmallResponse {
-        return CourseGetByIdSmallResponse(
-            _id = model._id,
-            title = model.title,
-            imageUrl = model.imageUrl,
-            description = model.description,
-            isFavourite = subscription?.isFavourite ?: false,
-        )
-    }
+        subscription: CourseSubscriptionModel? = null
+    ): CourseGetByIdSmallResponse
 
 }

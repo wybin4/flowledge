@@ -2,7 +2,7 @@
 
 import { mapCoursesHubToTable } from "../../functions/mapCoursesHubToTable";
 import { createCoursesHubTableHeader } from "../../functions/createCoursesHubTableHeader";
-import { coursesHubPrefix } from "@/helpers/prefixes";
+import { coursesHubPrefix, coursesHubPrefixApi } from "@/helpers/prefixes";
 import { EnhancedTablePage } from "@/components/TablePage/EnhancedTablePage/EnhancedTablePage";
 import { t, TFunction } from "i18next";
 import { CoursesHubTableItem } from "@/courses/courses-hub/types/CoursesHubTableItem";
@@ -30,8 +30,6 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
 
     const router = useRouter();
     const searchParams = useSearchParams();
-
-    const apiPrefix = `${coursesHubPrefix}/courses`;
 
     const getHeaderItems = (
         t: TFunction, setSortQuery: (query: string) => void
@@ -79,7 +77,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
             content={classNames => <div className={cn(classNames)}>{mode &&
                 <RightSidebarModal<Course, CourseToSave>
                     prefix={coursesHubPrefix}
-                    apiPrefix={apiPrefix}
+                    apiPrefix={coursesHubPrefixApi}
                     queryParams={{ isSmall: true }}
                     mode={mode}
                     _id={selectedItemId}
@@ -120,7 +118,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 <div>
                     <EnhancedTablePage<Course, CoursesHubTableItem>
                         prefix={coursesHubPrefix}
-                        apiPrefix={apiPrefix}
+                        apiPrefix={coursesHubPrefixApi}
                         getDataPageFunctions={{
                             getDataPage: (prefix, params) => getDataPageWithApi(prefix, userApiClient, params),
                             getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, userApiClient, params),

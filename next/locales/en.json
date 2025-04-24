@@ -176,6 +176,7 @@
             "creating": "create lesson...",
             "create": "add information about the lecture",
             "title": "lesson title",
+            "imageUrl": "lesson cover",
             "time": {
                 "name": "lesson reading/watching time",
                 "description": "can be detected in automatically by video if exists"
@@ -236,7 +237,7 @@
         "tags": "tags",
         "__count__comments_zero": "start discussion",
         "__count__comments_one": "{{count}} comment",
-        "__count__comments_plural": "{{count}} comments"
+        "__count__comments_many": "{{count}} comments"
     },
     "save": "save",
     "save-draft": "save draft",

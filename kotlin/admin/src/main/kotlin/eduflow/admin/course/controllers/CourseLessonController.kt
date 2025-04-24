@@ -92,7 +92,6 @@ class CourseLessonController(
                 if (existingLesson.isDraft != true) {
                     return@flatMap Mono.error<CourseLessonModel>(ResponseStatusException(HttpStatus.CONFLICT, "Lesson is not in draft state"))
                 }
-                println(lesson)
                 if (lesson.autoDetect) {
                     if (lesson.time != null || lesson.timeUnit != null) {
                         return@flatMap Mono.error<CourseLessonModel>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Time and timeUnit should be null when autoDetect is true"))
@@ -107,6 +106,9 @@ class CourseLessonController(
 
                 existingLesson.isDraft = false
                 existingLesson.title = lesson.title
+                if (lesson.imageUrl != null) {
+                    existingLesson.imageUrl = lesson.imageUrl
+                }
                 lessonRepository.save(existingLesson)
             }
             .map { savedLesson -> LessonCreateDraftResponse(savedLesson._id) }

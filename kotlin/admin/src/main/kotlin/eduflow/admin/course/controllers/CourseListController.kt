@@ -66,10 +66,10 @@ class CourseListController(
                     )
                 )
             )
-            .map { subscription ->
+            .flatMap { subscription ->
                 subscription.isFavourite = isFavourite
                 courseSubscriptionRepository.save(subscription)
-                ResponseEntity.ok(Unit)
+                    .thenReturn(ResponseEntity.ok(Unit))
             }
     }
 }

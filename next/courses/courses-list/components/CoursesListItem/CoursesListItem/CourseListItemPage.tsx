@@ -26,11 +26,16 @@ export const CourseListItemPage = ({ _id }: { _id: string }) => {
     if (!course) {
         return <div>{t('loading')}</div>;
     }
-    console.log(course)
+
     return (
         <CoursesListItem
             course={course}
-            header={<Breadcrumbs position={ChildrenPosition.Left} />}
+            header={
+                <Breadcrumbs
+                    currentPathName={course.title}
+                    position={ChildrenPosition.Left}
+                />
+            }
             pointer={false}
             isListPage={false}
         />

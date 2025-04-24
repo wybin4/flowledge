@@ -19,6 +19,13 @@ interface CourseLessonRepository : ReactiveMongoRepository<CourseLessonModel, St
 
     fun countBySectionIdAndIsDraft(sectionId: String, isDraft: Boolean): Mono<Long>
 
+    @Query("{ \$and: [ { \$or: [ { courseId: ?0 }, { sectionId: { \$in: ?1 } } ] }, { isVisible: ?2 } ] }")
+    fun findByCourseIdOrSectionIdsAndIsVisible(
+        courseId: String, sectionIds: List<String>, isVisible: Boolean? = false
+    ): Flux<CourseLessonModel>
+
     @Query("{ \$or: [ { courseId: ?0 }, { sectionId: { \$in: ?1 } } ] }")
-    fun findByCourseIdOrSectionIds(courseId: String, sectionIds: List<String>): Flux<CourseLessonModel>
+    fun findByCourseIdOrSectionIds(
+        courseId: String, sectionIds: List<String>
+    ): Flux<CourseLessonModel>
 }

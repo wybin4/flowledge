@@ -1,9 +1,9 @@
 "use client";
 
-import { useIcon } from "@/hooks/useIcon";
 import styles from "./CollapsibleSection.module.css";
 import cn from "classnames";
 import { ReactNode } from "react";
+import CollapsibleSectionTitleTags, { CollapsibleSectionTitleTag } from "./CollapsibleSectionTitleTags";
 
 type CollapsibleSectionChildProps = {
     id?: string;
@@ -14,7 +14,7 @@ type CollapsibleSectionChildProps = {
     image?: ReactNode;
     isActive?: boolean;
     isViewed?: boolean;
-    isLocked?: boolean;
+    titleTags?: CollapsibleSectionTitleTag[];
     childClassName?: string;
     titleContainerClassName?: string;
     titleClassName?: string;
@@ -24,11 +24,9 @@ type CollapsibleSectionChildProps = {
 
 export default function CollapsibleSectionChild({
     id, title, time, image, additionalInfo, onClick,
-    isActive = false, isViewed = false, isLocked = false,
+    isActive = false, isViewed = false, titleTags,
     childClassName, titleContainerClassName, titleClassName, timeClassName, additionalInfoClassName
 }: CollapsibleSectionChildProps) {
-    const lockedIcon = useIcon('locked');
-
     return (
         <div onClick={() => id && onClick?.(id)} className={cn(styles.child, childClassName, {
             [styles.active]: isActive,
@@ -37,9 +35,9 @@ export default function CollapsibleSectionChild({
             <div className={cn(styles.childTitle, titleContainerClassName)}>
                 {image}
                 <div className={styles.childTitleContainer}>
-                    <div>
+                    <div className={styles.childTitle}>
                         <div className={titleClassName}>{title}</div>
-                        {isLocked && <div>{lockedIcon}</div>}
+                        {titleTags && <CollapsibleSectionTitleTags titleTags={titleTags} />}
                     </div>
                     {additionalInfo && <div className={additionalInfoClassName}>{additionalInfo}</div>}
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { getPermissionsPage, getTotalPermissionsCount, Permissions } from "@/collections/Permissions";
+import { Permissions } from "@/collections/Permissions";
 import { Roles } from "@/collections/Roles";
 import { IPermission } from "@/types/Permission";
 import { TablePage } from "../TablePage/TablePage/TablePage";
@@ -26,8 +26,8 @@ export const PermissionsTablePage = () => {
     } = useEnhancedPagination<IPermission>({
         apiPrefix: permissionsPrefix,
         getDataPageFunctions: {
-            getDataPage: (_, props) => getPermissionsPage(props),
-            getTotalCount: (_, props) => getTotalPermissionsCount(props)
+            getDataPage: (_, props) => Permissions.getPage(props),
+            getTotalCount: (_, props) => Permissions.getTotalCount(props)
         },
         searchQuery,
         setStateCallbacks: Permissions.pushCallback.bind(Permissions),

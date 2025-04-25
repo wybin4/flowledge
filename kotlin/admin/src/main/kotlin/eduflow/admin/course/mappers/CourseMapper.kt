@@ -1,11 +1,12 @@
 package eduflow.admin.course.mappers
 
 import eduflow.admin.course.dto.course.get.CourseGetByIdBigResponse
-import eduflow.admin.course.dto.course.hub.get.CourseHubGetResponse
 import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
+import eduflow.admin.course.dto.course.hub.get.CourseHubGetResponse
+import eduflow.admin.course.dto.subscription.CourseSubscriptionGetResponse
 import eduflow.admin.course.models.CourseLessonModel
-import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.models.CourseModel
+import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.types.SectionWithLessons
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -15,15 +16,10 @@ interface CourseMapper {
     fun toHubGetDto(model: CourseModel): CourseHubGetResponse
 
     @Mapping(target = "_id", source = "model._id")
-    @Mapping(
-        target = "isFavourite",
-        expression = "java(subscription != null ? subscription.isFavourite() : false)"
-    )
     fun toGetByIdBigDto(
         model: CourseModel,
         lessons: List<CourseLessonModel> = emptyList(),
-        sections: List<SectionWithLessons> = emptyList(),
-        subscription: CourseSubscriptionModel? = null
+        sections: List<SectionWithLessons> = emptyList()
     ): CourseGetByIdBigResponse {
         return CourseGetByIdBigResponse(
             _id = model._id,
@@ -33,7 +29,6 @@ interface CourseMapper {
             tags = model.tags,
             lessons = lessons,
             sections = sections,
-            isFavourite = subscription?.isFavourite ?: false,
         )
     }
 
@@ -44,19 +39,31 @@ interface CourseMapper {
     @Mapping(target = "tags", source = "model.tags")
     @Mapping(
         target = "u",
-        expression = "java(subscription == null ? model.getU() : null)"
+        expression = "java(isUser == false ? model.getU() : null)"
     )
     @Mapping(
         target = "createdAt",
-        expression = "java(subscription == null ? model.getCreatedAt() : null)"
+        expression = "java(isUser == false ? model.getCreatedAt() : null)"
     )
-    @Mapping(
-        target = "isFavourite",
-        expression = "java(subscription != null ? subscription.isFavourite() : false)"
-    )
-    fun toGetSmallDto(
-        model: CourseModel,
-        subscription: CourseSubscriptionModel? = null
-    ): CourseGetByIdSmallResponse
+    fun toGetSmallDto(model: CourseModel, isUser: Boolean?): CourseGetByIdSmallResponse
+
+    @Mapping(target = "_id", source = "subscription._id")
+    fun toSubscriptionWithCourseDto(
+        subscription: CourseSubscriptionModel,
+        course: CourseModel,
+    ): CourseSubscriptionGetResponse {
+        return CourseSubscriptionGetResponse(
+            _id = subscription._id,
+            courseId = subscription.courseId,
+            isFavourite = subscription.isFavourite,
+            isSubscribed = subscription.isSubscribed,
+            roles = subscription.roles,
+            userId = subscription.userId,
+            title = course.title,
+            imageUrl = course.imageUrl,
+            description = course.description,
+            tags = course.tags
+        )
+    }
 
 }

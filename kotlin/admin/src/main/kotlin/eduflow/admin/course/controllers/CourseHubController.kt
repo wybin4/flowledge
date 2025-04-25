@@ -1,7 +1,7 @@
 package eduflow.admin.course.controllers
 
-import eduflow.admin.course.dto.course.CourseCreateRequest
 import eduflow.admin.course.dto.CourseUpdateRequest
+import eduflow.admin.course.dto.course.CourseCreateRequest
 import eduflow.admin.course.dto.course.get.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
 import eduflow.admin.course.models.CourseModel
@@ -34,12 +34,18 @@ class CourseHubController(
         @RequestParam(required = false) searchQuery: String?,
         @RequestParam(required = false) sortQuery: String?
     ): Mono<ResponseEntity<List<CourseGetByIdSmallResponse>>> {
-         val options = mapOf(
-            "page" to page as Any,
-            "pageSize" to pageSize as Any,
-            "searchQuery" to searchQuery as Any,
-            "sortQuery" to sortQuery as Any
+        val options = mutableMapOf<String, Any>(
+            "page" to page,
+            "pageSize" to pageSize
         )
+
+        searchQuery?.let {
+            options["searchQuery"] = it
+        }
+
+        sortQuery?.let {
+            options["sortQuery"] = it
+        }
 
         return courseService.getCourses(options)
             .map { ResponseEntity.ok(it) }
@@ -67,7 +73,10 @@ class CourseHubController(
     }
 
     @PutMapping("/courses.update/{id}")
-    fun updateCourse(@PathVariable id: String, @RequestBody course: CourseUpdateRequest): Mono<ResponseEntity<CourseModel>> {
+    fun updateCourse(
+        @PathVariable id: String,
+        @RequestBody course: CourseUpdateRequest
+    ): Mono<ResponseEntity<CourseModel>> {
         return courseRepository.findById(id)
             .flatMap { existingCourse ->
                 val updatedCourse = existingCourse.copy(

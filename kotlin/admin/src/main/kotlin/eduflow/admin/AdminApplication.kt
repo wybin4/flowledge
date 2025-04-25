@@ -101,6 +101,9 @@ class AdminApplication : CommandLineRunner {
 //               addSetting("page-size", 10, SettingDetails(
 //                   type = SettingType.INPUT_NUMBER,
 //               ))
+//               addSetting("preview-page-size", 5, SettingDetails(
+//                   type = SettingType.INPUT_NUMBER,
+//               ))
 //           }
 
 //            settingsRegistry.addGroup("courses-hub") {

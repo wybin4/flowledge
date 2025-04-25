@@ -3,7 +3,7 @@ import { CallbackUsage } from "@/types/StateCallback";
 import EventEmitter from "events";
 import Loki, { Collection } from "lokijs";
 
-const Application = new Loki('app.db');
+export const Application = new Loki('app.db');
 
 type CachedCollectionCallback<T> = (data: T[], usage: CallbackUsage, regex?: string) => void;
 
@@ -75,10 +75,11 @@ export class CachedCollection<T extends { _id: string }, U = T> extends EventEmi
             if (recordToUpdate) {
                 const updatedRecord = { ...recordToUpdate, ...newRecord, _id: recordToUpdate._id };
                 this.collection.update(updatedRecord);
+                console.log(`Record updated: ${_id}`);
             } else {
-                console.log(`No record found with _id: ${_id}`);
+                console.log(`Insert new record with id: ${_id}`);
+                this.collection.insert(newRecord);
             }
-            console.log(`Record updated: ${_id}`);
         }
 
         this.processRecords([record], CallbackUsage.ONE);
@@ -149,7 +150,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends EventEmi
     }
 
     private handleLoadFromServer(record: T): T {
-        return record; // Можно добавить обработку
+        return record;
     }
 
     private hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;

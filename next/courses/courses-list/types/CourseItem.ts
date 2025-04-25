@@ -1,12 +1,11 @@
+import { ICourse } from "@/types/Course";
 import { SectionItem } from "../../types/SectionItem";
 
-export interface CourseItem {
-    _id: string;
-    title: string;
-    imageUrl: string;
-    description?: string;
-    isFavourite?: boolean;
+export interface CourseItem extends ICourse {
     sections?: SectionItem[];
-    tags?: string[];
     comments?: string[];
+}
+
+export interface CourseWithSubscriptionItem extends CourseItem {
+    isFavourite?: boolean;
 }

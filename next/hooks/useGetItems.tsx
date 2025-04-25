@@ -5,11 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 export const useGetItems = <T,>(
     prefix: string,
     { getDataPage, getTotalCount }: DataPageHookFunctions<T>,
-    { page, pageSize, searchQuery, sortQuery }: GetDataPage
+    { page, pageSize, searchQuery, sortQuery, queryParams }: GetDataPage
 ): DataPageHook<T> => {
     const { data, isLoading: isDataLoading } = useQuery<T[], Error>({
         queryKey: [`${prefix}DataPage`, page, pageSize, searchQuery, sortQuery],
-        queryFn: () => getDataPage(prefix, { page, pageSize, searchQuery, sortQuery })
+        queryFn: () => getDataPage(prefix, { page, pageSize, searchQuery, sortQuery, queryParams })
     });
 
     const { data: totalCount, isLoading: isTotalCountLoading } = useQuery<number, Error>({

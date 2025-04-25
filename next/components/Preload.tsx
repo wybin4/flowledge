@@ -1,4 +1,6 @@
 "use client";
+import { Application } from "@/collections/CachedCollection";
+import { CourseSubscriptions } from "@/collections/CourseSubscriptions";
 import { Permissions } from "@/collections/Permissions";
 import { PrivateSettings } from "@/collections/PrivateSettings";
 import { Roles } from "@/collections/Roles";
@@ -41,6 +43,7 @@ const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
                 await PrivateSettings.listen();
                 await Roles.listen();
                 await Permissions.listen();
+                await CourseSubscriptions.listen();
 
                 await UserService.fetchUser();
                 UserService.subscribeToUserChanges();
@@ -49,6 +52,9 @@ const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
             } finally {
                 setLoading(false);
             }
+            // Application.listCollections().forEach(collection => {
+            //     Application.removeCollection(collection.name);
+            // });
         };
 
         loadUserSettings();

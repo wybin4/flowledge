@@ -25,16 +25,22 @@ class CourseListController(
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
         @RequestParam(required = false) searchQuery: String?,
-        @RequestParam(required = false) sortQuery: String?
+        @RequestParam(required = false) sortQuery: String?,
+        @RequestParam(required = false) excludedIds: List<String>?
     ): Mono<ResponseEntity<List<CourseGetByIdSmallResponse>>> {
-         val options = mapOf(
-            "page" to page as Any,
-            "pageSize" to pageSize as Any,
-            "searchQuery" to searchQuery as Any,
-            "sortQuery" to sortQuery as Any
+        val options = mutableMapOf<String, Any>(
+            "page" to page,
+            "pageSize" to pageSize
         )
 
-        return courseService.getCourses(options, "test_id") // TODO()
+        searchQuery?.let {
+            options["searchQuery"] = it
+        }
+
+        sortQuery?.let {
+            options["sortQuery"] = it
+        }
+        return courseService.getCourses(options, "test_id", excludedIds)
             .map { ResponseEntity.ok(it) }
     }
 

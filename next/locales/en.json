@@ -52,6 +52,10 @@
         "name": "search",
         "page-size": {
             "name": "page size"
+        },
+        "preview-page-size": {
+            "name": "preview page size",
+            "description": "number of items per page for preview"
         }
     },
     "permissions": {

@@ -13,9 +13,13 @@ class CourseRepositoryImpl(private val mongoTemplate: MongoTemplate) : CourseRep
     override fun findByTitleContainingIgnoreCaseWithCustomOptions(
         value: String,
         pageable: Pageable,
-        options: Map<String, Any>
+        options: Map<String, Any>,
+        excludedIds: List<String>?
     ): Flux<CourseModel> {
         val criteria = Criteria.where("title").regex(value, "i")
+        if (!excludedIds.isNullOrEmpty()) {
+            criteria.and("_id").nin(excludedIds)
+        }
         options.forEach { (key, value) ->
             criteria.and(key).`is`(value)
         }

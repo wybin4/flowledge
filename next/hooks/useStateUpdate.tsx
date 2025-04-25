@@ -6,7 +6,7 @@ export function useStateUpdate<T extends Identifiable>(
     searchQuery: string,
     setData: React.Dispatch<React.SetStateAction<T[]>>,
     setStateCallbacks: SetStateCallbacks<T>,
-    removeStateCallbacks: RemoveStateCallbacks<T>
+    removeStateCallbacks: RemoveStateCallbacks<T>,
 ) {
     useEffect(() => {
         const updateCallback = (newItems: T[], _regex?: string, usage: CallbackUsage = CallbackUsage.MANY) => {
@@ -22,7 +22,12 @@ export function useStateUpdate<T extends Identifiable>(
                 }
 
                 if (filteredItems.length === 1) {
-                    return prevData.map(p => (p._id === filteredItems[0]._id ? filteredItems[0] : p));
+                    const existingItem = prevData.find(p => p._id === filteredItems[0]._id);
+                    if (existingItem) {
+                        return prevData.map(p => (p._id === filteredItems[0]._id ? filteredItems[0] : p));
+                    } else {
+                        return [...prevData, filteredItems[0]];
+                    }
                 }
 
                 return prevData;

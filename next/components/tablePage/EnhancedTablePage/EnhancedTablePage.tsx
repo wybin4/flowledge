@@ -7,10 +7,8 @@ import styles from "./EnhancedTablePage.module.css";
 import { Sortable } from "@/types/Sortable";
 import { useRouter } from "next/navigation";
 import { useUserSetting } from "@/user/hooks/useUserSetting";
-import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
-import { usePagination } from "@/hooks/usePagination";
 import { Identifiable } from "@/types/Identifiable";
 import { IconKey } from "@/hooks/useIcon";
 import { EnhancedTablePageItem } from "./EnhancedTablePageItem/EnhancedTablePageItem";
@@ -18,15 +16,12 @@ import { TablePageMode } from "@/types/TablePageMode";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { EnhancedItemChildren } from "./types/EnhancedItemChildren";
 import cn from "classnames";
-import { GetDataPage } from "@/types/GetDataPage";
 import { DataPageHookFunctions } from "@/types/DataPageHook";
-import { useGetItems } from "@/hooks/useGetItems";
 import { useEnhancedPagination } from "@/hooks/useEnhancedPagination";
 
 interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
     apiPrefix?: string;
-    pageSize?: number;
     transformData: (data: T, locale: string, t: TFunction) => U;
     getHeaderItems: (t: TFunction, setSortQuery: (query: string) => void) => Sortable[];
     itemKeys: EnhancedItemChildren[];
@@ -39,7 +34,6 @@ interface EnhancedTablePageProps<T, U> {
 export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable>({
     prefix,
     apiPrefix,
-    pageSize,
     transformData,
     getHeaderItems,
     itemKeys,

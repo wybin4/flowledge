@@ -12,4 +12,5 @@ interface CourseSubscriptionRepository : ReactiveMongoRepository<CourseSubscript
     ReactiveSortingRepository<CourseSubscriptionModel, String> {
     fun findByCourseIdAndUserId(courseId: String, userId: String): Mono<CourseSubscriptionModel>
     fun findByCourseIdInAndUserId(courseIds: List<String>, userId: String): Flux<CourseSubscriptionModel>
+    fun findByUserId(userId: String): Flux<CourseSubscriptionModel>
 }

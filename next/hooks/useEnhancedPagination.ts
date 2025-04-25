@@ -6,13 +6,13 @@ import { PaginationHook, usePagination } from "./usePagination";
 import { DataPageHookFunctions } from "@/types/DataPageHook";
 
 export const useEnhancedPagination = <T extends Identifiable,>({
-    searchQuery, sortQuery, apiPrefix, getDataPageFunctions
+    searchQuery, sortQuery, queryParams, apiPrefix, getDataPageFunctions
 }: {
     apiPrefix: string;
     getDataPageFunctions: DataPageHookFunctions<T>;
 } & PaginationHook<T>) => {
     const itemsPerPage = usePrivateSetting<number>('search.page-size') || 10;
-
+    
     const getDataPageHook =
         (paginationProps: GetDataPage) => useGetItems<T>(
             apiPrefix,
@@ -25,5 +25,6 @@ export const useEnhancedPagination = <T extends Identifiable,>({
         getDataPageHook,
         searchQuery,
         sortQuery,
+        queryParams
     });
 };

@@ -7,7 +7,8 @@ import reactor.core.publisher.Flux
 interface CourseRepositoryTemplate {
     fun findByTitleContainingIgnoreCaseWithCustomOptions(
         value: String, 
-        pageable: Pageable, 
-        options: Map<String, Any>
+        pageable: Pageable,
+        options: Map<String, Any>,
+        excludedIds: List<String>? = null,
     ): Flux<CourseModel>
 }

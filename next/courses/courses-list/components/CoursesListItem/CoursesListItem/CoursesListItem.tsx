@@ -1,7 +1,6 @@
 "use client";
 
 import styles from "./CoursesListItem.module.css";
-import { CourseItem } from "@/courses/courses-list/types/CourseItem";
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { coursesListPrefix, coursesListPrefixApi } from "@/helpers/prefixes";
@@ -18,9 +17,10 @@ import { CoursesListItemComments } from "../CoursesListItemComments/CoursesListI
 import { userApiClient } from "@/apiClient";
 import { ToggleFavouriteRequest } from "@/courses/courses-list/types/ToggleFavourite";
 import { fakeUser } from "@/helpers/fakeUser";
+import { CourseWithSubscriptionItem } from "@/courses/courses-list/types/CourseItem";
 
 type CoursesListItemProps = {
-    course: CourseItem;
+    course: CourseWithSubscriptionItem;
     header?: ReactNode;
     pointer?: boolean;
     isListPage: boolean;
@@ -30,7 +30,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedMenuTab, setSelectedMenuTab] = useState<CourseTabs>(CourseTabs.Lessons);
-    const [isFavourite, setIsFavourite] = useState(course.isFavourite ?? false);
+    // const [isFavourite, setIsFavourite] = useState(course.isFavourite ?? false);
     const pathnamePrefix = `${coursesListPrefix}/${course._id}`;
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
     }
 
     const handleToggleFavourite = (newIsFavourite: boolean) => {
-        setIsFavourite(newIsFavourite);
+        // setIsFavourite(newIsFavourite);
         userApiClient.post<ToggleFavouriteRequest>(
             `${coursesListPrefixApi}.toggle-favourite/${course._id}`, {
             isFavourite: newIsFavourite,
@@ -58,7 +58,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
 
     const actions = (
         <CoursesListItemActions
-            isFavourite={isFavourite}
+            isFavourite={course.isFavourite ?? false}
             setIsFavourite={handleToggleFavourite}
             isExpanded={!isListPage}
             className={cn({

@@ -43,6 +43,12 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.6.0")
     kapt("org.mapstruct:mapstruct-processor:1.6.0")
 
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.ldap:spring-ldap-core")
+    implementation("org.springframework.security:spring-security-ldap")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.auth0:java-jwt:3.18.2")
+
     implementation("eduflow:common:1.0.0")
     implementation("eduflow:coretypings:1.0.0")
 }

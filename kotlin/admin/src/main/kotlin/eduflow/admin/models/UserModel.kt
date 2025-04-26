@@ -18,7 +18,8 @@ data class UserModel(
     override val email: UserEmail?,
     override val name: String,
     override val settings: UserSettingModel,
-    override val username: String
+    override val username: String,
+    override val services: UserServicesModel? = null
 ) : User
 
 

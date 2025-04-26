@@ -1,0 +1,22 @@
+dn: dc=example,dc=org
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: Example Org
+dc: example
+
+dn: ou=users,dc=example,dc=org
+objectClass: top
+objectClass: organizationalUnit
+ou: users
+
+dn: uid=testuser,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Test User
+sn: User
+uid: testuser
+mail: testuser@example.org
+userPassword: testpassword

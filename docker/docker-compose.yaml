@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 services:
   mongo:
@@ -11,12 +11,36 @@ services:
     volumes:
       - mongo_data:/data/db
     networks:
-      - mongo_network
+      - backend
     command: ["mongod", "--replSet", "rs0"]
+
+  ldap-server:
+    image: osixia/openldap:1.5.0
+    container_name: ldap-server
+    environment:
+      LDAP_ORGANISATION: "Test Org"
+      LDAP_DOMAIN: "example.org"
+      LDAP_ADMIN_PASSWORD: "admin"
+    ports:
+      - "389:389"
+      - "636:636"
+    networks:
+      - backend
+
+  ldap-ui:
+    image: osixia/phpldapadmin:0.9.0
+    container_name: ldap-ui
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: ldap-server
+      PHPLDAPADMIN_HTTPS: "false"
+    ports:
+      - "8081:80"
+    networks:
+      - backend
 
 volumes:
   mongo_data:
 
 networks:
-  mongo_network:
+  backend:
     driver: bridge

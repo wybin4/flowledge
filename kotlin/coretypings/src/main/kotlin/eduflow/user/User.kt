@@ -3,7 +3,7 @@ package eduflow.user
 import eduflow.Record
 import java.util.*
 
-interface User: Record {
+interface User : Record {
     val createdAt: Date
     val type: UserType
     val active: Boolean
@@ -11,4 +11,5 @@ interface User: Record {
     val name: String
     val email: UserEmail?
     val settings: UserSetting
+    val services: UserServices?
 }

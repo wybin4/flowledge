@@ -1,5 +1,46 @@
 .container {
+    gap: 1.3rem;
+
+    margin-bottom: 1rem;
+}
+
+.titleContainer {
+    gap: 0.8rem;
+}
+
+.titleContainer,
+.container {
     display: flex;
     align-items: center;
-    gap: 1rem;
+}
+
+.container h3 {
+    margin: 0;
+}
+
+.hasMore {
+    cursor: pointer;
+}
+
+.hasMore:hover {
+    filter: brightness(85%);
+}
+
+.count {
+    background-color: var(--hover-dark);
+    color: var(--secondary-text);
+
+    border-radius: 0.25rem;
+
+    font-size: 0.875rem;
+
+    padding: 0.15rem 0.3125rem;
+
+    margin-bottom: -2px;
+}
+
+.rightIcon {
+    color: var(--secondary-text);
+
+    margin-bottom: -2px;
 }

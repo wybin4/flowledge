@@ -60,6 +60,7 @@ import EditIcon from "../assets/edit.svg";
 import DeleteIcon from "../assets/delete.svg";
 import GhostIcon from "../assets/ghost.svg";
 import DraggableIcon from "../assets/draggable.svg";
+import RightArrowIcon from "../assets/right-arrow.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -135,6 +136,8 @@ const icons = {
     'ghost': <GhostIcon />,
 
     'draggable': <DraggableIcon />,
+
+    'right-arrow': <RightArrowIcon />
 } as const;
 
 export type IconKey = keyof typeof icons;

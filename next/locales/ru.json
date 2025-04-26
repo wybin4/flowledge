@@ -340,5 +340,7 @@
     },
     "survey": {
         "to-lesson": "тест к лекции"
-    }
+    },
+    "favourites": "избранное",
+    "all-courses": "все курсы"
 }

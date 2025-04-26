@@ -8,55 +8,55 @@ import { CoursesListHeader } from "../CoursesListHeader/CoursesListHeader";
 import { useTranslation } from "react-i18next";
 import { CoursesListInfinite } from "./CoursesListInfinite";
 import { CourseSubscriptionItem } from "../../types/CourseSubscriptionItem";
-import { usePagination } from "@/hooks/usePagination";
-import { courseSubscriptionsPrefix } from "@/helpers/prefixes";
-import { GetDataPage } from "@/types/GetDataPage";
-import { useGetItems } from "@/hooks/useGetItems";
-import { DataPageHookFunctions } from "@/types/DataPageHook";
+import { useDataManagement } from "@/hooks/useDataManagement";
 
 export const CoursesListInfinitePage = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
 
     const [subscriptions, setSubscriptions] = useState<CourseSubscriptionItem[] | undefined>(undefined);
     const [excludedIds, setExcludedIds] = useState<string[] | undefined>(undefined);
-    const [favourites, setFavourites] = useState<CourseSubscriptionItem[] | undefined>(undefined);
+
+    const [visibleFavourites, setVisibleFavourites] = useState<CourseSubscriptionItem[] | undefined>(undefined);
+    const [countFavourites, setCountFavourites] = useState<number | undefined>(undefined);
 
     const pageSize = usePrivateSetting<number>('preview-page-size') || 5;
 
-    const getDataPageFunctions: DataPageHookFunctions<CourseSubscriptionItem> = {
-        getDataPage: (_, props) => CourseSubscriptions.getPage(props),
-    };
-
-    const getDataPageHook =
-        (paginationProps: GetDataPage) => useGetItems<CourseSubscriptionItem>(
-            courseSubscriptionsPrefix,
-            getDataPageFunctions,
-            paginationProps
-        );
-
-    const { data: subs } = usePagination<CourseSubscriptionItem>({
-        itemsPerPage: pageSize,
-        getDataPageHook,
+    const { data: subs, setData: setSubs } = useDataManagement<CourseSubscriptionItem>({
         searchQuery,
         setStateCallbacks: CourseSubscriptions.pushCallback.bind(CourseSubscriptions),
         removeStateCallbacks: CourseSubscriptions.popCallback.bind(CourseSubscriptions),
         onSetData: (data) => {
-            const favouriteSubs = data.filter(sub => sub.isFavourite == true);
+            const favouriteSubs = data.filter(sub => sub.isFavourite === true);
             const restSubs = data.filter(sub => !favouriteSubs.some(fav => fav._id === sub._id));
-            setFavourites(favouriteSubs);
+            const excludedIds = data.map(item => item.courseId);
+
             setSubscriptions(restSubs);
-            setExcludedIds(data.map(item => item.courseId));
+            setExcludedIds(excludedIds);
+
+            setVisibleFavourites(favouriteSubs.slice(0, pageSize));
+            setCountFavourites(favouriteSubs.length);
+
+            setSubs(data);
         }
     });
+
+    useEffect(() => {
+        const initialData = CourseSubscriptions.collection.find() ?? [];
+        setSubs(initialData);
+    }, []);
 
     const { t } = useTranslation();
 
     return (
         <>
-            {!!favourites?.length &&
+            {!!visibleFavourites?.length &&
                 <>
-                    <CoursesListHeader title={t('favourites')} count={favourites.length} />
-                    {favourites.map((item, index) => (
+                    <CoursesListHeader
+                        title={t('favourites')}
+                        count={visibleFavourites.length}
+                        hasMoreItems={(countFavourites || 0) > pageSize}
+                    />
+                    {visibleFavourites.map((item, index) => (
                         <CoursesListItem
                             key={index}
                             course={item}

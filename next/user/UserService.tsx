@@ -59,7 +59,7 @@ class UserService extends EventEmitter {
 
     async updateUserSetting(setting: UpdatableSetting): Promise<void> {
         try {
-            await userApiClient.post(`users.set-setting?userId=${this.userId}`, JSON.stringify(setting));
+            await userApiClient.post(`users.set-setting?userId=${this.userId}`, setting);
         } catch (error: any) {
             return error.message;
         }

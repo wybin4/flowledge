@@ -18,23 +18,23 @@ class UserController(private val userRepository: UserRepository) {
     }
 
     @PostMapping("/users.set-setting")
-    fun setUserSettings(
-        @RequestParam userId: String,
-        @RequestBody settingUpdateRequest: SettingUpdateRequest
-    ): Mono<UserModel> {
-        return userRepository.findById(userId)
-            .flatMap { user ->
-                val updatedSettings = user.settings.copy()
+fun setUserSettings(
+    @RequestParam userId: String,
+    @RequestBody settingUpdateRequest: SettingUpdateRequest
+): Mono<UserModel> {
+    return userRepository.findById(userId)
+        .flatMap { user ->
+            val updatedSettings = user.settings.copy()
 
-                when (settingUpdateRequest.id) {
-                    "theme" -> updatedSettings.theme = Theme.valueOf(settingUpdateRequest.value.toString())
-                    "language" -> updatedSettings.language = Language.valueOf(settingUpdateRequest.value.toString())
-                    else -> return@flatMap Mono.error<UserModel>(IllegalArgumentException("Invalid setting ID"))
-                }
-
-                val updatedUser = user.copy(settings = updatedSettings)
-                userRepository.save(updatedUser)
+            when (settingUpdateRequest.id) {
+                "theme" -> updatedSettings.theme = Theme.valueOf(settingUpdateRequest.value)
+                "language" -> updatedSettings.language = Language.valueOf(settingUpdateRequest.value)
+                else -> return@flatMap Mono.error<UserModel>(IllegalArgumentException("Invalid setting ID"))
             }
-    }
+
+            val updatedUser = user.copy(settings = updatedSettings)
+            userRepository.save(updatedUser)
+        }
+}
 
 }

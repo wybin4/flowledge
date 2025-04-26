@@ -6,7 +6,7 @@ import { userApiClient } from '@/apiClient';
 export function usePrivateSettings(regex: string) {
     const updateSettings = useCallback(async (setting: UpdatableSetting, setError: (error: string | null) => void) => {
         try {
-            await userApiClient.post('settings.set', JSON.stringify(setting));
+            await userApiClient.post('settings.set', setting);
         } catch (err: any) {
             setError(err.message);
         }

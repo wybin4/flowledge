@@ -64,7 +64,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
     const handleSave = (setting: UpdatableSetting) => {
         setItem(prev => (prev ? { ...prev, [setting.id]: setting.value } : prev));
     };
-    
+
     const renderSettings = () => {
         const settings = settingKeys.map((key) => getSetting(key.name));
 
@@ -83,16 +83,18 @@ const EnhancedItemBody = <T extends Identifiable,>({
                         />
                     );
                 } else {
-                    return (<SettingWrapper
-                        key={index}
-                        validateError={settingKeys[index].error}
-                        debounceTime={0}
-                        withWrapper={true}
-                        setting={setting as SettingValue}
-                        handleSave={(newValue) => {
-                            handleSave({ id: setting._id, value: newValue.value });
-                        }}
-                    />);
+                    return (
+                        <SettingWrapper
+                            key={index}
+                            validateError={settingKeys[index].error}
+                            debounceTime={0}
+                            withWrapper={false}
+                            setting={setting as SettingValue}
+                            handleSave={(newValue) => {
+                                handleSave({ id: setting._id, value: newValue.value });
+                            }}
+                        />
+                    );
                 }
             }
             return null;

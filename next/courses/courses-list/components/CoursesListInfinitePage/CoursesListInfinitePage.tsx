@@ -43,21 +43,12 @@ export const CoursesListInfinitePage = () => {
         onSetData: (data) => {
             const favouriteSubs = data.filter(sub => sub.isFavourite == true);
             const restSubs = data.filter(sub => !favouriteSubs.some(fav => fav._id === sub._id));
-            console.log('pl343433', favouriteSubs, restSubs)
             setFavourites(favouriteSubs);
             setSubscriptions(restSubs);
             setExcludedIds(data.map(item => item.courseId));
-            console.log(restSubs)
         }
     });
 
-    // useEffect(() => {
-    //     console.log('pl1')
-    // const favouriteSubs = subs.filter(sub => sub.isFavourite == true);
-    // const restSubs = subs.filter(sub => sub.isFavourite == false);
-    // setFavourites(favouriteSubs);
-    // setSubscriptions(restSubs);
-    // }, [subs]);
     const { t } = useTranslation();
 
     return (
@@ -74,11 +65,11 @@ export const CoursesListInfinitePage = () => {
                     ))}
                 </>
             }
-            {subs &&
+            {subs && subscriptions && excludedIds &&
                 <CoursesListInfinite
                     searchQuery={searchQuery}
                     subscriptions={subscriptions}
-                    excludedIds={excludedIds ?? []}
+                    excludedIds={excludedIds}
                 />
             }
         </>

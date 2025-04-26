@@ -75,7 +75,7 @@ export const CourseSection = ({
             </CollapsibleSection>
         )
     }
-    console.log(translateTime('6 MINS'))
+
     if (typeof section === 'object' && 'section' in section) {
         return (
             <CollapsibleSection

@@ -3,12 +3,9 @@ package eduflow.admin.course.controllers
 import eduflow.admin.course.dto.course.get.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
 import eduflow.admin.course.dto.course.list.ToggleFavouriteRequest
-import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.models.CourseSubscriptionModel
-import eduflow.admin.course.repositories.CourseRepository
 import eduflow.admin.course.repositories.CourseSubscriptionRepository
 import eduflow.admin.course.services.CourseService
-import eduflow.course.CourseSubscription
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono

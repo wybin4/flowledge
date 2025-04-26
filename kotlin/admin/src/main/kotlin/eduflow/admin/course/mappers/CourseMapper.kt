@@ -47,13 +47,13 @@ interface CourseMapper {
     )
     fun toGetSmallDto(model: CourseModel, isUser: Boolean?): CourseGetByIdSmallResponse
 
-    @Mapping(target = "_id", source = "subscription._id")
+    @Mapping(target = "_id", source = "course._id")
     fun toSubscriptionWithCourseDto(
         subscription: CourseSubscriptionModel,
         course: CourseModel,
     ): CourseSubscriptionGetResponse {
         return CourseSubscriptionGetResponse(
-            _id = subscription._id,
+            _id = course._id,
             courseId = subscription.courseId,
             isFavourite = subscription.isFavourite,
             isSubscribed = subscription.isSubscribed,

@@ -15,10 +15,10 @@ type CoursesListInfiniteProps = {
     searchQuery: string;
 };
 
-export const CoursesListInfinite = ({ 
+export const CoursesListInfinite = ({
     subscriptions, excludedIds,
     searchQuery
- }: CoursesListInfiniteProps) => {
+}: CoursesListInfiniteProps) => {
     const [courses, setCourses] = useState<CourseWithSubscriptionItem[] | undefined>(undefined);
     const { t } = useTranslation();
 
@@ -32,13 +32,18 @@ export const CoursesListInfinite = ({
         searchQuery,
         queryParams: { excludedIds }
     });
-    
+
     useEffect(() => {
-        console.warn(excludedIds, data)
         if (subscriptions && subscriptions.length) {
-            setCourses([...subscriptions, ...data as CourseWithSubscriptionItem[]]);
+            const filteredData = (data as CourseWithSubscriptionItem[]).filter(
+                course => !excludedIds.includes(course._id)
+            );
+            setCourses([...subscriptions, ...filteredData]);
         } else if (data.length) {
-            setCourses(data as CourseWithSubscriptionItem[]);
+            const filteredData = (data as CourseWithSubscriptionItem[]).filter(
+                course => !excludedIds.includes(course._id)
+            );
+            setCourses(filteredData);
         }
     }, [subscriptions, data, excludedIds]);
 

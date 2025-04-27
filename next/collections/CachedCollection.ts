@@ -3,8 +3,19 @@ import WebSocketClient from "@/socket/WebSocketClient";
 import { CallbackUsage } from "@/types/StateCallback";
 import EventEmitter from "events";
 import Loki, { Collection } from "lokijs";
+const LokiIndexedAdapter = require('lokijs/src/loki-indexed-adapter');
 
-export const Application = new Loki('app.db');
+const adapter = new LokiIndexedAdapter();
+
+export const Application = new Loki('app.db', {
+    adapter: adapter,
+    autoload: true,
+    autoloadCallback: () => {
+        console.log('Database loaded from IndexedDB');
+    },
+    autosave: true,
+    autosaveInterval: 1000,
+});
 
 type CachedCollectionCallback<T> = (data: T[], usage: CallbackUsage, regex?: string) => void;
 

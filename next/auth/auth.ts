@@ -16,7 +16,7 @@ export const login = async (username: string, password: string) => {
     }
 };
 
-export const executeRefreshTokens = async (refreshToken: string, onError: () => void) => {
+export const executeRefreshTokens = async (oldRefreshToken: string, onError: () => void) => {
     try {
         const response = await fetch(`/api/auth/refresh`, {
             method: 'POST',
@@ -25,7 +25,7 @@ export const executeRefreshTokens = async (refreshToken: string, onError: () => 
             },
             credentials: 'include',
             body: JSON.stringify({
-                refreshToken,
+                refreshToken: oldRefreshToken,
             }),
         });
 
@@ -33,7 +33,7 @@ export const executeRefreshTokens = async (refreshToken: string, onError: () => 
             throw new Error(`Ошибка ${response.status}: ${await response.text()}`);
         }
 
-        const { jwtToken } = await response.json();
+        const { jwtToken, refreshToken } = await response.json();
         saveTokensClient(jwtToken, refreshToken);
     } catch (error) {
         console.error('Ошибка при обновлении токенов:', error);

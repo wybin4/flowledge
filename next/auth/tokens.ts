@@ -1,7 +1,7 @@
 'use client';
 
 import Cookies from 'js-cookie';
-import { executeRefreshTokens, onLoginError, refreshTokens } from './auth';
+import { executeRefreshTokens, onLoginError } from './auth';
 
 const JWT_TOKEN_COOKIE = 'jwtToken';
 const REFRESH_TOKEN_COOKIE = 'refreshToken';

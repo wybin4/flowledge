@@ -25,9 +25,6 @@ class JwtTokenFilter(
         val cookies = request.cookies
         val token = cookies?.find { it.name == "jwtToken" }?.value
 
-        print(request.requestURI)
-        println(token)
-
         if (token != null) {
             val userId = tokenService.validateToken(token)
             if (userId != null) {

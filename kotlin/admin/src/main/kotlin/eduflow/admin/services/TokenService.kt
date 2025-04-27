@@ -7,6 +7,8 @@ import eduflow.admin.models.UserModel
 import eduflow.admin.repositories.UserRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Service
@@ -19,14 +21,15 @@ class TokenService(
     fun generateJwtToken(user: UserModel): String {
         return JWT.create()
             .withSubject(user._id) // Используем ID пользователя как subject
-            .withExpiresAt(Date(System.currentTimeMillis() + 86400000)) // Срок действия 1 день
+            .withExpiresAt(Date(System.currentTimeMillis() + 60 * 60 * 1000)) // Срок действия 1 час
             .sign(algorithm)
     }
 
     fun generateRefreshToken(user: UserModel): String {
+        val expirationTime = Instant.now().plus(30, ChronoUnit.DAYS) // Срок действия 30 дней
         return JWT.create()
             .withSubject(user._id) // Используем ID пользователя как subject
-            .withExpiresAt(Date(System.currentTimeMillis() + 7 * 86400000)) // Срок действия 7 дней
+            .withExpiresAt(Date.from(expirationTime)) // Устанавливаем срок действия
             .sign(algorithm)
     }
 

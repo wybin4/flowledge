@@ -59,6 +59,8 @@ class AuthController(
                     if (user != null && user.services?.resume?.refreshToken == request.refreshToken) {
                         tokenService.updateTokens(user)
                             .map { updatedUser ->
+                                println("pl1")
+                                println(updatedUser.services?.resume?.refreshToken)
                                 RefreshTokenResponse(
                                     updatedUser.services?.resume?.jwtToken!!,
                                     updatedUser.services.resume?.refreshToken!!

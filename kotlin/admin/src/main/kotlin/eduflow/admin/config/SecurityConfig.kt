@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -30,6 +31,8 @@ class SecurityConfig(
             .securityContext { it.requireExplicitSave(false) }
             .authorizeHttpRequests { requests ->
                 requests
+                    .requestMatchers("/websocket").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().authenticated()

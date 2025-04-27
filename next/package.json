@@ -20,6 +20,7 @@
     "@uiw/react-markdown-editor": "^6.1.2",
     "classnames": "^2.5.1",
     "i18next": "^24.2.2",
+    "js-cookie": "^3.0.5",
     "lokijs": "^1.5.12",
     "next": "^15.2.4",
     "react": "^19.0.0",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@svgr/webpack": "^8.1.0",
+    "@types/js-cookie": "^3.0.6",
     "@types/lokijs": "^1.5.14",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -17,7 +17,16 @@ class JwtTokenFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token = request.getHeader("Authorization")?.removePrefix("Bearer ")
+        if (request.requestURI.contains("/websocket")) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        val cookies = request.cookies
+        val token = cookies?.find { it.name == "jwtToken" }?.value
+
+        print(request.requestURI)
+        println(token)
 
         if (token != null) {
             val userId = tokenService.validateToken(token)
@@ -27,7 +36,6 @@ class JwtTokenFilter(
                 if (user != null && user.services?.resume?.jwtToken == token) {
                     val authentication = UsernamePasswordAuthenticationToken(user, null, emptyList())
                     SecurityContextHolder.getContext().authentication = authentication
-                    println("Authentication set for user: ${user.username}")
                 } else {
                     response.status = HttpServletResponse.SC_UNAUTHORIZED
                     response.writer.println("Invalid token")

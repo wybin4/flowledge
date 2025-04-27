@@ -1,5 +1,7 @@
 "use client";
-import { Application, getTokens } from "@/collections/CachedCollection";
+
+import { LoginResponse } from "@/types/LoginResponse";
+import { getTokensClient } from "@/auth/tokens";
 import { CourseSubscriptions } from "@/collections/CourseSubscriptions";
 import { Permissions } from "@/collections/Permissions";
 import { PrivateSettings } from "@/collections/PrivateSettings";
@@ -9,19 +11,24 @@ import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 
 const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [tokens, setTokens] = useState<LoginResponse | undefined>(undefined);
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
-        const tokens = getTokens();
-        console.log(tokens)
-        if (!tokens) {
-            if (pathname !== '/login') {
-                router.push('/login');
+        const fetchTokens = async () => {
+            const tokens = await getTokensClient();
+            if (!tokens) {
+                if (pathname !== '/login') {
+                    router.push('/login');
+                }
+                return;
+            } else {
+                router.push('/');
             }
-            return;
-        }
+            setTokens(tokens);
+        };
 
         const loadUserSettings = async () => {
             try {
@@ -39,8 +46,9 @@ const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
             }
         };
 
-        loadUserSettings();
-    }, [router, pathname]);
+        fetchTokens();
+        tokens && loadUserSettings();
+    }, [JSON.stringify(tokens)]);
 
     if (loading && pathname != '/login') {
         return <div>Loading...</div>;

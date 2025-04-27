@@ -4,30 +4,7 @@ import { CallbackUsage } from "@/types/StateCallback";
 import EventEmitter from "events";
 import Loki, { Collection } from "lokijs";
 
-const Application = new Loki('app.db', {
-    autosave: true,
-    autosaveInterval: 5000,
-    persistenceMethod: 'fs',
-    autoload: true,
-    autoloadCallback: function () {
-        console.log('Database loaded');
-    }
-});
-
-const tokens = Application.addCollection('tokens');
-
-export const saveTokens = (jwtToken: string, refreshToken: string) => {
-    tokens.insert({ jwtToken, refreshToken });
-};
-
-export const getTokens = () => {
-    const token = tokens.findOne({});
-    return token ? { jwtToken: token.jwtToken, refreshToken: token.refreshToken } : null;
-};
-
-export const clearTokens = () => {
-    tokens.clear();
-};
+export const Application = new Loki('app.db');
 
 type CachedCollectionCallback<T> = (data: T[], usage: CallbackUsage, regex?: string) => void;
 
@@ -142,7 +119,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends EventEmi
 
     async loadFromServer() {
         try {
-            const response = await userApiClient.get<T[]>(`http://localhost:8080/api/${this.name}.get`);
+            const response = await userApiClient.get<T[]>(`${this.name}.get`);
             const startTime = new Date();
             const lastTime = this.updatedAt;
 

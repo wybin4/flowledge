@@ -23,11 +23,9 @@ class AuthController(
     @PostMapping("/login")
     fun ldapLogin(@RequestBody request: LdapLoginRequest): Mono<LoginResponse> {
         val authentication: Authentication = UsernamePasswordAuthenticationToken(request.username, request.password)
-        println("Attempting to authenticate user: ${request.username}")
         try {
             val authenticated = ldapAuthenticationProvider.authenticate(authentication)
             SecurityContextHolder.getContext().authentication = authenticated
-            println("Authentication result: $authenticated")
 
             return tokenService.userRepository.findByUsername(request.username)
                 .switchIfEmpty(userService.createUser(request.username))

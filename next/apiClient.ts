@@ -1,8 +1,7 @@
-import { redirect } from 'next/navigation';
-import { logout, refreshTokens } from './auth';
-import { getTokens } from './collections/CachedCollection';
+import { getTokensClient } from './auth/tokens';
+import { onLoginError, refreshTokens } from './auth/auth';
 
-export const userApiClientPrefix = 'http://localhost:8080/api';
+export const userApiClientPrefix = 'http://localhost:8080';
 
 export type ApiClientRequest = { url: string, options?: RequestInit };
 
@@ -13,63 +12,22 @@ export type ApiClientMethods = {
     delete: <T>(url: string, options?: Omit<ApiClientRequest['options'], 'method'>) => Promise<T>;
 };
 
-const createApiClient = (baseUrl: string, supportsTokens: boolean = false): ApiClientMethods => {
-    const client = async <T>({ url, options }: ApiClientRequest): Promise<T> => {
-        let headers = options?.headers;
-
-        if (supportsTokens) {
-            const tokens = getTokens();
-            if (tokens?.jwtToken) {
-                headers = {
-                    ...headers,
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${tokens.jwtToken}`,
-                };
-            }
-        }
-        const response = await fetch(`${baseUrl}/${url}`, {
+const createApiClient = (isBaseUrl: string, baseUrl?: string): ApiClientMethods => {
+    const makeRequest = async <T>(url: string, options: RequestInit): Promise<T> => {
+        const response = await fetch(`${isBaseUrl ? '' : baseUrl}/api/${url}`, {
             ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options?.headers,
-            },
+            credentials: 'include',
         });
 
-        if (supportsTokens && response.status === 401) {
-            // Попытка обновить токены
-            await refreshTokens();
-            const newTokens = getTokens();
-            if (newTokens?.jwtToken) {
-                const newResponse = await fetch(`${baseUrl}/${url}`, {
-                    ...options,
-                    headers: {
-                        ...headers,
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${newTokens.jwtToken}`,
-                    },
-                });
-
-                if (!newResponse.ok) {
-                    throw new Error(`Ошибка ${newResponse.status}: ${await newResponse.text()}`);
-                }
-
-                if (newResponse.status === 204) {
-                    return {} as T;
-                }
-
-                return newResponse.json();
-            } else {
-                throw new Error('Failed to refresh tokens');
-            }
-        }
-
-        // Обработка 403
-        if (response.status === 403) {
-            logout(); // Очищаем токены
-            redirect('/login');
-        }
-
         if (!response.ok) {
+            if (response.status == 401) {
+                return handleTokenRefresh<T>(url, options);
+            }
+
+            if (response.status == 403) {
+                onLoginError();
+            }
+
             throw new Error(`Ошибка ${response.status}: ${await response.text()}`);
         }
 
@@ -78,6 +36,36 @@ const createApiClient = (baseUrl: string, supportsTokens: boolean = false): ApiC
         }
 
         return response.json();
+    };
+
+    const handleTokenRefresh = async <T>(url: string, options: RequestInit): Promise<T> => {
+        refreshTokens(onLoginError);
+        const newTokens = await getTokensClient();
+        if (newTokens?.jwtToken) {
+            return makeRequest<T>(url, options);
+        } else {
+            return onLoginError();
+        }
+    };
+
+    const client = async <T>({ url, options }: ApiClientRequest): Promise<T> => {
+        const isGetMethod = options?.method?.toUpperCase() === 'GET';
+
+        const finalHeaders = {
+            ...(isGetMethod ? {} : { 'Content-Type': 'application/json' }),
+            ...options?.headers,
+        };
+
+        const requestOptions = {
+            ...options,
+            headers: finalHeaders,
+        };
+
+        try {
+            return await makeRequest<T>(url, requestOptions);
+        } catch (error) {
+            throw error;
+        }
     };
 
     return {
@@ -96,7 +84,7 @@ const createApiClient = (baseUrl: string, supportsTokens: boolean = false): ApiC
 };
 
 // userApiClient поддерживает токены
-export const userApiClient = createApiClient(userApiClientPrefix, true);
+export const userApiClient = createApiClient(userApiClientPrefix);
 
 // neuralApiClient и integrationApiClient не поддерживают токены
 export const neuralApiClient = createApiClient('http://localhost:8000');

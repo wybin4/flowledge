@@ -2,8 +2,8 @@ package eduflow.admin.course.controllers
 
 import eduflow.admin.course.dto.CourseUpdateRequest
 import eduflow.admin.course.dto.course.CourseCreateRequest
-import eduflow.admin.course.dto.course.get.CourseGetByIdResponse
-import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
+import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
+import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.repositories.CourseRepository
 import eduflow.admin.course.services.CourseService

@@ -1,12 +1,14 @@
 package eduflow.admin.course.mappers
 
-import eduflow.admin.course.dto.course.get.CourseGetByIdBigResponse
-import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
 import eduflow.admin.course.dto.course.hub.get.CourseHubGetResponse
+import eduflow.admin.course.dto.course.hub.id.CoursesHubGetByIdBigResponse
+import eduflow.admin.course.dto.course.id.CourseGetByIdBigResponse
+import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetResponse
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.types.CourseEditor
 import eduflow.admin.course.types.SectionWithLessons
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -16,7 +18,7 @@ interface CourseMapper {
     fun toHubGetDto(model: CourseModel): CourseHubGetResponse
 
     @Mapping(target = "_id", source = "model._id")
-    fun toGetByIdBigDto(
+    fun toCoursesListGetByIdBigDto(
         model: CourseModel,
         lessons: List<CourseLessonModel> = emptyList(),
         sections: List<SectionWithLessons> = emptyList()
@@ -29,6 +31,25 @@ interface CourseMapper {
             tags = model.tags,
             lessons = lessons,
             sections = sections,
+        )
+    }
+
+    @Mapping(target = "_id", source = "model._id")
+    fun toCoursesHubGetByIdBigDto(
+        model: CourseModel,
+        lessons: List<CourseLessonModel> = emptyList(),
+        sections: List<SectionWithLessons> = emptyList(),
+        editors: List<CourseEditor> = emptyList()
+    ): CoursesHubGetByIdBigResponse {
+        return CoursesHubGetByIdBigResponse(
+            _id = model._id,
+            title = model.title,
+            imageUrl = model.imageUrl,
+            description = model.description,
+            tags = model.tags,
+            lessons = lessons,
+            sections = sections,
+            editors = editors
         )
     }
 

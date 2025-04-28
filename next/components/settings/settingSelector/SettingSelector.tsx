@@ -1,10 +1,9 @@
 import { memo } from "react";
-import SelectorInfiniteIcon from "../../../assets/selector-infinite.svg";
 import { SelectorSetting, SettingType, SimpleSettingValueType } from "@/types/Setting";
-import { InputBox } from "@/components/InputBox/InputBox";
 import { InputBoxWrapper } from "@/components/InputBox/InputBoxWrapper";
 import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
 import { SettingWrapperProps } from "../SettingWrapper/SettingWrapper";
+import { InfiniteSelector } from "@/components/InfiniteSelector/InifiniteSelector";
 
 interface SettingSelectorProps extends SettingWrapperProps {
     setting: SelectorSetting<SimpleSettingValueType>;
@@ -24,12 +23,7 @@ export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingS
                     />
                 ))
             ) : setting.type === SettingType.SelectorInfinite ? (
-                <InputBox
-                    name={setting.placeholder || ''}
-                    icon={<SelectorInfiniteIcon />}
-                >
-                    <div>{setting.value}</div>
-                </InputBox>
+                <InfiniteSelector value={String(setting.value)} placeholder={setting.placeholder} />
             ) : null}
         </InputBoxWrapper>
     );

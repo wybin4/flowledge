@@ -2,7 +2,7 @@
 
 import { CoursesItemHeader } from "@/courses/components/CoursesItemHeader/CoursesItemHeader";
 import { CoursesListItemDescription } from "@/courses/components/CoursesListItemDescription/CoursesListItemDescription";
-import { CoursesHubEditors } from "./CoursesHubEditors/CoursesHubEditors";
+import { CoursesHubEditors } from "./CoursesHubEditors/CoursesHubEditors/CoursesHubEditors";
 import { CoursesHubDetail } from "../../types/CoursesHubDetails";
 import { CourseSection } from "@/courses/components/CourseSection/CourseSection";
 import { coursesHubPrefix, coursesHubSectionsPrefixApi, coursesHubSectionsPrefixTranslate } from "@/helpers/prefixes";
@@ -32,11 +32,15 @@ import { TablePageActionType } from "@/types/TablePageActionType";
 import { getItemsFromStringRange } from "@/helpers/getItemsFromStringRange";
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { getErrorByRegex } from "@/helpers/getErrorByRegex";
+import { Modal } from "@/components/Modal/Modal";
+import { CoursesHubEditorsModal } from "./CoursesHubEditors/CoursesHubEditorsModal/CoursesHubEditorsModal";
 
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
     const [selectedSectionIdToEdit, setSelectedSectionIdToEdit] = useState<string | undefined>(undefined);
+
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(true);
 
     const [sectionTitleError, setSectionTitleError] = useState<string>('');
 
@@ -177,6 +181,9 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
         >
             {(isExpanded, onClick) => (
                 <div className={cn({ [styles.expanded]: isExpanded })}>
+                    <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                        {onClose => <CoursesHubEditorsModal editors={course.editors || []} onCancel={onClose as any} />}
+                    </Modal>
                     <CoursesItemHeader
                         course={course}
                         header={<Breadcrumbs position={ChildrenPosition.Left} currentPathName={t(`${coursesHubPrefix}.current-course`)} />}
@@ -188,8 +195,8 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     />
                     <CoursesHubDetailsHeader
                         title={t(`${coursesHubPrefix}.editors`)}
-                        action={`+ ${t(`${coursesHubPrefix}.add-editor`)}`}
-                        onClick={() => { }}
+                        action={`${t(`${coursesHubPrefix}.manage-editors`)}`}
+                        onClick={() => setIsModalOpen(true)}
                     />
                     {course.editors && course.editors.length > 0 && <CoursesHubEditors editors={course.editors} />}
                     <div className={styles.sectionsContainer}>

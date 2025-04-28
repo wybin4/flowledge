@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.course.get
+package eduflow.admin.course.dto.course.id
 
 import eduflow.course.CourseCreator
 import java.util.*
@@ -12,4 +12,4 @@ data class CourseGetByIdSmallResponse(
     val u: CourseCreator? = null,
     val createdAt: Date? = null,
     val isFavourite: Boolean? = null
-): CourseGetByIdResponse
+) : CourseGetByIdResponse

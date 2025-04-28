@@ -1,7 +1,7 @@
 package eduflow.admin.course.controllers
 
-import eduflow.admin.course.dto.course.get.CourseGetByIdResponse
-import eduflow.admin.course.dto.course.get.CourseGetByIdSmallResponse
+import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
+import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.dto.course.list.ToggleFavouriteRequest
 import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.repositories.CourseSubscriptionRepository

@@ -23,7 +23,11 @@ export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingS
                     />
                 ))
             ) : setting.type === SettingType.SelectorInfinite ? (
-                <InfiniteSelector value={String(setting.value)} placeholder={setting.placeholder} />
+                <InfiniteSelector
+                    options={setting.options}
+                    value={String(setting.value)}
+                    placeholder={setting.placeholder}
+                />
             ) : null}
         </InputBoxWrapper>
     );

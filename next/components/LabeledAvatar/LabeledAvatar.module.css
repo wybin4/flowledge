@@ -1,0 +1,31 @@
+.avatar {
+    border-radius: 100%;
+    width: 2.5rem;
+    height: 2.5rem;
+
+    object-fit: cover;
+}
+
+.container,
+.titleContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.editorRoles {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+}
+
+.info {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.big {
+    justify-content: space-between;
+}

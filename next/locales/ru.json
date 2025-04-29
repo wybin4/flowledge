@@ -345,5 +345,6 @@
         "to-lesson": "тест к лекции"
     },
     "favourites": "избранное",
-    "all-courses": "все курсы"
+    "all-courses": "все курсы",
+    "there-are-no-options": "нет доступных опций"
 }

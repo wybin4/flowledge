@@ -5,33 +5,34 @@ import { CourseEditor } from "../../../../types/CourseEditor";
 import { rolesPrefix } from "@/helpers/prefixes";
 import styles from "./CoursesHubEditorItem.module.css";
 import { Tag } from "@/components/Tag/Tag";
-import cn from "classnames";
 import { InfiniteSelector } from "@/components/InfiniteSelector/InifiniteSelector";
-import { InputBoxWrapper } from "@/components/InputBox/InputBoxWrapper";
+import { ItemSize } from "@/types/ItemSize";
+import { LabeledAvatar } from "@/components/LabeledAvatar/LabeledAvatar";
 
 type CoursesHubEditorItemProps = {
     editor: CourseEditor;
-    isSmall?: boolean;
+    size?: ItemSize;
 }
 
-export const CoursesHubEditorItem = ({ editor, isSmall = true }: CoursesHubEditorItemProps) => {
+export const CoursesHubEditorItem = ({ editor, size = ItemSize.Little }: CoursesHubEditorItemProps) => {
     const { t } = useTranslation();
+
     const role = editor.roles[0];
 
     return (
-        <div className={cn(styles.container, { [styles.big]: !isSmall })}>
-            <div className={styles.titleContainer}>
-                <img src={editor.avatar} alt={editor.name} className={styles.avatar} />
-                <div className={styles.info}>
-                    <div className={styles.name}>{editor.name}</div>
-                    {isSmall && <Tag tag={t(`${rolesPrefix}.${role}`)} size='small' />}
-                </div>
-            </div>
-            {!isSmall &&
-                <InputBoxWrapper className={styles.selectorContainer}>
-                    <InfiniteSelector value={t(`${rolesPrefix}.${role}`)} endClassName={styles.selector} />
-                </InputBoxWrapper>
-            }
-        </div >
+        <LabeledAvatar
+            item={{ value: editor._id, avatar: editor.avatar, label: editor.name }}
+            size={size}
+            child={(size) => (size === ItemSize.Little
+                ? <Tag tag={t(`${rolesPrefix}.${role}`)} size={size} />
+                : <InfiniteSelector
+                    width={8}
+                    optionWidth={84.3}
+                    options={[{ value: '1', label: 'testuser' }]}
+                    value={t(`${rolesPrefix}.${role}`)}
+                    endClassName={styles.selector}
+                />
+            )}
+        />
     );
 };

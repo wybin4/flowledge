@@ -4,9 +4,10 @@ import { useState } from "react";
 import { CoursesHubEditors } from "../CoursesHubEditors/CoursesHubEditors";
 import styles from "./CoursesHubEditorsModal.module.css";
 import { InfiniteSelector } from "@/components/InfiniteSelector/InifiniteSelector";
-import { InputBoxWrapper } from "@/components/InputBox/InputBoxWrapper";
 import cn from "classnames";
 import { coursesHubPrefix } from "@/helpers/prefixes";
+import { LabeledAvatar } from "@/components/LabeledAvatar/LabeledAvatar";
+import { ItemSize } from "@/types/ItemSize";
 
 type CoursesHubEditorsModalProps = {
     editors: CourseEditor[];
@@ -14,7 +15,7 @@ type CoursesHubEditorsModalProps = {
 };
 
 export const CoursesHubEditorsModal = ({ editors: initialEditors, onCancel }: CoursesHubEditorsModalProps) => {
-    const [editors, setEditors] = useState<CourseEditor[]>(initialEditors);
+    const [editors, setEditors] = useState<CourseEditor[]>(initialEditors || []);
 
     const { t } = useTranslation();
 
@@ -22,15 +23,24 @@ export const CoursesHubEditorsModal = ({ editors: initialEditors, onCancel }: Co
         <div className={styles.container}>
             <div className={styles.content}>
                 <h3 className={cn(styles.title, styles.negMt)}>{t(`${coursesHubPrefix}.add-editor`)}</h3>
-                <InputBoxWrapper className={styles.selectorContainer}>
-                    <InfiniteSelector
-                        value={''}
-                        endClassName={styles.editorSelector}
-                        placeholder={t(`${coursesHubPrefix}.select-from-users-list`)}
-                    />
-                </InputBoxWrapper>
+                <InfiniteSelector
+                    value={'2'}
+                    options={editors.map(editor => ({
+                        value: editor._id,
+                        label: editor.name,
+                        avatar: editor.avatar
+                    }))}
+                    formatOptionLabel={(option: any) => (
+                        <LabeledAvatar
+                            key={option.value}
+                            item={option}
+                        />
+                    )}
+                    endClassName={styles.editorSelector}
+                    placeholder={t(`${coursesHubPrefix}.select-from-users-list`)}
+                />
                 <h3 className={styles.title}>{t(`${coursesHubPrefix}.editors`)}</h3>
-                <CoursesHubEditors editors={editors} isSmall={false} />
+                <CoursesHubEditors editors={editors} size={ItemSize.Big} />
             </div>
             <div className={styles.actions}>
                 <div className={styles.actionCancel} onClick={() => {

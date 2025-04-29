@@ -1,25 +1,16 @@
-import { InputBox } from "../InputBox/InputBox";
-import SelectorInfiniteIcon from "../../assets/selector-infinite.svg";
+import { Dropdown, DropdownProps } from "../Dropdown/Dropdown";
 
 type InfiniteSelectorProps = {
-    placeholder?: string;
-    value: string;
     className?: string;
     endClassName?: string;
-};
+} & DropdownProps;
 
 export const InfiniteSelector = ({
-    value, placeholder = '',
-    className, endClassName
+    options,
+    className, endClassName,
+    ...props
 }: InfiniteSelectorProps) => {
     return (
-        <InputBox
-            className={className}
-            endClassName={endClassName}
-            name={placeholder}
-            icon={<SelectorInfiniteIcon />}
-        >
-            <div>{value}</div>
-        </InputBox>
+        <Dropdown options={options} {...props} />
     );
 };

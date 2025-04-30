@@ -5,14 +5,13 @@ import { CoursesListItemDescription } from "@/courses/components/CoursesListItem
 import { CoursesHubEditors } from "./CoursesHubEditors/CoursesHubEditors/CoursesHubEditors";
 import { CoursesHubDetail } from "../../types/CoursesHubDetails";
 import { CourseSection } from "@/courses/components/CourseSection/CourseSection";
-import { coursesHubPrefix, coursesHubSectionsPrefixApi, coursesHubSectionsPrefixTranslate } from "@/helpers/prefixes";
+import { coursesHubEditorsPrefixTranslate, coursesHubPrefix, coursesHubSectionsPrefixApi, coursesHubSectionsPrefixTranslate } from "@/helpers/prefixes";
 import { useTranslation } from "react-i18next";
 import styles from "./CoursesHubDetails.module.css";
 import { CoursesHubDetailsHeader } from "./CoursesHubDetailsHeader/CoursesHubDetailsHeader";
 import { handlePluralTranslation } from "@/helpers/handlePluralTranslation";
 import { useUserSetting } from "@/user/hooks/useUserSetting";
 import { Language } from "@/user/types/Language";
-import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useRouter } from "next/navigation";
@@ -34,13 +33,15 @@ import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { getErrorByRegex } from "@/helpers/getErrorByRegex";
 import { Modal } from "@/components/Modal/Modal";
 import { CoursesHubEditorsModal } from "./CoursesHubEditors/CoursesHubEditorsModal/CoursesHubEditorsModal";
+import { CourseEditor } from "../../types/CourseEditor";
 
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
+    const [courseEditors, setCourseEditors] = useState<CourseEditor[]>(course.editors || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
     const [selectedSectionIdToEdit, setSelectedSectionIdToEdit] = useState<string | undefined>(undefined);
 
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(true);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     const [sectionTitleError, setSectionTitleError] = useState<string>('');
 
@@ -182,7 +183,14 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
             {(isExpanded, onClick) => (
                 <div className={cn({ [styles.expanded]: isExpanded })}>
                     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                        {onClose => <CoursesHubEditorsModal editors={course.editors || []} onCancel={onClose as any} />}
+                        {onClose =>
+                            <CoursesHubEditorsModal
+                                courseId={course._id}
+                                editors={courseEditors || []}
+                                onSave={(editors) => setCourseEditors(editors)}
+                                onCancel={onClose as any}
+                            />
+                        }
                     </Modal>
                     <CoursesItemHeader
                         course={course}
@@ -194,11 +202,11 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                         isExpanded={true}
                     />
                     <CoursesHubDetailsHeader
-                        title={t(`${coursesHubPrefix}.editors`)}
-                        action={`${t(`${coursesHubPrefix}.manage-editors`)}`}
+                        title={t(`${coursesHubEditorsPrefixTranslate}.name`)}
+                        action={`${t(`${coursesHubEditorsPrefixTranslate}.manage-editors`)}`}
                         onClick={() => setIsModalOpen(true)}
                     />
-                    {course.editors && course.editors.length > 0 && <CoursesHubEditors editors={course.editors} />}
+                    {courseEditors && !!courseEditors.length && <CoursesHubEditors editors={courseEditors} />}
                     <div className={styles.sectionsContainer}>
                         <CoursesHubDetailsHeader
                             title={t(`${coursesHubSectionsPrefixTranslate}.name`)}

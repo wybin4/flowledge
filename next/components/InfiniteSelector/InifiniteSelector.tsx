@@ -6,11 +6,10 @@ type InfiniteSelectorProps = {
 } & DropdownProps;
 
 export const InfiniteSelector = ({
-    options,
     className, endClassName,
     ...props
 }: InfiniteSelectorProps) => {
     return (
-        <Dropdown options={options} {...props} />
+        <Dropdown {...props} />
     );
 };

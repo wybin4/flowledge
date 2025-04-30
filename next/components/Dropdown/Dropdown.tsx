@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Select, { ActionMeta, DropdownIndicatorProps, FormatOptionLabelMeta, GroupBase, OptionsOrGroups, StylesConfig } from 'react-select';
 import SelectorInfiniteIcon from "../../assets/selector-infinite.svg";
 import { useTranslation } from 'react-i18next';
@@ -55,32 +55,54 @@ const DropdownIndicator = (props: DropdownIndicatorProps) => {
 };
 
 export type DropdownProps = {
-    value: string;
+    value?: string;
+    searchQuery?: string;
+    setSearchQuery?: (query: string) => void;
+    changeable?: boolean;
     options?: OptionsOrGroups<unknown, GroupBase<unknown>>;
     onChange?: ((newValue: unknown, actionMeta: ActionMeta<unknown>) => void);
     placeholder?: string;
+    noOptionsPlaceholder?: string;
     width?: number;
     optionWidth?: number;
     formatOptionLabel?: ((data: unknown, formatOptionLabelMeta: FormatOptionLabelMeta<unknown>) => React.ReactNode);
 };
 
 export const Dropdown = ({
-    value, options, onChange,
-    placeholder, formatOptionLabel,
+    value, changeable = true, options, onChange,
+    searchQuery, setSearchQuery,
+    placeholder, noOptionsPlaceholder, formatOptionLabel,
     width = 25, optionWidth = 94.6,
 }: DropdownProps) => {
     const { t } = useTranslation();
 
-    const initialValue = options?.find((option: any) => option.value === value);
+    const [selectedValue, setSelectedValue] = useState<any | null>(null);
+
+    const handleInputChange = (newValue: string) => {
+        setSearchQuery?.(newValue);
+        return newValue;
+    };
+
+    useEffect(() => {
+        const newInitialValue = options?.find((option: any) => option.value === value);
+        setSelectedValue(changeable ? newInitialValue : null);
+    }, [JSON.stringify(value), JSON.stringify(options)]);
+
+    const handleChange = (newValue: unknown, actionMeta: ActionMeta<unknown>) => {
+        setSelectedValue(changeable ? newValue : null);
+        onChange?.(newValue, actionMeta);
+    };
 
     return (
         <div>
             <Select
-                value={initialValue}
+                value={selectedValue}
                 options={options}
-                onChange={onChange}
+                onInputChange={handleInputChange}
+                inputValue={searchQuery}
+                onChange={handleChange}
                 placeholder={placeholder ?? ''}
-                noOptionsMessage={() => t('there-are-no-options')}
+                noOptionsMessage={() => noOptionsPlaceholder ?? t('there-are-no-options')}
                 formatOptionLabel={formatOptionLabel}
                 filterOption={(option, searchText) => {
                     return option.label.toLowerCase().includes(searchText.toLowerCase());

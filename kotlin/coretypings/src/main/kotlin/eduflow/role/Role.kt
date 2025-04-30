@@ -4,6 +4,6 @@ interface Role {
     val _id: String
     val name: String
     val description: String
-    val scope: RoleScope
+    val scopes: List<RoleScope>
 }
 

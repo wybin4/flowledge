@@ -158,9 +158,14 @@
         "description": "description",
         "imageUrl": "course cover",
         "edit-content": "edit content",
-        "editors": "editors",
-        "add-editor": "add editor",
-        "manage-editors": "manage editors",
+        "editors": {
+            "name": "editors",
+            "add-editor": "add editor",
+            "manage-editors": "manage editors",
+            "no-users-for-editors": "no users found to assign as editors",
+            "select-from-users-list": "select users",
+            "remove-roles": "remove roles"
+        },
         "sections": {
             "name": "sections",
             "edit": "edit section",
@@ -231,8 +236,7 @@
             "name": "title regex",
             "description": "regex for names of entities in the courses hub",
             "error": "name can contain only {{start}} {{end}}"
-        },
-        "select-from-users-list": "select users"
+        }
     },
     "courses-list": {
         "menu": {

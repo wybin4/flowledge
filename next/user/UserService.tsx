@@ -22,7 +22,7 @@ class UserService extends EventEmitter {
     }
 
     async fetchUser() {
-        const user = await userApiClient.get<User>(`users.get?id=${this.userId}`);
+        const user = await userApiClient.get<User>(`users.get/${this.userId}`);
         this.setUserState(user);
     }
 

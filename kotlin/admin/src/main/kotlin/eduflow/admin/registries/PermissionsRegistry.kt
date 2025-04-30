@@ -25,12 +25,11 @@ class PermissionsRegistry {
 
     private fun addMissingRoles(): Mono<Void> {
         val defaultRoles = listOf(
-            RoleModel("admin", "Users", "admin role", RoleScope.USERS),
-            RoleModel("user", "Users", "user role", RoleScope.USERS),
-            RoleModel("editor", "Users", "editor role", RoleScope.USERS),
-            RoleModel("owner", "Courses", "owner role", RoleScope.COURSES),
-            RoleModel("moderator", "Courses", "moderator role", RoleScope.COURSES),
-            RoleModel("custom_role", "Courses", "custom role", RoleScope.COURSES)
+            RoleModel("admin", "Users", "admin role", listOf(RoleScope.USERS)),
+            RoleModel("user", "Users", "user role", listOf(RoleScope.USERS)),
+            RoleModel("editor", "Users", "editor role", listOf(RoleScope.USERS, RoleScope.COURSES)),
+            RoleModel("owner", "Courses", "owner role", listOf(RoleScope.COURSES)),
+            RoleModel("moderator", "Courses", "moderator role", listOf(RoleScope.COURSES)),
         )
 
         return roleRepository.findAll()

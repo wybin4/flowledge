@@ -33,3 +33,9 @@
 .content {
     flex: 1;
 }
+
+.disabled {
+    color: var(--description-text);
+
+    cursor: not-allowed !important;
+}

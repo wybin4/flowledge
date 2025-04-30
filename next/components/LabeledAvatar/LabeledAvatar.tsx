@@ -4,7 +4,7 @@ import cn from "classnames";
 import { ValueLabel } from "@/types/ValueLabel";
 import { ReactNode } from "react";
 
-type LabeledAvatarItem = {
+export type LabeledAvatarItem = {
     avatar: string;
 } & ValueLabel;
 

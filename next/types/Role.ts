@@ -1,11 +1,11 @@
 export enum RoleScope {
-    Users = 'Users',
-    Courses = 'Courses'
+    Users = 'USERS',
+    Courses = 'COURSES'
 }
 
 export interface IRole {
     description: string;
     name: string;
-    scope: RoleScope;
+    scopes: RoleScope[];
     _id: string;
 }

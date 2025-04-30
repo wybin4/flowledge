@@ -15,5 +15,8 @@ interface UserRepository : ReactiveMongoRepository<UserModel, String> {
     @Query(value = "{ '_id': { \$in: ?0 } }", fields = "{ 'id': 1, 'name': 1, 'username': 1 }")
     fun findUsersByIds(ids: List<String>): Flux<BaseUser>
 
+    @Query("{ '_id': { \$nin: ?0 }, \$or: [ { 'name': { \$regex: ?1, \$options: 'i' } }, { 'username': { \$regex: ?1, \$options: 'i' } } ] }")
+    fun findAllExcludingIds(excludedIds: List<String>?, searchQuery: String?): Flux<UserModel>
+
     data class BaseUser(val _id: String, val name: String, val username: String)
 }

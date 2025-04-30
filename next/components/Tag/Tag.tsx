@@ -5,11 +5,14 @@ import cn from "classnames";
 type TagProps = {
     tag: string;
     size?: ItemSize;
+    isHovered?: boolean;
 };
 
-export const Tag = ({ tag, size = ItemSize.Medium }: TagProps) => {
+export const Tag = ({ tag, isHovered = true, size = ItemSize.Medium }: TagProps) => {
     return (
-        <div className={cn(styles.tag, styles[size])}>
+        <div className={cn(styles.tag, styles[size], {
+            [styles.hovered]: isHovered
+        })}>
             {tag}
         </div>
     );

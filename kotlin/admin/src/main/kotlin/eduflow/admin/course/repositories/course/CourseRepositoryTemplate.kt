@@ -1,4 +1,4 @@
-package eduflow.admin.course.repositories
+package eduflow.admin.course.repositories.course
 
 import eduflow.admin.course.models.CourseModel
 import org.springframework.data.domain.Pageable
@@ -6,7 +6,7 @@ import reactor.core.publisher.Flux
 
 interface CourseRepositoryTemplate {
     fun findByTitleContainingIgnoreCaseWithCustomOptions(
-        value: String, 
+        value: String,
         pageable: Pageable,
         options: Map<String, Any>,
         excludedIds: List<String>? = null,

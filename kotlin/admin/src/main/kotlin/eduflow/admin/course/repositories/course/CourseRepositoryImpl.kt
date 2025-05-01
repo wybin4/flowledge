@@ -1,4 +1,4 @@
-package eduflow.admin.course.repositories
+package eduflow.admin.course.repositories.course
 
 import eduflow.admin.course.models.CourseModel
 import org.springframework.data.domain.Pageable

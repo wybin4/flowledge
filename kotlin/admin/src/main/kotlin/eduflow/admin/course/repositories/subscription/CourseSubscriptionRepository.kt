@@ -1,4 +1,4 @@
-package eduflow.admin.course.repositories
+package eduflow.admin.course.repositories.subscription
 
 import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.types.UserWithCourseRole
@@ -10,8 +10,10 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
-interface CourseSubscriptionRepository : ReactiveMongoRepository<CourseSubscriptionModel, String>,
-    ReactiveSortingRepository<CourseSubscriptionModel, String> {
+interface CourseSubscriptionRepository :
+    ReactiveMongoRepository<CourseSubscriptionModel, String>,
+    ReactiveSortingRepository<CourseSubscriptionModel, String>,
+    CourseSubscriptionRepositoryTemplate {
     fun findByCourseIdAndUserId(courseId: String, userId: String): Mono<CourseSubscriptionModel>
 
     @Query(
@@ -20,6 +22,5 @@ interface CourseSubscriptionRepository : ReactiveMongoRepository<CourseSubscript
     )
     fun findUsersWithRolesByCourseId(courseId: String): Flux<UserWithCourseRole>
 
-    fun findByCourseIdInAndUserId(courseIds: List<String>, userId: String): Flux<CourseSubscriptionModel>
     fun findByUserId(userId: String): Flux<CourseSubscriptionModel>
 }

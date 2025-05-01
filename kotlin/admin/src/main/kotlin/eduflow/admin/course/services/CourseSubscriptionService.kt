@@ -3,8 +3,8 @@ package eduflow.admin.course.services
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetResponse
 import eduflow.admin.course.mappers.CourseSubscriptionMapper
 import eduflow.admin.course.models.CourseSubscriptionModel
-import eduflow.admin.course.repositories.CourseRepository
-import eduflow.admin.course.repositories.CourseSubscriptionRepository
+import eduflow.admin.course.repositories.course.CourseRepository
+import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
 import eduflow.admin.course.types.CourseEditor
 import eduflow.admin.repositories.UserRepository
 import org.springframework.stereotype.Service

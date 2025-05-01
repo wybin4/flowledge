@@ -5,7 +5,7 @@ import eduflow.admin.course.dto.course.CourseCreateRequest
 import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.models.CourseModel
-import eduflow.admin.course.repositories.CourseRepository
+import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.services.CourseService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

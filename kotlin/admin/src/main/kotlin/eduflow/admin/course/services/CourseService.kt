@@ -4,8 +4,8 @@ import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.mappers.CourseMapper
 import eduflow.admin.course.repositories.CourseLessonRepository
-import eduflow.admin.course.repositories.CourseRepository
 import eduflow.admin.course.repositories.CourseSectionRepository
+import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.types.SectionWithLessons
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort

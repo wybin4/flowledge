@@ -38,6 +38,7 @@ export const CoursesHubEditorItem = ({ editor, setEditor, size = ItemSize.Little
             }
             setRoles(newRoles);
         }
+        setSelectedRole(editor.roles[0]);
     }, [editor.roles[0]]);
 
     const formatRoleName = (name?: string) => {

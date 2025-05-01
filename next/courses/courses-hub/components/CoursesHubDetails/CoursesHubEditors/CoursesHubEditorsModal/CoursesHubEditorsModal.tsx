@@ -57,12 +57,21 @@ export const CoursesHubEditorsModal = ({
         if (!canSave) {
             return;
         }
-      
+
+        const processedEditors = editors.map(e => ({
+            _id: e._id,
+            roles: e.roles.filter(role => role !== null && role !== undefined)
+        }));
+
         userApiClient.post(`${coursesHubEditorsPrefixApi}.update`, {
             courseId,
-            editors: editors.map(e => ({ _id: e._id, roles: e.roles }))
+            editors: processedEditors
         });
-        onSave(editors);
+
+        const filteredEditors = editors.filter(e =>
+            e.roles.every(role => role !== null && role !== undefined)
+        );
+        onSave(filteredEditors);
         onCancel?.();
     };
 

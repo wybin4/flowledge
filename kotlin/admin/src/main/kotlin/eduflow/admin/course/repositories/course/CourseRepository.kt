@@ -1,4 +1,4 @@
-package eduflow.admin.course.repositories
+package eduflow.admin.course.repositories.course
 
 import eduflow.admin.course.models.CourseModel
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 
 @Repository
-interface CourseRepository : ReactiveMongoRepository<CourseModel, String>,
+interface CourseRepository :
+    ReactiveMongoRepository<CourseModel, String>,
     ReactiveSortingRepository<CourseModel, String>,
     CourseRepositoryTemplate {
-    
     fun countByTitleContainingIgnoreCase(title: String?): Mono<Long>
 }

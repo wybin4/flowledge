@@ -6,7 +6,9 @@ export type SettingOption = {
 export enum SettingType {
     SelectorFinite = "SELECTOR_FINITE",
     SelectorInfinite = "SELECTOR_INFINITE",
+    SelectorInfiniteMultiple = "SELECTOR_INFINITE_MULTIPLE",
     InputText = "INPUT_TEXT",
+    TextArea = "TEXTAREA",
     InputNumber = "INPUT_NUMBER",
     InputPassword = "INPUT_PASSWORD",
     Radio = "RADIO",
@@ -24,7 +26,7 @@ type BaseSetting<T> = {
 };
 
 export type SelectorSetting<T> = BaseSetting<T> & {
-    type: SettingType.SelectorFinite | SettingType.SelectorInfinite;
+    type: SettingType.SelectorFinite | SettingType.SelectorInfinite | SettingType.SelectorInfiniteMultiple;
     options: SettingOption[];
 };
 

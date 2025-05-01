@@ -12,7 +12,7 @@ export const CoursesListItemTags = ({ className, tags }: CoursesListItemTagsProp
 
     return (
         <div className={className}>
-            <div className={styles.title}>{t('courses-list.tags')}</div>
+            <div className={styles.title}>{t('tags')}</div>
             <div className={styles.tagsContainer}>
                 {tags.map((tag) => (
                     <Tag key={tag} tag={tag} />

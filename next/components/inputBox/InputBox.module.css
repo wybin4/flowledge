@@ -116,19 +116,6 @@ input:-webkit-autofill:focus {
     gap: 0.2rem;
 }
 
-.textarea {
-    width: 100%;
-    height: 8rem;
-
-    resize: vertical;
-    overflow-y: auto;
-    white-space: pre-wrap;
-
-    resize: none;
-
-    z-index: 1;
-}
-
 .hasNoIcon {
     padding: 0.9rem 1rem .9rem 1.3rem !important;
 }

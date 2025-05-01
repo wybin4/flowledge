@@ -1,4 +1,4 @@
-import { TextArea } from "@/components/InputBox/TextArea";
+import { TextArea } from "@/components/TextArea/TextArea";
 import { t } from "i18next";
 import { SurveyQuestionItem } from "./SurveyQuestionItem";
 import styles from "./SurveyQuestion.module.css";

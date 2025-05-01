@@ -61,6 +61,7 @@ import DeleteIcon from "../assets/delete.svg";
 import GhostIcon from "../assets/ghost.svg";
 import DraggableIcon from "../assets/draggable.svg";
 import RightArrowIcon from "../assets/right-arrow.svg";
+import FullScreenIcon from "../assets/fullscreen.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -137,7 +138,8 @@ const icons = {
 
     'draggable': <DraggableIcon />,
 
-    'right-arrow': <RightArrowIcon />
+    'right-arrow': <RightArrowIcon />,
+    'full-screen': <FullScreenIcon />,
 } as const;
 
 export type IconKey = keyof typeof icons;

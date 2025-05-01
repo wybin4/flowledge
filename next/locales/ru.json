@@ -248,7 +248,6 @@
             "about": "о курсе",
             "comments": "комментарии"
         },
-        "tags": "теги",
         "__count__comments_zero": "начать обсуждение",
         "__count__comments_one": "{{count}} комментарий",
         "__count__comments_few": "{{count}} комментария",
@@ -256,6 +255,7 @@
     },
     "save": "сохранить",
     "cancel": "отмена",
+    "close": "закрыть",
     "save-draft": "сохранить черновик",
     "create": "создать",
     "back": "назад",
@@ -350,5 +350,6 @@
     },
     "favourites": "избранное",
     "all-courses": "все курсы",
-    "there-are-no-options": "нет доступных опций"
+    "there-are-no-options": "нет доступных опций",
+    "tags": "теги"
 }

@@ -27,6 +27,7 @@ export type EnhancedItemAdditionalButton = {
 
 export type EnhancedItemSettingKey = {
     name: string;
+    i18nLabel?: string;
     types: SettingType[];
     additionalProps?: MultiSettingWrapperAdditionalProps;
     hasDescription?: boolean;

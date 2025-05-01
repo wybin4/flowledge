@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Select, { ActionMeta, DropdownIndicatorProps, FormatOptionLabelMeta, GroupBase, OptionsOrGroups, StylesConfig } from 'react-select';
 import SelectorInfiniteIcon from "../../assets/selector-infinite.svg";
 import { useTranslation } from 'react-i18next';
@@ -56,9 +56,9 @@ const DropdownIndicator = (props: DropdownIndicatorProps) => {
 
 export type DropdownProps = {
     value?: string;
+    isMulti?: boolean;
     searchQuery?: string;
     setSearchQuery?: (query: string) => void;
-    changeable?: boolean;
     options?: OptionsOrGroups<unknown, GroupBase<unknown>>;
     onChange?: ((newValue: unknown, actionMeta: ActionMeta<unknown>) => void);
     placeholder?: string;
@@ -69,38 +69,29 @@ export type DropdownProps = {
 };
 
 export const Dropdown = ({
-    value, changeable = true, options, onChange,
+    value, onChange,
+    options,
+    isMulti = false,
     searchQuery, setSearchQuery,
     placeholder, noOptionsPlaceholder, formatOptionLabel,
     width = 25, optionWidth = 94.6,
 }: DropdownProps) => {
     const { t } = useTranslation();
 
-    const [selectedValue, setSelectedValue] = useState<any | null>(null);
-
     const handleInputChange = (newValue: string) => {
         setSearchQuery?.(newValue);
         return newValue;
     };
 
-    useEffect(() => {
-        const newInitialValue = options?.find((option: any) => option.value === value);
-        setSelectedValue(changeable ? newInitialValue : null);
-    }, [JSON.stringify(value), JSON.stringify(options)]);
-
-    const handleChange = (newValue: unknown, actionMeta: ActionMeta<unknown>) => {
-        setSelectedValue(changeable ? newValue : null);
-        onChange?.(newValue, actionMeta);
-    };
-
     return (
         <div>
             <Select
-                value={selectedValue}
+                value={value}
                 options={options}
+                isMulti={isMulti}
                 onInputChange={handleInputChange}
                 inputValue={searchQuery}
-                onChange={handleChange}
+                onChange={onChange}
                 placeholder={placeholder ?? ''}
                 noOptionsMessage={() => noOptionsPlaceholder ?? t('there-are-no-options')}
                 formatOptionLabel={formatOptionLabel}

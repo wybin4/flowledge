@@ -49,11 +49,12 @@ const EnhancedItemBody = <T extends Identifiable,>({
         return {
             setting: {
                 _id: key,
-                i18nLabel: hasDescription ? `${prefix}.${key}.name` : `${prefix}.${key}`,
+                i18nLabel: props.i18nLabel ? props.i18nLabel : hasDescription ? `${prefix}.${key}.name` : `${prefix}.${key}`,
                 i18nDescription: hasDescription ? `${prefix}.${key}.description` : undefined,
                 value,
                 packageValue: value,
                 type: !isMulti ? types?.[0] : undefined,
+                options: additionalProps?.options
             },
             types,
             additionalProps,

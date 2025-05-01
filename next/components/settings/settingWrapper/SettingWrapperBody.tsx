@@ -7,6 +7,7 @@ import { SettingRadio } from "../SettingRadio/SettingRadio";
 import { SettingCode } from "../SettingCode/SettingCode";
 import { SettingWrapperProps } from "./SettingWrapper";
 import { areSettingWrapperPropsEqual } from "./areSettingWrapperPropsEqual";
+import { SettingTextArea } from "../SettingTextArea/SettingTextArea";
 
 export interface SettingWrapperBodyProps extends Omit<SettingWrapperProps, 'validateError' | 'className'> { }
 
@@ -17,6 +18,7 @@ export const SettingWrapperBody = memo(({
     switch (setting.type) {
         case SettingType.SelectorFinite:
         case SettingType.SelectorInfinite:
+        case SettingType.SelectorInfiniteMultiple:
             return (
                 <SettingSelector
                     handleSave={handleSave}
@@ -24,6 +26,14 @@ export const SettingWrapperBody = memo(({
                     disabled={disabled}
                 />
             );
+        case SettingType.TextArea:
+            return (
+                <SettingTextArea
+                    handleSave={handleSave}
+                    setting={setting}
+                    debounceTime={debounceTime}
+                />
+            )
         case SettingType.InputPassword:
         case SettingType.InputText:
         case SettingType.InputNumber:

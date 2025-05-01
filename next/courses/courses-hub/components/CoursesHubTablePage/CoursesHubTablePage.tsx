@@ -83,8 +83,19 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                     _id={selectedItemId}
                     settingKeys={[
                         { name: 'title', types: [SettingType.InputText] },
-                        { name: 'description', types: [SettingType.InputText] },
+                        { name: 'description', types: [SettingType.TextArea] },
                         { name: 'imageUrl', types: [SettingType.InputText] },
+                        {
+                            name: 'tags',
+                            i18nLabel: 'tags',
+                            types: [SettingType.SelectorInfiniteMultiple],
+                            additionalProps: {
+                                options: [
+                                    { value: '1', label: '2' },
+                                    { value: '2', label: '3' }
+                                ]
+                            }
+                        },
                     ]}
                     apiClient={userApiClient}
                     transformItemToSave={(item) => {

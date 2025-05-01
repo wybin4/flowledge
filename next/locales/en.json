@@ -244,13 +244,13 @@
             "about": "about",
             "comments": "comments"
         },
-        "tags": "tags",
         "__count__comments_zero": "start discussion",
         "__count__comments_one": "{{count}} comment",
         "__count__comments_many": "{{count}} comments"
     },
     "save": "save",
     "cancel": "cancel",
+    "close": "close",
     "save-draft": "save draft",
     "create": "create",
     "back": "back",
@@ -345,5 +345,6 @@
     },
     "favourites": "favourites",
     "all-courses": "all courses",
-    "there-are-no-options": "there are no options"
+    "there-are-no-options": "there are no options",
+    "tags": "tags"
 }

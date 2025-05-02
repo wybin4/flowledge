@@ -4,7 +4,7 @@ import styles from "./Sidebar.module.css";
 import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
-import { apiIntegrationsPrefix, coursesHubPrefix, coursesListPrefix, permissionsPrefix, privateSettingsPrefix, profilePrefix, userSettingsPrefix } from "@/helpers/prefixes";
+import { apiIntegrationsPrefix, coursesHubPrefix, coursesListPrefix, courseTagsPrefix, permissionsPrefix, privateSettingsPrefix, profilePrefix, userSettingsPrefix } from "@/helpers/prefixes";
 import LeftSidebarIcon from "./LeftSidebarIcon/LeftSidebarIcon";
 
 export default function LeftSidebar({ children }: { children: (isExpanded: boolean) => ReactNode }) {
@@ -35,6 +35,7 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
                             <LeftSidebarIcon isExpanded={isExpanded} name={profilePrefix} />
                             <LeftSidebarIcon isExpanded={isExpanded} name={coursesListPrefix} />
                             <LeftSidebarIcon isExpanded={isExpanded} name={coursesHubPrefix} />
+                            <LeftSidebarIcon isExpanded={isExpanded} name={courseTagsPrefix} />
                         </div>
                         <div>
                             <LeftSidebarIcon

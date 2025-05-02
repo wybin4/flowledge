@@ -19,7 +19,7 @@ import cn from "classnames";
 import { DataPageHookFunctions } from "@/types/DataPageHook";
 import { useEnhancedPagination } from "@/hooks/useEnhancedPagination";
 
-interface EnhancedTablePageProps<T, U> {
+export interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
     apiPrefix?: string;
     transformData: (data: T, locale: string, t: TFunction) => U;

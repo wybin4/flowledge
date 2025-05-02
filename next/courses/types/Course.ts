@@ -7,5 +7,6 @@ export interface Course {
     u: {
         _id: string;
         name: string;
-    }
+    };
+    tags: string[];
 }

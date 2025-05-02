@@ -56,7 +56,8 @@ export const CoursesHubItem = ({ mode, _id, onBackButtonClick }: CoursesHubItemP
                 imageUrl: "",
                 u: fakeUser,
                 createdAt: "",
-                updatedAt: ""
+                updatedAt: "",
+                tags: []
             })}
             backButton={{
                 onBackButtonClick: onBackButtonClick,

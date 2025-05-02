@@ -7,7 +7,7 @@ import { memo } from "react";
 import { Identifiable } from "@/types/Identifiable";
 import { areEnhancedItemPropsEqual } from "@/components/TablePage/EnhancedTablePage/EnhancedItem/areEnhancedItemPropsEqual";
 
-type RightSidebarModalProps<T, U> = Omit<EnhancedItemProps<T, U>, 'backButton'> & {
+export type RightSidebarModalProps<T, U> = Omit<EnhancedItemProps<T, U>, 'backButton'> & {
     onBackButtonClick?: () => void;
 };
 

@@ -14,7 +14,12 @@ export const PrivateSettingsTabs = ({ tabName }: { tabName: string }) => {
     return (
         <>
             {settings.map((setting, index) => (
-                <SettingWrapper key={index} setting={setting} handleSave={handleSave} />
+                <SettingWrapper
+                    key={index}
+                    isOptionsTranslatable={true}
+                    setting={setting}
+                    handleSave={handleSave}
+                />
             ))}
         </>
     );

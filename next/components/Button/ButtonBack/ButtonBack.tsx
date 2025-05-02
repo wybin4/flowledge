@@ -16,7 +16,7 @@ export type ButtonBackProps = {
 export const ButtonBack = ({ onBackButtonClick, backButtonIcon, hasBackButtonText = true, backButtonStyles, isBackWithRouter = true }: ButtonBackProps) => {
     const router = useRouter();
     const iconArrowLeft = useIcon('left');
-
+   
     return (
         <div className={cn(styles.backButton, backButtonStyles)} onClick={() => {
             onBackButtonClick?.();

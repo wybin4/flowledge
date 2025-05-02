@@ -128,6 +128,8 @@
     right: 2rem;
 
     width: 5% !important;
+
+    z-index: 1;
 }
 
 /* RightSidebarModal styles end */

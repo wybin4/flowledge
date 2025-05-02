@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
-@RequestMapping("/api/courses-hub")
+@RequestMapping("/api/course-editors")
 class CourseEditorController(
     private val subscriptionRepository: CourseSubscriptionRepository
 ) {

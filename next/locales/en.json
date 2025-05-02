@@ -11,7 +11,8 @@
         "permissions": "permissions",
         "api-integrations": "api integrations",
         "courses-hub": "courses hub",
-        "courses-list": "courses list"
+        "courses-list": "courses list",
+        "course-tags": "tags"
     },
     "name": "name",
     "user-default": {
@@ -28,7 +29,7 @@
             "language": {
                 "name": "language",
                 "description": "any text that isn't translated will be displayed in english",
-                "placeholder": "preferred language", 
+                "placeholder": "preferred language",
                 "en": "english",
                 "ru": "russian"
             }
@@ -351,5 +352,13 @@
     "favourites": "favourites",
     "all-courses": "all courses",
     "there-are-no-options": "there are no options",
-    "tags": "tags"
+    "tags": "tags",
+    "course-tags": {
+        "name": {
+            "name": "название тега",
+            "description": "название тега должно быть уникальным"
+        },
+        "placeholder": "поиск по тегам",
+        "create": "добавить тег"
+    }
 }

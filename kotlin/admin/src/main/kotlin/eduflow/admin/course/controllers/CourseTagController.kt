@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 
 @RestController
-@RequestMapping("/api/courses-hub")
+@RequestMapping("/api")
 class CourseTagController(
     private val tagRepository: CourseTagRepository,
 ) {
 
-    @GetMapping("/tags.get")
+    @GetMapping("/course-tags.get")
     fun getAllTags(): Flux<CourseTagModel> {
         return tagRepository.findAll()
     }

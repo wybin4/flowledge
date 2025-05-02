@@ -11,7 +11,8 @@
         "permissions": "права доступа",
         "api-integrations": "api-интеграции",
         "courses-hub": "центр курсов",
-        "courses-list": "каталог курсов"
+        "courses-list": "каталог курсов",
+        "course-tags": "теги"
     },
     "name": "название",
     "user-default": {
@@ -357,5 +358,13 @@
     "favourites": "избранное",
     "all-courses": "все курсы",
     "there-are-no-options": "нет доступных опций",
-    "tags": "теги"
+    "tags": "теги",
+    "course-tags": {
+        "name": {
+            "name": "tag name",
+            "description": "tag name must be unique"
+        },
+        "placeholder": "search tags",
+        "create": "add tag"
+    }
 }

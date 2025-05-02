@@ -80,8 +80,8 @@ export type DropdownProps = {
     onChange?: ((newValue: unknown, actionMeta: ActionMeta<unknown>) => void);
     placeholder?: string;
     noOptionsPlaceholder?: string;
-    width?: number;
-    optionWidth?: number;
+    width?: string;
+    optionWidth?: string;
     formatOptionLabel?: ((data: unknown, formatOptionLabelMeta: FormatOptionLabelMeta<unknown>) => React.ReactNode);
 };
 
@@ -91,7 +91,7 @@ export const Dropdown = ({
     optionChild, valueChild,
     searchQuery, setSearchQuery,
     placeholder, noOptionsPlaceholder, formatOptionLabel,
-    width = 25, optionWidth = 94.6,
+    width = '25rem', optionWidth = '94.6%',
 }: DropdownProps) => {
     const { t } = useTranslation();
 
@@ -101,49 +101,51 @@ export const Dropdown = ({
     };
 
     return (
-        <div>
-            <Select
-                value={value}
-                options={options}
-                onInputChange={handleInputChange}
-                inputValue={searchQuery}
-                onChange={onChange}
-                placeholder={placeholder ?? ''}
-                noOptionsMessage={() => noOptionsPlaceholder ?? t('there-are-no-options')}
-                formatOptionLabel={formatOptionLabel}
-                filterOption={(option, searchText) => {
-                    return option.label.toLowerCase().includes(searchText.toLowerCase());
-                }}
-                styles={{
-                    ...customStyles,
-                    container: (base) => ({
-                        ...base,
-                        width: `${width}rem`
-                    }),
-                    option: (base, { isFocused }) => ({
-                        ...base,
-                        width: `${optionWidth}% !important`,
+        <Select
+            value={value}
+            options={options}
+            onInputChange={handleInputChange}
+            inputValue={searchQuery}
+            onChange={onChange}
+            placeholder={t(placeholder as any) ?? ''}
+            noOptionsMessage={() =>
+                noOptionsPlaceholder
+                    ? t(noOptionsPlaceholder as any)
+                    : t('there-are-no-options')
+            }
+            formatOptionLabel={formatOptionLabel}
+            filterOption={(option, searchText) => {
+                return option.label.toLowerCase().includes(searchText.toLowerCase());
+            }}
+            styles={{
+                ...customStyles,
+                container: (base) => ({
+                    ...base,
+                    width
+                }),
+                option: (base, { isFocused }) => ({
+                    ...base,
+                    width: `${optionWidth} !important`,
 
-                        fontSize,
+                    fontSize,
 
-                        backgroundColor: isFocused ? 'var(--button-hover)' : 'var(--button)',
-                        '&:active': {
-                            backgroundColor: 'var(--button-transparent)',
-                        },
-                        borderRadius: '.66rem',
+                    backgroundColor: isFocused ? 'var(--button-hover)' : 'var(--button)',
+                    '&:active': {
+                        backgroundColor: 'var(--button-transparent)',
+                    },
+                    borderRadius: '.66rem',
 
-                        margin: '0.5rem 0.62rem',
-                        padding: '0.7rem',
+                    margin: '0.5rem 0.62rem',
+                    padding: '0.7rem',
 
-                        cursor: 'pointer',
-                    })
-                }}
-                components={{
-                    DropdownIndicator,
-                    Option: optionChild ? optionChild : components.Option,
-                    ValueContainer: valueChild ? valueChild : components.ValueContainer
-                }}
-            />
-        </div>
+                    cursor: 'pointer',
+                })
+            }}
+            components={{
+                DropdownIndicator,
+                Option: optionChild ? optionChild : components.Option,
+                ValueContainer: valueChild ? valueChild : components.ValueContainer
+            }}
+        />
     );
 };

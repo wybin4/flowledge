@@ -61,9 +61,9 @@ export const CoursesHubEditorItem = ({ editor, setEditor, size = ItemSize.Little
             child={(size) => (size === ItemSize.Little
                 ? <Tag tag={formatRoleName(selectedRole)} size={size} isHovered={false} />
                 : <InfiniteSelector
-                    width={8}
+                    width='8rem'
                     onChange={handleRoleChange}
-                    optionWidth={84.3}
+                    optionWidth='84.3%'
                     options={roles}
                     value={selectedRole}
                     endClassName={styles.selector}

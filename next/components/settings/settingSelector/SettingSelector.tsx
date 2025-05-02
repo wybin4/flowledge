@@ -5,12 +5,17 @@ import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
 import { SettingWrapperProps } from "../SettingWrapper/SettingWrapper";
 import { InfiniteSelector } from "@/components/InfiniteSelector/InifiniteSelector";
 import { InfiniteSelectorMultiple } from "@/components/InfiniteSelector/InifiniteSelectorMultiple";
+import { useTranslation } from "react-i18next";
 
 interface SettingSelectorProps extends SettingWrapperProps {
     setting: SelectorSetting<SimpleSettingValueType & string[]>;
 }
 
-export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingSelectorProps) => {
+export const SettingSelector = memo(({
+    setting, handleSave, isOptionsTranslatable, disabled
+}: SettingSelectorProps) => {
+    const { t } = useTranslation();
+
     return (
         <>
             {(() => {
@@ -29,12 +34,21 @@ export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingS
                                 ))}
                             </InputBoxWrapper>
                         );
-                    case SettingType.SelectorInfinite:
-                        <InfiniteSelector
-                            options={setting.options}
-                            value={String(setting.value)}
-                            placeholder={setting.placeholder}
-                        />
+                    case SettingType.SelectorInfinite: {
+                        return (
+                            <InfiniteSelector
+                                options={
+                                    isOptionsTranslatable
+                                        ? setting.options.map((o: any) => ({ ...o, label: t(o.label) }))
+                                        : setting.options
+                                }
+                                width='100%'
+                                value={String(setting.value)}
+                                placeholder={setting.placeholder}
+                                onChange={(newValue: any) => handleSave({ id: setting._id, value: newValue.value })}
+                            />
+                        )
+                    }
                     case SettingType.SelectorInfiniteMultiple:
                         return (
                             <InfiniteSelectorMultiple
@@ -59,5 +73,6 @@ export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingS
     );
 }, (prevProps, nextProps) =>
     JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting) &&
-    prevProps.disabled === nextProps.disabled
+    prevProps.disabled === nextProps.disabled &&
+    prevProps.isOptionsTranslatable === nextProps.isOptionsTranslatable,
 );

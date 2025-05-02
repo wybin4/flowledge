@@ -92,7 +92,14 @@ class CourseService(
                     processCourse(updatedCourse, isSmall, isUser, id)
                 }
             } else {
-                processCourse(course, isSmall, isUser, id)
+                if (!isSmall) {
+                    getUpdatedTags(listOf(course)).flatMap { updatedTags ->
+                        val updatedCourse = course.copy(tags = updatedTags[course._id] ?: emptyList())
+                        processCourse(updatedCourse, isSmall, isUser, id)
+                    }
+                } else {
+                    processCourse(course, isSmall, isUser, id)
+                }
             }
         }.switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
     }

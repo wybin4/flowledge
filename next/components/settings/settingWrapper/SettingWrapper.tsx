@@ -15,12 +15,13 @@ export interface SettingWrapperProps {
     className?: string;
     headerChildren?: ReactNode;
     disabled?: boolean;
+    isOptionsTranslatable?: boolean;
 }
 
 export const SettingWrapper = memo(({
     setting, handleSave, className,
     debounceTime = 1000, withWrapper = true,
-    validateError, disabled
+    validateError, disabled, isOptionsTranslatable
 }: SettingWrapperProps) => {
     return (
         <SettingWrapperContainer
@@ -36,6 +37,7 @@ export const SettingWrapper = memo(({
                 handleSave={handleSave}
                 debounceTime={debounceTime}
                 withWrapper={withWrapper}
+                isOptionsTranslatable={isOptionsTranslatable}
             />
         </SettingWrapperContainer>
     );

@@ -14,6 +14,7 @@ export interface SettingWrapperBodyProps extends Omit<SettingWrapperProps, 'vali
 export const SettingWrapperBody = memo(({
     setting, handleSave, disabled,
     debounceTime = 1000, withWrapper = true,
+    isOptionsTranslatable,
 }: SettingWrapperBodyProps) => {
     switch (setting.type) {
         case SettingType.SelectorFinite:
@@ -24,6 +25,7 @@ export const SettingWrapperBody = memo(({
                     handleSave={handleSave}
                     setting={setting as any}
                     disabled={disabled}
+                    isOptionsTranslatable={isOptionsTranslatable}
                 />
             );
         case SettingType.TextArea:

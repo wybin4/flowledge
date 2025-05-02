@@ -28,7 +28,9 @@
             "language": {
                 "name": "language",
                 "description": "any text that isn't translated will be displayed in english",
-                "placeholder": "preferred language"
+                "placeholder": "preferred language", 
+                "en": "english",
+                "ru": "russian"
             }
         }
     },

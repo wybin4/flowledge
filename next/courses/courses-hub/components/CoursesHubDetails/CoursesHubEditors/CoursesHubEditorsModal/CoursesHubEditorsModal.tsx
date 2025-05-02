@@ -99,8 +99,8 @@ export const CoursesHubEditorsModal = ({
                         />
                     )}
                     endClassName={styles.editorSelector}
-                    placeholder={t(`${coursesHubEditorsPrefixTranslate}.select-from-users-list`)}
-                    noOptionsPlaceholder={t(`${coursesHubEditorsPrefixTranslate}.no-users-for-editors`)}
+                    placeholder={`${coursesHubEditorsPrefixTranslate}.select-from-users-list`}
+                    noOptionsPlaceholder={`${coursesHubEditorsPrefixTranslate}.no-users-for-editors`}
                 />
                 <h3 className={styles.title}>{t(`${coursesHubEditorsPrefixTranslate}.name`)}</h3>
                 <CoursesHubEditors

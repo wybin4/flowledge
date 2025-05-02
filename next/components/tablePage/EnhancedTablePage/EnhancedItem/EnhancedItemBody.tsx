@@ -45,7 +45,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
         const { hasDescription, additionalProps, types } = props;
         const isMulti = (types?.length || 0) > 1;
-
+      
         return {
             setting: {
                 _id: key,
@@ -54,7 +54,9 @@ const EnhancedItemBody = <T extends Identifiable,>({
                 value,
                 packageValue: value,
                 type: !isMulti ? types?.[0] : undefined,
-                options: additionalProps?.options
+                options: additionalProps?.options,
+                prefix: additionalProps?.prefix,
+                selectedKey: additionalProps?.selectedKey,
             },
             types,
             additionalProps,

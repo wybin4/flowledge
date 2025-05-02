@@ -7,24 +7,28 @@ import { InfiniteSelector } from "@/components/InfiniteSelector/InifiniteSelecto
 import { InfiniteSelectorMultiple } from "@/components/InfiniteSelector/InifiniteSelectorMultiple";
 
 interface SettingSelectorProps extends SettingWrapperProps {
-    setting: SelectorSetting<SimpleSettingValueType>;
+    setting: SelectorSetting<SimpleSettingValueType & string[]>;
 }
 
 export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingSelectorProps) => {
     return (
-        <InputBoxWrapper disabled={disabled}>
+        <>
             {(() => {
                 switch (setting.type) {
                     case SettingType.SelectorFinite:
-                        return setting.options.map(option => (
-                            <FiniteSelector
-                                key={option.label}
-                                value={option.value as string}
-                                selectedValue={setting.value as string}
-                                label={option.label}
-                                onClick={() => handleSave({ id: setting._id, value: option.value })}
-                            />
-                        ));
+                        return (
+                            <InputBoxWrapper disabled={disabled}>{
+                                setting.options.map(option => (
+                                    <FiniteSelector
+                                        key={option.label}
+                                        value={option.value as string}
+                                        selectedValue={setting.value as string}
+                                        label={option.label}
+                                        onClick={() => handleSave({ id: setting._id, value: option.value })}
+                                    />
+                                ))}
+                            </InputBoxWrapper>
+                        );
                     case SettingType.SelectorInfinite:
                         <InfiniteSelector
                             options={setting.options}
@@ -34,16 +38,24 @@ export const SettingSelector = memo(({ setting, handleSave, disabled }: SettingS
                     case SettingType.SelectorInfiniteMultiple:
                         return (
                             <InfiniteSelectorMultiple
+                                prefix={setting.prefix ?? ''}
+                                selectedKey={setting.selectedKey ?? ''}
                                 options={setting.options}
-                                value={String(setting.value)}
+                                value={setting.value as any}
                                 placeholder={setting.placeholder}
+                                onChange={(newValue: any) => {
+                                    if (newValue.action === 'remove') {
+                                        return handleSave({ id: setting._id, value: setting.value.filter(s => s != newValue.value) as any });
+                                    }
+                                    return handleSave({ id: setting._id, value: [...setting.value || [], newValue.value] as any });
+                                }}
                             />
                         );
                     default:
                         return null;
                 }
             })()}
-        </InputBoxWrapper>
+        </>
     );
 }, (prevProps, nextProps) =>
     JSON.stringify(prevProps.setting) === JSON.stringify(nextProps.setting) &&

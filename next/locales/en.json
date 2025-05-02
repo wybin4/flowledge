@@ -236,7 +236,10 @@
             "name": "title regex",
             "description": "regex for names of entities in the courses hub",
             "error": "name can contain only {{start}} {{end}}"
-        }
+        },
+        "__count__tags_selected_zero": "no tags selected",
+        "__count__tags_selected_one": "{{count}} tag selected",
+        "__count__tags_selected_many": "{{count}} tags selected"
     },
     "courses-list": {
         "menu": {

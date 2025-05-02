@@ -1,0 +1,34 @@
+.multiOption {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    gap: 1rem;
+
+    width: 97% !important;
+}
+
+.multiOptionIcon {
+    width: max-content !important;
+    height: 1rem;
+
+    color: var(--light);
+
+    margin-top: -4px;
+}
+
+.multiOptionText {
+    flex: 1;
+}
+
+.multiValueContainer{
+    width: max-content !important;
+
+    display: flex;
+    align-items: center;
+}
+
+.multiValuePlaceholder{
+    margin-left: -9px;
+}

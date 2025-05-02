@@ -15,6 +15,8 @@ export type MultiSettingWrapperAdditionalProps = {
     disable?: (setting: SettingValue) => boolean;
     placeholder?: MultiSettingWrapperPlaceholder;
     label?: MultiSettingWrapperAdditionalPropsLabel;
+    prefix?: string;
+    selectedKey?: string;
 };
 export interface MultiSettingWrapperSetting extends Omit<SettingValue, 'type'> {
     value: ComplexSettingValueType;

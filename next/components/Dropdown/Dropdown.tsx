@@ -1,5 +1,5 @@
-import React from 'react';
-import Select, { ActionMeta, DropdownIndicatorProps, FormatOptionLabelMeta, GroupBase, OptionsOrGroups, StylesConfig } from 'react-select';
+import React, { ComponentType, ReactNode } from 'react';
+import Select, { ActionMeta, components, DropdownIndicatorProps, FormatOptionLabelMeta, GroupBase, OptionProps, OptionsOrGroups, StylesConfig, ValueContainerProps } from 'react-select';
 import SelectorInfiniteIcon from "../../assets/selector-infinite.svg";
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,10 @@ const containerStyle = (isFocused: boolean) => ({
 const customStyles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
     control: (base, { isFocused }) => ({
         ...base, ...containerStyle(isFocused),
+        minHeight: '3.1rem',
+
         display: 'flex',
+        flexWrap: 'nowrap',
         alignItems: 'center',
 
         padding: '.4rem .6rem',
@@ -40,23 +43,37 @@ const customStyles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
     indicatorSeparator: () => ({
         display: 'none',
     }),
+    valueContainer: (base) => ({
+        ...base,
+        overflow: 'inherit',
+        whiteSpace: 'nowrap'
+    }),
 };
 
 const DropdownIndicator = (props: DropdownIndicatorProps) => {
     return (
         <div {...props.innerProps} style={{
-            paddingRight: '.3rem',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            flex: 1,
+
             paddingTop: '4px',
             color: 'var(--input-border)'
         }}>
-            <SelectorInfiniteIcon />
+            <div style={{
+                maxWidth: 'max-content',
+                marginRight: '.3rem'
+            }}>
+                <SelectorInfiniteIcon />
+            </div>
         </div>
     );
 };
 
 export type DropdownProps = {
     value?: string;
-    isMulti?: boolean;
+    valueChild?: ComponentType<ValueContainerProps<unknown, boolean, GroupBase<unknown>>> | undefined;
+    optionChild?: ComponentType<OptionProps<unknown, boolean, GroupBase<unknown>>> | undefined;
     searchQuery?: string;
     setSearchQuery?: (query: string) => void;
     options?: OptionsOrGroups<unknown, GroupBase<unknown>>;
@@ -71,7 +88,7 @@ export type DropdownProps = {
 export const Dropdown = ({
     value, onChange,
     options,
-    isMulti = false,
+    optionChild, valueChild,
     searchQuery, setSearchQuery,
     placeholder, noOptionsPlaceholder, formatOptionLabel,
     width = 25, optionWidth = 94.6,
@@ -88,7 +105,6 @@ export const Dropdown = ({
             <Select
                 value={value}
                 options={options}
-                isMulti={isMulti}
                 onInputChange={handleInputChange}
                 inputValue={searchQuery}
                 onChange={onChange}
@@ -106,7 +122,7 @@ export const Dropdown = ({
                     }),
                     option: (base, { isFocused }) => ({
                         ...base,
-                        width: `${optionWidth}%`,
+                        width: `${optionWidth}% !important`,
 
                         fontSize,
 
@@ -122,7 +138,11 @@ export const Dropdown = ({
                         cursor: 'pointer',
                     })
                 }}
-                components={{ DropdownIndicator }}
+                components={{
+                    DropdownIndicator,
+                    Option: optionChild ? optionChild : components.Option,
+                    ValueContainer: valueChild ? valueChild : components.ValueContainer
+                }}
             />
         </div>
     );

@@ -28,6 +28,8 @@ type BaseSetting<T> = {
 export type SelectorSetting<T> = BaseSetting<T> & {
     type: SettingType.SelectorFinite | SettingType.SelectorInfinite | SettingType.SelectorInfiniteMultiple;
     options: SettingOption[];
+    prefix?: string;
+    selectedKey?: string;
 };
 
 export type InputTextSetting<T> = BaseSetting<T> & {

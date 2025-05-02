@@ -6,6 +6,10 @@ export const handlePluralTranslation = (prefix: string, t: TFunction, count: num
         const mod100 = count % 100;
         const mod10 = count % 10;
 
+        if (count === 0) {
+            return t(`${prefix}.__count__${key}_zero`, { count });
+        }
+
         let pluralKey;
         if (mod10 === 1 && mod100 !== 11) {
             pluralKey = 'one';

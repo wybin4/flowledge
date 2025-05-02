@@ -2,7 +2,7 @@
 import { memo } from "react";
 import { SettingSelector } from "../SettingSelector/SettingSelector";
 import { SettingInput } from "../SettingInput/SettingInput";
-import { SelectorSetting, SettingType, SimpleSettingValueType } from "@/types/Setting";
+import { SettingType } from "@/types/Setting";
 import { SettingRadio } from "../SettingRadio/SettingRadio";
 import { SettingCode } from "../SettingCode/SettingCode";
 import { SettingWrapperProps } from "./SettingWrapper";
@@ -22,7 +22,7 @@ export const SettingWrapperBody = memo(({
             return (
                 <SettingSelector
                     handleSave={handleSave}
-                    setting={setting as SelectorSetting<SimpleSettingValueType>}
+                    setting={setting as any}
                     disabled={disabled}
                 />
             );

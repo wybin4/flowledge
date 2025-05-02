@@ -2,7 +2,7 @@
 
 import { mapCoursesHubToTable } from "../../functions/mapCoursesHubToTable";
 import { createCoursesHubTableHeader } from "../../functions/createCoursesHubTableHeader";
-import { coursesHubPrefix, coursesHubPrefixApi } from "@/helpers/prefixes";
+import { coursesHubPrefix, coursesHubPrefixApi, coursesHubTagsPrefixApi } from "@/helpers/prefixes";
 import { EnhancedTablePage } from "@/components/TablePage/EnhancedTablePage/EnhancedTablePage";
 import { t, TFunction } from "i18next";
 import { CoursesHubTableItem } from "@/courses/courses-hub/types/CoursesHubTableItem";
@@ -23,10 +23,12 @@ import { RightSidebarModal } from "@/components/Sidebar/RightSidebar/RightSideba
 import { fakeUser } from "@/helpers/fakeUser";
 import { SettingType } from "@/types/Setting";
 import { CourseToSave } from "../../types/CourseToSave";
+import { CourseTag } from "../../types/CourseTag";
 
 export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
     const [expanded, setExpanded] = useState<boolean>(false);
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
+    const [tags, setTags] = useState<CourseTag[]>([]);
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -70,6 +72,14 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
         router.push(`/${coursesHubPrefix}/${selectedItemId}`);
     };
 
+    useEffect(() => {
+        userApiClient.get<CourseTag[]>(`${coursesHubTagsPrefixApi}.get`).then(items => {
+            if (items && items.length) {
+                setTags(items);
+            }
+        });
+    }, []);
+
     return (
         <RightSidebar
             useSidebarHook={useNonPersistentSidebar}
@@ -90,18 +100,17 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                             i18nLabel: 'tags',
                             types: [SettingType.SelectorInfiniteMultiple],
                             additionalProps: {
-                                options: [
-                                    { value: '1', label: '2' },
-                                    { value: '2', label: '3' }
-                                ]
+                                options: tags.map(t => ({ value: t._id, label: t.name })),
+                                prefix: coursesHubPrefix,
+                                selectedKey: 'tags_selected'
                             }
                         },
                     ]}
                     apiClient={userApiClient}
                     transformItemToSave={(item) => {
-                        const { title, description, imageUrl } = item;
+                        const { title, description, imageUrl, tags: tagsToSave } = item;
                         const body = {
-                            title, description, imageUrl, u: fakeUser
+                            title, description, imageUrl, u: fakeUser, tags: tagsToSave
                         };
                         return body;
                     }}

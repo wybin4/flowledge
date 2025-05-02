@@ -3,6 +3,7 @@ export const coursesHubPrefix = 'courses-hub';
 export const coursesHubPrefixApi = 'courses-hub/courses';
 export const coursesHubSectionsPrefixTranslate = 'courses-hub.sections';
 export const coursesHubSectionsPrefixApi = 'courses-hub/sections';
+export const coursesHubTagsPrefixApi = 'courses-hub/tags';
 export const coursesHubLessonsPrefixTranslate = 'courses-hub.lessons';
 export const coursesHubLessonsPrefixApi = 'courses-hub/lessons';
 export const courseSubscriptionsPrefix = 'course-subscriptions';

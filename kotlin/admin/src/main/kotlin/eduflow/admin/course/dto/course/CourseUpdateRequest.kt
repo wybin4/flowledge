@@ -1,7 +1,8 @@
-package eduflow.admin.course.dto
+package eduflow.admin.course.dto.course
 
 data class CourseUpdateRequest(
     val title: String,
     val description: String,
     val imageUrl: String,
+    val tags: List<String>,
 )

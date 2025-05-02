@@ -1,7 +1,7 @@
 package eduflow.admin.course.controllers
 
-import eduflow.admin.course.dto.CourseUpdateRequest
 import eduflow.admin.course.dto.course.CourseCreateRequest
+import eduflow.admin.course.dto.course.CourseUpdateRequest
 import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.models.CourseModel
@@ -72,7 +72,7 @@ class CourseHubController(
             .map { ResponseEntity.ok(it) }
     }
 
-    @PutMapping("/courses.update/{id}")
+    @PostMapping("/courses.update/{id}")
     fun updateCourse(
         @PathVariable id: String,
         @RequestBody course: CourseUpdateRequest
@@ -83,6 +83,7 @@ class CourseHubController(
                     title = course.title,
                     description = course.description,
                     imageUrl = course.imageUrl,
+                    tags = course.tags
                 )
                 courseRepository.save(updatedCourse)
             }

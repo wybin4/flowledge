@@ -240,7 +240,11 @@
             "name": "регулярное выражение для названий",
             "description": "регулярное выражение для названий сущностей в центре курсов",
             "error": "название может содержать только {{start}} {{end}}"
-        }
+        },
+        "__count__tags_selected_zero": "теги не выбраны",
+        "__count__tags_selected_one": "выбран {{count}} тег",
+        "__count__tags_selected_few": "выбрано {{count}} тега",
+        "__count__tags_selected_many": "выбрано {{count}} тегов"
     },
     "courses-list": {
         "menu": {

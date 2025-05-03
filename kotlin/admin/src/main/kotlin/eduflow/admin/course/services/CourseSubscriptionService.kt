@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono
 @Service
 class CourseSubscriptionService(
     private val courseRepository: CourseRepository,
+    private val tagService: CourseTagService,
     private val subscriptionRepository: CourseSubscriptionRepository,
     private val subscriptionMapper: CourseSubscriptionMapper,
     private val userRepository: UserRepository,
@@ -22,16 +23,20 @@ class CourseSubscriptionService(
         return subscriptionRepository.findByUserId(userId)
             .flatMap { subscription ->
                 courseRepository.findById(subscription.courseId)
-                    .map { course ->
-                        subscriptionMapper.toSubscriptionWithCourseDto(subscription, course)
+                    .flatMap { course ->
+                        tagService.getUpdatedTagsByCourse(course).map { updatedTags ->
+                            subscriptionMapper.toSubscriptionWithCourseDto(subscription, course.updateTags(updatedTags))
+                        }
                     }
             }
     }
 
     fun getCourseBySubscription(subscription: CourseSubscriptionModel): Mono<CourseSubscriptionGetResponse> {
         return courseRepository.findById(subscription.courseId)
-            .map { course ->
-                subscriptionMapper.toSubscriptionWithCourseDto(subscription, course)
+            .flatMap { course ->
+                tagService.getUpdatedTagsByCourse(course).map { updatedTags ->
+                    subscriptionMapper.toSubscriptionWithCourseDto(subscription, course.updateTags(updatedTags))
+                }
             }
     }
 

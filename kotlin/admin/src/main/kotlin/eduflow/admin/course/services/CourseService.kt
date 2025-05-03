@@ -7,7 +7,6 @@ import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.repositories.CourseLessonRepository
 import eduflow.admin.course.repositories.CourseSectionRepository
 import eduflow.admin.course.repositories.course.CourseRepository
-import eduflow.admin.course.repositories.tag.CourseTagRepository
 import eduflow.admin.course.types.SectionWithLessons
 import eduflow.admin.services.PaginationAndSortingService
 import org.springframework.http.ResponseEntity
@@ -21,7 +20,7 @@ class CourseService(
     private val sectionRepository: CourseSectionRepository,
     private val lessonRepository: CourseLessonRepository,
     private val subscriptionService: CourseSubscriptionService,
-    private val tagRepository: CourseTagRepository
+    private val tagService: CourseTagService
 ) : PaginationAndSortingService() {
     fun getCourses(
         options: Map<String, Any>, userId: String? = null, excludedIds: List<String>? = null
@@ -37,26 +36,12 @@ class CourseService(
                 }
             }
         ) { courses ->
-            getUpdatedTags(courses).map { updatedTags ->
+            tagService.getUpdatedTagsByCourses(courses).map { updatedTags ->
                 courses.map { course ->
                     courseMapper.toGetSmallDto(
-                        course.copy(tags = updatedTags[course._id]), userId != null
+                        course.updateTags(updatedTags), userId != null
                     )
                 }
-            }
-        }
-    }
-
-    private fun getUpdatedTags(courses: List<CourseModel>): Mono<Map<String, List<String>>> {
-        val tagIds = courses.flatMap { it.tags ?: emptyList() }.distinct()
-
-        return tagRepository.findByIdIn(tagIds).collectList().map { tags ->
-            val tagMap = tags.associateBy { it._id }
-
-            courses.associate { course ->
-                course._id to (course.tags?.mapNotNull { tagId ->
-                    tagMap[tagId]?.name
-                } ?: emptyList())
             }
         }
     }
@@ -69,15 +54,13 @@ class CourseService(
         val isUser = userId != null
         return courseRepository.findById(id).flatMap { course ->
             if (isUser) {
-                getUpdatedTags(listOf(course)).flatMap { updatedTags ->
-                    val updatedCourse = course.copy(tags = updatedTags[course._id] ?: emptyList())
-                    processCourse(updatedCourse, isSmall, isUser, id)
+                tagService.getUpdatedTagsByCourse(course).flatMap { updatedTags ->
+                    processCourse(course.updateTags(updatedTags), isSmall, isUser, id)
                 }
             } else {
                 if (!isSmall) {
-                    getUpdatedTags(listOf(course)).flatMap { updatedTags ->
-                        val updatedCourse = course.copy(tags = updatedTags[course._id] ?: emptyList())
-                        processCourse(updatedCourse, isSmall, isUser, id)
+                    tagService.getUpdatedTagsByCourse(course).flatMap { updatedTags ->
+                        processCourse(course.updateTags(updatedTags), isSmall, isUser, id)
                     }
                 } else {
                     processCourse(course, isSmall, isUser, id)

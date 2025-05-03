@@ -67,7 +67,7 @@ export const CRUDTablePage = <T extends Identifiable, L, U extends Identifiable>
         apiPrefix, apiClient, queryParams, getDataPageFunctions,
         transformData, transformItemToSave,
         createEmptyItem, getHeaderItems,
-        additionalButtons,
+        additionalButtons, hasDeleteDescription,
         settingKeys, itemKeys
     } = props;
 
@@ -88,6 +88,7 @@ export const CRUDTablePage = <T extends Identifiable, L, U extends Identifiable>
                     createEmptyItem={createEmptyItem}
                     onBackButtonClick={() => updateState(null)}
                     additionalButtons={additionalButtons}
+                    hasDeleteDescription={hasDeleteDescription}
                 />
             }</div>}>
             {(isExpanded, toggleSidebar) => (

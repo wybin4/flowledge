@@ -5,7 +5,7 @@ import { courseTagsPrefix } from "@/helpers/prefixes";
 export const createCourseTagsTableHeader = (t: TFunction, onSort: (name: string, position?: TopBottomPosition) => void) => {
     const items = [
         {
-            name: 'name', isSortable: true,
+            name: 'name.name', isSortable: true,
             onSort: (position?: TopBottomPosition) => {
                 onSort('name', position);
             }

@@ -69,6 +69,11 @@ class PermissionsRegistry {
 
             PermissionModel("view-all-integrations", listOf("admin")),
             PermissionModel("manage-integration", listOf("admin")),
+
+            PermissionModel("view-tags", listOf("admin", "editor")),
+            PermissionModel("create-tags", listOf("admin")),
+            PermissionModel("edit-tags", listOf("admin")),
+            PermissionModel("delete-tags", listOf("admin"))
         )
 
         return permissionRepository.findAll()

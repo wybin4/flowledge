@@ -361,10 +361,13 @@
     "tags": "теги",
     "course-tags": {
         "name": {
-            "name": "tag name",
-            "description": "tag name must be unique"
+            "name": "название тега",
+            "description": "название тега должно быть уникальным"
         },
-        "placeholder": "search tags",
-        "create": "add tag"
+        "placeholder": "поиск по тегам",
+        "create": "добавить тег",
+        "save": "сохранить тег",
+        "edit": "изменить тег",
+        "delete": "удалить тег"
     }
 }

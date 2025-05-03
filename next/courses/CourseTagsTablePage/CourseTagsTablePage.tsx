@@ -52,6 +52,7 @@ export const CourseTagsTablePage = ({ mode }: { mode?: TablePageMode }) => {
             itemKeys={[
                 { name: 'name', type: EnhancedItemType.Text },
             ]}
+            hasDeleteDescription={false}
         />
     );
 };

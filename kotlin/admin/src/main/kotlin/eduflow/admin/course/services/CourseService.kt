@@ -6,11 +6,10 @@ import eduflow.admin.course.mappers.CourseMapper
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.repositories.CourseLessonRepository
 import eduflow.admin.course.repositories.CourseSectionRepository
-import eduflow.admin.course.repositories.CourseTagRepository
 import eduflow.admin.course.repositories.course.CourseRepository
+import eduflow.admin.course.repositories.tag.CourseTagRepository
 import eduflow.admin.course.types.SectionWithLessons
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
+import eduflow.admin.services.PaginationAndSortingService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -23,43 +22,26 @@ class CourseService(
     private val lessonRepository: CourseLessonRepository,
     private val subscriptionService: CourseSubscriptionService,
     private val tagRepository: CourseTagRepository
-) {
+) : PaginationAndSortingService() {
     fun getCourses(
         options: Map<String, Any>, userId: String? = null, excludedIds: List<String>? = null
     ): Mono<List<CourseGetByIdSmallResponse>> {
-        val page = options["page"] as? Int ?: 1
-        val pageSize = options["pageSize"] as? Int ?: 10
-        val searchQuery = options["searchQuery"] as? String
-        val sortQuery = options["sortQuery"] as? String
-        val isUser = userId != null
-
-        val (sortField, sortOrder) = if (sortQuery.isNullOrEmpty()) {
-            "createdAt" to Sort.Direction.DESC
-        } else {
-            sortQuery.split(":")
-                .let { it[0] to if (it.getOrElse(1) { "bottom" } == "top") Sort.Direction.ASC else Sort.Direction.DESC }
-        }
-        val pageable = PageRequest.of(page - 1, pageSize, Sort.by(sortOrder, sortField))
-
-        val filteredOptions = mutableMapOf<String, Any>()
-        options.forEach { (key, value) ->
-            when (key) {
-                "page", "pageSize", "searchQuery", "sortQuery" -> {
-                    // Эти параметры уже обработаны выше, пропускаем их
-                }
-
-                else -> {
-                    // Добавляем остальные параметры в filteredOptions
-                    filteredOptions[key] = value
+        return this.getPaginatedAndSorted(
+            options,
+            courseRepository,
+            criteriaModifier = { criteria ->
+                if (!excludedIds.isNullOrEmpty()) {
+                    criteria.and("_id").nin(excludedIds)
+                } else {
+                    criteria
                 }
             }
-        }
-        return courseRepository.findByTitleContainingIgnoreCaseWithCustomOptions(
-            searchQuery ?: "", pageable, filteredOptions, excludedIds
-        ).collectList().flatMap { courses ->
+        ) { courses ->
             getUpdatedTags(courses).map { updatedTags ->
                 courses.map { course ->
-                    courseMapper.toGetSmallDto(course.copy(tags = updatedTags[course._id]), isUser)
+                    courseMapper.toGetSmallDto(
+                        course.copy(tags = updatedTags[course._id]), userId != null
+                    )
                 }
             }
         }

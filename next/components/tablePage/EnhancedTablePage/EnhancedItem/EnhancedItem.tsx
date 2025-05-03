@@ -50,6 +50,7 @@ export interface EnhancedItemProps<T, U> {
     queryParams?: QueryParams;
     isBackWithRouter?: boolean;
     onActionCallback?: (type: TablePageActionType, item?: T) => void;
+    hasDeleteDescription?: boolean;
 }
 
 const EnhancedItem = <T extends Identifiable, U>({
@@ -62,6 +63,7 @@ const EnhancedItem = <T extends Identifiable, U>({
     backButton,
     containerStyles,
     isBackWithRouter = true,
+    hasDeleteDescription = true,
     onActionCallback
 }: EnhancedItemProps<T, U>) => {
     const { t } = useTranslation();
@@ -123,7 +125,7 @@ const EnhancedItem = <T extends Identifiable, U>({
                 additionalButtons={additionalButtons}
                 isEditMode={isEditMode}
                 hasChanges={hasChanges()}
-                deleteItemDescription={t(`${prefix}.delete-description`)}
+                deleteItemDescription={hasDeleteDescription ? t(`${prefix}.delete-description`) : undefined}
             />
         </ButtonBackContainer>
     );

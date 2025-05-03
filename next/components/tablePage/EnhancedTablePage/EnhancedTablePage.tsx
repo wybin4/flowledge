@@ -47,7 +47,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
     const [sortQuery, setSortQuery] = useState<string>('');
     const locale = useUserSetting<string>('language') || 'en';
     const router = useRouter();
-
+ 
     const realPrefix = apiPrefix ?? prefix;
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

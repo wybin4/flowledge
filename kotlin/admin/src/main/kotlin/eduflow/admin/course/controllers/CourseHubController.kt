@@ -7,6 +7,7 @@ import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.services.CourseService
+import eduflow.admin.dto.PaginationRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -18,7 +19,6 @@ class CourseHubController(
     private val courseService: CourseService,
     private val courseRepository: CourseRepository
 ) {
-
     @GetMapping("/courses.get/{id}")
     fun getCourseById(
         @PathVariable id: String,
@@ -28,26 +28,8 @@ class CourseHubController(
     }
 
     @GetMapping("/courses.get")
-    fun getAllCourses(
-        @RequestParam(defaultValue = "1") page: Int,
-        @RequestParam(defaultValue = "10") pageSize: Int,
-        @RequestParam(required = false) searchQuery: String?,
-        @RequestParam(required = false) sortQuery: String?
-    ): Mono<ResponseEntity<List<CourseGetByIdSmallResponse>>> {
-        val options = mutableMapOf<String, Any>(
-            "page" to page,
-            "pageSize" to pageSize
-        )
-
-        searchQuery?.let {
-            options["searchQuery"] = it
-        }
-
-        sortQuery?.let {
-            options["sortQuery"] = it
-        }
-
-        return courseService.getCourses(options)
+    fun getAllCourses(params: PaginationRequest): Mono<ResponseEntity<List<CourseGetByIdSmallResponse>>> {
+        return courseService.getCourses(params.toMap())
             .map { ResponseEntity.ok(it) }
     }
 

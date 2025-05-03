@@ -91,7 +91,6 @@ const EnhancedItemBody = <T extends Identifiable,>({
                             key={index}
                             validateError={settingKeys[index].error}
                             debounceTime={0}
-                            withWrapper={false}
                             setting={setting as SettingValue}
                             handleSave={(newValue) => {
                                 handleSave({ id: setting._id, value: newValue.value });

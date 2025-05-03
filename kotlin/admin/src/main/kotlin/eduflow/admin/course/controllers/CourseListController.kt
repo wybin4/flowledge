@@ -6,6 +6,7 @@ import eduflow.admin.course.dto.course.list.ToggleFavouriteRequest
 import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
 import eduflow.admin.course.services.CourseService
+import eduflow.admin.dto.PaginationRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -19,25 +20,10 @@ class CourseListController(
 ) {
     @GetMapping("/courses.get")
     fun getAllCourses(
-        @RequestParam(defaultValue = "1") page: Int,
-        @RequestParam(defaultValue = "10") pageSize: Int,
-        @RequestParam(required = false) searchQuery: String?,
-        @RequestParam(required = false) sortQuery: String?,
+        params: PaginationRequest,
         @RequestParam(required = false) excludedIds: List<String>?
     ): Mono<ResponseEntity<List<CourseGetByIdSmallResponse>>> {
-        val options = mutableMapOf<String, Any>(
-            "page" to page,
-            "pageSize" to pageSize
-        )
-
-        searchQuery?.let {
-            options["searchQuery"] = it
-        }
-
-        sortQuery?.let {
-            options["sortQuery"] = it
-        }
-        return courseService.getCourses(options, "test_id", excludedIds)
+        return courseService.getCourses(params.toMap(), "test_id", excludedIds)
             .map { ResponseEntity.ok(it) }
     }
 

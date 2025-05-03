@@ -141,7 +141,12 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     _id={selectedSectionIdToEdit}
                     settingKeys={[
                         { name: 'title', types: [SettingType.InputText], error: sectionTitleError },
-                        { name: 'isVisible', types: [SettingType.Radio], hasDescription: true }
+                        {
+                            name: 'isVisible',
+                            types: [SettingType.Radio],
+                            hasDescription: true,
+                            additionalProps: { withWrapper: false }
+                        }
                     ]}
                     apiClient={userApiClient}
                     transformItemToSave={(item) => {

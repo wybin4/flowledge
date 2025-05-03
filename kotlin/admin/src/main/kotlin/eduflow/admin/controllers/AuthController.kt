@@ -2,6 +2,8 @@ package eduflow.admin.controllers
 
 import eduflow.admin.ldap.CustomLdapUserDetails
 import eduflow.admin.ldap.LDAPService
+import eduflow.admin.models.LDAPServiceModel
+import eduflow.admin.models.UserServicesModel
 import eduflow.admin.services.TokenService
 import eduflow.admin.services.UserService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -30,6 +32,7 @@ class AuthController(
             val authenticated = ldapAuthenticationProvider.authenticate(authentication)
             SecurityContextHolder.getContext().authentication = authenticated
 
+
             val memberOf = (authenticated.principal as? CustomLdapUserDetails)?.attributes?.get("memberOf")
             val groupNames = if (memberOf != null) {
                 (memberOf as List<*>).map { dn ->
@@ -45,17 +48,19 @@ class AuthController(
                     if (user == null) {
                         Mono.error(IllegalStateException("User is null after switchIfEmpty"))
                     } else {
-                        user.services = user.services?.copy(
-                            ldap = user.services?.ldap?.copy(
-                                memberOf = groupNames
-                            )
+                        val updatedUser = user.copy(
+                            services = user.services?.copy(
+                                ldap = user.services?.ldap?.copy(
+                                    memberOf = groupNames
+                                ) ?: LDAPServiceModel(memberOf = groupNames)
+                            ) ?: UserServicesModel(ldap = LDAPServiceModel(memberOf = groupNames))
                         )
 
-                        tokenService.updateTokens(user)
-                            .map { updatedUser ->
+                        tokenService.updateTokens(updatedUser)
+                            .map { updated ->
                                 LoginResponse(
-                                    updatedUser.services?.resume?.jwtToken!!,
-                                    updatedUser.services?.resume?.refreshToken!!
+                                    updated.services?.resume?.jwtToken!!,
+                                    updated.services?.resume?.refreshToken!!
                                 )
                             }
                     }

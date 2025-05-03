@@ -173,12 +173,19 @@ class SettingsRegistry {
             }
             addTab("user") {
                 addSetting(
-                    "dn-pattern", "", SettingDetails(
+                    "base-dn", "", SettingDetails(
                         type = SettingType.INPUT_TEXT
                     )
                 )
                 addSetting(
                     "search-filter", "", SettingDetails(
+                        type = SettingType.INPUT_TEXT
+                    )
+                )
+            }
+            addTab("group") {
+                addSetting(
+                    "base-dn", "", SettingDetails(
                         type = SettingType.INPUT_TEXT
                     )
                 )

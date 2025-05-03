@@ -60,13 +60,17 @@
             }
         },
         "user": {
-            "dn-pattern": {
-                "name": "user dn pattern",
-                "description": "use {0} as a placeholder for the username"
+            "base-dn": {
+                "name": "user base dn"
             },
             "search-filter": {
                 "name": "user search filter",
                 "description": "the filter used to search for users in the LDAP directory. use {0} as a placeholder for the username."
+            }
+        },
+        "group": {
+            "base-dn": {
+                "name": "ad group base dn"
             }
         },
         "map-groups-to-courses": {

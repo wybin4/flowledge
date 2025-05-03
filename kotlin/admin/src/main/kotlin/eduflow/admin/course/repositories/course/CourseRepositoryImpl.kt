@@ -20,4 +20,16 @@ class CourseRepositoryImpl(private val mongoTemplate: MongoTemplate) :
         val query = Query.query(criteria).with(pageable)
         return Flux.fromIterable(mongoTemplate.find(query, CourseModel::class.java))
     }
+
+    override fun findByTagsInAndTitleIn(tags: List<String>, titles: List<String>): Flux<CourseModel> {
+        val query = Query().apply {
+            addCriteria(
+                Criteria().orOperator(
+                    Criteria.where("tags").`in`(tags),
+                    Criteria.where("title").`in`(titles)
+                )
+            )
+        }
+        return Flux.fromIterable(mongoTemplate.find(query, CourseModel::class.java))
+    }
 }

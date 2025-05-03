@@ -2,7 +2,7 @@
 
 import { SettingOption, SettingType, SettingValue } from "@/types/Setting";
 import { useTranslation } from "react-i18next";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, ReactNode, useCallback, useEffect, useState } from "react";
 import { TablePageMode } from "@/types/TablePageMode";
 import { TransformItemToSave, useSaveEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useSaveEnhancedTablePageItem";
 import { useDeleteEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useDeleteEnhancedTablePageItem";

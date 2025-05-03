@@ -36,8 +36,8 @@
     cursor: pointer;
 }
 
-.sectionActionBottom:hover {
-    background-color: var(--hover-dark);
+.sectionActionBottom {
+    text-decoration: underline;
 }
 
 .sectionActionRight {

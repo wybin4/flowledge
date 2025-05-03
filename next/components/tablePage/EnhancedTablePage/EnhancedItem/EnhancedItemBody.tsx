@@ -45,7 +45,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
         const { hasDescription, additionalProps, types } = props;
         const isMulti = (types?.length || 0) > 1;
-      
+
         return {
             setting: {
                 _id: key,
@@ -57,6 +57,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
                 options: additionalProps?.options,
                 prefix: additionalProps?.prefix,
                 selectedKey: additionalProps?.selectedKey,
+                withWrapper: additionalProps?.withWrapper
             },
             types,
             additionalProps,
@@ -91,6 +92,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
                             key={index}
                             validateError={settingKeys[index].error}
                             debounceTime={0}
+                            withWrapper={setting.withWrapper}
                             setting={setting as SettingValue}
                             handleSave={(newValue) => {
                                 handleSave({ id: setting._id, value: newValue.value });

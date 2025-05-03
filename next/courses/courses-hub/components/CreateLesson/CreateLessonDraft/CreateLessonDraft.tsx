@@ -15,7 +15,6 @@ import { CreateLessonDraftHeader } from "./CreateLessonDraftHeader/CreateLessonD
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { getFileSize } from "@/helpers/getFileSize";
 import { Button, ButtonType } from "@/components/Button/Button";
-import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import { integrationApiClient, neuralApiClient, userApiClient, userApiClientPrefix } from "@/apiClient";
 import { SynopsisCreateResponse } from "../../../types/SynopsisCreateResponse";
@@ -25,6 +24,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { SettingType, SettingValueType } from "@/types/Setting";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
 import { UpdatableSetting } from "@/hooks/useSettings";
+import { EnhancedBreadcrumbs } from "@/components/EnhancedBreadcrumbs/EnhancedBreadcrumbs";
+import { createCreateLessonCrumbs } from "@/courses/courses-hub/functions/createCreateLessonCrumbs";
 
 enum VideoActionType {
     Synopsis = 'generate-synopsis',
@@ -195,10 +196,10 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
 
             setLoadingString(`${coursesHubLessonsPrefixTranslate}.creating`);
 
-            const result = await saveLesson({ 
+            const result = await saveLesson({
                 videoId, survey, synopsis, isVisible, sectionId,
                 type: LessonSaveType.Draft
-             });
+            });
             lessonId = result.lessonId;
 
             if (lessonId) {
@@ -217,7 +218,7 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
     }
 
     return (
-        <ButtonBackContainer>
+        <EnhancedBreadcrumbs crumbs={createCreateLessonCrumbs(LessonSaveType.Draft)}  >
             <div className={styles.content}>
                 <PageLayoutHeader
                     name={isEditMode ? `${coursesHubPrefix}.edit-lesson` : `${coursesHubPrefix}.create-lesson`}
@@ -338,6 +339,6 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
                     disabled={withVideo && (!video || !!isVideoUploadError || isVideoUploading || !videoId)}
                 />
             </div>
-        </ButtonBackContainer>
+        </EnhancedBreadcrumbs>
     );
 };

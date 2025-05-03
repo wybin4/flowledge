@@ -1,0 +1,32 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 8rem;
+
+    min-height: 100vh;
+}
+
+.body {
+    position: relative;
+
+    width: 70%;
+}
+
+.body h3 {
+    color: var(--light);
+}
+
+.crumbContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.checkContainer {
+    display: flex;
+    gap: 1rem;
+}
+
+.checkIcon {
+    color: var(--light);
+}

@@ -12,7 +12,7 @@ class CustomLdapUserDetailsMapper : LdapUserDetailsMapper() {
         username: String,
         authorities: MutableCollection<out GrantedAuthority>
     ): UserDetails {
-        val userDetails = super.mapUserFromContext(ctx, username, authorities) as LdapUserDetails
-        return CustomLdapUserDetails(userDetails, ctx.attributes)
+        val userDetails = super.mapUserFromContext(ctx, username, authorities)
+        return CustomLdapUserDetails(userDetails as LdapUserDetails, ctx.attributes)
     }
 }

@@ -1,0 +1,6 @@
+# Группа testgroup, example.org
+dn: cn=testgroup,dc=example,dc=org
+objectClass: top
+objectClass: groupOfNames
+cn: testgroup
+member: uid=testuser,dc=example,dc=org

@@ -19,4 +19,6 @@ interface CourseTagRepository :
     fun countByNameContainingIgnoreCase(name: String?): Mono<Long>
 
     fun findByName(name: String): Flux<CourseTagModel>
+
+    fun findByNameIn(names: List<String>): Flux<CourseTagModel>
 }

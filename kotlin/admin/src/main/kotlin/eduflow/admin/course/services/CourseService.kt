@@ -23,14 +23,16 @@ class CourseService(
     private val tagService: CourseTagService
 ) : PaginationAndSortingService() {
     fun getCourses(
-        options: Map<String, Any>, userId: String? = null, excludedIds: List<String>? = null
+        options: Map<String, Any>,
+        userId: String? = null,
+        filteredIds: List<String>? = null
     ): Mono<List<CourseGetByIdSmallResponse>> {
         return this.getPaginatedAndSorted(
             options,
             courseRepository,
             criteriaModifier = { criteria ->
-                if (!excludedIds.isNullOrEmpty()) {
-                    criteria.and("_id").nin(excludedIds)
+                if (filteredIds != null) {
+                    criteria.and("_id").`in`(filteredIds)
                 } else {
                     criteria
                 }

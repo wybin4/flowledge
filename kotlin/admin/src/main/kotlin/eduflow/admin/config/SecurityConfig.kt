@@ -58,11 +58,11 @@ class SecurityConfig(
 
     @Bean
     fun ldapAuthenticationProvider(): LdapAuthenticationProvider {
-        val ldapUrl = ldapService.getLdapUrl()
-        val adminDn = ldapService.getLdapAdminDn()
-        val adminPassword = ldapService.getLdapAdminPassword()
-        val userDnPattern = ldapService.getLdapUserDnPattern()
-        val userSearchFilter = ldapService.getLdapUserSearchFilter()
+        val ldapUrl = ldapService.getUrl()
+        val adminDn = ldapService.getAdminDn()
+        val adminPassword = ldapService.getAdminPassword()
+        val baseUserDn = ldapService.getUserDn()
+        val userSearchFilter = ldapService.getUserSearchFilter()
 
         val contextSource = DefaultSpringSecurityContextSource(ldapUrl)
         contextSource.userDn = adminDn
@@ -70,18 +70,20 @@ class SecurityConfig(
         contextSource.afterPropertiesSet()
 
         val authenticator = BindAuthenticator(contextSource)
-        authenticator.setUserDnPatterns(arrayOf(userDnPattern))
 
         authenticator.setUserSearch(
             FilterBasedLdapUserSearch(
-                "",
+                baseUserDn,
                 userSearchFilter,
                 contextSource
-            )
+            ).apply {
+                setReturningAttributes(arrayOf("uid", "mail", "cn", "sn", "memberOf"))
+            }
         )
 
         val provider = LdapAuthenticationProvider(authenticator)
         provider.setUserDetailsContextMapper(CustomLdapUserDetailsMapper())
+
         return provider
     }
 
@@ -89,7 +91,7 @@ class SecurityConfig(
     fun authenticationManager(): AuthenticationManager {
         val providers = mutableListOf<AuthenticationProvider>()
 
-        if (ldapService.isLdapEnabled()) {
+        if (ldapService.isEnabled()) {
             providers.add(ldapAuthenticationProvider())
         }
 

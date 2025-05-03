@@ -1,8 +1,6 @@
 package eduflow.admin.services
 
-import eduflow.admin.models.ResumeServiceModel
 import eduflow.admin.models.UserModel
-import eduflow.admin.models.UserServicesModel
 import eduflow.admin.models.UserSettingModel
 import eduflow.admin.repositories.UserRepository
 import eduflow.user.Language
@@ -30,13 +28,7 @@ class UserService(
                 theme = Theme.AUTO,
                 language = Language.EN,
             ),
-            username = username,
-            services = UserServicesModel(
-                resume = ResumeServiceModel(
-                    jwtToken = "",
-                    refreshToken = ""
-                )
-            )
+            username = username
         )
         return userRepository.save(newUser)
     }

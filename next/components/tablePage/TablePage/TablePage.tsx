@@ -42,12 +42,14 @@ export const TablePage = <T,>({ header, body, pagination, bodyStyles, tableStyle
                     {body}
                 </tbody>
             </table>
-            <div data-pagination='right' className={cn(styles.button, styles.buttonRight, 'tablePaginationButtonRight', {
-                [styles.disabled]: pagination.currentPage === pagination.totalPages
-            })}>
-                <div>{pagination.currentPage + 1}/{pagination.totalPages}</div>
-                <div onClick={pagination.handleNextPage}>{iconRight}</div>
-            </div>
+            {!!pagination.totalPages &&
+                <div data-pagination='right' className={cn(styles.button, styles.buttonRight, 'tablePaginationButtonRight', {
+                    [styles.disabled]: pagination.currentPage === pagination.totalPages
+                })}>
+                    <div>{pagination.currentPage + 1}/{pagination.totalPages}</div>
+                    <div onClick={pagination.handleNextPage}>{iconRight}</div>
+                </div>
+            }
         </div>
     );
 };

@@ -19,7 +19,7 @@ data class UserModel(
     override val name: String,
     override val settings: UserSettingModel,
     override val username: String,
-    override val services: UserServicesModel? = null
+    override var services: UserServicesModel? = null
 ) : User
 
 

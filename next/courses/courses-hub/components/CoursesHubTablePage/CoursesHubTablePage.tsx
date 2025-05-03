@@ -61,7 +61,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
             setSelectedItemId={setSelectedItemId}
             mode={mode}
             settingKeys={[
-                { name: 'title', types: [SettingType.InputText] },
+                { name: 'title', types: [SettingType.InputText], hasDescription: true },
                 { name: 'description', types: [SettingType.TextArea] },
                 { name: 'imageUrl', types: [SettingType.InputText] },
                 {

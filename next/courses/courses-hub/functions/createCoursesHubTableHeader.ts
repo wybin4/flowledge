@@ -6,7 +6,7 @@ import { SortableTableHeader } from "@/types/SortableTableHeader";
 export const createCoursesHubTableHeader = (t: TFunction, onSort: (name: string, position?: TopBottomPosition) => void): SortableTableHeader[] => {
     const items = [
         { name: 'imageUrl' },
-        { name: 'title' },
+        { name: 'title.name' },
         { name: 'creator' },
         {
             name: 'createdAt', isSortable: true,

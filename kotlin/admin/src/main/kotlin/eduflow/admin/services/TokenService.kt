@@ -20,16 +20,16 @@ class TokenService(
 
     fun generateJwtToken(user: UserModel): String {
         return JWT.create()
-            .withSubject(user._id) // Используем ID пользователя как subject
-            .withExpiresAt(Date(System.currentTimeMillis() + 60 * 60 * 1000)) // Срок действия 1 час
+            .withSubject(user._id)
+            .withExpiresAt(Date(System.currentTimeMillis() + 60 * 60 * 1000))
             .sign(algorithm)
     }
 
     fun generateRefreshToken(user: UserModel): String {
-        val expirationTime = Instant.now().plus(30, ChronoUnit.DAYS) // Срок действия 30 дней
+        val expirationTime = Instant.now().plus(30, ChronoUnit.DAYS)
         return JWT.create()
-            .withSubject(user._id) // Используем ID пользователя как subject
-            .withExpiresAt(Date.from(expirationTime)) // Устанавливаем срок действия
+            .withSubject(user._id)
+            .withExpiresAt(Date.from(expirationTime))
             .sign(algorithm)
     }
 
@@ -37,7 +37,7 @@ class TokenService(
         return try {
             val verifier = JWT.require(algorithm).build()
             val jwt = verifier.verify(token)
-            jwt.subject // Возвращаем ID пользователя
+            jwt.subject
         } catch (e: Exception) {
             null
         }

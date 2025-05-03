@@ -76,7 +76,7 @@ const icons = {
 
     'appearance': <AppearanceIcon />,
     'ldap': <AccessIcon />,
-    'search': <SearchIcon />,
+    'discover': <SearchIcon />,
     'user-default': <DefaultIcon />,
     'file-upload': <FileUploadIcon />,
     'security': <SecurityIcon />,

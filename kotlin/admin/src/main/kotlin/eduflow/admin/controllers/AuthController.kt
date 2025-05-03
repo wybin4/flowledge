@@ -1,5 +1,7 @@
 package eduflow.admin.controllers
 
+import eduflow.admin.ldap.CustomLdapUserDetails
+import eduflow.admin.ldap.LDAPService
 import eduflow.admin.services.TokenService
 import eduflow.admin.services.UserService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -16,6 +18,7 @@ import reactor.core.publisher.Mono
 @RequestMapping("/api/auth")
 class AuthController(
     private val tokenService: TokenService,
+    private val ldapService: LDAPService,
     private val userService: UserService,
     private val ldapAuthenticationProvider: LdapAuthenticationProvider,
 ) {
@@ -27,17 +30,32 @@ class AuthController(
             val authenticated = ldapAuthenticationProvider.authenticate(authentication)
             SecurityContextHolder.getContext().authentication = authenticated
 
+            val memberOf = (authenticated.principal as? CustomLdapUserDetails)?.attributes?.get("memberOf")
+            val groupNames = if (memberOf != null) {
+                (memberOf as List<*>).map { dn ->
+                    ldapService.extractGroupName(dn.toString())
+                }
+            } else {
+                emptyList()
+            }
+
             return tokenService.userRepository.findByUsername(request.username)
                 .switchIfEmpty(userService.createUser(request.username))
                 .flatMap { user ->
                     if (user == null) {
                         Mono.error(IllegalStateException("User is null after switchIfEmpty"))
                     } else {
+                        user.services = user.services?.copy(
+                            ldap = user.services?.ldap?.copy(
+                                memberOf = groupNames
+                            )
+                        )
+
                         tokenService.updateTokens(user)
                             .map { updatedUser ->
                                 LoginResponse(
                                     updatedUser.services?.resume?.jwtToken!!,
-                                    updatedUser.services.resume?.refreshToken!!
+                                    updatedUser.services?.resume?.refreshToken!!
                                 )
                             }
                     }
@@ -61,7 +79,7 @@ class AuthController(
                             .map { updatedUser ->
                                 RefreshTokenResponse(
                                     updatedUser.services?.resume?.jwtToken!!,
-                                    updatedUser.services.resume?.refreshToken!!
+                                    updatedUser.services?.resume?.refreshToken!!
                                 )
                             }
                     } else {

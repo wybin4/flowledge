@@ -49,9 +49,32 @@
         },
         "enabled": {
             "name": "enabled"
+        },
+        "auth": {
+            "dn": {
+                "name": "service account dn",
+                "description": "service account used for binding to the LDAP server"
+            },
+            "password": {
+                "name": "service account password"
+            }
+        },
+        "user": {
+            "dn-pattern": {
+                "name": "user dn pattern",
+                "description": "use {0} as a placeholder for the username"
+            },
+            "search-filter": {
+                "name": "user search filter",
+                "description": "the filter used to search for users in the LDAP directory. use {0} as a placeholder for the username."
+            }
+        },
+        "map-groups-to-courses": {
+            "name": "map ad groups to courses and tags",
+            "description": "allows you to map active directory (ad) groups to specific courses and tags"
         }
     },
-    "search": {
+    "discover": {
         "name": "search",
         "page-size": {
             "name": "page size"
@@ -123,6 +146,30 @@
         "view-all-stats": {
             "name": "view all statistics",
             "description": "allows the user to view statistics for all courses in the system."
+        },
+        "view-all-integrations": {
+            "name": "view all integrations",
+            "description": "allows the user to view all integrations in the system."
+        },
+        "manage-integration": {
+            "name": "manage integrations",
+            "description": "allows the user to create, edit and delete integrations."
+        },
+        "view-tags": {
+            "name": "view tags",
+            "description": "allows the user to view tags."
+        },
+        "create-tags": {
+            "name": "create tags",
+            "description": "allows the user to create tags."
+        },
+        "edit-tags": {
+            "name": "edit tags",
+            "description": "allows the user to edit tags."
+        },
+        "delete-tags": {
+            "name": "delete tags",
+            "description": "allows the user to delete tags."
         }
     },
     "roles": {
@@ -155,11 +202,14 @@
         "delete": "delete course",
         "create": "create course",
         "edit": "edit course",
-        "title": "course",
+        "title": {
+            "name": "name",
+            "description": "course name must be unique"
+        },
         "creator": "creator",
         "createdAt": "created at",
         "description": "description",
-        "imageUrl": "course cover",
+        "imageUrl": "cover",
         "edit-content": "edit content",
         "editors": {
             "name": "editors",
@@ -360,6 +410,8 @@
         },
         "placeholder": "search tags",
         "create": "add tag",
-        "save": "save tag"
+        "save": "save tag",
+        "edit": "edit tag",
+        "delete": "delete tag"
     }
 }

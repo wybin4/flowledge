@@ -9,7 +9,7 @@ import { useDeleteEnhancedTablePageItem } from "@/components/TablePage/EnhancedT
 import { useGetEnhancedTablePageItem } from "@/components/TablePage/EnhancedTablePage/hooks/useGetEnhancedTablePageItem";
 import { ButtonType } from "@/components/Button/Button";
 import { ButtonBackProps } from "@/components/Button/ButtonBack/ButtonBack";
-import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
+import { ButtonBackContainer, ButtonBackContainerProps } from "@/components/Button/ButtonBack/ButtonBackContainer";
 import { QueryParams } from "@/types/QueryParams";
 import EnhancedItemBody from "./EnhancedItemBody";
 import { Identifiable } from "@/types/Identifiable";
@@ -17,6 +17,7 @@ import { TablePageActionType } from "@/types/TablePageActionType";
 import { areEnhancedItemPropsEqual } from "./areEnhancedItemPropsEqual";
 import { ApiClientMethods } from "@/apiClient";
 import { MultiSettingWrapperAdditionalProps } from "@/components/Settings/SettingWrapper/MultiSettingWrapper";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
 
 export type EnhancedItemAdditionalButton = {
     title: string;
@@ -44,8 +45,8 @@ export interface EnhancedItemProps<T, U> {
     transformItemToSave: TransformItemToSave<T, U>;
     createEmptyItem: () => T;
     useGetItemHook?: (callback: (item: T) => void) => (_id: string) => void;
-    additionalButtons?: EnhancedItemAdditionalButton[];
-    backButton?: ButtonBackProps;
+    additionalButtons?: (EnhancedItemAdditionalButton | ReactNode)[];
+    backButton?: ButtonBackProps & Pick<ButtonBackContainerProps, 'type' | 'compressBody'>;
     containerStyles?: string;
     queryParams?: QueryParams;
     isBackWithRouter?: boolean;
@@ -112,7 +113,7 @@ const EnhancedItem = <T extends Identifiable, U>({
     }
 
     return (
-        <ButtonBackContainer className={containerStyles} {...backButton}>
+        <ButtonBackContainer className={containerStyles} {...backButton}>{button =>
             <EnhancedItemBody<T>
                 item={item}
                 setItem={setItem}
@@ -122,12 +123,16 @@ const EnhancedItem = <T extends Identifiable, U>({
                 mode={mode}
                 prefix={prefix}
                 settingKeys={settingKeys}
-                additionalButtons={additionalButtons}
+                additionalButtons={
+                    backButton?.type === ChildrenPosition.Bottom
+                        ? additionalButtons ? [...additionalButtons, button] : [button]
+                        : additionalButtons
+                }
                 isEditMode={isEditMode}
                 hasChanges={hasChanges()}
                 deleteItemDescription={hasDeleteDescription ? t(`${prefix}.delete-description`) : undefined}
             />
-        </ButtonBackContainer>
+        }</ButtonBackContainer>
     );
 };
 

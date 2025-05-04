@@ -14,7 +14,7 @@ export const formatTimeUnit = (unit: string): string => {
 export function parseTimeUnit(time: string): { value: number, unit: TimeUnit } | undefined {
     const timeUnits = Object.values(TimeUnit).join('|');
     const regex = new RegExp(`^(\\d+)\\s+(${timeUnits})$`, 'i');
-    const match = time.match(regex);
+    const match = regex && time ? time.match(regex) : undefined;
 
     if (match) {
         const value = parseInt(match[1], 10);

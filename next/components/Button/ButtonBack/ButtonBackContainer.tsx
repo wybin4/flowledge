@@ -3,18 +3,30 @@ import { ButtonBack } from "./ButtonBack";
 import { ReactNode } from "react";
 import styles from "./ButtonBack.module.css";
 import cn from "classnames";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
 
-type ButtonBackContainerProps = ButtonBackProps & {
-    children: ReactNode;
+export type ButtonBackContainerProps = ButtonBackProps & {
+    children: (backButton?: ReactNode) => ReactNode;
     className?: string;
+    type?: ChildrenPosition;
+    compressBody?: boolean;
 }
 
-export const ButtonBackContainer = ({ children, className, ...props }: ButtonBackContainerProps) => {
+export const ButtonBackContainer = ({
+    children,
+    type = ChildrenPosition.Left,
+    compressBody = true,
+    className,
+    ...props
+}: ButtonBackContainerProps) => {
     return (
         <div className={cn(styles.container, className)}>
-            <ButtonBack {...props} />
-            <div className={styles.body}>
-                {children}
+            {type === ChildrenPosition.Left && <ButtonBack {...props} />}
+            <div className={cn(styles.body, {
+                [styles.compressed]: compressBody,
+                [styles.full]: !compressBody
+            })}>
+                {children(type === ChildrenPosition.Bottom ? <ButtonBack {...props} /> : undefined)}
             </div>
         </div>
     );

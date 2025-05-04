@@ -301,7 +301,12 @@
         "__count__tags_selected_zero": "теги не выбраны",
         "__count__tags_selected_one": "выбран {{count}} тег",
         "__count__tags_selected_few": "выбрано {{count}} тега",
-        "__count__tags_selected_many": "выбрано {{count}} тегов"
+        "__count__tags_selected_many": "выбрано {{count}} тегов",
+        "draft": "черновик",
+        "video": "видео",
+        "details": "подробности",
+        "synopsis": "конспект и материалы",
+        "survey": "тест"
     },
     "courses-list": {
         "menu": {

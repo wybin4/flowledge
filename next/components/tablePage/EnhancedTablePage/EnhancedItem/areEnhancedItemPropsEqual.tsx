@@ -2,7 +2,10 @@ import { EnhancedItemProps, EnhancedItemSettingKey } from "./EnhancedItem"
 import { EnhancedItemBodyProps } from "./EnhancedItemBody"
 
 const areSettingKeysEqual = (prevKeys: EnhancedItemSettingKey[], nextKeys: EnhancedItemSettingKey[]) => {
-    return prevKeys.every((key, index) => key.error === nextKeys[index].error)
+    return prevKeys.every((key, index) =>
+        key.error === nextKeys[index].error &&
+        key.additionalProps?.options === nextKeys[index].additionalProps?.options
+    )
 }
 
 export const areEnhancedItemPropsEqual = <T, U>(prevProps: EnhancedItemProps<T, U>, nextProps: EnhancedItemProps<T, U>) => {

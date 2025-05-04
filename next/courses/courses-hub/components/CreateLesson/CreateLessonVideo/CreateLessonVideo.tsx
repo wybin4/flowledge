@@ -6,12 +6,12 @@ import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate, coursesHu
 import { PageLayoutHeader } from "@/components/PageLayout/PageLayoutHeader/PageLayoutHeader";
 import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
 import { useState, useCallback, useMemo } from "react";
-import styles from "./CreateLessonDraft.module.css";
+import styles from "./CreateLessonVideo.module.css";
 import { useIcon } from "@/hooks/useIcon";
 import { VideoUpload } from "@/components/Video/VideoUpload/VideoUpload";
 import { InputBox } from "@/components/InputBox/InputBox";
 import { ToggleSwitch } from "@/components/ToggleSwitch/ToggleSwitch";
-import { CreateLessonDraftHeader } from "./CreateLessonDraftHeader/CreateLessonDraftHeader";
+import { CreateLessonVideoHeader } from "./CreateLessonVideoHeader/CreateLessonVideoHeader";
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { getFileSize } from "@/helpers/getFileSize";
 import { Button, ButtonType } from "@/components/Button/Button";
@@ -24,8 +24,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { SettingType, SettingValueType } from "@/types/Setting";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
 import { UpdatableSetting } from "@/hooks/useSettings";
-import { EnhancedBreadcrumbs } from "@/components/EnhancedBreadcrumbs/EnhancedBreadcrumbs";
-import { createCreateLessonCrumbs } from "@/courses/courses-hub/functions/createCreateLessonCrumbs";
+import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
 
 enum VideoActionType {
     Synopsis = 'generate-synopsis',
@@ -51,12 +51,12 @@ type VideoAction = {
     options?: Record<string, SettingValueType>
 };
 
-type CreateLessonDraftProps = {
+type CreateLessonVideoProps = {
+    _id: string;
     mode: TablePageMode;
-    sectionId: string;
 }
 
-export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) => {
+export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
     const { t } = useTranslation();
 
     const [video, setVideo] = useState<File | null>(null);
@@ -71,6 +71,8 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
 
     const router = useRouter();
     const currentPath = usePathname();
+
+    const translationPrefix = coursesHubPrefix;
 
     const fileUploadMaxSize = usePrivateSetting<number>('file-upload.max-size') || 104857600;
 
@@ -128,11 +130,11 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
     const videoSelectorOptions = useMemo(() => [
         {
             value: true,
-            label: t(`${coursesHubPrefix}.with-video`)
+            label: t(`${translationPrefix}.with-video`)
         },
         {
             value: false,
-            label: t(`${coursesHubPrefix}.without-video`)
+            label: t(`${translationPrefix}.without-video`)
         }
     ], [t]);
 
@@ -174,12 +176,14 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
     };
 
     const onSave = useCallback(async (isDraft?: boolean) => {
+        if (!withVideo || !videoId) {
+            router.push('?details=true');
+        }
         try {
             let lessonId: string | undefined;
             let synopsis: string | undefined, survey: string | undefined = undefined;
-            const isVisible = false;
 
-            if (withVideo && !isDraft) {
+            if (!isDraft) {
                 if (!videoId) {
                     return;
                 }
@@ -197,8 +201,9 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
             setLoadingString(`${coursesHubLessonsPrefixTranslate}.creating`);
 
             const result = await saveLesson({
-                videoId, survey, synopsis, isVisible, sectionId,
-                type: LessonSaveType.Draft
+                videoId, survey, synopsis,
+                type: LessonSaveType.Video,
+                _id
             });
             lessonId = result.lessonId;
 
@@ -218,127 +223,123 @@ export const CreateLessonDraft = ({ mode, sectionId }: CreateLessonDraftProps) =
     }
 
     return (
-        <EnhancedBreadcrumbs crumbs={createCreateLessonCrumbs(LessonSaveType.Draft)}  >
-            <div className={styles.content}>
-                <PageLayoutHeader
-                    name={isEditMode ? `${coursesHubPrefix}.edit-lesson` : `${coursesHubPrefix}.create-lesson`}
-                    translateName={false}
-                />
-                <div className={styles.videoSelector}>
-                    {videoSelectorOptions.map(option => (
-                        <FiniteSelector
-                            key={option.label}
-                            value={option.value.toString()}
-                            selectedValue={withVideo.toString()}
-                            label={option.label}
-                            onClick={() => setWithVideo(option.value)}
-                            mode={FillBorderUnderlineMode.BORDER}
-                            icon={checkIcon}
+        <ButtonBackContainer
+            type={ChildrenPosition.Bottom}
+            hasBackButtonIcon={false}
+            compressBody={false}
+        >{backButton =>
+            <>
+                <div className={styles.content}>
+                    <PageLayoutHeader
+                        name={isEditMode ? `${translationPrefix}.edit-lesson` : `${translationPrefix}.create-lesson`}
+                        translateName={false}
+                    />
+                    <div className={styles.videoSelector}>
+                        {videoSelectorOptions.map(option => (
+                            <FiniteSelector
+                                key={option.label}
+                                value={option.value.toString()}
+                                selectedValue={withVideo.toString()}
+                                label={option.label}
+                                onClick={() => setWithVideo(option.value)}
+                                mode={FillBorderUnderlineMode.BORDER}
+                                icon={checkIcon}
+                            />
+                        ))}
+                    </div>
+                    {withVideo && <>
+                        <CreateLessonVideoHeader
+                            title={t(`${translationPrefix}.upload-video.name`)}
+                            description={t(`${translationPrefix}.upload-video.description`, {
+                                size: getFileSize(fileUploadMaxSize)
+                            })}
+                            icon={videoUploadIcon}
                         />
-                    ))}
+                        <VideoUpload
+                            setId={setVideoId}
+                            isUploading={isVideoUploading}
+                            setIsUploading={setIsVideoUploading}
+                            isUploadError={isVideoUploadError}
+                            setIsUploadError={setIsVideoUploadError}
+                            video={video}
+                            setVideo={setVideo}
+                            maxSize={fileUploadMaxSize}
+                            apiClientPrefix={userApiClientPrefix}
+                            childrenOnVideo={
+                                <>
+                                    <div className={styles.videoActions}>
+                                        <CreateLessonVideoHeader
+                                            title={t(`${translationPrefix}.what-to-do-with-video`)}
+                                            icon={swapIcon}
+                                        />
+                                        {videoActions.map((action, index) => (
+                                            <span key={index}>
+                                                <InputBox
+                                                    name={`${translationPrefix}.${action.label}.name`}
+                                                    className={styles.videoAction}
+                                                    description={`${translationPrefix}.${action.label}.description`}
+                                                >
+                                                    <ToggleSwitch
+                                                        isChecked={action.value}
+                                                        onToggle={() => toggleVideoAction(action.label)}
+                                                        disabled={isDisabled(action)}
+                                                    />
+                                                </InputBox>
+                                                {action.options && Object.keys(action.options).map(key => {
+                                                    if (action.options && action.options[key] != undefined) {
+                                                        return (
+                                                            <SettingWrapper
+                                                                key={key}
+                                                                className={styles.videoActionOption}
+                                                                debounceTime={0}
+                                                                setting={{
+                                                                    _id: key,
+                                                                    value: action.options[key],
+                                                                    packageValue: findInitialValue(action.label, key) || '',
+                                                                    i18nLabel: `${translationPrefix}.${key}`,
+                                                                    type: typeof action.options[key] === 'string'
+                                                                        ? SettingType.InputText
+                                                                        : SettingType.InputNumber
+                                                                }}
+                                                                handleSave={({ value }: UpdatableSetting) => {
+                                                                    setVideoActionOption(action.label, key, value);
+                                                                }}
+                                                            />
+                                                        );
+                                                    } else return null;
+                                                })}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </>
+                            }
+                        />
+                    </>}
+                    {!videoId &&
+                        <CreateLessonVideoHeader
+                            title={t(`${translationPrefix}.what-else.name`)}
+                            description={t(`${translationPrefix}.what-else.description`)}
+                            icon={infoIcon}
+                        />
+                    }
+                    {!withVideo &&
+                        <CreateLessonVideoHeader
+                            title={t(`${translationPrefix}.you-can-add-video-later.name`)}
+                            icon={infoIcon}
+                        />
+                    }
                 </div>
-                {withVideo && <>
-                    <CreateLessonDraftHeader
-                        title={t(`${coursesHubPrefix}.upload-video.name`)}
-                        description={t(`${coursesHubPrefix}.upload-video.description`, {
-                            size: getFileSize(fileUploadMaxSize)
-                        })}
-                        icon={videoUploadIcon}
+                <div className={styles.buttonContainer}>
+                    {backButton}
+                    <Button
+                        onClick={() => onSave(false)}
+                        prefix={translationPrefix}
+                        type={ButtonType.SAVE}
+                        title={t('next')}
+                        disabled={withVideo && (!video || !!isVideoUploadError || isVideoUploading || !videoId)}
                     />
-                    <VideoUpload
-                        setId={setVideoId}
-                        isUploading={isVideoUploading}
-                        setIsUploading={setIsVideoUploading}
-                        isUploadError={isVideoUploadError}
-                        setIsUploadError={setIsVideoUploadError}
-                        video={video}
-                        setVideo={setVideo}
-                        maxSize={fileUploadMaxSize}
-                        apiClientPrefix={userApiClientPrefix}
-                        childrenOnVideo={
-                            <>
-                                <div className={styles.videoActions}>
-                                    <CreateLessonDraftHeader
-                                        title={t(`${coursesHubPrefix}.what-to-do-with-video`)}
-                                        icon={swapIcon}
-                                    />
-                                    {videoActions.map((action, index) => (
-                                        <span key={index}>
-                                            <InputBox
-                                                name={`${coursesHubPrefix}.${action.label}.name`}
-                                                className={styles.videoAction}
-                                                description={`${coursesHubPrefix}.${action.label}.description`}
-                                            >
-                                                <ToggleSwitch
-                                                    isChecked={action.value}
-                                                    onToggle={() => toggleVideoAction(action.label)}
-                                                    disabled={isDisabled(action)}
-                                                />
-                                            </InputBox>
-                                            {action.options && Object.keys(action.options).map(key => {
-                                                if (action.options && action.options[key] != undefined) {
-                                                    return (
-                                                        <SettingWrapper
-                                                            key={key}
-                                                            className={styles.videoActionOption}
-                                                            debounceTime={0}
-                                                            setting={{
-                                                                _id: key,
-                                                                value: action.options[key],
-                                                                packageValue: findInitialValue(action.label, key) || '',
-                                                                i18nLabel: `${coursesHubPrefix}.${key}`,
-                                                                type: typeof action.options[key] === 'string'
-                                                                    ? SettingType.InputText
-                                                                    : SettingType.InputNumber
-                                                            }}
-                                                            handleSave={({ value }: UpdatableSetting) => {
-                                                                setVideoActionOption(action.label, key, value);
-                                                            }}
-                                                        />
-                                                    );
-                                                } else return null;
-                                            })}
-                                        </span>
-                                    ))}
-                                </div>
-                            </>
-                        }
-                    />
-                </>}
-                {!videoId &&
-                    <CreateLessonDraftHeader
-                        title={t(`${coursesHubPrefix}.what-else.name`)}
-                        description={t(`${coursesHubPrefix}.what-else.description`)}
-                        icon={infoIcon}
-                    />
-                }
-                {!withVideo &&
-                    <CreateLessonDraftHeader
-                        title={t(`${coursesHubPrefix}.you-can-add-video-later.name`)}
-                        icon={infoIcon}
-                    />
-                }
-            </div>
-            <div className={styles.buttonContainer}>
-                <Button
-                    onClick={async () => {
-                        await onSave(true);
-                        router.back();
-                    }}
-                    prefix={coursesHubPrefix}
-                    type={ButtonType.SAVE}
-                    title={t('save-draft')}
-                    disabled={!withVideo}
-                    mode={FillBorderUnderlineMode.UNDERLINE}
-                />
-                <Button
-                    onClick={() => onSave(false)}
-                    prefix={coursesHubPrefix}
-                    type={ButtonType.SAVE}
-                    title={t('next')}
-                    disabled={withVideo && (!video || !!isVideoUploadError || isVideoUploading || !videoId)}
-                />
-            </div>
-        </EnhancedBreadcrumbs>
+                </div>
+            </>
+            }</ButtonBackContainer>
     );
 };

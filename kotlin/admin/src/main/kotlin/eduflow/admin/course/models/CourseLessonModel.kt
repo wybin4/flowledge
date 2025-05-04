@@ -13,10 +13,10 @@ data class CourseLessonModel(
     override val courseId: String? = null,
     override val sectionId: String? = null,
     override val isVisible: Boolean,
-    override val videoId: String? = null,
+    override var videoId: String? = null,
     override val createdAt: Date,
     override val updatedAt: Date,
-    override val surveyText: String? = null,
-    override val synopsis: String? = null,
+    override var surveyText: String? = null,
+    override var synopsisText: String? = null,
     override var isDraft: Boolean? = null,
 ) : CourseLesson

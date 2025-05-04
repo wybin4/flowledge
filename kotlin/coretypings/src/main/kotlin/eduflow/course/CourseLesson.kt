@@ -12,7 +12,7 @@ interface CourseLesson {
     val isVisible: Boolean
     val isDraft: Boolean?
     val videoId: String?
-    val synopsis: String?
+    val synopsisText: String?
     val surveyText: String?
     val createdAt: Date
     val updatedAt: Date

@@ -1,6 +1,9 @@
 export enum LessonSaveType {
     Draft = 'DRAFT',
+    Video = 'VIDEO',
     Details = 'DETAILS',
+    Synopsis = 'SYNOPSIS',
+    Survey = 'SURVEY'
 }
 
 interface LessonToSaveRequest {
@@ -8,11 +11,10 @@ interface LessonToSaveRequest {
 }
 
 export interface LessonToSaveOnDraftRequest extends LessonToSaveRequest {
+    _id: string;
     videoId?: string;
     synopsis?: string;
     survey?: string;
-    isVisible: boolean;
-    sectionId: string;
 }
 
 export type LessonToSaveOnDraftResponse = {

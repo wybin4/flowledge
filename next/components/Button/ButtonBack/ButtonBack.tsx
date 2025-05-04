@@ -8,23 +8,32 @@ import { useRouter } from "next/navigation";
 export type ButtonBackProps = {
     onBackButtonClick?: () => void;
     backButtonIcon?: ReactNode;
+    hasBackButtonIcon?: boolean;
     hasBackButtonText?: boolean;
     backButtonStyles?: string;
     isBackWithRouter?: boolean;
 }
 
-export const ButtonBack = ({ onBackButtonClick, backButtonIcon, hasBackButtonText = true, backButtonStyles, isBackWithRouter = true }: ButtonBackProps) => {
+export const ButtonBack = ({
+    onBackButtonClick,
+    backButtonIcon, hasBackButtonIcon = true,
+    hasBackButtonText = true,
+    backButtonStyles,
+    isBackWithRouter = true,
+}: ButtonBackProps) => {
     const router = useRouter();
     const iconArrowLeft = useIcon('left');
-   
+
     return (
-        <div className={cn(styles.backButton, backButtonStyles)} onClick={() => {
+        <div className={cn(styles.backButton, backButtonStyles, {
+            [styles.mb]: hasBackButtonIcon
+        })} onClick={() => {
             onBackButtonClick?.();
             if (isBackWithRouter) {
                 router.back();
             }
         }}>
-            {backButtonIcon ? backButtonIcon : iconArrowLeft} {hasBackButtonText ? t('back') : ''}
+            {hasBackButtonIcon ? backButtonIcon ? backButtonIcon : iconArrowLeft : undefined} {hasBackButtonText ? t('back') : ''}
         </div>
     );
 }

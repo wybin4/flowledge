@@ -1,7 +1,7 @@
 .container {
     display: flex;
     flex-direction: row;
-    gap: 8rem;
+    gap: 3.1rem;
 
     min-height: 100vh;
 }
@@ -20,6 +20,8 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+
+    padding-top: 4.3rem;
 }
 
 .checkContainer {
@@ -27,6 +29,20 @@
     gap: 1rem;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .checkIcon {
     color: var(--light);
+}
+
+.current {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.prevOrNext {
+    color: var(--description-text);
+    font-size: 0.975rem;
 }

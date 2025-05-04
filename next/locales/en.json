@@ -296,7 +296,12 @@
         },
         "__count__tags_selected_zero": "no tags selected",
         "__count__tags_selected_one": "{{count}} tag selected",
-        "__count__tags_selected_many": "{{count}} tags selected"
+        "__count__tags_selected_many": "{{count}} tags selected",
+        "draft": "draft",
+        "video": "video",
+        "details": "details",
+        "synopsis": "synopsis and stuff",
+        "survey": "survey"
     },
     "courses-list": {
         "menu": {

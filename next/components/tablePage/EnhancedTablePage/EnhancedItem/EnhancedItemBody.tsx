@@ -2,7 +2,7 @@ import { Button } from "@/components/Button/Button";
 
 import { ButtonType } from "@/components/Button/Button";
 import { TablePageMode } from "@/types/TablePageMode";
-import { Dispatch, memo, SetStateAction, useCallback, useMemo } from "react";
+import { Dispatch, memo, ReactNode, SetStateAction, useCallback, useMemo } from "react";
 import styles from "./EnhancedItem.module.css";
 import { EnhancedItemAdditionalButton, EnhancedItemSettingKey } from "./EnhancedItem";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
@@ -11,12 +11,13 @@ import { SettingValue } from "@/types/Setting";
 import { Identifiable } from "@/types/Identifiable";
 import { areEnhancedItemBodyPropsEqual } from "./areEnhancedItemPropsEqual";
 import { MultiSettingWrapper, MultiSettingWrapperSetting } from "@/components/Settings/SettingWrapper/MultiSettingWrapper";
+import React from "react";
 
 export type EnhancedItemBodyProps<T> = {
     title: string;
     mode: TablePageMode;
     prefix: string;
-    additionalButtons?: EnhancedItemAdditionalButton[];
+    additionalButtons?: (EnhancedItemAdditionalButton | ReactNode)[];
     isEditMode: boolean;
     settingKeys: EnhancedItemSettingKey[];
     hasChanges: boolean;
@@ -35,6 +36,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
     deleteItem, deleteItemDescription,
     saveItem
 }: EnhancedItemBodyProps<T>) => {
+
     const getSetting = useCallback((key: string) => {
         const value = item?.[key as keyof T];
         const props = settingKeys.find((setting) => setting.name === key);
@@ -45,7 +47,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
         const { hasDescription, additionalProps, types } = props;
         const isMulti = (types?.length || 0) > 1;
-
+        
         return {
             setting: {
                 _id: key,
@@ -63,7 +65,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
             additionalProps,
             isMulti
         };
-    }, [JSON.stringify(item)]);
+    }, [JSON.stringify(item), JSON.stringify(settingKeys)]);
 
     const handleSave = (setting: UpdatableSetting) => {
         setItem(prev => (prev ? { ...prev, [setting.id]: setting.value } : prev));
@@ -110,9 +112,23 @@ const EnhancedItemBody = <T extends Identifiable,>({
             <h2 className={styles.title}>{title}</h2>
             <div className={styles.settingsContainer}>{renderSettings()}</div>
             <div className={styles.buttonContainer}>
-                {additionalButtons?.filter((button) => button.mode ? button.mode === mode : true).map((button) => (
-                    <Button key={button.title} onClick={button.onClick} prefix={prefix} type={button.type} title={button.title} />
-                ))}
+                {
+                    additionalButtons && !!additionalButtons.length &&
+                    additionalButtons
+                        .map((button: EnhancedItemAdditionalButton | ReactNode) => {
+                            if (typeof button === 'object' && button !== null && !React.isValidElement(button)) {
+                                const enhancedButton = button as EnhancedItemAdditionalButton;
+                                if (enhancedButton.mode === mode) {
+                                    return <Button key={enhancedButton.title} onClick={enhancedButton.onClick} prefix={prefix} type={enhancedButton.type} title={enhancedButton.title} />
+                                }
+
+                                return null;
+                            } else if (React.isValidElement(button)) {
+                                return button;
+                            }
+                            return null;
+                        })
+                }
                 {isEditMode &&
                     <div className={styles.deleteContainer}>
                         <Button onClick={() => deleteItem(item._id)} prefix={prefix} type={ButtonType.DELETE} />

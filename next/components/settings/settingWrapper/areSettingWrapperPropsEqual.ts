@@ -4,6 +4,7 @@ export const areSettingWrapperPropsEqual = (prevProps: SettingWrapperProps, next
     JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
     prevProps.disabled === nextProps.disabled &&
     prevProps.setting._id === nextProps.setting._id &&
+    (prevProps.setting as any).options === (nextProps.setting as any).options &&
     prevProps.isOptionsTranslatable === nextProps.isOptionsTranslatable
 );
 

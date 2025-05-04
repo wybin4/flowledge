@@ -5,7 +5,7 @@ import { CoursesListItemDescription } from "@/courses/components/CoursesListItem
 import { CoursesHubEditors } from "./CoursesHubEditors/CoursesHubEditors/CoursesHubEditors";
 import { CoursesHubDetail } from "../../types/CoursesHubDetails";
 import { CourseSection } from "@/courses/components/CourseSection/CourseSection";
-import { coursesHubEditorsPrefixTranslate, coursesHubPrefix, coursesHubSectionsPrefixApi, coursesHubSectionsPrefixTranslate } from "@/helpers/prefixes";
+import { coursesHubEditorsPrefixTranslate, coursesHubLessonsPrefixApi, coursesHubPrefix, coursesHubSectionsPrefixApi, coursesHubSectionsPrefixTranslate } from "@/helpers/prefixes";
 import { useTranslation } from "react-i18next";
 import styles from "./CoursesHubDetails.module.css";
 import { CoursesHubDetailsHeader } from "./CoursesHubDetailsHeader/CoursesHubDetailsHeader";
@@ -34,6 +34,7 @@ import { getErrorByRegex } from "@/helpers/getErrorByRegex";
 import { Modal } from "@/components/Modal/Modal";
 import { CoursesHubEditorsModal } from "./CoursesHubEditors/CoursesHubEditorsModal/CoursesHubEditorsModal";
 import { CourseEditor } from "../../types/CourseEditor";
+import { LessonSaveType, LessonToSaveOnDraftResponse } from "../../types/LessonToSave";
 
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
@@ -244,7 +245,12 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                 {
                                     title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
                                     onClick: () => {
-                                        router.push(`/courses-hub/${course._id}?sectionId=${section.section._id}`);
+                                        userApiClient.post<LessonToSaveOnDraftResponse>(
+                                            `${coursesHubLessonsPrefixApi}.create`,
+                                            { type: LessonSaveType.Draft, sectionId: section.section._id }
+                                        ).then(({ lessonId }) => {
+                                            router.push(`/courses-hub/${course._id}/${lessonId}?video=true`);
+                                        })
                                     },
                                     type: ChildrenPosition.Bottom
                                 }]}

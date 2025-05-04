@@ -1,10 +1,7 @@
 package eduflow.admin.course.controllers
 
-import eduflow.admin.course.dto.lesson.*
-import eduflow.admin.course.dto.lesson.create.LessonAddDetailsRequest
-import eduflow.admin.course.dto.lesson.create.LessonCreateDraftRequest
-import eduflow.admin.course.dto.lesson.create.LessonCreateDraftResponse
-import eduflow.admin.course.dto.lesson.create.LessonCreateRequest
+import eduflow.admin.course.dto.lesson.LessonUpdateRequest
+import eduflow.admin.course.dto.lesson.create.*
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.repositories.CourseLessonRepository
 import eduflow.user.Language
@@ -33,6 +30,15 @@ class CourseLessonController(
                     Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for draft"))
                 }
             }
+
+            is LessonAddVideoRequest -> {
+                try {
+                    addVideo(lesson)
+                } catch (e: IllegalArgumentException) {
+                    Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for video"))
+                }
+            }
+
             is LessonAddDetailsRequest -> {
                 try {
                     addDetails(lesson)
@@ -40,18 +46,12 @@ class CourseLessonController(
                     Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for details"))
                 }
             }
+
             else -> Mono.error<Any>(IllegalArgumentException("Invalid action parameter"))
         }
     }
 
-    private fun createDraft(lesson: LessonCreateDraftRequest): Mono<LessonCreateDraftResponse> {
-        if (lesson.videoId == null && (lesson.synopsis != null || lesson.survey != null)) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "synopsis and surveyText require videoId")
-        }
-        if (lesson.survey != null && lesson.synopsis == null) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "surveyText requires synopsis")
-        }
-
+    private fun createDraft(lesson: LessonCreateDraftRequest): Mono<LessonCreateResponse> {
         val locale = Language.RU // TODO: get from user document
 
         val draftCount = if (lesson.courseId != null) {
@@ -73,33 +73,55 @@ class CourseLessonController(
             title = title,
             courseId = lesson.courseId,
             sectionId = lesson.sectionId,
-            videoId = lesson.videoId,
             isVisible = false,
-            synopsis = lesson.synopsis,
-            surveyText = lesson.survey,
             createdAt = Date(),
             updatedAt = Date(),
             isDraft = true
         )
 
         return lessonRepository.save(newLesson)
-        .map { savedLesson -> LessonCreateDraftResponse(savedLesson._id) }
+            .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
     }
 
-    private fun addDetails(lesson: LessonAddDetailsRequest): Mono<LessonCreateDraftResponse> {
+    private fun addVideo(lesson: LessonAddVideoRequest): Mono<LessonCreateResponse> {
+        if (lesson.videoId == null && (lesson.synopsis != null || lesson.survey != null)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "synopsis and surveyText require videoId")
+        }
+        if (lesson.survey != null && lesson.synopsis == null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "surveyText requires synopsis")
+        }
+
         return lessonRepository.findById(lesson._id)
             .flatMap { existingLesson ->
-                if (existingLesson.isDraft != true) {
-                    return@flatMap Mono.error<CourseLessonModel>(ResponseStatusException(HttpStatus.CONFLICT, "Lesson is not in draft state"))
-                }
+                existingLesson.videoId = lesson.videoId
+                existingLesson.surveyText = lesson.survey
+                existingLesson.synopsisText = lesson.synopsis
+                lessonRepository.save(existingLesson)
+            }
+            .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
+    }
+
+    private fun addDetails(lesson: LessonAddDetailsRequest): Mono<LessonCreateResponse> {
+        return lessonRepository.findById(lesson._id)
+            .flatMap { existingLesson ->
                 if (lesson.autoDetect) {
                     if (lesson.time != null || lesson.timeUnit != null) {
-                        return@flatMap Mono.error<CourseLessonModel>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Time and timeUnit should be null when autoDetect is true"))
+                        return@flatMap Mono.error<CourseLessonModel>(
+                            ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "Time and timeUnit should be null when autoDetect is true"
+                            )
+                        )
                     }
                     // todo() - здесь будет логика для autoDetect
                 } else {
                     if (lesson.time == null || lesson.timeUnit == null) {
-                        return@flatMap Mono.error<CourseLessonModel>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Time and timeUnit should not be null when autoDetect is false"))
+                        return@flatMap Mono.error<CourseLessonModel>(
+                            ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "Time and timeUnit should not be null when autoDetect is false"
+                            )
+                        )
                     }
                     existingLesson.time = "${lesson.time} ${lesson.timeUnit}"
                 }
@@ -111,7 +133,7 @@ class CourseLessonController(
                 }
                 lessonRepository.save(existingLesson)
             }
-            .map { savedLesson -> LessonCreateDraftResponse(savedLesson._id) }
+            .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
     }
 
     @PutMapping("/lessons.update/{id}")
@@ -140,8 +162,8 @@ class CourseLessonController(
     ): Mono<ResponseEntity<Void>> {
         return lessonRepository.deleteById(id)
             .then(Mono.just<ResponseEntity<Void>>(ResponseEntity.noContent().build()))
-            .onErrorResume { _: Throwable -> 
-                Mono.just(ResponseEntity.notFound().build()) 
+            .onErrorResume { _: Throwable ->
+                Mono.just(ResponseEntity.notFound().build())
             }
     }
 

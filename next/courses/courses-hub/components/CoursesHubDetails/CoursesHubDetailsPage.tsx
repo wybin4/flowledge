@@ -1,7 +1,5 @@
 "use client";
 
-import { TablePageMode } from "@/types/TablePageMode";
-import { CreateLessonDraft } from "../CreateLesson/CreateLessonDraft/CreateLessonDraft";
 import { CoursesHubDetails } from "./CoursesHubDetails";
 import { useEffect, useCallback, useState, memo } from "react";
 import { CoursesHubDetail } from "../../types/CoursesHubDetails";
@@ -13,10 +11,9 @@ import { IconKey } from "@/hooks/useIcon";
 
 type CoursesHubDetailsPageProps = {
     courseId: string;
-    sectionId?: string;
 };
 
-export const CoursesHubDetailsPage = memo(({ courseId, sectionId }: CoursesHubDetailsPageProps) => {
+export const CoursesHubDetailsPage = memo(({ courseId }: CoursesHubDetailsPageProps) => {
     const [course, setCourse] = useState<CoursesHubDetail | undefined>(undefined);
     const { t } = useTranslation();
 
@@ -24,16 +21,12 @@ export const CoursesHubDetailsPage = memo(({ courseId, sectionId }: CoursesHubDe
         `${coursesHubPrefix}/courses` as IconKey, userApiClient, (item) => {
             setCourse(item);
         },
-        { isSmall: sectionId ?? false }
-    ), [sectionId]);
+        { isSmall: false }
+    ), []);
 
     useEffect(() => {
         getItem(courseId);
     }, [courseId]);
-
-    if (sectionId) {
-        return <CreateLessonDraft mode={TablePageMode.CREATE} sectionId={sectionId} />;
-    }
 
     if (!course) {
         return <div>{t('loading')}</div>;
@@ -41,6 +34,6 @@ export const CoursesHubDetailsPage = memo(({ courseId, sectionId }: CoursesHubDe
 
     return <CoursesHubDetails course={course} />;
 }, (prevProps, nextProps) => {
-    return prevProps.courseId === nextProps.courseId && prevProps.sectionId === nextProps.sectionId;
+    return prevProps.courseId === nextProps.courseId;
 });
 

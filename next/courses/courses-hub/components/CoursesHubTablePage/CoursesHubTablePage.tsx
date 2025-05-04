@@ -17,12 +17,13 @@ import { ButtonType } from "@/components/Button/Button";
 import { fakeUser } from "@/helpers/fakeUser";
 import { SettingType } from "@/types/Setting";
 import { CourseToSave } from "../../types/CourseToSave";
-import { CourseTag } from "../../../types/CourseTag";
 import { CRUDTablePage } from "@/components/TablePage/CRUDTablePage/CRUDTablePage";
+import { getTagsSettingKey } from "../../functions/getTagsSettingKey";
+import { useTags } from "../../hooks/useTags";
 
 export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
-    const [tags, setTags] = useState<CourseTag[]>([]);
+    const { tags } = useTags();
 
     const router = useRouter();
 
@@ -38,14 +39,6 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
     const handleEditContent = () => {
         router.push(`/${coursesHubPrefix}/${selectedItemId}`);
     };
-
-    useEffect(() => {
-        userApiClient.get<CourseTag[]>(`${courseTagsPrefix}.get`).then(items => {
-            if (items && items.length) {
-                setTags(items);
-            }
-        });
-    }, []);
 
     return (
         <CRUDTablePage<Course, CourseToSave, CoursesHubTableItem>
@@ -64,16 +57,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 { name: 'title', types: [SettingType.InputText], hasDescription: true },
                 { name: 'description', types: [SettingType.TextArea] },
                 { name: 'imageUrl', types: [SettingType.InputText] },
-                {
-                    name: 'tags',
-                    i18nLabel: 'tags',
-                    types: [SettingType.SelectorInfiniteMultiple],
-                    additionalProps: {
-                        options: tags.map(t => ({ value: t._id, label: t.name })),
-                        prefix: coursesHubPrefix,
-                        selectedKey: 'tags_selected'
-                    }
-                },
+                getTagsSettingKey(tags),
             ]}
             transformItemToSave={(item) => {
                 const { title, description, imageUrl, tags: tagsToSave } = item;

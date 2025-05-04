@@ -2,12 +2,15 @@
 
 import { userApiClient } from "@/apiClient";
 import EnhancedItem from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
+import { getTagsSettingKey } from "@/courses/courses-hub/functions/getTagsSettingKey";
+import { useTags } from "@/courses/courses-hub/hooks/useTags";
 import { LessonSaveType, LessonToSaveOnDetails, LessonToSaveOnDetailsRequest, LessonToSaveOnDetailsRequestTime } from "@/courses/courses-hub/types/LessonToSave";
-import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate, coursesHubSectionsPrefixTranslate } from "@/helpers/prefixes";
+import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { SettingType, SettingValue } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
 import { TimeUnit } from "@/types/TimeUnit";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
 export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: boolean }) => {
@@ -18,7 +21,6 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
     const hoursVal = t('hours-abbr');
 
     const router = useRouter();
-    const pathname = usePathname();
 
     return (
         <EnhancedItem<LessonToSaveOnDetails, LessonToSaveOnDetailsRequest>
@@ -78,8 +80,13 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
                 const { _id, title, time } = item;
                 return { _id, title, ...time, type: LessonSaveType.Details }
             }}
-            onActionCallback={() => router.replace(pathname)}
+            onActionCallback={() => router.push('?synopsis=true')}
             isBackWithRouter={false}
+            backButton={{
+                type: ChildrenPosition.Bottom,
+                hasBackButtonIcon: false,
+                compressBody: false
+            }}
             createEmptyItem={() => ({
                 _id,
                 title: '',

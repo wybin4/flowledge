@@ -8,8 +8,14 @@
 
 .body {
     position: relative;
+}
 
+.compressed {
     width: 70%;
+}
+
+.full {
+    width: 100%;
 }
 
 .body h3 {
@@ -21,9 +27,11 @@
     align-items: center;
     gap: 1rem;
 
-    margin-bottom: 2rem;
-
     color: var(--light);
 
     cursor: pointer;
+}
+
+.mb {
+    margin-bottom: 2rem;
 }

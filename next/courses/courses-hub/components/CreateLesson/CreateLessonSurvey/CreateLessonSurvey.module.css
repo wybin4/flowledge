@@ -63,3 +63,12 @@
 .mt {
     margin-top: 2.5rem;
 }
+
+.buttonContainer {
+    display: flex;
+    gap: 1rem;
+}
+
+.expanded .buttonContainer {
+    margin-right: 32%;
+}

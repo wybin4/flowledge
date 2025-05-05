@@ -405,9 +405,6 @@
             "add": "add choice"
         }
     },
-    "survey": {
-        "to-lesson": "survey to lesson"
-    },
     "favourites": "favourites",
     "all-courses": "all courses",
     "there-are-no-options": "there are no options",

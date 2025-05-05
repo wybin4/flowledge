@@ -230,10 +230,6 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
         >{backButton =>
             <>
                 <div className={styles.content}>
-                    <PageLayoutHeader
-                        name={isEditMode ? `${translationPrefix}.edit-lesson` : `${translationPrefix}.create-lesson`}
-                        translateName={false}
-                    />
                     <div className={styles.videoSelector}>
                         {videoSelectorOptions.map(option => (
                             <FiniteSelector

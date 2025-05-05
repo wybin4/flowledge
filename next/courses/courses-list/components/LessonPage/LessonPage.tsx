@@ -1,7 +1,7 @@
 "use client";
 
 import { StuffUpload } from "@/stuff/components/StuffUpload";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { FiniteSelector } from "../../../../components/FiniteSelector/FiniteSelector";
 import { InputBoxWrapper } from "../../../../components/InputBox/InputBoxWrapper";
 import styles from "./LessonPage.module.css";
@@ -18,12 +18,13 @@ import { SynopsisLessonTabs } from "@/courses/courses-hub/types/SynopsisLessonTa
 export type LessonsPageProps = {
     mode: PageMode;
     lesson: LessonItem;
+    setLesson?: Dispatch<SetStateAction<LessonItem | undefined>>;
+    hasTitle?: boolean;
 };
 
-export const LessonPage = ({ mode, lesson }: LessonsPageProps) => {
+export const LessonPage = ({ mode, lesson, setLesson, hasTitle = true }: LessonsPageProps) => {
     const tabs = Object.values(SynopsisLessonTabs);
     const [selectedTab, setSelectedTab] = useState<SynopsisLessonTabs>(tabs[0]);
-    const [markdownText, setMarkdownText] = useState<string>('');
     const isEditorMode = mode === PageMode.Editor;
 
     const onDownloadStuff = (stuff: LessonStuff) => {
@@ -44,9 +45,11 @@ export const LessonPage = ({ mode, lesson }: LessonsPageProps) => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.titleContainer}>
-                <h1 className={styles.title}>{lesson.title}</h1>
-            </div>
+            {hasTitle &&
+                <div className={styles.titleContainer}>
+                    <h1 className={styles.title}>{lesson.title}</h1>
+                </div>
+            }
             {lesson.videoUrl && (
                 <video className={styles.video} controls poster={lesson.imageUrl}>
                     <source src={lesson.videoUrl} type="video/mp4" />
@@ -73,15 +76,44 @@ export const LessonPage = ({ mode, lesson }: LessonsPageProps) => {
             ))}
             {isEditorMode &&
                 <>
-                    <StuffUpload className={cn({
-                        [styles.empty]: selectedTab !== SynopsisLessonTabs.Stuff
-                    })} />
+                    <StuffUpload
+                        stuffList={lesson.stuffs ?? [] as any}
+                        setStuffList={(stuffs) => {
+                            setLesson && setLesson((currentLesson: LessonItem | undefined) => {
+                                if (currentLesson) {
+                                    return {
+                                        ...currentLesson, stuffs: stuffs.map((stuff: Stuff) => ({
+                                            ...stuff,
+                                            file: {
+                                                name: stuff.file?.name,
+                                                url: ''
+                                            }
+                                        })) ?? []
+                                    } as LessonItem;
+                                }
+                                return currentLesson;
+                            });
+                        }}
+                        className={cn({
+                            [styles.empty]: selectedTab !== SynopsisLessonTabs.Stuff
+                        })}
+                    />
                     <Editor
                         className={cn({
                             [styles.empty]: selectedTab !== SynopsisLessonTabs.Synopsis
                         })}
-                        markdownText={markdownText}
-                        setMarkdownText={setMarkdownText}
+                        markdownText={lesson.synopsis ?? ''}
+                        setMarkdownText={(text) => {
+                            setLesson && setLesson((currentLesson: LessonItem | undefined) => {
+                                if (currentLesson) {
+                                    return {
+                                        ...currentLesson, synopsis: text
+                                    } as LessonItem;
+                                }
+                                return currentLesson;
+                            });
+                            return text;
+                        }}
                     />
                 </>
             }

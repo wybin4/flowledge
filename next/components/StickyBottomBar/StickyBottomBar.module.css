@@ -1,0 +1,18 @@
+.barContent {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+
+    width: 100%;
+
+    display: flex;
+    justify-content: flex-end;
+
+    padding: 1rem 2rem;
+
+    background-color: var(--dark);
+}
+
+.container {
+    padding-bottom: 2rem;
+}

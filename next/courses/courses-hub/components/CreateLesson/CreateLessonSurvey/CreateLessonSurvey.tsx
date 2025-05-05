@@ -14,6 +14,11 @@ import { useScrollToElement } from "@/hooks/useScrollToElement";
 import { useAddQuestionToUrl } from "@/courses/courses-hub/hooks/useAddQuestionToUrl";
 import { MenuButton } from "@/components/MenuButton/MenuButton";
 import { ItemSize } from "@/types/ItemSize";
+import { Button, ButtonType } from "@/components/Button/Button";
+import { ButtonBack } from "@/components/Button/ButtonBack/ButtonBack";
+import { StickyBottomBar } from "@/components/StickyBottomBar/StickyBottomBar";
+import { coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
+import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 
 type CreateLessonSurveyProps = {
     selectedQuestionId?: string;
@@ -22,7 +27,7 @@ type CreateLessonSurveyProps = {
 export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyProps) => {
     const handleScrollToQuestion = useAddQuestionToUrl();
 
-    const [questions, setQuestions] = useState<SurveyQuestion[]>([{
+    const initialQuestions = [{
         _id: '1',
         text: "какую цель преследует статья с проектами для начинающих python-разработчиков?",
         choices: [{
@@ -56,7 +61,8 @@ export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyPro
             _id: '8888',
             text: "4",
         }]
-    }]);
+    }];
+    const [questions, setQuestions] = useState<SurveyQuestion[]>(initialQuestions);
 
     const canDeleteQuestions = questions.length > 1;
 
@@ -88,6 +94,8 @@ export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyPro
 
     useScrollToElement(selectedQuestionId);
 
+    const saveItem = () => { };
+
     return (
         <RightSidebar content={_ =>
             <div className={styles.container}>
@@ -116,22 +124,38 @@ export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyPro
                 />
             </div>
         }>{(isExpanded, toggleSidebar) => (
+
             <div className={cn(styles.container, {
                 [styles.expanded]: isExpanded
             })}>
-                <div className={cn(styles.titleContainer, styles.mb)}>
-                    <h2>{t('survey.to-lesson')}</h2>
-                    <MenuButton size={ItemSize.Little} isExpanded={isExpanded} onClick={toggleSidebar} />
-                </div>
-                {questions.map((question, index) => (
-                    <SurveyQuestionBody
-                        key={index}
-                        number={index + 1}
-                        question={question}
-                        setQuestion={handleSetQuestion}
-                        canDeleteQuestions={canDeleteQuestions}
-                    />
-                ))}
+                <StickyBottomBar barContent={
+                    <div className={styles.buttonContainer}>
+                        <ButtonBack hasBackButtonIcon={false} />
+                        {JSON.stringify(initialQuestions) != JSON.stringify(questions) &&
+                            <Button
+                                onClick={() => saveItem()}
+                                prefix={coursesHubLessonsPrefixTranslate}
+                                type={ButtonType.SAVE}
+                                mode={FillBorderUnderlineMode.UNDERLINE}
+                                noEffects={true}
+                            />
+                        }
+                    </div>
+                }>
+                    <div className={cn(styles.titleContainer, styles.mb)}>
+                        <div></div>
+                        <MenuButton size={ItemSize.Little} isExpanded={isExpanded} onClick={toggleSidebar} />
+                    </div>
+                    {questions.map((question, index) => (
+                        <SurveyQuestionBody
+                            key={index}
+                            number={index + 1}
+                            question={question}
+                            setQuestion={handleSetQuestion}
+                            canDeleteQuestions={canDeleteQuestions}
+                        />
+                    ))}
+                </StickyBottomBar>
             </div>
         )}</RightSidebar>
     )

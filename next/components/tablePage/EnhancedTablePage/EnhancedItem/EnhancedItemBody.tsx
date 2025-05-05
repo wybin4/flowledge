@@ -12,6 +12,7 @@ import { Identifiable } from "@/types/Identifiable";
 import { areEnhancedItemBodyPropsEqual } from "./areEnhancedItemPropsEqual";
 import { MultiSettingWrapper, MultiSettingWrapperSetting } from "@/components/Settings/SettingWrapper/MultiSettingWrapper";
 import React from "react";
+import cn from "classnames";
 
 export type EnhancedItemBodyProps<T> = {
     title: string;
@@ -26,14 +27,18 @@ export type EnhancedItemBodyProps<T> = {
     deleteItem: (_id: string) => Promise<void>;
     deleteItemDescription?: string;
     saveItem: (item: T | undefined) => Promise<void>;
+    hasTitle?: boolean;
+    settingsContainerClassNames?: string;
+    buttonContainerClassNames?: string;
 };
 
 const EnhancedItemBody = <T extends Identifiable,>({
     item, setItem,
     title, mode, prefix,
     settingKeys, additionalButtons,
-    isEditMode, hasChanges,
+    isEditMode, hasChanges, hasTitle = true,
     deleteItem, deleteItemDescription,
+    settingsContainerClassNames, buttonContainerClassNames,
     saveItem
 }: EnhancedItemBodyProps<T>) => {
 
@@ -47,7 +52,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
         const { hasDescription, additionalProps, types } = props;
         const isMulti = (types?.length || 0) > 1;
-        
+
         return {
             setting: {
                 _id: key,
@@ -109,9 +114,9 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
     return (
         <>
-            <h2 className={styles.title}>{title}</h2>
-            <div className={styles.settingsContainer}>{renderSettings()}</div>
-            <div className={styles.buttonContainer}>
+            {hasTitle && <h2 className={styles.title}>{title}</h2>}
+            <div className={cn(styles.settingsContainer, settingsContainerClassNames)}>{renderSettings()}</div>
+            <div className={cn(styles.buttonContainer, buttonContainerClassNames)}>
                 {
                     additionalButtons && !!additionalButtons.length &&
                     additionalButtons

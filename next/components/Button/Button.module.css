@@ -50,3 +50,15 @@
     background-color: transparent;
     color: var(--secondary-light);
 }
+
+.no {
+    font-size: .875rem;
+    font-weight: 400;
+    text-transform: none;
+
+    padding: 0 !important;
+}
+
+.no:hover {
+    color: var(--light);
+}

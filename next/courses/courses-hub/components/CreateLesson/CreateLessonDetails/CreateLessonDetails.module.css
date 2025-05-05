@@ -1,0 +1,14 @@
+.body {
+    min-height: 100vh;
+}
+
+.settingsContainer {
+    min-height: 85vh;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 1rem;
+}

@@ -1,7 +1,7 @@
 "use client";
 import { useTranslation } from "react-i18next";
 import styles from "./StuffUpload.module.css";
-import { HTMLProps, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import cn from "classnames";
 import { StuffUploadButton } from "./StuffUploadButton";
 import { StuffTypes } from "../types/StuffTypes";
@@ -10,20 +10,26 @@ import { getEnumValueByString } from "@/helpers/getEnumValueByString";
 import { Stuff } from "../types/Stuff";
 import { StuffItem } from "./StuffItem";
 
-export const StuffUpload: React.FC<HTMLProps<HTMLDivElement>> = ({ className }) => {
+type StuffUploadProps = {
+    className?: string;
+    stuffList: Stuff[];
+    setStuffList: (stuffs: Stuff[]) => void;
+};
+
+export const StuffUpload = ({ stuffList, setStuffList, className }: StuffUploadProps) => {
     const { t } = useTranslation();
     const [expanded, setExpanded] = useState<boolean>(false);
     const [activeButton, setActiveButton] = useState<string | undefined>(undefined);
-    const [stuffList, setStuffList] = useState<Stuff[]>([]);
 
     const handleAccept = (newItem: Stuff) => {
-        setStuffList(prevStuffList => [newItem, ...prevStuffList]);
+        setStuffList([newItem, ...stuffList]);
         setActiveButton(undefined);
         setExpanded(false);
     };
 
     const handleClear = (itemToRemove: Stuff) => {
-        setStuffList(prevStuffList => prevStuffList.filter(stuff => stuff._id !== itemToRemove._id));
+        const newItems = stuffList.filter(stuff => stuff._id !== itemToRemove._id);
+        setStuffList(newItems);
     };
 
     return (

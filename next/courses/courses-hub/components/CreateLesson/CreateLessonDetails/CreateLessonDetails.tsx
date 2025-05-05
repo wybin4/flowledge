@@ -2,8 +2,6 @@
 
 import { userApiClient } from "@/apiClient";
 import EnhancedItem from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
-import { getTagsSettingKey } from "@/courses/courses-hub/functions/getTagsSettingKey";
-import { useTags } from "@/courses/courses-hub/hooks/useTags";
 import { LessonSaveType, LessonToSaveOnDetails, LessonToSaveOnDetailsRequest, LessonToSaveOnDetailsRequestTime } from "@/courses/courses-hub/types/LessonToSave";
 import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
@@ -12,6 +10,7 @@ import { TablePageMode } from "@/types/TablePageMode";
 import { TimeUnit } from "@/types/TimeUnit";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import styles from "./CreateLessonDetails.module.css";
 
 export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: boolean }) => {
     const { t } = useTranslation();
@@ -24,6 +23,10 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
 
     return (
         <EnhancedItem<LessonToSaveOnDetails, LessonToSaveOnDetailsRequest>
+            containerStyles={styles.body}
+            hasTitle={false}
+            settingsContainerClassNames={styles.settingsContainer}
+            buttonContainerClassNames={styles.buttonContainer}
             mode={TablePageMode.CREATE}
             prefix={translationPrefix}
             apiPrefix={coursesHubLessonsPrefixApi}

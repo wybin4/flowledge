@@ -3,7 +3,7 @@ import { StuffTypes } from "../types/StuffTypes";
 import { IconKey, useIcon } from "@/hooks/useIcon";
 import { useTranslation } from "react-i18next";
 import styles from "./StuffUpload.module.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import cn from "classnames";
 import { isValidUrl } from "@/helpers/isValidUrl";
 import { Stuff } from "../types/Stuff";

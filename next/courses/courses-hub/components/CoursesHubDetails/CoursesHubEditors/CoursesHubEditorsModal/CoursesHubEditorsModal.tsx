@@ -42,7 +42,7 @@ export const CoursesHubEditorsModal = ({
         const excludedIds = editors.map(e => e._id);
         userApiClient.get<UserGetResponse[]>(
             `users.get${setQueryParams({
-                pageSize, searchQuery, excludedIds
+                pageSize, searchQuery, excludedIds, isSmall: true
             })}`
         ).then(users => {
             setUsers(users.map(u => ({

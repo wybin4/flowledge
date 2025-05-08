@@ -16,3 +16,4 @@ export const permissionsPrefix = 'permissions';
 export const userSettingsPrefix = 'user-settings';
 export const privateSettingsPrefix = 'private-settings';
 export const profilePrefix = 'profile';
+export const usersPrefix = 'users';

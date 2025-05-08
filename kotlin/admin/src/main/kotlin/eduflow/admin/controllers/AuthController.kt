@@ -2,10 +2,10 @@ package eduflow.admin.controllers
 
 import eduflow.admin.ldap.CustomLdapUserDetails
 import eduflow.admin.ldap.LDAPService
-import eduflow.admin.models.LDAPServiceModel
 import eduflow.admin.models.UserServicesModel
 import eduflow.admin.services.TokenService
-import eduflow.admin.services.UserService
+import eduflow.admin.user.models.LDAPServiceModel
+import eduflow.admin.user.services.UserService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder

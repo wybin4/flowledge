@@ -105,7 +105,6 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
                         header={
                             <TablePageHeader
                                 items={headerItems}
-                                isTranslated={true}
                                 align='left'
                                 className={styles.header}
                             />

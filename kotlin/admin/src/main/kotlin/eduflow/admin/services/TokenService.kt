@@ -2,9 +2,9 @@ package eduflow.admin.services
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import eduflow.admin.models.ResumeServiceModel
-import eduflow.admin.models.UserModel
-import eduflow.admin.repositories.UserRepository
+import eduflow.admin.user.models.ResumeServiceModel
+import eduflow.admin.user.models.UserModel
+import eduflow.admin.user.repositories.UserRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.time.Instant

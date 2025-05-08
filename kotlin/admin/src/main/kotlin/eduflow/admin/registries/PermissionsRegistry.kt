@@ -5,6 +5,8 @@ import eduflow.admin.models.RoleModel
 import eduflow.admin.repositories.PermissionRepository
 import eduflow.admin.repositories.RoleRepository
 import eduflow.role.RoleScope
+import eduflow.user.DefaultRoles
+import eduflow.user.toLowerCase
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -25,11 +27,16 @@ class PermissionsRegistry {
 
     private fun addMissingRoles(): Mono<Void> {
         val defaultRoles = listOf(
-            RoleModel("admin", "Users", "admin role", listOf(RoleScope.USERS)),
-            RoleModel("user", "Users", "user role", listOf(RoleScope.USERS)),
-            RoleModel("editor", "Users", "editor role", listOf(RoleScope.USERS, RoleScope.COURSES)),
-            RoleModel("owner", "Courses", "owner role", listOf(RoleScope.COURSES)),
-            RoleModel("moderator", "Courses", "moderator role", listOf(RoleScope.COURSES)),
+            RoleModel(DefaultRoles.ADMIN.toLowerCase(), "Users", "admin role", listOf(RoleScope.USERS)),
+            RoleModel(DefaultRoles.USER.toLowerCase(), "Users", "user role", listOf(RoleScope.USERS)),
+            RoleModel(
+                DefaultRoles.EDITOR.toLowerCase(),
+                "Users",
+                "editor role",
+                listOf(RoleScope.USERS, RoleScope.COURSES)
+            ),
+            RoleModel(DefaultRoles.OWNER.toLowerCase(), "Courses", "owner role", listOf(RoleScope.COURSES)),
+            RoleModel(DefaultRoles.MODERATOR.toLowerCase(), "Courses", "moderator role", listOf(RoleScope.COURSES)),
         )
 
         return roleRepository.findAll()
@@ -47,33 +54,70 @@ class PermissionsRegistry {
 
     private fun addMissingPermissions(): Mono<Void> {
         val defaultPermissions = listOf(
-            PermissionModel("view-private-settings", listOf("admin")),
-            PermissionModel("edit-private-settings", listOf("admin")),
-            PermissionModel("manage-permissions", listOf("admin")),
+            PermissionModel(
+                "view-private-settings",
+                listOf(DefaultRoles.ADMIN.toLowerCase())
+            ),
+            PermissionModel(
+                "edit-private-settings",
+                listOf(DefaultRoles.ADMIN.toLowerCase())
+            ),
+            PermissionModel(
+                "manage-permissions", listOf(DefaultRoles.ADMIN.toLowerCase())
+            ),
 
-            PermissionModel("view-all-courses", listOf("admin")),
-            PermissionModel("view-assigned-courses", listOf("moderator", "owner", "user")),
-            PermissionModel("edit-assigned-courses", listOf("moderator", "owner")),
-            PermissionModel("edit-all-courses", listOf("admin")),
-            PermissionModel("delete-course", listOf("admin")),
-            PermissionModel("delete-assigned-course", listOf("moderator", "owner")),
+            PermissionModel("view-all-courses", listOf(DefaultRoles.ADMIN.toLowerCase())),
+            PermissionModel(
+                "view-assigned-courses",
+                listOf(
+                    DefaultRoles.MODERATOR.toLowerCase(),
+                    DefaultRoles.OWNER.toLowerCase(),
+                    DefaultRoles.USER.toLowerCase()
+                )
+            ),
+            PermissionModel(
+                "edit-assigned-courses",
+                listOf(DefaultRoles.MODERATOR.toLowerCase(), DefaultRoles.OWNER.toLowerCase())
+            ),
+            PermissionModel("edit-all-courses", listOf(DefaultRoles.ADMIN.toLowerCase())),
+            PermissionModel("delete-course", listOf(DefaultRoles.ADMIN.toLowerCase())),
+            PermissionModel(
+                "delete-assigned-course",
+                listOf(DefaultRoles.MODERATOR.toLowerCase(), DefaultRoles.OWNER.toLowerCase())
+            ),
 
-            PermissionModel("assign-users-to-course", listOf("admin", "owner")),
-            PermissionModel("remove-users-from-course", listOf("admin", "owner")),
+            PermissionModel(
+                "assign-users-to-course",
+                listOf(DefaultRoles.ADMIN.toLowerCase(), DefaultRoles.OWNER.toLowerCase())
+            ),
+            PermissionModel(
+                "remove-users-from-course",
+                listOf(DefaultRoles.ADMIN.toLowerCase(), DefaultRoles.OWNER.toLowerCase())
+            ),
 
-            PermissionModel("create-course", listOf("admin")),
+            PermissionModel("create-course", listOf(DefaultRoles.ADMIN.toLowerCase())),
 
-            PermissionModel("view-own-stats", listOf("user")),
-            PermissionModel("view-assigned-stats", listOf("admin", "moderator", "owner")),
-            PermissionModel("view-all-stats", listOf("admin")),
+            PermissionModel("view-own-stats", listOf(DefaultRoles.USER.toLowerCase())),
+            PermissionModel(
+                "view-assigned-stats",
+                listOf(
+                    DefaultRoles.ADMIN.toLowerCase(),
+                    DefaultRoles.MODERATOR.toLowerCase(),
+                    DefaultRoles.OWNER.toLowerCase()
+                )
+            ),
+            PermissionModel("view-all-stats", listOf(DefaultRoles.ADMIN.toLowerCase())),
 
-            PermissionModel("view-all-integrations", listOf("admin")),
-            PermissionModel("manage-integration", listOf("admin")),
+            PermissionModel("view-all-integrations", listOf(DefaultRoles.ADMIN.toLowerCase())),
+            PermissionModel("manage-integration", listOf(DefaultRoles.ADMIN.toLowerCase())),
 
-            PermissionModel("view-tags", listOf("admin", "editor")),
-            PermissionModel("create-tags", listOf("admin")),
-            PermissionModel("edit-tags", listOf("admin")),
-            PermissionModel("delete-tags", listOf("admin"))
+            PermissionModel(
+                "view-tags",
+                listOf(DefaultRoles.ADMIN.toLowerCase(), DefaultRoles.EDITOR.toLowerCase())
+            ),
+            PermissionModel("create-tags", listOf(DefaultRoles.ADMIN.toLowerCase())),
+            PermissionModel("edit-tags", listOf(DefaultRoles.ADMIN.toLowerCase())),
+            PermissionModel("delete-tags", listOf(DefaultRoles.ADMIN.toLowerCase()))
         )
 
         return permissionRepository.findAll()

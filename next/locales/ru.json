@@ -12,7 +12,8 @@
         "api-integrations": "api-интеграции",
         "courses-hub": "центр курсов",
         "courses-list": "каталог курсов",
-        "course-tags": "теги"
+        "course-tags": "теги",
+        "users": "пользователи"
     },
     "name": "название",
     "user-default": {
@@ -425,5 +426,24 @@
         "save": "сохранить тег",
         "edit": "изменить тег",
         "delete": "удалить тег"
+    },
+    "users": {
+        "placeholder": "поиск пользователей",
+        "avatar": "аватар",
+        "username": "логин",
+        "name": "имя",
+        "password": "пароль",
+        "roles": "роли",
+        "status": "статус",
+        "active": "активирован",
+        "inactive": "деактивирован",
+        "delete": "удалить",
+        "save": "сохранить",
+        "create": "создать пользователя",
+        "edit": "изменить пользователя",
+        "__count__roles_zero": "роли не выбраны",
+        "__count__roles_one": "выбрана {{count}} роль",
+        "__count__roles_few": "выбрано {{count}} роли",
+        "__count__roles_many": "выбрано {{count}} ролей"
     }
 }

@@ -18,7 +18,13 @@
     justify-content: flex-start;
     gap: 1rem 1.5rem;
 
+    width: 100%;
+
     margin-top: 1.3rem;
+}
+
+.buttonContainer div {
+    width: max-content !important;
 }
 
 .description {
@@ -28,6 +34,16 @@
     color: var(--description-text);
 
     margin-top: 0.5rem;
+}
+
+.deleteContainer:hover {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.deleteContainer:hover .description {
+    width: 100% !important;
 }
 
 .deleteContainer:hover .description {

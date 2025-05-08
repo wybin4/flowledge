@@ -9,7 +9,7 @@ import eduflow.admin.course.services.CourseService
 import eduflow.admin.course.services.CourseTagService
 import eduflow.admin.dto.PaginationRequest
 import eduflow.admin.ldap.LDAPService
-import eduflow.admin.models.UserModel
+import eduflow.admin.user.models.UserModel
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*

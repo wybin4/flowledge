@@ -6,7 +6,7 @@ import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
 import eduflow.admin.course.types.CourseEditor
-import eduflow.admin.repositories.UserRepository
+import eduflow.admin.user.repositories.UserRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono

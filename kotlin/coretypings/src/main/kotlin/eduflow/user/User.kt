@@ -5,7 +5,7 @@ import java.util.*
 
 interface User : Record {
     val createdAt: Date
-    val type: UserType
+    val roles: List<String>
     val active: Boolean
     val username: String
     val name: String

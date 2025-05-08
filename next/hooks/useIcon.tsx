@@ -36,6 +36,7 @@ import UnorderedListIcon from "../assets/unordered-list.svg";
 import OrderedListIcon from "../assets/ordered-list.svg";
 import QuoteIcon from "../assets/quote.svg";
 import IntegrationsIcon from "../assets/integrations.svg";
+import UsersIcon from "../assets/users.svg";
 import SortIcon from "../assets/sort.svg";
 import FileUploadIcon from "../assets/file-upload.svg";
 import SecurityIcon from "../assets/security.svg";
@@ -73,6 +74,7 @@ const icons = {
     'resize': <ResizeIcon />,
     'profile': <ProfileIcon />,
     'api-integrations': <IntegrationsIcon />,
+    'users': <UsersIcon />,
 
     'appearance': <AppearanceIcon />,
     'ldap': <AccessIcon />,

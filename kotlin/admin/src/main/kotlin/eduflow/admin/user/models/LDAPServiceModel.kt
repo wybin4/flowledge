@@ -1,4 +1,4 @@
-package eduflow.admin.models
+package eduflow.admin.user.models
 
 import eduflow.user.LDAPService
 

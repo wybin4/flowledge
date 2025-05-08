@@ -12,7 +12,8 @@
         "api-integrations": "api integrations",
         "courses-hub": "courses hub",
         "courses-list": "courses list",
-        "course-tags": "tags"
+        "course-tags": "tags",
+        "users": "users"
     },
     "name": "name",
     "user-default": {
@@ -419,5 +420,24 @@
         "save": "save tag",
         "edit": "edit tag",
         "delete": "delete tag"
+    },
+    "users": {
+        "placeholder": "search users",
+        "avatar": "avatar",
+        "username": "username",
+        "name": "name",
+        "password": "password",
+        "roles": "roles",
+        "status": "status",
+        "active": "activated",
+        "inactive": "deactivated",
+        "delete": "delete",
+        "save": "save",
+        "create": "create user",
+        "edit": "edit user",
+        "__count__roles_zero": "no roles selected",
+        "__count__roles_one": "{{count}} role selected",
+        "__count__roles_few": "{{count}} roles selected",
+        "__count__roles_many": "{{count}} roles selected"
     }
 }

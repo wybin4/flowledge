@@ -14,6 +14,7 @@ import eduflow.admin.user.services.PasswordService
 import eduflow.admin.user.services.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Flux
@@ -32,7 +33,13 @@ class UserController(
         @PathVariable id: String,
         @RequestParam(name = "isSmall", required = false) isSmall: Boolean? = true
     ): Mono<out UserGetByIdResponse> {
-        return userRepository.findById(id)
+        var userId = id
+        if (userId == "me") {
+            val authentication = SecurityContextHolder.getContext().authentication
+            val user = authentication.principal as UserModel
+            userId = user._id
+        }
+        return userRepository.findById(userId)
             .flatMap { user ->
                 if (user == null) {
                     Mono.error(ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"))
@@ -45,7 +52,8 @@ class UserController(
                                 username = user.username,
                                 avatar = "", // TODO()
                                 settings = user.settings,
-                                services = user.services
+                                services = user.services,
+                                roles = user.roles
                             )
                         )
                     } else {

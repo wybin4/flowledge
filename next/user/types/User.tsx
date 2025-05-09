@@ -1,10 +1,10 @@
 import { UserEmail } from "./UserEmail";
 import { UserSetting } from "./UserSetting";
-import { UserType } from "./UserType";
 
 export interface User {
+    _id: string;
     createdAt: Date;
-    type: UserType;
+    roles: string[];
     active: boolean;
     username: string;
     name: string;

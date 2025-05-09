@@ -9,18 +9,25 @@ type PermissionsItemProps = {
     permission: IPermission;
     roles: string[];
     onClick: (permissionId: string, roleId: string) => void;
+    isEditable: boolean;
 }
 
-export const PermissionsItem = ({ permission, roles, onClick }: PermissionsItemProps) => {
+export const PermissionsItem = ({ permission, roles, onClick, isEditable }: PermissionsItemProps) => {
     const { t } = useTranslation();
     return (
-        <tr className={styles.container}>
+        <tr className={cn(styles.container, {
+            [styles.pointer]: isEditable
+        })}>
             <td className={styles.first}>{t(`permissions.${permission._id}.name`)}</td>
             {roles.map(role => {
                 return (
-                    <td key={role} onClick={() => onClick(permission._id, role)} className={cn(styles.item, {
-                        [styles.checked]: permission.roles.includes(role)
-                    })}>ㅤ</td>
+                    <td
+                        key={role}
+                        onClick={() => isEditable ? onClick(permission._id, role) : undefined}
+                        className={cn(styles.item, {
+                            [styles.checked]: permission.roles.includes(role)
+                        })}
+                    >ㅤ</td>
                 )
             })}
         </tr>

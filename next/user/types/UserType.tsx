@@ -1,4 +1,7 @@
-export enum UserType {
+export enum DefaultRoles {
     USER = "USER",
-    ADMIN = "ADMIN"
+    EDITOR = "EDITOR",
+    ADMIN = "ADMIN",
+    OWNER = "OWNER",
+    MODERATOR = "MODERATOR"
 }

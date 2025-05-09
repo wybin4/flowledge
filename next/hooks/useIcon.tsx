@@ -66,6 +66,7 @@ import FullScreenIcon from "../assets/fullscreen.svg";
 import TagIcon from "../assets/tag.svg";
 import StatisticsIcon from "../assets/statistics.svg";
 import OptionsIcon from "../assets/options.svg";
+import LogoutIcon from "../assets/logout.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -78,6 +79,7 @@ const icons = {
     'api-integrations': <IntegrationsIcon />,
     'users': <UsersIcon />,
     'course-tags': <TagIcon />,
+    'logout': <LogoutIcon />,
 
     'appearance': <AppearanceIcon />,
     'ldap': <AccessIcon />,

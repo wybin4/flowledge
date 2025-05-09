@@ -11,6 +11,7 @@ import { integrationApiClient } from "@/apiClient";
 import { EnhancedItemType } from "@/components/TablePage/EnhancedTablePage/types/EnhancedItemTypes";
 import { getDataPageWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getDataPageWithApi";
 import { getTotalCountWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getTotalCountWithApi";
+import { usePermission } from "@/hooks/usePermission";
 
 export const ApiIntegrationsTablePage = () => {
     const getHeaderItems = (
@@ -22,9 +23,16 @@ export const ApiIntegrationsTablePage = () => {
         }
     );
 
+    const isPermitted = usePermission('manage-integrations');
+
     return (
         <EnhancedTablePage<ApiIntegration, ApiIntegrationTableItem>
             prefix={apiIntegrationsPrefix}
+            permissions={{
+                isCreationPermitted: isPermitted,
+                isEditionPermitted: isPermitted,
+                isDeletionPermitted: isPermitted
+            }}
             getDataPageFunctions={{
                 getDataPage: (prefix, params) => getDataPageWithApi(prefix, integrationApiClient, params),
                 getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, integrationApiClient, params),

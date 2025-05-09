@@ -10,7 +10,7 @@ import FocusableContainer from "@/components/FocusableContainer";
 import "../../Editor/CodeEditorCommon.css";
 import cn from "classnames";
 
-export const SettingCode = memo(({ setting, handleSave }: SettingWrapperProps) => {
+export const SettingCode = memo(({ setting, handleSave, disabled }: SettingWrapperProps) => {
     const [inputValue, setInputValue] = useDebouncedSave<SettingValueType>(
         setting.value,
         1000,
@@ -18,10 +18,13 @@ export const SettingCode = memo(({ setting, handleSave }: SettingWrapperProps) =
     );
 
     return (
-        <FocusableContainer>
+        <FocusableContainer disabled={disabled}>
             {(focused) => (
                 <CodeMirror
-                    className={cn(focused ? 'code-mirror-focused' : 'code-mirror', 'setting-code')}
+                    className={cn(
+                        focused ? 'code-mirror-focused' : `code-mirror ${disabled ? 'code-mirror-disabled' : ''}`,
+                        'setting-code'
+                    )}
                     value={inputValue as string}
                     onChange={(value) => setInputValue(value)}
                     height="200px"
@@ -39,6 +42,7 @@ export const SettingCode = memo(({ setting, handleSave }: SettingWrapperProps) =
                         highlightActiveLine: false,
                         highlightActiveLineGutter: false
                     }}
+                    readOnly={disabled}
                 />
             )}
         </FocusableContainer>

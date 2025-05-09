@@ -18,6 +18,7 @@ import { areEnhancedItemPropsEqual } from "./areEnhancedItemPropsEqual";
 import { ApiClientMethods } from "@/apiClient";
 import { MultiSettingWrapperAdditionalProps } from "@/components/Settings/SettingWrapper/MultiSettingWrapper";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { CUDPermissions } from "../../CRUDTablePage/CUDPermissions";
 
 export type EnhancedItemAdditionalButton = {
     title: string;
@@ -55,10 +56,11 @@ export interface EnhancedItemProps<T, U> {
     hasTitle?: boolean;
     settingsContainerClassNames?: string;
     buttonContainerClassNames?: string;
+    permissions: Omit<CUDPermissions, 'isCreationPermitted'>;
 }
 
 const EnhancedItem = <T extends Identifiable, U>({
-    _id, mode, prefix, apiPrefix,
+    _id, mode, prefix, apiPrefix, permissions,
     apiClient, queryParams,
     settingKeys,
     transformItemToSave, createEmptyItem,
@@ -122,6 +124,7 @@ const EnhancedItem = <T extends Identifiable, U>({
             <EnhancedItemBody<T>
                 item={item}
                 setItem={setItem}
+                permissions={permissions}
                 deleteItem={deleteItem}
                 saveItem={saveItem}
                 title={isEditMode ? t(`${prefix}.edit`) : t(`${prefix}.create`)}

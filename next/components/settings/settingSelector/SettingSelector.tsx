@@ -31,6 +31,7 @@ export const SettingSelector = memo(({
                                         selectedValue={setting.value as string}
                                         label={option.label}
                                         onClick={() => handleSave({ id: setting._id, value: option.value })}
+                                        disabled={disabled}
                                     />
                                 ))}
                             </InputBoxWrapper>
@@ -38,6 +39,7 @@ export const SettingSelector = memo(({
                     case SettingType.SelectorInfinite: {
                         return (
                             <InfiniteSelector
+                                disabled={disabled}
                                 options={
                                     isOptionsTranslatable
                                         ? setting.options.map((o: any) => ({ ...o, label: t(o.label) }))

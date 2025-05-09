@@ -6,7 +6,7 @@ import { ToggleSwitch } from "@/components/ToggleSwitch/ToggleSwitch";
 import { useTranslation } from "react-i18next";
 import styles from './SettingRadio.module.css';
 
-export const SettingRadio = memo(({ setting, handleSave, withWrapper = true }: SettingWrapperProps & { withWrapper?: boolean }) => {
+export const SettingRadio = memo(({ setting, handleSave, withWrapper = true, disabled }: SettingWrapperProps & { withWrapper?: boolean }) => {
     const { t } = useTranslation();
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
@@ -22,9 +22,13 @@ export const SettingRadio = memo(({ setting, handleSave, withWrapper = true }: S
 
     if (withWrapper) {
         return (
-            <InputBoxWrapper>
+            <InputBoxWrapper disabled={disabled}>
                 <InputBox name={t(setting.i18nLabel)} style={{ cursor: 'default' }}>
-                    <ToggleSwitch isChecked={isChecked} onToggle={handleToggle} />
+                    <ToggleSwitch
+                        isChecked={Boolean(isChecked)}
+                        onToggle={handleToggle}
+                        disabled={disabled}
+                    />
                 </InputBox>
             </InputBoxWrapper>
         );
@@ -37,7 +41,11 @@ export const SettingRadio = memo(({ setting, handleSave, withWrapper = true }: S
             nameNode={<h3>{t(setting.i18nLabel)}</h3>}
             style={{ cursor: 'default' }}
         >
-            <ToggleSwitch isChecked={isChecked} onToggle={handleToggle} />
+            <ToggleSwitch
+                isChecked={Boolean(isChecked)}
+                onToggle={handleToggle}
+                disabled={disabled}
+            />
         </InputBox>
     );
 }, (prevProps, nextProps) =>

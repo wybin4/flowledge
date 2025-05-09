@@ -13,6 +13,7 @@ import { courseTagsPrefix } from "@/helpers/prefixes";
 import { SettingType } from "@/types/Setting";
 import { TFunction } from "i18next";
 import { useState } from "react";
+import { usePermission } from "@/hooks/usePermission";
 
 export const CourseTagsTablePage = ({ mode }: { mode?: TablePageMode }) => {
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
@@ -26,10 +27,17 @@ export const CourseTagsTablePage = ({ mode }: { mode?: TablePageMode }) => {
         }
     );
 
+    const isPermitted = usePermission('manage-tags');
+
     return (
         <CRUDTablePage<CourseTag, CourseTagToSave, CourseTag>
             prefix={courseTagsPrefix}
             apiClient={userApiClient}
+            permissions={{
+                isCreationPermitted: isPermitted,
+                isEditionPermitted: isPermitted,
+                isDeletionPermitted: isPermitted
+            }}
             getDataPageFunctions={{
                 getDataPage: (prefix, params) => getDataPageWithApi(prefix, userApiClient, params),
                 getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, userApiClient, params),

@@ -23,7 +23,7 @@ export type GetTableHeaderItemsProps = {
     setSortQuery: (query: string) => void;
 };
 
-interface CRUDTablePageProps<T, L, U> extends EnhancedTablePageProps<T, U>, Omit<RightSidebarModalProps<T, L>, 'prefix' | 'mode'> {
+interface CRUDTablePageProps<T, L, U> extends EnhancedTablePageProps<T, U>, Omit<RightSidebarModalProps<T, L>, 'prefix' | 'mode' | 'permissions'> {
     mode?: TablePageMode;
     selectedItemId: string | undefined;
     setSelectedItemId: Dispatch<SetStateAction<string | undefined>>;
@@ -65,6 +65,7 @@ export const CRUDTablePage = <T extends Identifiable, L, U extends Identifiable>
 
     const {
         apiPrefix, apiClient, queryParams, getDataPageFunctions,
+        permissions,
         transformData, transformItemToSave,
         createEmptyItem, getHeaderItems,
         additionalButtons, hasDeleteDescription,
@@ -89,6 +90,7 @@ export const CRUDTablePage = <T extends Identifiable, L, U extends Identifiable>
                     onBackButtonClick={() => updateState(null)}
                     additionalButtons={additionalButtons}
                     hasDeleteDescription={hasDeleteDescription}
+                    permissions={permissions}
                 />
             }</div>}>
             {(isExpanded, toggleSidebar) => (
@@ -110,6 +112,7 @@ export const CRUDTablePage = <T extends Identifiable, L, U extends Identifiable>
                         tableStyles={cn({
                             [styles.bodyExpanded]: isExpanded
                         })}
+                        permissions={permissions}
                     />
                 </div>
             )}

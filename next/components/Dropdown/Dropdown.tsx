@@ -1,43 +1,25 @@
-import React, { ComponentType, ReactNode } from 'react';
+import React, { ComponentType } from 'react';
 import Select, { ActionMeta, components, DropdownIndicatorProps, FormatOptionLabelMeta, GroupBase, OptionProps, OptionsOrGroups, StylesConfig, ValueContainerProps } from 'react-select';
 import SelectorInfiniteIcon from "../../assets/selector-infinite.svg";
 import { useTranslation } from 'react-i18next';
 
 const fontSize = '.95rem';
 
-const textStyle = {
+const textStyle = (isDisabled?: boolean) => ({
     caretColor: 'var(--light)',
     fontSize,
-    color: 'var(--light)',
+    color: isDisabled ? 'var(--light)' : 'var(--description-text)',
     marginLeft: '-.1rem'
-};
+});
 
-const containerStyle = (isFocused: boolean) => ({
+const containerStyle = (isFocused: boolean, isDisabled?: boolean) => ({
     border: `solid .125rem ${isFocused ? 'var(--light)' : 'var(--input-border)'} !important`,
     borderRadius: '.875rem',
-    backgroundColor: 'var(--button)',
+    backgroundColor: !isDisabled ? 'var(--button)' : 'var(--input-border)',
 });
 
 const customStyles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
-    control: (base, { isFocused }) => ({
-        ...base, ...containerStyle(isFocused),
-        minHeight: '3.1rem',
-
-        display: 'flex',
-        flexWrap: 'nowrap',
-        alignItems: 'center',
-
-        color: isFocused ? 'var(--light)' : 'var(--description-text)',
-
-        padding: '.4rem .6rem',
-
-        outline: 'none',
-        boxShadow: 'none',
-
-        cursor: 'pointer'
-    }),
-    input: (base) => ({ ...base, ...textStyle }),
-    singleValue: (base) => ({ ...base, ...textStyle }),
+    singleValue: (base) => ({ ...base, ...textStyle() }),
     menu: (base) => ({ ...base, ...containerStyle(false) }),
     indicatorsContainer: () => ({
         border: 'none',
@@ -85,11 +67,12 @@ export type DropdownProps = {
     width?: string;
     optionWidth?: string;
     formatOptionLabel?: ((data: unknown, formatOptionLabelMeta: FormatOptionLabelMeta<unknown>) => React.ReactNode);
+    disabled?: boolean;
 };
 
 export const Dropdown = ({
     value, onChange,
-    options,
+    options, disabled,
     optionChild, valueChild,
     searchQuery, setSearchQuery,
     placeholder, noOptionsPlaceholder, formatOptionLabel,
@@ -106,6 +89,7 @@ export const Dropdown = ({
         <Select
             value={value}
             options={options}
+            isDisabled={disabled}
             onInputChange={handleInputChange}
             inputValue={searchQuery}
             onChange={onChange}
@@ -123,7 +107,27 @@ export const Dropdown = ({
                 ...customStyles,
                 container: (base) => ({
                     ...base,
-                    width
+                    width,
+                }),
+                input: (base) => ({
+                    ...base, ...textStyle(disabled),
+                }),
+                control: (base, { isFocused }) => ({
+                    ...base, ...containerStyle(isFocused, disabled),
+                    minHeight: '3.1rem',
+
+                    display: 'flex',
+                    flexWrap: 'nowrap',
+                    alignItems: 'center',
+
+                    color: isFocused ? 'var(--light)' : 'var(--description-text)',
+
+                    padding: '.4rem .6rem',
+
+                    outline: 'none',
+                    boxShadow: 'none',
+
+                    cursor: 'pointer'
                 }),
                 option: (base, { isFocused }) => ({
                     ...base,

@@ -15,11 +15,12 @@ type FiniteSelectorProps = {
     mode?: FillBorderUnderlineMode;
     icon?: ReactNode;
     iconPosition?: ChildrenPosition;
+    disabled?: boolean;
 };
 
 export const FiniteSelector = ({
     value, selectedValue,
-    label, onClick,
+    label, onClick, disabled,
     icon, iconPosition = ChildrenPosition.TopRight,
     className, activeClassName, mode = FillBorderUnderlineMode.FILL,
 }: FiniteSelectorProps) => {
@@ -30,7 +31,8 @@ export const FiniteSelector = ({
 
     return (
         <div className={cn(styles.container, {
-            [styles.containerActive]: isActive
+            [styles.containerActive]: isActive,
+            [styles.hovered]: !disabled
         })}>
             {iconPosition === ChildrenPosition.TopRight && icon && iconNode}
             <div
@@ -38,7 +40,7 @@ export const FiniteSelector = ({
                     [styles.active]: isActive,
                     [styles[`active${mode[0].toUpperCase() + mode.slice(1)}`]]: isActive
                 })}
-                onClick={() => onClick()}
+                onClick={!disabled ? () => onClick() : undefined}
             >
                 {iconPosition === ChildrenPosition.Left && icon && iconNode}
                 <div>{t(label)}</div>

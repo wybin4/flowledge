@@ -9,5 +9,6 @@ data class UserGetByIdSmallResponse(
     override val username: String,
     override val avatar: String,
     val settings: UserSettingModel,
-    val services: UserServicesModel? = null
+    val services: UserServicesModel? = null,
+    override val roles: List<String>
 ) : UserGetByIdResponse

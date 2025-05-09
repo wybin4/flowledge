@@ -19,6 +19,7 @@ import cn from "classnames";
 import { DataPageHookFunctions } from "@/types/DataPageHook";
 import { useEnhancedPagination } from "@/hooks/useEnhancedPagination";
 import { Language } from "@/user/types/Language";
+import { CUDPermissions } from "../CRUDTablePage/CUDPermissions";
 
 export interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
@@ -30,25 +31,27 @@ export interface EnhancedTablePageProps<T, U> {
     className?: string;
     tableStyles?: string;
     getDataPageFunctions: DataPageHookFunctions<T>;
+    permissions: CUDPermissions;
 }
 
 export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable>({
-    prefix,
-    apiPrefix,
+    prefix, apiPrefix,
     transformData,
     getHeaderItems,
     itemKeys,
     onItemClick,
-    className,
-    tableStyles,
+    className, tableStyles,
     getDataPageFunctions,
+    permissions
 }: EnhancedTablePageProps<T, U>) => {
+    const { isCreationPermitted, isEditionPermitted, isDeletionPermitted } = permissions;
+
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [sortQuery, setSortQuery] = useState<string>('');
     const locale = useUserSetting<Language>('language') || Language.EN;
     const router = useRouter();
- 
+
     const realPrefix = apiPrefix ?? prefix;
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,12 +86,12 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
             name={prefix}
             type='block'
             headerProps={{
-                headerChildren: (
+                headerChildren: isCreationPermitted ? (
                     <div
                         className={styles.createButton}
                         onClick={handleCreate}>{t(`${prefix}.create`)}
                     </div>
-                ),
+                ) : undefined,
                 headerInfo: `${totalCount}`,
                 headerChildrenPosition: ChildrenPosition.Right,
                 headerStyles: cn(styles.container, className)
@@ -117,6 +120,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
                                 mode={TablePageMode.EDIT}
                                 itemKeys={itemKeys}
                                 prefix={prefix}
+                                isItemClickable={isEditionPermitted || isDeletionPermitted}
                                 onClick={onItemClick}
                             />
                         )}

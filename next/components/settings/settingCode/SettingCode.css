@@ -123,3 +123,31 @@
 }
 
 /* end scrollbar */
+
+
+.code-mirror-disabled .cm-content,
+.code-mirror-disabled .cm-scroller,
+.code-mirror-disabled .cm-gutter,
+.code-mirror-disabled .cm-gutters {
+    background-color: var(--input-border) !important;
+}
+
+.code-mirror-disabled .ͼ1.cm-focused .cm-scroller {
+    border-right: solid 2px var(--input-border) !important;
+    border-left: solid 2px var(--input-border) !important;
+    border-top: solid 2px var(--input-border) !important;
+    border-bottom: solid 2px var(--input-border) !important;
+}
+
+.code-mirror-disabled .ͼ1.cm-focused .cm-gutters {
+    border-top: solid 2px var(--input-border);
+}
+
+.code-mirror-disabled .ͼ1.cm-focused .cm-gutters .cm-gutterElement {
+    color: inherit !important;
+}
+
+.code-mirror-disabled .ͼ1.cm-focused .cm-matchingBracket {
+    background-color: inherit;
+    color: var(--description-text);
+}

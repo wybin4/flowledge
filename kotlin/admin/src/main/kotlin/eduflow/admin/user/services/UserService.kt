@@ -14,6 +14,7 @@ import eduflow.user.Language
 import eduflow.user.Theme
 import eduflow.user.toLowerCase
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.bcrypt.BCrypt
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Flux
@@ -22,6 +23,19 @@ import java.util.*
 
 @Service
 class UserService(private val userRepository: UserRepository) : PaginationAndSortingService() {
+    fun passwordLogin(username: String, password: String): Mono<UserModel> {
+        return userRepository.findByUsername(username)
+            .switchIfEmpty(Mono.error(IllegalArgumentException("User not found")))
+            .flatMap { user ->
+                val hashedPassword = user?.services?.password?.bcrypt
+                if (hashedPassword != null && BCrypt.checkpw(password, hashedPassword)) {
+                    Mono.just(user)
+                } else {
+                    Mono.error(IllegalArgumentException("Invalid password"))
+                }
+            }
+    }
+
     fun setSetting(setting: SettingUpdateRequest, user: UserModel?): Mono<UserModel> {
         if (user == null) {
             return Mono.error(IllegalArgumentException("User not found"))

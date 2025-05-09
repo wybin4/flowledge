@@ -20,10 +20,15 @@ import { CourseToSave } from "../../types/CourseToSave";
 import { CRUDTablePage } from "@/components/TablePage/CRUDTablePage/CRUDTablePage";
 import { getTagsSettingKey } from "../../functions/getTagsSettingKey";
 import { useTags } from "../../hooks/useTags";
+import { usePermission } from "@/hooks/usePermission";
 
 export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
     const { tags } = useTags();
+
+    const isCreationPermitted = usePermission('create-course');
+    const isEditionPermitted = usePermission('edit-all-courses');
+    const isDeletionPermitted = usePermission('delete-all-courses');
 
     const router = useRouter();
 
@@ -77,12 +82,12 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 tags: []
             })}
             additionalButtons={[
-                {
+                isEditionPermitted ? {
                     title: t(`${coursesHubPrefix}.edit-content`),
                     onClick: handleEditContent,
                     mode: TablePageMode.EDIT,
                     type: ButtonType.EDIT
-                }
+                } : undefined
             ]}
             getHeaderItems={getHeaderItems}
             transformData={mapCoursesHubToTable}
@@ -92,6 +97,11 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 { name: 'creator', type: EnhancedItemType.Text },
                 { name: 'createdAt', type: EnhancedItemType.Text },
             ]}
+            permissions={{
+                isCreationPermitted,
+                isEditionPermitted,
+                isDeletionPermitted
+            }}
         />
     );
 };

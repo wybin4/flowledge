@@ -5,4 +5,5 @@ interface UserGetByIdResponse {
     val name: String
     val username: String
     val avatar: String
+    val roles: List<String>
 }

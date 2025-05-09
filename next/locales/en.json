@@ -13,7 +13,8 @@
         "courses-hub": "courses hub",
         "courses-list": "courses list",
         "course-tags": "tags",
-        "users": "users"
+        "users": "users",
+        "logout": "logout"
     },
     "name": "name",
     "user-default": {
@@ -120,21 +121,13 @@
             "name": "edit all courses",
             "description": "allows the user to edit any course in the system."
         },
-        "delete-course": {
+        "delete-all-courses": {
             "name": "delete any course",
             "description": "allows the user to delete any course in the system."
         },
         "delete-assigned-course": {
             "name": "delete assigned course",
             "description": "allows the user to delete only courses they are assigned to."
-        },
-        "assign-users-to-course": {
-            "name": "assign users to course",
-            "description": "allows the user to add participants to courses."
-        },
-        "remove-users-from-course": {
-            "name": "remove users from course",
-            "description": "allows the user to remove participants from courses."
         },
         "create-course": {
             "name": "create course",
@@ -152,29 +145,49 @@
             "name": "view all statistics",
             "description": "allows the user to view statistics for all courses in the system."
         },
-        "view-all-integrations": {
-            "name": "view all integrations",
-            "description": "allows the user to view all integrations in the system."
+        "view-all-users": {
+            "name": "view all users",
+            "description": "allows viewing all users."
         },
-        "manage-integration": {
+        "manage-users": {
+            "name": "manage users",
+            "description": "allows adding, editing, and deleting users."
+        },
+        "view-integrations": {
+            "name": "view integrations",
+            "description": "allows viewing integrations."
+        },
+        "manage-integrations": {
             "name": "manage integrations",
-            "description": "allows the user to create, edit and delete integrations."
+            "description": "allows managing integrations."
+        },
+        "view-all-permissions": {
+            "name": "view all permissions",
+            "description": "allows viewing all available permissions."
         },
         "view-tags": {
             "name": "view tags",
             "description": "allows the user to view tags."
         },
-        "create-tags": {
-            "name": "create tags",
-            "description": "allows the user to create tags."
+        "manage-tags": {
+            "name": "manage tags",
+            "description": "allows the user to create, edit and delete tags."
         },
-        "edit-tags": {
-            "name": "edit tags",
-            "description": "allows the user to edit tags."
+        "manage-roles": {
+            "name": "manage roles",
+            "description": "allows creating, editing, and deleting roles."
         },
-        "delete-tags": {
-            "name": "delete tags",
-            "description": "allows the user to delete tags."
+        "manage-moderators": {
+            "name": "manage moderators",
+            "description": "allows assigning and removing course moderators."
+        },
+        "manage-owners": {
+            "name": "manage owners",
+            "description": "allows assigning and removing course owners."
+        },
+        "manage-subscribers": {
+            "name": "manage course subscribers",
+            "description": "allows adding and removing course subscribers."
         }
     },
     "roles": {

@@ -11,10 +11,13 @@ import PageLayout from "../PageLayout/PageLayout";
 import { userApiClient } from "@/apiClient";
 import { TablePageHeader } from "../TablePage/TablePageHeader/TablePageHeader";
 import { useEnhancedPagination } from "@/hooks/useEnhancedPagination";
-import { permissionsPrefix } from "@/helpers/prefixes";
+import { permissionsPrefix, rolesPrefix } from "@/helpers/prefixes";
+import { useTranslation } from "react-i18next";
+import { usePermission } from "@/hooks/usePermission";
 
 export const PermissionsTablePage = () => {
     const [searchQuery, setSearchQuery] = useState('');
+    const { t } = useTranslation();
 
     const {
         data,
@@ -43,31 +46,45 @@ export const PermissionsTablePage = () => {
 
     const handleAddRole = async (permissionId: string, roleId: string) => {
         try {
-            await userApiClient.post(`permissions.toggle-role?id=${permissionId}&value=${roleId}`, {});
-
+            await userApiClient.post(
+                `${permissionsPrefix}.toggle-role?id=${permissionId}&value=${roleId}`,
+                {}
+            );
         } catch (error) {
             console.error('Не удалось добавить роль:', error);
         }
     };
 
+    const isEditionPermitted = usePermission('manage-permissions');
+
     return (
         <PageLayout
-            name='permissions'
+            name={permissionsPrefix}
             type='block'
             headerProps={{
                 headerInfo: `${totalCount}`
             }}
             mainChildren={
                 <>
-                    <TablePageSearch query={searchQuery} onChange={handleSearchChange} placeholder='permissions.placeholder' />
+                    <TablePageSearch
+                        query={searchQuery}
+                        onChange={handleSearchChange}
+                        placeholder={`${permissionsPrefix}.placeholder`}
+                    />
                     <TablePage
-                        header={<TablePageHeader title='permissions.name' items={roleNames.map(name => ({ name }))} />}
+                        header={
+                            <TablePageHeader
+                                title={`${permissionsPrefix}.name`}
+                                items={roleNames.map(name => ({ name: t(`${rolesPrefix}.${name}`) }))}
+                            />
+                        }
                         body={data.map(permission => (
                             <PermissionsItem
                                 onClick={handleAddRole}
                                 key={permission._id}
                                 permission={permission}
                                 roles={roleNames}
+                                isEditable={isEditionPermitted}
                             />
                         ))}
                         pagination={{

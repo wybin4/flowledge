@@ -48,9 +48,22 @@ export const SettingWrapperBody = memo(({
                 />
             );
         case SettingType.Radio:
-            return <SettingRadio handleSave={handleSave} setting={setting} withWrapper={withWrapper} />;
+            return (
+                <SettingRadio
+                    handleSave={handleSave}
+                    setting={setting}
+                    withWrapper={withWrapper}
+                    disabled={disabled}
+                />
+            );
         case SettingType.Code:
-            return <SettingCode handleSave={handleSave} setting={setting} />;
+            return (
+                <SettingCode
+                    handleSave={handleSave}
+                    setting={setting}
+                    disabled={disabled}
+                />
+            );
         default:
             return null;
     }

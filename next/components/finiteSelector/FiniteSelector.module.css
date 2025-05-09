@@ -11,7 +11,7 @@
     cursor: pointer;
 }
 
-.fill:hover {
+.hovered .fill:hover {
     background-color: var(--button-hover);
 }
 

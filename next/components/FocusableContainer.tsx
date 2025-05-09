@@ -3,9 +3,10 @@ import { useState, useRef, ReactNode } from "react";
 interface FocusableContainerProps {
     children: (focused: boolean) => ReactNode;
     className?: string;
+    disabled?: boolean;
 }
 
-const FocusableContainer = ({ children, className }: FocusableContainerProps) => {
+const FocusableContainer = ({ children, className, disabled }: FocusableContainerProps) => {
     const [focused, setFocused] = useState(false);
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -14,7 +15,7 @@ const FocusableContainer = ({ children, className }: FocusableContainerProps) =>
             className={className}
             ref={divRef}
             tabIndex={-1}
-            onFocus={() => setFocused(true)}
+            onFocus={() => !disabled ? setFocused(true) : undefined}
             onBlur={() => setFocused(false)}
         >
             {children(focused)}

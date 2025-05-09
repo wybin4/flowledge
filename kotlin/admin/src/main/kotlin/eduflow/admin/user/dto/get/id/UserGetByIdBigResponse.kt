@@ -6,5 +6,5 @@ data class UserGetByIdBigResponse(
     override val username: String,
     override val avatar: String,
     val active: Boolean,
-    val roles: List<String>
+    override val roles: List<String>
 ) : UserGetByIdResponse

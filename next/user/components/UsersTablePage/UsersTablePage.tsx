@@ -7,6 +7,7 @@ import { getDataPageWithApi } from "@/components/TablePage/EnhancedTablePage/fun
 import { getTotalCountWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getTotalCountWithApi";
 import { EnhancedItemType } from "@/components/TablePage/EnhancedTablePage/types/EnhancedItemTypes";
 import { rolesPrefix, usersPrefix } from "@/helpers/prefixes";
+import { usePermission } from "@/hooks/usePermission";
 import { RoleScope } from "@/types/Role";
 import { SettingType } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
@@ -34,10 +35,17 @@ export const UsersTablePage = ({ mode }: { mode?: TablePageMode }) => {
         }
     );
 
+    const isPermitted = usePermission('manage-users');
+
     return (
         <CRUDTablePage<UserItem, UserToSave, UserTableItem>
             prefix={usersPrefix}
             apiClient={userApiClient}
+            permissions={{
+                isCreationPermitted: isPermitted,
+                isEditionPermitted: isPermitted,
+                isDeletionPermitted: isPermitted
+            }}
             hasDeleteDescription={false}
             queryParams={{ isSmall: false }}
             getDataPageFunctions={{

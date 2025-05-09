@@ -6,24 +6,33 @@ import { User } from "./types/User";
 import { UserSetting } from "./types/UserSetting";
 import { UpdatableSetting } from "@/hooks/useSettings";
 import { SettingValue } from "@/types/Setting";
+import { hasPermission } from "./functions/hasPermission";
 
 export type UserSettings = SettingValue[];
 type UserSettingsCallback = (settings: UserSettings, regex?: string) => void;
 
 class UserService extends EventEmitter {
-    public userId: string;
+    public userId: string | undefined;
     private userState: User | undefined = undefined;
     private userStateCallbacks: Set<{ cb: UserSettingsCallback; regex?: string }> = new Set();
     public eventName = 'user-changed';
 
-    constructor(userId: string) {
+    constructor() {
         super();
-        this.userId = userId;
     }
 
     async fetchUser() {
-        const user = await userApiClient.get<User>(`users.get/${this.userId}`);
+        const user = await userApiClient.get<User>(`users.get/me`);
+        this.userId = user._id;
         this.setUserState(user);
+    }
+
+    hasPermission(permissionId: string) {
+        if (!this.userState) {
+            return false;
+        }
+
+        return hasPermission(permissionId, this.userState);
     }
 
     setUserState(data: User) {
@@ -107,5 +116,5 @@ class UserService extends EventEmitter {
     }
 }
 
-const userService = new UserService("ce7f53dd-caf7-4b4e-a83a-3a19ffd91bed");
+const userService = new UserService();
 export default userService;

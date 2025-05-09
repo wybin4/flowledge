@@ -13,6 +13,7 @@ import { areEnhancedItemBodyPropsEqual } from "./areEnhancedItemPropsEqual";
 import { MultiSettingWrapper, MultiSettingWrapperSetting } from "@/components/Settings/SettingWrapper/MultiSettingWrapper";
 import React from "react";
 import cn from "classnames";
+import { CUDPermissions } from "../../CRUDTablePage/CUDPermissions";
 
 export type EnhancedItemBodyProps<T> = {
     title: string;
@@ -30,10 +31,11 @@ export type EnhancedItemBodyProps<T> = {
     hasTitle?: boolean;
     settingsContainerClassNames?: string;
     buttonContainerClassNames?: string;
+    permissions: Omit<CUDPermissions, 'isCreationPermitted'>;
 };
 
 const EnhancedItemBody = <T extends Identifiable,>({
-    item, setItem,
+    item, setItem, permissions,
     title, mode, prefix,
     settingKeys, additionalButtons,
     isEditMode, hasChanges, hasTitle = true,
@@ -41,7 +43,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
     settingsContainerClassNames, buttonContainerClassNames,
     saveItem
 }: EnhancedItemBodyProps<T>) => {
-
+    const { isEditionPermitted, isDeletionPermitted } = permissions;
     const getSetting = useCallback((key: string) => {
         const value = item?.[key as keyof T];
         const props = settingKeys.find((setting) => setting.name === key);
@@ -134,7 +136,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
                             return null;
                         })
                 }
-                {isEditMode &&
+                {isDeletionPermitted && isEditMode &&
                     <div className={styles.deleteContainer}>
                         <Button onClick={() => deleteItem(item._id)} prefix={prefix} type={ButtonType.DELETE} />
                         {deleteItemDescription &&
@@ -142,7 +144,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
                         }
                     </div>
                 }
-                {hasChanges && item &&
+                {isEditionPermitted && hasChanges && item &&
                     <Button onClick={() => saveItem(item)} prefix={prefix} type={ButtonType.SAVE} />
                 }
             </div>

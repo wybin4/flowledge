@@ -5,6 +5,7 @@ import { TablePageMode } from "@/types/TablePageMode";
 import { EnhancedItemType } from "../types/EnhancedItemTypes";
 import { EnhancedItemChildren } from "../types/EnhancedItemChildren";
 import styles from "./EnhancedTablePageItem.module.css";
+import cn from "classnames";
 
 interface EnhancedTablePageItemProps<T> {
     prefix: IconKey;
@@ -12,14 +13,22 @@ interface EnhancedTablePageItemProps<T> {
     mode: TablePageMode;
     itemKeys: EnhancedItemChildren[];
     onClick?: (_id: string) => void;
+    isItemClickable: boolean;
 }
 
-export const EnhancedTablePageItem = <T extends Identifiable>({ item, prefix, mode, itemKeys, onClick: passedOnClick }: EnhancedTablePageItemProps<T>) => {
+export const EnhancedTablePageItem = <T extends Identifiable>({
+    item, isItemClickable,
+    prefix, mode,
+    itemKeys,
+    onClick: passedOnClick
+}: EnhancedTablePageItemProps<T>) => {
     const router = useRouter();
     const onClick = passedOnClick ? () => passedOnClick(item._id) : () => router.push(`/${prefix}/${item._id}?mode=${mode}`);
 
     return (
-        <tr className={styles.container} key={item._id} onClick={onClick}>
+        <tr className={cn(styles.container, {
+            [styles.pointer]: isItemClickable
+        })} onClick={isItemClickable ? onClick : undefined}>
             {itemKeys.map((key) => (
                 <td key={key.name}>
                     {

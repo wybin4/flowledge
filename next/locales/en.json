@@ -216,12 +216,12 @@
         "description": "description",
         "imageUrl": "cover",
         "edit-content": "edit content",
+        "select-from-users-list": "select users",
         "editors": {
             "name": "editors",
             "add-editor": "add editor",
             "manage-editors": "manage editors",
             "no-users-for-editors": "no users found to assign as editors",
-            "select-from-users-list": "select users",
             "remove-roles": "remove roles"
         },
         "sections": {
@@ -302,7 +302,21 @@
         "video": "video",
         "details": "details",
         "synopsis": "synopsis and stuff",
-        "survey": "survey"
+        "survey": "survey",
+        "sidebar": {
+            "users": "subscribers",
+            "add-users": "add subscribers",
+            "statistics": "statistics",
+            "__count__users_zero": "course has no subscribers",
+            "__count__users_one": "{{count}} subscriber",
+            "__count__users_few": "{{count}} subscribers",
+            "__count__users_many": "{{count}} subscribers",
+            "no-users-for-subscribers": "no users found to assign as course subscribers",
+            "__count__users_for_subscribers_zero": "no users selected",
+            "__count__users_for_subscribers_one": "{{count}} user",
+            "__count__users_for_subscribers_few": "{{count}} users",
+            "__count__users_for_subscribers_many": "{{count}} users"
+        }
     },
     "courses-list": {
         "menu": {
@@ -439,5 +453,6 @@
         "__count__roles_one": "{{count}} role selected",
         "__count__roles_few": "{{count}} roles selected",
         "__count__roles_many": "{{count}} roles selected"
-    }
+    },
+    "view-all": "view all"
 }

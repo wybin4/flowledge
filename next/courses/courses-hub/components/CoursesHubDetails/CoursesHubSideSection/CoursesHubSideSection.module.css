@@ -1,0 +1,120 @@
+.container {
+    display: flex;
+    flex-direction: column;
+
+    max-height: 30rem;
+    width: 20rem;
+
+    padding: 1rem 0;
+}
+
+.body {
+    padding: 1rem;
+}
+
+.additionalTabHeader,
+.selector {
+    display: flex;
+    gap: 1rem;
+
+    border-bottom: solid 1px var(--input-border);
+}
+
+.selector {
+    margin-top: -0.5rem;
+    padding: 0 1rem;
+}
+
+.tab,
+.tab:hover,
+.activeTab {
+    background-color: transparent;
+}
+
+.tab {
+    color: var(--description-text);
+
+    padding-right: 0.8rem;
+    padding-bottom: 0.8rem;
+}
+
+.tab:hover {
+    color: var(--secondary-light);
+}
+
+.tab svg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.activeTab,
+.activeTab:hover {
+    color: var(--light);
+
+    border-bottom: solid 1px var(--light);
+    border-radius: 0;
+}
+
+.subscribers,
+.subscribersContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    height: 87%;
+}
+
+.viewAllButton {
+    width: max-content;
+}
+
+.footer {
+    padding: 0 1rem;
+    padding-top: 1rem;
+
+    border-top: solid 1px var(--input-border);
+}
+
+.addNewButton {
+    width: 100%;
+}
+
+.count {
+    font-size: 1rem;
+
+    padding-bottom: 1.3rem;
+}
+
+.backButton {
+    margin-bottom: -2px;
+}
+
+.backButton svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.additionalTabHeader {
+    padding: 1rem;
+    padding-top: 0;
+}
+
+.flexOne,
+.subscribersContainer,
+.body {
+    flex: 1;
+}
+
+.flexOne {
+    height: 93%;
+}
+
+.subscriberOptionsIcon {
+    color: var(--light);
+
+    cursor: pointer;
+}
+
+.subscriberOptionsIcon:hover {
+    filter: brightness(80%);
+}

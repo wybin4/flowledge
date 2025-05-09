@@ -4,7 +4,7 @@ import eduflow.admin.course.dto.course.hub.get.CourseHubGetResponse
 import eduflow.admin.course.dto.course.hub.id.CoursesHubGetByIdBigResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdBigResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
-import eduflow.admin.course.dto.subscription.CourseSubscriptionGetResponse
+import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.models.CourseSubscriptionModel
@@ -72,8 +72,8 @@ interface CourseMapper {
     fun toSubscriptionWithCourseDto(
         subscription: CourseSubscriptionModel,
         course: CourseModel,
-    ): CourseSubscriptionGetResponse {
-        return CourseSubscriptionGetResponse(
+    ): CourseSubscriptionGetByUserIdResponse {
+        return CourseSubscriptionGetByUserIdResponse(
             _id = course._id,
             courseId = subscription.courseId,
             isFavourite = subscription.isFavourite,

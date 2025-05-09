@@ -30,12 +30,16 @@
 
 .save:hover,
 .edit:hover {
-    background-color: var(--secondary-light);
+    filter: brightness(85%);
 }
 
 .disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.disabled:hover {
+    filter: brightness(100%);
 }
 
 .underline {

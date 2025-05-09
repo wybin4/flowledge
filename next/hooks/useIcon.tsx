@@ -64,6 +64,8 @@ import DraggableIcon from "../assets/draggable.svg";
 import RightArrowIcon from "../assets/right-arrow.svg";
 import FullScreenIcon from "../assets/fullscreen.svg";
 import TagIcon from "../assets/tag.svg";
+import StatisticsIcon from "../assets/statistics.svg";
+import OptionsIcon from "../assets/options.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -75,6 +77,7 @@ const icons = {
     'profile': <ProfileIcon />,
     'api-integrations': <IntegrationsIcon />,
     'users': <UsersIcon />,
+    'course-tags': <TagIcon />,
 
     'appearance': <AppearanceIcon />,
     'ldap': <AccessIcon />,
@@ -144,7 +147,8 @@ const icons = {
     'right-arrow': <RightArrowIcon />,
     'full-screen': <FullScreenIcon />,
 
-    'course-tags': <TagIcon />
+    'statistics': <StatisticsIcon />,
+    'options': <OptionsIcon />
 } as const;
 
 export type IconKey = keyof typeof icons;

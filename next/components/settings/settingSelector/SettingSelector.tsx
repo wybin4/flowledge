@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { SelectorSetting, SettingType, SimpleSettingValueType } from "@/types/Setting";
 import { InputBoxWrapper } from "@/components/InputBox/InputBoxWrapper";
 import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
@@ -15,6 +15,7 @@ export const SettingSelector = memo(({
     setting, handleSave, isOptionsTranslatable, disabled
 }: SettingSelectorProps) => {
     const { t } = useTranslation();
+    const [selectedValues, setSelectedValues] = useState<any[]>([]);
 
     return (
         <>
@@ -57,6 +58,8 @@ export const SettingSelector = memo(({
                                 options={setting.options}
                                 value={setting.value as any}
                                 placeholder={setting.placeholder}
+                                selectedValues={selectedValues}
+                                setSelectedValues={setSelectedValues}
                                 onChange={(newValue: any) => {
                                     if (newValue.action === 'remove') {
                                         return handleSave({ id: setting._id, value: setting.value.filter(s => s != newValue.value) as any });

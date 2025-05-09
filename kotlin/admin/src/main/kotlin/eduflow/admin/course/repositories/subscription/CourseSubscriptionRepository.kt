@@ -23,4 +23,8 @@ interface CourseSubscriptionRepository :
     fun findUsersWithRolesByCourseId(courseId: String): Flux<UserWithCourseRole>
 
     fun findByUserId(userId: String): Flux<CourseSubscriptionModel>
+
+    fun findByCourseIdAndIsSubscribed(courseId: String, isSubscribed: Boolean): Flux<CourseSubscriptionModel>
+
+    fun countByCourseIdAndIsSubscribed(courseId: String, isSubscribed: Boolean): Mono<Long>
 }

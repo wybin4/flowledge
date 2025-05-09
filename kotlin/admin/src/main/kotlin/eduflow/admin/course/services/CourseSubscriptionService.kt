@@ -1,6 +1,7 @@
 package eduflow.admin.course.services
 
-import eduflow.admin.course.dto.subscription.CourseSubscriptionGetResponse
+import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
+import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
 import eduflow.admin.course.mappers.CourseSubscriptionMapper
 import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.repositories.course.CourseRepository
@@ -19,19 +20,60 @@ class CourseSubscriptionService(
     private val subscriptionMapper: CourseSubscriptionMapper,
     private val userRepository: UserRepository,
 ) {
-    fun getCoursesWithSubscriptionsByUserId(userId: String): Flux<CourseSubscriptionGetResponse> {
+    fun getCoursesWithSubscriptionsByUserId(userId: String): Flux<CourseSubscriptionGetByUserIdResponse> {
         return subscriptionRepository.findByUserId(userId)
-            .flatMap { subscription ->
-                courseRepository.findById(subscription.courseId)
-                    .flatMap { course ->
-                        tagService.getUpdatedTagsByCourse(course).map { updatedTags ->
-                            subscriptionMapper.toSubscriptionWithCourseDto(subscription, course.updateTags(updatedTags))
-                        }
+            .collectList()
+            .flatMapMany { subscriptions ->
+                val courseIds = subscriptions.map { it.courseId }
+                courseRepository.findByIdIn(courseIds)
+                    .collectList()
+                    .flatMapMany { courses ->
+                        val courseMap = courses.associateBy { it._id }
+                        Flux.fromIterable(subscriptions)
+                            .flatMap { subscription ->
+                                val course = courseMap[subscription.courseId]
+                                if (course != null) {
+                                    tagService.getUpdatedTagsByCourse(course).map { updatedTags ->
+                                        subscriptionMapper.toSubscriptionWithCourseDto(
+                                            subscription,
+                                            course.updateTags(updatedTags)
+                                        )
+                                    }
+                                } else {
+                                    Flux.empty()
+                                }
+                            }
                     }
             }
     }
 
-    fun getCourseBySubscription(subscription: CourseSubscriptionModel): Mono<CourseSubscriptionGetResponse> {
+    fun getUsersWithSubscriptionsByCourseId(
+        courseId: String,
+        pageSize: Int
+    ): Flux<CourseSubscriptionGetByCourseIdResponse> {
+        return subscriptionRepository.findByCourseIdAndIsSubscribed(courseId, true)
+            .take(pageSize.toLong())
+            .collectList()
+            .flatMapMany { subscriptions ->
+                val userIds = subscriptions.map { it.userId }
+                userRepository.findByIdIn(userIds)
+                    .collectList()
+                    .flatMapMany { users ->
+                        val userMap = users.associateBy { it._id }
+                        Flux.fromIterable(subscriptions)
+                            .flatMap { subscription ->
+                                val user = userMap[subscription.userId]
+                                if (user != null) {
+                                    Mono.just(subscriptionMapper.toSubscriptionWithUserDto(subscription, user))
+                                } else {
+                                    Mono.empty()
+                                }
+                            }
+                    }
+            }
+    }
+
+    fun getCourseBySubscription(subscription: CourseSubscriptionModel): Mono<CourseSubscriptionGetByUserIdResponse> {
         return courseRepository.findById(subscription.courseId)
             .flatMap { course ->
                 tagService.getUpdatedTagsByCourse(course).map { updatedTags ->
@@ -45,7 +87,7 @@ class CourseSubscriptionService(
             .collectList()
             .flatMapMany { usersWithCourse ->
                 val userIds = usersWithCourse.map { it.userId }
-                userRepository.findUsersByIds(userIds)
+                userRepository.findByIdIn(userIds)
                     .map { user ->
                         val userWithCourse = usersWithCourse.find { it.userId == user._id }
                         CourseEditor(

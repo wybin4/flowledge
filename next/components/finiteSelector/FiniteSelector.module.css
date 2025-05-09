@@ -1,6 +1,7 @@
 .item {
     display: flex;
     justify-content: center;
+    align-items: center;
     flex: 1;
 
     padding: 0.5rem;
@@ -39,34 +40,43 @@
     width: 100%;
 }
 
-.icon {
+.topRight {
     position: absolute;
     top: -7px;
     right: -7px;
 
-    cursor: pointer;
-}
-
-.icon svg path {
     stroke-width: 1.5px;
 }
 
-.container:hover .icon svg path {
+.icon {
+    cursor: pointer;
+}
+
+.topRight svg path {
+    stroke-width: 1.5px;
+}
+
+.left {
+    margin-right: 0.7rem;
+    margin-bottom: -2px;
+}
+
+.container:hover .topRight svg path {
     fill: var(--dark);
     stroke: var(--button-hover);
 }
 
-.containerActive .icon svg path,
-.containerActive:hover .icon svg path {
+.containerActive .topRight svg path,
+.containerActive:hover .topRight svg path {
     fill: var(--dark);
     stroke: var(--light);
 }
 
-.container .icon {
+.container .topRight {
     display: none;
 }
 
-.container:hover .icon,
-.containerActive .icon {
+.container:hover .topRight,
+.containerActive .topRight {
     display: block;
 }

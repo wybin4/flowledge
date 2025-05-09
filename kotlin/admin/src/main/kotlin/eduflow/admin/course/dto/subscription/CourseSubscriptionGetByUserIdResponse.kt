@@ -1,6 +1,6 @@
 package eduflow.admin.course.dto.subscription
 
-data class CourseSubscriptionGetResponse(
+data class CourseSubscriptionGetByUserIdResponse(
     // sub
     val _id: String,
     val courseId: String,

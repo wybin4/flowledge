@@ -5,7 +5,7 @@ import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 
 type ButtonProps = {
     onClick: () => void;
-    prefix: string;
+    prefix?: string;
     type: ButtonType;
     title?: string;
     disabled?: boolean;

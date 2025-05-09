@@ -1,5 +1,7 @@
 .description {
     color: var(--description-text);
+
+    font-size: 0.875rem;
 }
 
 .descriptionWithoutWrapper {

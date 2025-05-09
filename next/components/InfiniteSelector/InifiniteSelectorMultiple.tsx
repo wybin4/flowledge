@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Dropdown, DropdownProps } from "../Dropdown/Dropdown";
 import { ActionMeta, components } from "react-select";
 import React from "react";
@@ -8,22 +8,24 @@ import { handlePluralTranslation } from "@/helpers/handlePluralTranslation";
 import { useTranslation } from "react-i18next";
 import { useUserSetting } from "@/user/hooks/useUserSetting";
 import { Language } from "@/user/types/Language";
+import cn from "classnames";
 
 type InfiniteSelectorProps = {
     prefix: string;
     selectedKey: string;
     className?: string;
     endClassName?: string;
+    selectedValues: any[];
+    setSelectedValues: Dispatch<SetStateAction<any[]>>;
 } & DropdownProps;
 
 export const InfiniteSelectorMultiple = ({
     prefix, selectedKey,
+    selectedValues, setSelectedValues,
     value, options, onChange,
     className, endClassName,
     ...props
 }: InfiniteSelectorProps) => {
-    const [selectedValues, setSelectedValues] = useState<any[]>([]);
-
     const checkedIcon = useIcon('check');
     const { t } = useTranslation();
     const locale = useUserSetting<Language>('language') || Language.EN;
@@ -63,7 +65,9 @@ export const InfiniteSelectorMultiple = ({
                     const isAlreadySelected = selectedValues.some((val) => val.value === value);
                     return (
                         <components.Option {...props}>
-                            <div className={styles.multiOption}>
+                            <div className={cn(styles.multiOption, {
+                                [styles.multiOptionIsAlreadySelected]: isAlreadySelected
+                            })}>
                                 {isAlreadySelected &&
                                     <div className={styles.multiOptionIcon}>
                                         {checkedIcon}

@@ -3,6 +3,7 @@ import { coursesListPrefix } from "@/helpers/prefixes";
 import { CourseTabs } from "@/types/CourseTabs";
 import styles from "./CoursesListItemMenu.module.css";
 import cn from "classnames";
+
 type CoursesListItemMenuProps = {
     className?: string;
     selectedTab: CourseTabs;

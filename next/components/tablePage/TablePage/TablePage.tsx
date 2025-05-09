@@ -4,6 +4,7 @@ import styles from "./TablePage.module.css";
 import { IPagination } from "@/types/Pagination";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
+import { NothingFound } from "@/components/NothingFound/NothingFound";
 
 type TablePageProps<T> = {
     header: ReactNode;
@@ -16,16 +17,9 @@ type TablePageProps<T> = {
 export const TablePage = <T,>({ header, body, pagination, bodyStyles, tableStyles }: TablePageProps<T>) => {
     const iconRight = useIcon('right');
     const iconLeft = useIcon('left');
-    const iconNothing = useIcon('nothing');
-    const { t } = useTranslation();
 
     if (pagination.totalCount === 0) {
-        return (
-            <div className={styles.nothingContainer}>
-                <div>{iconNothing}</div>
-                <h2>{t('nothing-found')}</h2>
-            </div>
-        );
+        return (<NothingFound />);
     }
 
     return (

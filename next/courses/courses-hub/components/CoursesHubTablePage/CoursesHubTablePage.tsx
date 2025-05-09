@@ -2,7 +2,7 @@
 
 import { mapCoursesHubToTable } from "../../functions/mapCoursesHubToTable";
 import { createCoursesHubTableHeader } from "../../functions/createCoursesHubTableHeader";
-import { coursesHubPrefix, coursesHubPrefixApi, courseTagsPrefix } from "@/helpers/prefixes";
+import { coursesHubPrefix, coursesHubPrefixApi } from "@/helpers/prefixes";
 import { t, TFunction } from "i18next";
 import { CoursesHubTableItem } from "@/courses/courses-hub/types/CoursesHubTableItem";
 import { userApiClient } from "@/apiClient";
@@ -10,7 +10,7 @@ import { Course } from "../../../types/Course";
 import { EnhancedItemType } from "@/components/TablePage/EnhancedTablePage/types/EnhancedItemTypes";
 import { TablePageMode } from "@/types/TablePageMode";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getDataPageWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getDataPageWithApi";
 import { getTotalCountWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getTotalCountWithApi";
 import { ButtonType } from "@/components/Button/Button";

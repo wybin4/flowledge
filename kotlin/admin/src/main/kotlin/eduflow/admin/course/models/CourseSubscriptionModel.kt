@@ -10,7 +10,7 @@ data class CourseSubscriptionModel(
     override val courseId: String,
     override val createdAt: Date,
     override var isFavourite: Boolean?,
-    override val isSubscribed: Boolean?,
+    override var isSubscribed: Boolean?,
     override val roles: List<String>?,
     override val updatedAt: Date,
     override val userId: String,

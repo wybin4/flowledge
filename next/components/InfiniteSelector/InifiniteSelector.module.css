@@ -7,6 +7,12 @@
     gap: 1rem;
 
     width: 97% !important;
+
+    color: var(--description-text);
+}
+
+.multiOptionIsAlreadySelected {
+    color: var(--light);
 }
 
 .multiOptionIcon {
@@ -22,13 +28,13 @@
     flex: 1;
 }
 
-.multiValueContainer{
+.multiValueContainer {
     width: max-content !important;
 
     display: flex;
     align-items: center;
 }
 
-.multiValuePlaceholder{
+.multiValuePlaceholder {
     margin-left: -9px;
 }

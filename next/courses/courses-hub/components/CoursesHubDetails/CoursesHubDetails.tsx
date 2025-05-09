@@ -35,6 +35,7 @@ import { Modal } from "@/components/Modal/Modal";
 import { CoursesHubEditorsModal } from "./CoursesHubEditors/CoursesHubEditorsModal/CoursesHubEditorsModal";
 import { CourseEditor } from "../../types/CourseEditor";
 import { LessonSaveType, LessonToSaveOnDraftResponse } from "../../types/LessonToSave";
+import { CoursesHubSideSection } from "./CoursesHubSideSection/CoursesHubSideSection";
 
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
@@ -207,56 +208,64 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                         description={course.description}
                         isExpanded={true}
                     />
-                    <CoursesHubDetailsHeader
-                        title={t(`${coursesHubEditorsPrefixTranslate}.name`)}
-                        action={`${t(`${coursesHubEditorsPrefixTranslate}.manage-editors`)}`}
-                        onClick={() => setIsModalOpen(true)}
-                    />
-                    {courseEditors && !!courseEditors.length && <CoursesHubEditors editors={courseEditors} />}
-                    <div className={styles.sectionsContainer}>
-                        <CoursesHubDetailsHeader
-                            title={t(`${coursesHubSectionsPrefixTranslate}.name`)}
-                            description={`${countSectionsText} · ${countLessonsText}`}
-                            action={newSection !== undefined ? `- ${t(`${coursesHubSectionsPrefixTranslate}.cancel`)}` : `+ ${t(`${coursesHubSectionsPrefixTranslate}.add`)}`}
-                            onClick={newSection !== undefined ? handleCancelNewSection : handleAddSection}
-                        />
-                        {newSection !== undefined &&
-                            <CourseSection
-                                validateSectionTitle={validateSectionTitle}
-                                sectionTitleError={sectionTitleError}
-                                section={newSection}
-                                className={styles.newSection}
-                                setNewSection={setNewSection}
-                                onSaveNewSection={() => handleSaveNewSection()}
+                    <div className={styles.body}>
+
+                        <div className={styles.firstBodyChild}>
+                            <CoursesHubDetailsHeader
+                                title={t(`${coursesHubEditorsPrefixTranslate}.name`)}
+                                action={`${t(`${coursesHubEditorsPrefixTranslate}.manage-editors`)}`}
+                                onClick={() => setIsModalOpen(true)}
                             />
-                        }
-                        {courseSections && courseSections.length > 0 && courseSections.map(section => (
-                            <CourseSection
-                                key={section.section._id}
-                                section={section}
-                                actions={[{
-                                    title: t('edit'),
-                                    type: ChildrenPosition.Right,
-                                    onClick: () => {
-                                        setSelectedSectionIdToEdit(section.section._id);
-                                        onClick();
-                                    }
-                                },
-                                {
-                                    title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
-                                    onClick: () => {
-                                        userApiClient.post<LessonToSaveOnDraftResponse>(
-                                            `${coursesHubLessonsPrefixApi}.create`,
-                                            { type: LessonSaveType.Draft, sectionId: section.section._id }
-                                        ).then(({ lessonId }) => {
-                                            router.push(`/courses-hub/${course._id}/${lessonId}?video=true`);
-                                        })
-                                    },
-                                    type: ChildrenPosition.Bottom
-                                }]}
-                                className={styles.section}
-                            />
-                        ))}
+                            {courseEditors && !!courseEditors.length && <CoursesHubEditors editors={courseEditors} />}
+                            <div className={styles.sectionsContainer}>
+                                <CoursesHubDetailsHeader
+                                    title={t(`${coursesHubSectionsPrefixTranslate}.name`)}
+                                    description={`${countSectionsText} · ${countLessonsText}`}
+                                    action={newSection !== undefined ? `- ${t(`${coursesHubSectionsPrefixTranslate}.cancel`)}` : `+ ${t(`${coursesHubSectionsPrefixTranslate}.add`)}`}
+                                    onClick={newSection !== undefined ? handleCancelNewSection : handleAddSection}
+                                />
+                                {newSection !== undefined &&
+                                    <CourseSection
+                                        validateSectionTitle={validateSectionTitle}
+                                        sectionTitleError={sectionTitleError}
+                                        section={newSection}
+                                        className={styles.newSection}
+                                        setNewSection={setNewSection}
+                                        onSaveNewSection={() => handleSaveNewSection()}
+                                    />
+                                }
+                                {courseSections && courseSections.length > 0 && courseSections.map(section => (
+                                    <CourseSection
+                                        key={section.section._id}
+                                        section={section}
+                                        actions={[{
+                                            title: t('edit'),
+                                            type: ChildrenPosition.Right,
+                                            onClick: () => {
+                                                setSelectedSectionIdToEdit(section.section._id);
+                                                onClick();
+                                            }
+                                        },
+                                        {
+                                            title: `+ ${t(`${coursesHubPrefix}.add-lesson`)}`,
+                                            onClick: () => {
+                                                userApiClient.post<LessonToSaveOnDraftResponse>(
+                                                    `${coursesHubLessonsPrefixApi}.create`,
+                                                    { type: LessonSaveType.Draft, sectionId: section.section._id }
+                                                ).then(({ lessonId }) => {
+                                                    router.push(`/${coursesHubPrefix}/${course._id}/${lessonId}?video=true`);
+                                                })
+                                            },
+                                            type: ChildrenPosition.Bottom
+                                        }]}
+                                        className={styles.section}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <CoursesHubSideSection courseId={course._id} />
+
                     </div>
                 </div>
             )}

@@ -1,8 +1,10 @@
 package eduflow.admin.course.mappers
 
-import eduflow.admin.course.dto.subscription.CourseSubscriptionGetResponse
+import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
+import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.user.repositories.UserRepository
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 
@@ -13,8 +15,8 @@ interface CourseSubscriptionMapper {
     fun toSubscriptionWithCourseDto(
         subscription: CourseSubscriptionModel,
         course: CourseModel,
-    ): CourseSubscriptionGetResponse {
-        return CourseSubscriptionGetResponse(
+    ): CourseSubscriptionGetByUserIdResponse {
+        return CourseSubscriptionGetByUserIdResponse(
             _id = course._id,
             courseId = subscription.courseId,
             isFavourite = subscription.isFavourite,
@@ -25,6 +27,19 @@ interface CourseSubscriptionMapper {
             imageUrl = course.imageUrl,
             description = course.description,
             tags = course.tags
+        )
+    }
+
+    @Mapping(target = "_id", source = "subscription._id")
+    fun toSubscriptionWithUserDto(
+        subscription: CourseSubscriptionModel,
+        user: UserRepository.BaseUser,
+    ): CourseSubscriptionGetByCourseIdResponse {
+        return CourseSubscriptionGetByCourseIdResponse(
+            _id = subscription._id,
+            userId = subscription.userId,
+            username = user.username,
+            name = user.name,
         )
     }
 

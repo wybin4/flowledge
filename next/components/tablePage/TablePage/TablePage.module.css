@@ -48,13 +48,3 @@
 
     margin: 0 5rem 2rem 6rem;
 }
-
-.nothingContainer {
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    margin-top: 10rem;
-}

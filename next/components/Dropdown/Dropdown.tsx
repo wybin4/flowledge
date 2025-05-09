@@ -27,6 +27,8 @@ const customStyles: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
         flexWrap: 'nowrap',
         alignItems: 'center',
 
+        color: isFocused ? 'var(--light)' : 'var(--description-text)',
+
         padding: '.4rem .6rem',
 
         outline: 'none',

@@ -216,12 +216,12 @@
         "description": "описание",
         "imageUrl": "обложка",
         "edit-content": "редактировать содержимое",
+        "select-from-users-list": "выберите пользователей из списка",
         "editors": {
             "name": "редакторы",
             "add-editor": "добавить редактора",
             "manage-editors": "управлять редакторами",
             "no-users-for-editors": "не найдено пользователей для назначения редакторами",
-            "select-from-users-list": "выберите пользователей из списка",
             "remove-roles": "снять роли"
         },
         "sections": {
@@ -307,7 +307,21 @@
         "video": "видео",
         "details": "подробности",
         "synopsis": "конспект и материалы",
-        "survey": "тест"
+        "survey": "тест",
+        "sidebar": {
+            "users": "подписчики",
+            "__count__users_zero": "у курса нет подписчиков",
+            "__count__users_one": "{{count}} подписчик",
+            "__count__users_few": "{{count}} подписчика",
+            "__count__users_many": "{{count}} подписчиков",
+            "add-users": "добавить подписчиков",
+            "statistics": "статистика",
+            "no-users-for-subscribers": "не найдено пользователей для назначения подписчиками курса",
+            "__count__users_for_subscribers_zero": "пользователи не выбраны",
+            "__count__users_for_subscribers_one": "{{count}} пользователь",
+            "__count__users_for_subscribers_few": "{{count}} пользователя",
+            "__count__users_for_subscribers_many": "{{count}} пользователей"
+        }
     },
     "courses-list": {
         "menu": {
@@ -445,5 +459,6 @@
         "__count__roles_one": "выбрана {{count}} роль",
         "__count__roles_few": "выбрано {{count}} роли",
         "__count__roles_many": "выбрано {{count}} ролей"
-    }
+    },
+    "view-all": "посмотреть всё"
 }

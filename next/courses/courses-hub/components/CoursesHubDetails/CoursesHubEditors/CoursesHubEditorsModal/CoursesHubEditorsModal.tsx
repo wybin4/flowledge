@@ -5,7 +5,7 @@ import { CoursesHubEditors } from "../CoursesHubEditors/CoursesHubEditors";
 import styles from "./CoursesHubEditorsModal.module.css";
 import { InfiniteSelector } from "@/components/InfiniteSelector/InifiniteSelector";
 import cn from "classnames";
-import { coursesHubEditorsPrefixApi, coursesHubEditorsPrefixTranslate } from "@/helpers/prefixes";
+import { coursesHubEditorsPrefixApi, coursesHubEditorsPrefixTranslate, coursesHubPrefix } from "@/helpers/prefixes";
 import { LabeledAvatar, LabeledAvatarItem } from "@/components/LabeledAvatar/LabeledAvatar";
 import { ItemSize } from "@/types/ItemSize";
 import { userApiClient } from "@/apiClient";
@@ -99,7 +99,7 @@ export const CoursesHubEditorsModal = ({
                         />
                     )}
                     endClassName={styles.editorSelector}
-                    placeholder={`${coursesHubEditorsPrefixTranslate}.select-from-users-list`}
+                    placeholder={`${coursesHubPrefix}.select-from-users-list`}
                     noOptionsPlaceholder={`${coursesHubEditorsPrefixTranslate}.no-users-for-editors`}
                 />
                 <h3 className={styles.title}>{t(`${coursesHubEditorsPrefixTranslate}.name`)}</h3>

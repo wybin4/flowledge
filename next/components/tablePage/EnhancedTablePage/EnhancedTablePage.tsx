@@ -18,6 +18,7 @@ import { EnhancedItemChildren } from "./types/EnhancedItemChildren";
 import cn from "classnames";
 import { DataPageHookFunctions } from "@/types/DataPageHook";
 import { useEnhancedPagination } from "@/hooks/useEnhancedPagination";
+import { Language } from "@/user/types/Language";
 
 export interface EnhancedTablePageProps<T, U> {
     prefix: IconKey;
@@ -45,7 +46,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [sortQuery, setSortQuery] = useState<string>('');
-    const locale = useUserSetting<string>('language') || 'en';
+    const locale = useUserSetting<Language>('language') || Language.EN;
     const router = useRouter();
  
     const realPrefix = apiPrefix ?? prefix;

@@ -15,3 +15,13 @@
 .expanded {
     width: 58.5%;
 }
+
+.body {
+    display: flex;
+    justify-content: space-between;
+    gap: 6rem;
+}
+
+.firstBodyChild {
+    flex: 1;
+}

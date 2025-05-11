@@ -254,7 +254,13 @@
                 "name": "lesson reading/watching time",
                 "description": "can be detected in automatically by video if exists"
             },
-            "save": "next"
+            "save": "save",
+            "edit": "edit lesson",
+            "delete": "delete lesson",
+            "isVisible": {
+                "name": "is visible",
+                "description": "invisible lesson is not shown in the course, but can be seen by course editors"
+            }
         },
         "__count__sections_zero": "no sections",
         "__count__sections_one": "{{count}} section",

@@ -60,9 +60,13 @@
 }
 
 .right .container {
-    background-color: var(--hover-dark);
+    background-color: var(--sidebar);
 
     overflow: hidden;
+}
+
+.right .container div {
+    min-height: inherit;
 }
 
 .right .header {

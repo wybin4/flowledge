@@ -11,10 +11,12 @@ const areSettingKeysEqual = (prevKeys: EnhancedItemSettingKey[], nextKeys: Enhan
 export const areEnhancedItemPropsEqual = <T, U>(prevProps: EnhancedItemProps<T, U>, nextProps: EnhancedItemProps<T, U>) => {
     return prevProps._id === nextProps._id &&
         prevProps.mode === nextProps.mode &&
+        prevProps.title === nextProps.mode &&
         areSettingKeysEqual(prevProps.settingKeys, nextProps.settingKeys);
 }
 
 export const areEnhancedItemBodyPropsEqual = <T,>(prevProps: EnhancedItemBodyProps<T>, nextProps: EnhancedItemBodyProps<T>) => {
     return JSON.stringify(prevProps.item) === JSON.stringify(nextProps.item) &&
+        prevProps.title === nextProps.mode &&
         areSettingKeysEqual(prevProps.settingKeys, nextProps.settingKeys);
 }

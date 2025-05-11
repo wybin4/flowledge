@@ -7,7 +7,7 @@ import { useState } from "react";
 import { SurveyQuestionItem } from "./SurveyQuestion/SurveyQuestionItem";
 import cn from "classnames";
 import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
-import { SurveyQuestionBody } from "./SurveyQuestion/SurveyQuestionBody";
+import { SurveyQuestionBody } from "./SurveyQuestion/SurveyQuestionBody/SurveyQuestionBody";
 import { SortableList } from "@/components/Sortable/SortableList";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useScrollToElement } from "@/hooks/useScrollToElement";

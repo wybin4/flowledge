@@ -15,7 +15,7 @@ import { Language } from "@/user/types/Language";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useRouter } from "next/navigation";
-import { memo, useState, useCallback } from "react";
+import { memo, useState } from "react";
 import { userApiClient } from "@/apiClient";
 import { Section } from "@/courses/types/Section";
 import { useSaveItem } from "@/hooks/useSaveItem";
@@ -24,10 +24,6 @@ import { SectionItem } from "@/courses/types/SectionItem";
 import RightSidebar from "@/components/Sidebar/RightSidebar/RightSidebar";
 import cn from "classnames";
 import { useNonPersistentSidebar } from "@/hooks/useNonPersistentSidebar";
-import { RightSidebarModal } from "@/components/Sidebar/RightSidebar/RightSidebarModal";
-import { TablePageMode } from "@/types/TablePageMode";
-import { SettingType } from "@/types/Setting";
-import { TablePageActionType } from "@/types/TablePageActionType";
 import { getItemsFromStringRange } from "@/helpers/getItemsFromStringRange";
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { getErrorByRegex } from "@/helpers/getErrorByRegex";
@@ -37,6 +33,10 @@ import { CourseEditor } from "../../types/CourseEditor";
 import { LessonSaveType, LessonToSaveOnDraftResponse } from "../../types/LessonToSave";
 import { CoursesHubSideSection, CoursesHubSideSectionMainTabs } from "./CoursesHubSideSection/CoursesHubSideSection";
 import { usePermissions } from "@/hooks/usePermissions";
+import { SectionRightSidebarModal } from "./RightSidebars/SectionRightSidebarModal";
+import { LessonRightSidebarModal } from "./RightSidebars/LessonRightSidebarModal";
+import { CourseLessonItem } from "@/courses/courses-list/types/CourseLessonItem";
+import { TablePageActionType } from "@/types/TablePageActionType";
 
 const detailsPermissions = [
     'view-subscribers',
@@ -45,11 +45,21 @@ const detailsPermissions = [
     'manage-moderators'
 ];
 
+export type ValidateSectionTitle = (title: string) => boolean;
+
+export interface RightSidebarModalProps<T> {
+    courseId: string;
+    setIsExpanded: (isExpanded: boolean) => void;
+    handleChange: HandleChangeInRightSidebar<T>;
+};
+type HandleChangeInRightSidebar<T,> = (type: TablePageActionType, item?: T, id?: string) => void;
+
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
     const [courseEditors, setCourseEditors] = useState<CourseEditor[]>(course.editors || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
     const [selectedSectionIdToEdit, setSelectedSectionIdToEdit] = useState<string | undefined>(undefined);
+    const [selectedLessonToEdit, setSelectedLessonToEdit] = useState<CourseLessonItem | undefined>(undefined);
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -81,7 +91,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
         setSectionTitleError('');
     };
 
-    const validateSectionTitle = (title: string) => {
+    const validateSectionTitle: ValidateSectionTitle = (title: string) => {
         if (title.length < minTitleLength || title.length > maxTitleLength) {
             setSectionTitleError(t(`${coursesHubPrefix}.title-length.error`, { min: minTitleLength, max: maxTitleLength }));
             return false;
@@ -124,79 +134,72 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
         }
     };
 
-    const useGetItemHook = useCallback((callback: (item: Section) => void) => {
-        return (_id: string) => {
-            const section = courseSections.find(section => section.section._id === selectedSectionIdToEdit);
-            if (section) {
-                callback(section.section);
+    const [
+        viewSubscribers,
+        viewStatistics,
+        manageOwners, manageModerators
+    ] = usePermissions(detailsPermissions);
+
+    const sectionHandleChange: HandleChangeInRightSidebar<Section> = (type, item, id) => {
+        if (type === TablePageActionType.DELETE) {
+            setCourseSections(courseSections.filter(section => section.section._id !== id));
+        } else if (type === TablePageActionType.EDIT) {
+            setCourseSections(courseSections.map(section => {
+                if (section.section._id === id && item) {
+                    section.section = item;
+                }
+                return section;
+            }));
+        }
+    };
+
+    const lessonHandleChange: HandleChangeInRightSidebar<CourseLessonItem> = (type, item, id) => {
+        setCourseSections(courseSections.map(section => {
+            if (section.lessons) {
+                if (type === TablePageActionType.DELETE) {
+                    section.lessons = section.lessons.filter(lesson => lesson._id !== id);
+                } else if (type === TablePageActionType.EDIT) {
+                    section.lessons = section.lessons.map(lesson => {
+                        if (lesson._id === id && item) {
+                            return item;
+                        }
+                        return lesson;
+                    });
+                }
             }
-        };
-    }, [selectedSectionIdToEdit]);
-
-    const clearState = useCallback(() => {
-        setSelectedSectionIdToEdit(undefined);
-        setSectionTitleError('');
-    }, []);
-
-    const [viewSubscribers, viewStatistics, manageOwners, manageModerators] = usePermissions(detailsPermissions);
+            return section;
+        }));
+    };
 
     return (
         <RightSidebar
             useSidebarHook={useNonPersistentSidebar}
-            content={(classNames, setIsExpanded) => <div className={cn(classNames)}>
-                <RightSidebarModal<Section, SectionToSave>
-                    permissions={{ isEditionPermitted: true, isDeletionPermitted: true }}
-                    useGetItemHook={useGetItemHook}
-                    prefix={coursesHubSectionsPrefixTranslate}
-                    apiPrefix={coursesHubSectionsPrefixApi}
-                    queryParams={{ isSmall: true }}
-                    mode={TablePageMode.EDIT}
-                    _id={selectedSectionIdToEdit}
-                    settingKeys={[
-                        { name: 'title', types: [SettingType.InputText], error: sectionTitleError },
-                        {
-                            name: 'isVisible',
-                            types: [SettingType.Radio],
-                            hasDescription: true,
-                            additionalProps: { withWrapper: false }
-                        }
-                    ]}
-                    apiClient={userApiClient}
-                    transformItemToSave={(item) => {
-                        const { title, courseId, isVisible } = item;
-                        if (!validateSectionTitle(title)) {
-                            throw new Error('Invalid section title');
-                        }
-                        const body = { title, courseId, isVisible };
-                        return body;
-                    }}
-                    createEmptyItem={() => ({
-                        _id: "",
-                        title: "",
-                        courseId: course._id,
-                        isVisible: false
-                    })}
-                    onBackButtonClick={() => {
-                        clearState();
-                        setIsExpanded(false);
-                    }}
-                    isBackWithRouter={false}
-                    onActionCallback={(type, item) => {
-                        clearState();
-                        setIsExpanded(false);
-                        if (type === TablePageActionType.DELETE) {
-                            setCourseSections(courseSections.filter(section => section.section._id !== selectedSectionIdToEdit));
-                        } else if (type === TablePageActionType.EDIT) {
-                            setCourseSections(courseSections.map(section => {
-                                if (section.section._id === selectedSectionIdToEdit && item) {
-                                    section.section = item;
-                                }
-                                return section;
-                            }));
-                        }
-                    }}
-                />
-            </div>}
+            content={(classNames, setIsExpanded) => (
+                <div className={cn(classNames.containerClassName)}>
+                    {selectedSectionIdToEdit && (
+                        <SectionRightSidebarModal
+                            courseId={course._id}
+                            selectedId={selectedSectionIdToEdit}
+                            setSelectedId={setSelectedSectionIdToEdit}
+                            setIsExpanded={setIsExpanded}
+                            sections={courseSections}
+                            validateSectionTitle={validateSectionTitle}
+                            sectionTitleError={sectionTitleError}
+                            setSectionTitleError={setSectionTitleError}
+                            handleChange={sectionHandleChange}
+                        />
+                    )}
+                    {selectedLessonToEdit && (
+                        <LessonRightSidebarModal
+                            courseId={course._id}
+                            selected={selectedLessonToEdit}
+                            setSelected={setSelectedLessonToEdit}
+                            setIsExpanded={setIsExpanded}
+                            handleChange={lessonHandleChange}
+                        />
+                    )}
+                </div>
+            )}
         >
             {(isExpanded, onClick) => (
                 <div className={cn({ [styles.expanded]: isExpanded })}>
@@ -253,6 +256,10 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                     <CourseSection
                                         key={section.section._id}
                                         section={section}
+                                        setLesson={(lesson) => {
+                                            setSelectedLessonToEdit(lesson);
+                                            onClick();
+                                        }}
                                         actions={[{
                                             title: t('edit'),
                                             type: ChildrenPosition.Right,

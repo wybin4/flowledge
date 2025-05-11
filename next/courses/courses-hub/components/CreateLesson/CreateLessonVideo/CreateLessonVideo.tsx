@@ -331,7 +331,7 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
                         onClick={() => onSave(false)}
                         prefix={translationPrefix}
                         type={ButtonType.SAVE}
-                        title={t('next')}
+                        title={t('save')}
                         disabled={withVideo && (!video || !!isVideoUploadError || isVideoUploading || !videoId)}
                     />
                 </div>

@@ -1,6 +1,7 @@
 .title {
     margin-bottom: 0.7rem;
     margin-top: 0rem;
+    padding-right: 2.5rem;
 
     color: var(--light);
 }

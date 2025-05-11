@@ -3,11 +3,12 @@ import CollapsibleSection, { CollapsibleSectionTagType } from "@/components/Coll
 import CollapsibleSectionChild from "@/components/CollapsibleSection/CollapsibleSectionChild";
 import styles from "./CourseSection.module.css";
 import { CourseListImage } from "../../courses-list/components/CoursesListItem/CourseListImage/CourseListImage";
-import { useRouter } from "next/navigation";
 import { CollapsibleSectionActionProps } from "@/components/CollapsibleSection/CollapsibleSectionAction";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useTranslation } from "react-i18next";
 import { useTranslatedTime } from "@/hooks/useTranslatedTime";
+import { ValidateSectionTitle } from "@/courses/courses-hub/components/CoursesHubDetails/CoursesHubDetails";
+import { CourseLessonItem } from "@/courses/courses-list/types/CourseLessonItem";
 
 type CourseSectionProps = {
     className?: string;
@@ -15,14 +16,17 @@ type CourseSectionProps = {
     setNewSection?: (section: string) => void;
     onSaveNewSection?: () => void;
     actions?: CollapsibleSectionActionProps[];
-    validateSectionTitle?: (title: string) => boolean;
+    validateSectionTitle?: ValidateSectionTitle;
     sectionTitleError?: string;
+    setLesson?: (lesson: CourseLessonItem) => void;
 }
 
 export const CourseSection = ({
-    className, section, actions, setNewSection, onSaveNewSection, validateSectionTitle, sectionTitleError
+    section, setNewSection, onSaveNewSection,
+    validateSectionTitle, sectionTitleError,
+    actions, setLesson,
+    className,
 }: CourseSectionProps) => {
-    const router = useRouter();
     const { t } = useTranslation();
     const translateTime = useTranslatedTime();
 
@@ -58,8 +62,6 @@ export const CourseSection = ({
 
     const defaultChildProps = { isActive: false };
 
-    const onLessonClick = (id: string) => router.push(`${window.location.pathname}/${id}`);
-
     if (typeof section === 'string') {
         return (
             <CollapsibleSection
@@ -90,7 +92,7 @@ export const CourseSection = ({
                 {(section.lessons && section.lessons.length > 0) ? section.lessons.map((lesson) => (
                     <CollapsibleSectionChild
                         id={lesson._id}
-                        onClick={onLessonClick}
+                        onClick={() => setLesson?.(lesson)}
                         key={lesson._id}
                         title={lesson.title}
                         time={translateTime(lesson.time) || lesson.time}

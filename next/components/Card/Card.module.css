@@ -14,8 +14,6 @@
 
 .little {
     width: 82%;
-
-    cursor: pointer;
 }
 
 .little .title {
@@ -39,26 +37,27 @@
 }
 
 .big .text,
-.big .number {
+.big .dot {
     font-size: 0.875rem;
 }
 
-.little .title:hover {
-    filter: brightness(80%);
-}
-
-.number {
+.dot {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 
-    width: 1.3rem;
-    height: 1.3rem;
+    width: 1.3rem !important;
+    height: 1.3rem !important;
 
     background-color: var(--button-tip);
 
     border-radius: 0.8rem;
+}
+
+.dot svg {
+    width: 14px;
+    height: 14px;
 }
 
 .text {
@@ -77,8 +76,10 @@
     cursor: pointer;
 }
 
-.locked {
-    color: var(--description-text) !important;
-    text-decoration: none;
-    cursor: not-allowed !important;
+.pointer {
+    cursor: pointer;
+}
+
+.pointer:hover {
+    filter: brightness(80%);
 }

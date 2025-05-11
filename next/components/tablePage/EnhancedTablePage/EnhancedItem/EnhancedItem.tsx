@@ -1,6 +1,6 @@
 "use client";
 
-import { SettingOption, SettingType, SettingValue } from "@/types/Setting";
+import { SettingType } from "@/types/Setting";
 import { useTranslation } from "react-i18next";
 import { memo, ReactNode, useCallback, useEffect, useState } from "react";
 import { TablePageMode } from "@/types/TablePageMode";
@@ -36,27 +36,34 @@ export type EnhancedItemSettingKey = {
     error?: string;
 };
 
-export interface EnhancedItemProps<T, U> {
-    _id?: string;
-    mode: TablePageMode;
+export interface BaseEnhancedItemProps {
     prefix: string;
+    mode: TablePageMode;
+    additionalButtons?: (EnhancedItemAdditionalButton | ReactNode)[];
+    additionalChildren?: ReactNode;
+    settingKeys: EnhancedItemSettingKey[];
+    hasTitle?: boolean;
+    settingsContainerClassNames?: string;
+    buttonContainerClassNames?: string;
+    permissions: Omit<CUDPermissions, 'isCreationPermitted'>;
+}
+
+export interface EnhancedItemProps<T, U> extends BaseEnhancedItemProps {
+    _id?: string;
     apiPrefix?: string;
     apiClient: ApiClientMethods;
-    settingKeys: EnhancedItemSettingKey[];
     transformItemToSave: TransformItemToSave<T, U>;
     createEmptyItem: () => T;
     useGetItemHook?: (callback: (item: T) => void) => (_id: string) => void;
-    additionalButtons?: (EnhancedItemAdditionalButton | ReactNode)[];
+
     backButton?: ButtonBackProps & Pick<ButtonBackContainerProps, 'type' | 'compressBody'>;
     containerStyles?: string;
     queryParams?: QueryParams;
     isBackWithRouter?: boolean;
     onActionCallback?: (type: TablePageActionType, item?: T) => void;
     hasDeleteDescription?: boolean;
-    hasTitle?: boolean;
-    settingsContainerClassNames?: string;
-    buttonContainerClassNames?: string;
-    permissions: Omit<CUDPermissions, 'isCreationPermitted'>;
+
+    title?: string;
 }
 
 const EnhancedItem = <T extends Identifiable, U>({
@@ -65,12 +72,12 @@ const EnhancedItem = <T extends Identifiable, U>({
     settingKeys,
     transformItemToSave, createEmptyItem,
     useGetItemHook,
-    additionalButtons,
+    additionalButtons, additionalChildren,
     backButton,
     containerStyles,
     isBackWithRouter = true,
     hasDeleteDescription = true,
-    hasTitle = true,
+    hasTitle = true, title,
     settingsContainerClassNames, buttonContainerClassNames,
     onActionCallback
 }: EnhancedItemProps<T, U>) => {
@@ -118,7 +125,7 @@ const EnhancedItem = <T extends Identifiable, U>({
     if (!item) {
         return <div>{t('loading')}</div>;
     }
-
+   
     return (
         <ButtonBackContainer className={containerStyles} {...backButton}>{button =>
             <EnhancedItemBody<T>
@@ -127,10 +134,11 @@ const EnhancedItem = <T extends Identifiable, U>({
                 permissions={permissions}
                 deleteItem={deleteItem}
                 saveItem={saveItem}
-                title={isEditMode ? t(`${prefix}.edit`) : t(`${prefix}.create`)}
+                title={title ? title : isEditMode ? t(`${prefix}.edit`) : t(`${prefix}.create`)}
                 mode={mode}
                 prefix={prefix}
                 settingKeys={settingKeys}
+                additionalChildren={additionalChildren}
                 additionalButtons={
                     backButton?.type === ChildrenPosition.Bottom
                         ? additionalButtons ? [...additionalButtons, button] : [button]

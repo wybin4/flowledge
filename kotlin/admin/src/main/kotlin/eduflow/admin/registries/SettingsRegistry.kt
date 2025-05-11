@@ -244,7 +244,7 @@ class SettingsRegistry {
                 )
             )
             addSetting(
-                "title-regex", "[a-zA-Zа-яА-Я0-9_]+", SettingDetails(
+                "title-regex", "[a-zA-Zа-яА-Я0-9_ ]+", SettingDetails(
                     type = SettingType.INPUT_TEXT,
                 )
             )

@@ -1,4 +1,3 @@
-import { Stuff } from "@/stuff/types/Stuff";
 import { StuffTypes } from "@/stuff/types/StuffTypes";
 
 export interface LessonItem {

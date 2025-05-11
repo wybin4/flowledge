@@ -136,7 +136,7 @@ class CourseLessonController(
             .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
     }
 
-    @PutMapping("/lessons.update/{id}")
+    @PostMapping("/lessons.update/{id}")
     fun updateLessonTitle(
         @PathVariable id: String,
         @RequestBody request: LessonUpdateRequest

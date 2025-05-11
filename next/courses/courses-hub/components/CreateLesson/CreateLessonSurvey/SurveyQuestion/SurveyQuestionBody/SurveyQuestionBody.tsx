@@ -1,10 +1,10 @@
 import { TextArea } from "@/components/TextArea/TextArea";
 import { t } from "i18next";
-import { SurveyQuestionItem } from "./SurveyQuestionItem";
-import styles from "./SurveyQuestion.module.css";
+import { SurveyQuestionItem } from "../SurveyQuestionItem";
+import styles from "./SurveyQuestionBody.module.css";
 import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
 import { SortableList } from "@/components/Sortable/SortableList";
-import { SurveyChoiceBody } from "../SurveyChoice/SurveyChoiceBody";
+import { SurveyChoiceBody } from "../../SurveyChoice/SurveyChoiceBody";
 import cn from "classnames";
 import { useEffect } from "react";
 import { useSurveyChoices } from "@/courses/courses-hub/hooks/useSurveyChoices";

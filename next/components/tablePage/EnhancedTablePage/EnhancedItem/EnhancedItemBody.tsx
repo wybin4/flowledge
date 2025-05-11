@@ -1,10 +1,9 @@
 import { Button } from "@/components/Button/Button";
 
 import { ButtonType } from "@/components/Button/Button";
-import { TablePageMode } from "@/types/TablePageMode";
-import { Dispatch, memo, ReactNode, SetStateAction, useCallback, useMemo } from "react";
+import { Dispatch, memo, ReactNode, SetStateAction, useCallback } from "react";
 import styles from "./EnhancedItem.module.css";
-import { EnhancedItemAdditionalButton, EnhancedItemSettingKey } from "./EnhancedItem";
+import { BaseEnhancedItemProps, EnhancedItemAdditionalButton } from "./EnhancedItem";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
 import { UpdatableSetting } from "@/hooks/useSettings";
 import { SettingValue } from "@/types/Setting";
@@ -13,31 +12,23 @@ import { areEnhancedItemBodyPropsEqual } from "./areEnhancedItemPropsEqual";
 import { MultiSettingWrapper, MultiSettingWrapperSetting } from "@/components/Settings/SettingWrapper/MultiSettingWrapper";
 import React from "react";
 import cn from "classnames";
-import { CUDPermissions } from "../../CRUDTablePage/CUDPermissions";
 
-export type EnhancedItemBodyProps<T> = {
+export interface EnhancedItemBodyProps<T> extends BaseEnhancedItemProps {
     title: string;
-    mode: TablePageMode;
-    prefix: string;
-    additionalButtons?: (EnhancedItemAdditionalButton | ReactNode)[];
+
     isEditMode: boolean;
-    settingKeys: EnhancedItemSettingKey[];
     hasChanges: boolean;
     item: T;
     setItem: Dispatch<SetStateAction<T | undefined>>;
     deleteItem: (_id: string) => Promise<void>;
-    deleteItemDescription?: string;
     saveItem: (item: T | undefined) => Promise<void>;
-    hasTitle?: boolean;
-    settingsContainerClassNames?: string;
-    buttonContainerClassNames?: string;
-    permissions: Omit<CUDPermissions, 'isCreationPermitted'>;
+    deleteItemDescription?: string;
 };
 
 const EnhancedItemBody = <T extends Identifiable,>({
     item, setItem, permissions,
     title, mode, prefix,
-    settingKeys, additionalButtons,
+    settingKeys, additionalButtons, additionalChildren,
     isEditMode, hasChanges, hasTitle = true,
     deleteItem, deleteItemDescription,
     settingsContainerClassNames, buttonContainerClassNames,
@@ -117,6 +108,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
     return (
         <>
             {hasTitle && <h2 className={styles.title}>{title}</h2>}
+            {additionalChildren}
             <div className={cn(styles.settingsContainer, settingsContainerClassNames)}>{renderSettings()}</div>
             <div className={cn(styles.buttonContainer, buttonContainerClassNames)}>
                 {

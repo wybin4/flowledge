@@ -52,6 +52,11 @@
     cursor: pointer;
 }
 
+.icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 .topRight svg path {
     stroke-width: 1.5px;
 }

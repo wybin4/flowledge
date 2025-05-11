@@ -32,14 +32,14 @@
 }
 
 .tab {
-    color: var(--description-text);
+    color: var(--description-text) !important;
 
     padding-right: 0.8rem;
     padding-bottom: 0.8rem;
 }
 
 .tab:hover {
-    color: var(--secondary-light);
+    color: var(--secondary-light) !important;
 }
 
 .tab svg {
@@ -49,10 +49,10 @@
 
 .activeTab,
 .activeTab:hover {
-    color: var(--light);
+    color: var(--light) !important;
 
-    border-bottom: solid 1px var(--light);
-    border-radius: 0;
+    border-bottom: solid 1px var(--light) !important;
+    border-radius: 0 !important;
 }
 
 .subscribers,

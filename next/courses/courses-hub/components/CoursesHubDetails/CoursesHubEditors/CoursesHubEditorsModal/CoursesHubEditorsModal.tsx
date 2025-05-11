@@ -5,24 +5,26 @@ import { CoursesHubEditors } from "../CoursesHubEditors/CoursesHubEditors";
 import styles from "./CoursesHubEditorsModal.module.css";
 import { InfiniteSelector } from "@/components/InfiniteSelector/InifiniteSelector";
 import cn from "classnames";
-import { coursesHubEditorsPrefixApi, coursesHubEditorsPrefixTranslate, coursesHubPrefix } from "@/helpers/prefixes";
+import { coursesHubEditorsPrefixApi, coursesHubEditorsPrefixTranslate, coursesHubPrefix, usersPrefix } from "@/helpers/prefixes";
 import { LabeledAvatar, LabeledAvatarItem } from "@/components/LabeledAvatar/LabeledAvatar";
 import { ItemSize } from "@/types/ItemSize";
 import { userApiClient } from "@/apiClient";
 import { usePrivateSetting } from "@/private-settings/hooks/usePrivateSetting";
 import { UserGetResponse } from "@/dto/UserGetResponse";
 import { setQueryParams } from "@/helpers/setQueryParams";
+import { EditorPermissions } from "@/courses/courses-hub/types/EditorPermissions";
 
 type CoursesHubEditorsModalProps = {
     editors: CourseEditor[];
     onCancel?: () => void;
     onSave: (editors: CourseEditor[]) => void;
     courseId: string;
+    permissions: EditorPermissions;
 };
 
 export const CoursesHubEditorsModal = ({
     courseId,
-    editors: initialEditors,
+    editors: initialEditors, permissions,
     onSave, onCancel
 }: CoursesHubEditorsModalProps) => {
     const [editors, setEditors] = useState<CourseEditor[]>(initialEditors || []);
@@ -41,7 +43,7 @@ export const CoursesHubEditorsModal = ({
     useEffect(() => {
         const excludedIds = editors.map(e => e._id);
         userApiClient.get<UserGetResponse[]>(
-            `users.get${setQueryParams({
+            `${usersPrefix}.get${setQueryParams({
                 pageSize, searchQuery, excludedIds, isSmall: true
             })}`
         ).then(users => {
@@ -107,6 +109,7 @@ export const CoursesHubEditorsModal = ({
                     editors={editors}
                     setEditors={setEditors}
                     size={ItemSize.Big}
+                    permissions={permissions}
                 />
             </div>
             <div className={styles.actions}>

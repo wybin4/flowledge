@@ -6,24 +6,24 @@ import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdRespon
 import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
 import eduflow.admin.course.services.CourseSubscriptionService
+import eduflow.admin.services.AuthenticationService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.util.*
 
 @RestController
 @RequestMapping("/api")
 class CourseSubscriptionController(
     private val subscriptionService: CourseSubscriptionService,
-    private val subscriptionRepository: CourseSubscriptionRepository
+    private val subscriptionRepository: CourseSubscriptionRepository,
+    private val authenticationService: AuthenticationService
 ) {
 
     @GetMapping("/course-subscriptions.get")
     fun getSubscriptionsByUserId(): Flux<CourseSubscriptionGetByUserIdResponse> {
-        val userId = "test_id" // TODO()
-
-        return subscriptionService.getCoursesWithSubscriptionsByUserId(userId)
+        val user = authenticationService.getCurrentUser()
+        return subscriptionService.getCoursesWithSubscriptionsByUserId(user._id)
     }
 
     @GetMapping("/course-subscriptions.get/{courseId}")
@@ -52,15 +52,12 @@ class CourseSubscriptionController(
                 subscriptionRepository.findByCourseIdAndUserId(courseId, userId)
                     .switchIfEmpty(
                         subscriptionRepository.save(
-                            CourseSubscriptionModel(
-                                _id = UUID.randomUUID().toString(),
+                            CourseSubscriptionModel.create(
                                 userId = userId,
                                 courseId = courseId,
                                 isSubscribed = true,
                                 isFavourite = false,
                                 roles = null,
-                                createdAt = Date(),
-                                updatedAt = Date()
                             )
                         )
                     )

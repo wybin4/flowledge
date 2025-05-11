@@ -68,7 +68,6 @@ class PermissionsRegistry {
             PermissionModel(
                 "view-all-courses", listOf(
                     DefaultRoles.ADMIN.toLowerCase(),
-                    DefaultRoles.EDITOR.toLowerCase()
                 )
             ),
             PermissionModel(
@@ -82,35 +81,31 @@ class PermissionsRegistry {
                 )
             ),
             PermissionModel(
-                "edit-assigned-courses",
+                "edit-course",
                 listOf(
-                    DefaultRoles.MODERATOR.toLowerCase(),
+                    DefaultRoles.ADMIN.toLowerCase(),
+                    DefaultRoles.EDITOR.toLowerCase(),
                     DefaultRoles.OWNER.toLowerCase(),
-                    DefaultRoles.EDITOR.toLowerCase()
+                    DefaultRoles.MODERATOR.toLowerCase(),
                 )
             ),
             PermissionModel(
-                "delete-assigned-course",
-                listOf(DefaultRoles.EDITOR.toLowerCase(), DefaultRoles.OWNER.toLowerCase())
+                "delete-course",
+                listOf(
+                    DefaultRoles.ADMIN.toLowerCase(),
+                    DefaultRoles.EDITOR.toLowerCase(),
+                    DefaultRoles.OWNER.toLowerCase()
+                )
             ),
-
             PermissionModel(
                 "create-course", listOf(
                     DefaultRoles.ADMIN.toLowerCase(),
                     DefaultRoles.EDITOR.toLowerCase()
                 )
             ),
-            PermissionModel("edit-all-courses", listOf(DefaultRoles.ADMIN.toLowerCase())),
-            PermissionModel("delete-all-courses", listOf(DefaultRoles.ADMIN.toLowerCase())),
 
             PermissionModel(
-                "manage-subscribers",
-                listOf(DefaultRoles.ADMIN.toLowerCase(), DefaultRoles.OWNER.toLowerCase())
-            ),
-
-            PermissionModel("view-own-stats", listOf(DefaultRoles.USER.toLowerCase())),
-            PermissionModel(
-                "view-assigned-stats",
+                "view-subscribers",
                 listOf(
                     DefaultRoles.ADMIN.toLowerCase(),
                     DefaultRoles.EDITOR.toLowerCase(),
@@ -118,7 +113,25 @@ class PermissionsRegistry {
                     DefaultRoles.MODERATOR.toLowerCase()
                 )
             ),
-            PermissionModel("view-all-stats", listOf(DefaultRoles.ADMIN.toLowerCase())),
+            PermissionModel(
+                "manage-subscribers",
+                listOf(
+                    DefaultRoles.ADMIN.toLowerCase(),
+                    DefaultRoles.EDITOR.toLowerCase(),
+                    DefaultRoles.OWNER.toLowerCase()
+                )
+            ),
+
+            PermissionModel("view-own-statistics", listOf(DefaultRoles.USER.toLowerCase())),
+            PermissionModel(
+                "view-course-statistics",
+                listOf(
+                    DefaultRoles.ADMIN.toLowerCase(),
+                    DefaultRoles.EDITOR.toLowerCase(),
+                    DefaultRoles.OWNER.toLowerCase(),
+                    DefaultRoles.MODERATOR.toLowerCase()
+                )
+            ),
 
             PermissionModel(
                 "view-tags",

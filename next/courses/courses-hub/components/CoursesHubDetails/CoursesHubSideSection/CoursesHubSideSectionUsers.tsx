@@ -15,6 +15,9 @@ import { SubscriptionWithUserResponse } from "@/courses/courses-hub/dto/Subscrip
 import { CoursesHubSideSectionAdditionalTabs, CoursesHubSideSectionChildrenProps } from "./CoursesHubSideSection";
 import { useIcon } from "@/hooks/useIcon";
 import { ItemSize } from "@/types/ItemSize";
+import { usePermissions } from "@/hooks/usePermissions";
+
+const userSectionPermissions = ['manage-subscribers', 'view-all-users'];
 
 export const CoursesHubSideSectionUsers = ({ prefix, courseId, setTab }: CoursesHubSideSectionChildrenProps) => {
     const { t } = useTranslation();
@@ -25,6 +28,8 @@ export const CoursesHubSideSectionUsers = ({ prefix, courseId, setTab }: Courses
     const pageSize = usePrivateSetting<number>('preview-page-size') ?? 5;
 
     const optionsIcon = useIcon('options');
+
+    const [manageSubscribers, viewAllUsers] = usePermissions(userSectionPermissions);
 
     useEffect(() => {
         userApiClient.get<SubscriptionWithUserResponse[]>(
@@ -55,7 +60,7 @@ export const CoursesHubSideSectionUsers = ({ prefix, courseId, setTab }: Courses
                                 key={index}
                                 item={subscriber}
                                 size={ItemSize.Big}
-                                child={_ => (
+                                child={_ => manageSubscribers && (
                                     <div className={styles.subscriberOptionsIcon}>{optionsIcon}</div>
                                 )}
                             />
@@ -73,14 +78,16 @@ export const CoursesHubSideSectionUsers = ({ prefix, courseId, setTab }: Courses
                     )}
                 </div>
             </div>
-            <div className={styles.footer}>
-                <Button
-                    onClick={() => setTab(CoursesHubSideSectionAdditionalTabs.AddUsers)}
-                    title={`+ ${t(`${prefix}.add-users`)}`}
-                    type={ButtonType.SAVE}
-                    className={styles.addNewButton}
-                />
-            </div>
+            {manageSubscribers && viewAllUsers && (
+                <div className={styles.footer}>
+                    <Button
+                        onClick={() => setTab(CoursesHubSideSectionAdditionalTabs.AddUsers)}
+                        title={`+ ${t(`${prefix}.add-users`)}`}
+                        type={ButtonType.SAVE}
+                        className={styles.addNewButton}
+                    />
+                </div>
+            )}
         </>
     );
 };

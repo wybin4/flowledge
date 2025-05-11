@@ -28,7 +28,7 @@
 .tab,
 .tab:hover,
 .activeTab {
-    background-color: transparent;
+    background-color: transparent !important;
 }
 
 .tab {

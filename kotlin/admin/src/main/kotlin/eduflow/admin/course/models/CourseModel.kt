@@ -1,7 +1,6 @@
 package eduflow.admin.course.models
 
 import eduflow.course.Course
-import eduflow.course.CourseCreator
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 
@@ -11,7 +10,7 @@ data class CourseModel(
     override val title: String,
     override val description: String,
     override val imageUrl: String? = null,
-    override val u: CourseCreator,
+    override val u: CourseCreatorModel,
     override val createdAt: Date,
     override val updatedAt: Date,
     override val tags: List<String>? = null

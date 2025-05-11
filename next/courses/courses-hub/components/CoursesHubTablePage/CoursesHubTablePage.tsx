@@ -10,7 +10,7 @@ import { Course } from "../../../types/Course";
 import { EnhancedItemType } from "@/components/TablePage/EnhancedTablePage/types/EnhancedItemTypes";
 import { TablePageMode } from "@/types/TablePageMode";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { getDataPageWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getDataPageWithApi";
 import { getTotalCountWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getTotalCountWithApi";
 import { ButtonType } from "@/components/Button/Button";
@@ -20,15 +20,29 @@ import { CourseToSave } from "../../types/CourseToSave";
 import { CRUDTablePage } from "@/components/TablePage/CRUDTablePage/CRUDTablePage";
 import { getTagsSettingKey } from "../../functions/getTagsSettingKey";
 import { useTags } from "../../hooks/useTags";
-import { usePermission } from "@/hooks/usePermission";
+import { usePermissions } from "@/hooks/usePermissions";
+import { CourseSubscriptions } from "@/collections/CourseSubscriptions";
+import { DataPageHookFunctions } from "@/types/DataPageHook";
+
+const coursesHubTablePermissions = [
+    'view-all-courses',
+    'view-assigned-courses',
+    'create-course',
+    'edit-course',
+    'delete-course'
+];
 
 export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
     const { tags } = useTags();
 
-    const isCreationPermitted = usePermission('create-course');
-    const isEditionPermitted = usePermission('edit-all-courses');
-    const isDeletionPermitted = usePermission('delete-all-courses');
+    const [
+        viewAll,
+        viewAssigned,
+        isCreationPermitted,
+        isEditionPermitted,
+        isDeletionPermitted
+    ] = usePermissions(coursesHubTablePermissions);
 
     const router = useRouter();
 
@@ -45,16 +59,31 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
         router.push(`/${coursesHubPrefix}/${selectedItemId}`);
     };
 
+    const getDataPageFunctions: DataPageHookFunctions<Course> = useMemo(() => {
+        if (viewAll) {
+            return {
+                getDataPage: (prefix, params) => getDataPageWithApi(prefix, userApiClient, params),
+                getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, userApiClient, params),
+            };
+        } else if (viewAssigned) {
+            return {
+                getDataPage: (_, props) => CourseSubscriptions.getPage(props) as any,
+                getTotalCount: (_, props) => CourseSubscriptions.getTotalCount(props),
+            };
+        }
+        return {
+            getDataPage: () => Promise.resolve([]),
+            getTotalCount: () => Promise.resolve(0),
+        };
+    }, [viewAll, viewAssigned]);
+
     return (
         <CRUDTablePage<Course, CourseToSave, CoursesHubTableItem>
             prefix={coursesHubPrefix}
             apiPrefix={coursesHubPrefixApi}
             apiClient={userApiClient}
             queryParams={{ isSmall: true }}
-            getDataPageFunctions={{
-                getDataPage: (prefix, params) => getDataPageWithApi(prefix, userApiClient, params),
-                getTotalCount: (prefix, params) => getTotalCountWithApi(prefix, userApiClient, params),
-            }}
+            getDataPageFunctions={getDataPageFunctions}
             selectedItemId={selectedItemId}
             setSelectedItemId={setSelectedItemId}
             mode={mode}
@@ -67,7 +96,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
             transformItemToSave={(item) => {
                 const { title, description, imageUrl, tags: tagsToSave } = item;
                 const body = {
-                    title, description, imageUrl, u: fakeUser, tags: tagsToSave
+                    title, description, imageUrl, tags: tagsToSave
                 };
                 return body;
             }}

@@ -19,6 +19,16 @@ data class UserModel(
     override val settings: UserSettingModel,
     override val username: String,
     override var services: UserServicesModel? = null
-) : User
+) : User {
+    data class BaseUser(val _id: String, val name: String, val username: String)
+
+    fun toBase(): BaseUser {
+        return BaseUser(
+            _id = _id,
+            name = name,
+            username = username,
+        )
+    }
+}
 
 

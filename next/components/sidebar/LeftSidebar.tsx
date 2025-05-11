@@ -6,19 +6,30 @@ import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
 import { apiIntegrationsPrefix, coursesHubPrefix, coursesListPrefix, courseTagsPrefix, permissionsPrefix, privateSettingsPrefix, profilePrefix, userSettingsPrefix, usersPrefix } from "@/helpers/prefixes";
 import LeftSidebarIcon from "./LeftSidebarIcon/LeftSidebarIcon";
-import { usePermission } from "@/hooks/usePermission";
 import { clearTokensClient } from "@/auth/tokens";
 import { useRouter } from "next/navigation";
+import { usePermissions } from "@/hooks/usePermissions";
+
+const sidebarPermissions = [
+    'view-private-settings',
+    'view-tags',
+    'edit-course',
+    'view-all-users',
+    'view-all-permissions',
+    'view-integrations'
+];
 
 export default function LeftSidebar({ children }: { children: (isExpanded: boolean) => ReactNode }) {
     const { isExpanded, hydrated, toggleSidebar } = useSidebar('left');
 
-    const viewPrivateSettings = usePermission('view-private-settings');
-    const viewTags = usePermission('view-tags');
-    const viewAllCourses = usePermission('view-all-courses');
-    const viewAllUsers = usePermission('view-all-users');
-    const viewAllPermissions = usePermission('view-all-permissions');
-    const viewIntegrations = usePermission('view-integrations');
+    const [
+        viewPrivateSettings,
+        viewTags,
+        editCourse,
+        viewAllUsers,
+        viewAllPermissions,
+        viewIntegrations
+    ] = usePermissions(sidebarPermissions);
 
     const router = useRouter();
 
@@ -47,7 +58,7 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
                             <LeftSidebarIcon isExpanded={isExpanded} name={profilePrefix} />
                             {viewAllUsers && <LeftSidebarIcon isExpanded={isExpanded} name={usersPrefix} />}
                             <LeftSidebarIcon isExpanded={isExpanded} name={coursesListPrefix} />
-                            {viewAllCourses && <LeftSidebarIcon isExpanded={isExpanded} name={coursesHubPrefix} />}
+                            {editCourse && <LeftSidebarIcon isExpanded={isExpanded} name={coursesHubPrefix} />}
                             {viewTags && <LeftSidebarIcon isExpanded={isExpanded} name={courseTagsPrefix} />}
                         </div>
                         <div>

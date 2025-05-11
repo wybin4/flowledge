@@ -1,6 +1,7 @@
 package eduflow.admin.user
 
 import eduflow.admin.dto.SettingUpdateRequest
+import eduflow.admin.services.AuthenticationService
 import eduflow.admin.user.dto.UserCreateRequest
 import eduflow.admin.user.dto.UserUpdateRequest
 import eduflow.admin.user.dto.get.UserGetRequest
@@ -14,7 +15,6 @@ import eduflow.admin.user.services.PasswordService
 import eduflow.admin.user.services.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Flux
@@ -25,7 +25,8 @@ import reactor.core.publisher.Mono
 class UserController(
     private val userRepository: UserRepository,
     private val userService: UserService,
-    private val passwordService: PasswordService
+    private val passwordService: PasswordService,
+    private val authenticationService: AuthenticationService
 ) {
 
     @GetMapping("/users.get/{id}")
@@ -35,8 +36,7 @@ class UserController(
     ): Mono<out UserGetByIdResponse> {
         var userId = id
         if (userId == "me") {
-            val authentication = SecurityContextHolder.getContext().authentication
-            val user = authentication.principal as UserModel
+            val user = authenticationService.getCurrentUser()
             userId = user._id
         }
         return userRepository.findById(userId)

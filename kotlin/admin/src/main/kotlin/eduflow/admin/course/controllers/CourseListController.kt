@@ -9,12 +9,10 @@ import eduflow.admin.course.services.CourseService
 import eduflow.admin.course.services.CourseTagService
 import eduflow.admin.dto.PaginationRequest
 import eduflow.admin.ldap.LDAPService
-import eduflow.admin.user.models.UserModel
+import eduflow.admin.services.AuthenticationService
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
-import java.util.*
 
 @RestController
 @RequestMapping("/api/courses-list")
@@ -22,15 +20,15 @@ class CourseListController(
     private val courseService: CourseService,
     private val ldapService: LDAPService,
     private val tagService: CourseTagService,
-    private val courseSubscriptionRepository: CourseSubscriptionRepository
+    private val courseSubscriptionRepository: CourseSubscriptionRepository,
+    private val authenticationService: AuthenticationService
 ) {
     @GetMapping("/courses.get")
     fun getAllCourses(
         params: PaginationRequest,
         @RequestParam(required = false) excludedIds: List<String>?
     ): Mono<ResponseEntity<List<CourseGetByIdSmallResponse>>> {
-        val authentication = SecurityContextHolder.getContext().authentication
-        val user = authentication.principal as UserModel
+        val user = authenticationService.getCurrentUser()
         val userGroups = user.services?.ldap?.memberOf ?: emptyList()
 
         val includedNames = ldapService.getUserMappingGroupsToCoursesAndTags(userGroups)
@@ -65,15 +63,11 @@ class CourseListController(
         return courseSubscriptionRepository.findByCourseIdAndUserId(id, userId)
             .switchIfEmpty(
                 courseSubscriptionRepository.save(
-                    CourseSubscriptionModel(
-                        _id = UUID.randomUUID().toString(),
+                    CourseSubscriptionModel.create(
                         userId = userId,
                         courseId = id,
-                        isSubscribed = false,
-                        isFavourite = isFavourite,
-                        roles = null,
-                        createdAt = Date(),
-                        updatedAt = Date()
+                        isSubscribed = true,
+                        isFavourite = isFavourite
                     )
                 )
             )

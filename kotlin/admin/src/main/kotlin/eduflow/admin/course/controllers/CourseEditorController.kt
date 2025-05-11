@@ -39,15 +39,11 @@ class CourseEditorController(
                         Mono.defer {
                             if (editor.roles.isNotEmpty()) {
                                 subscriptionRepository.save(
-                                    CourseSubscriptionModel(
-                                        _id = UUID.randomUUID().toString(),
+                                    CourseSubscriptionModel.create(
+                                        userId = editor._id,
                                         courseId = request.courseId,
-                                        createdAt = Date(),
-                                        isFavourite = false,
                                         isSubscribed = true,
-                                        roles = editor.roles,
-                                        updatedAt = Date(),
-                                        userId = editor._id
+                                        isFavourite = false
                                     )
                                 )
                             } else {

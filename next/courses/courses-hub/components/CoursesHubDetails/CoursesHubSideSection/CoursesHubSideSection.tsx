@@ -21,19 +21,16 @@ export interface CoursesHubSideSectionChildrenProps {
     setTab: (tab: CoursesHubSideSectionAdditionalTabs) => void;
 };
 
-export const CoursesHubSideSection = ({ courseId }: { courseId: string }) => {
+export const CoursesHubSideSection = ({ courseId, tabs }: { courseId: string, tabs: CoursesHubSideSectionMainTabs[] }) => {
     const usersIcon = useIcon('users');
     const statisticsIcon = useIcon('statistics');
-    const tabs = Object.values(CoursesHubSideSectionMainTabs);
     const additionalTabs = Object.values(CoursesHubSideSectionAdditionalTabs);
 
-    const prefix = `${coursesHubPrefix}.sidebar`
+    const prefix = `${coursesHubPrefix}.sidebar`;
 
     const { t } = useTranslation();
 
-    const [selectedTab, setSelectedTab] = useState<CoursesHubSideSectionTabs>(
-        CoursesHubSideSectionMainTabs.Users
-    );
+    const [selectedTab, setSelectedTab] = useState<CoursesHubSideSectionTabs>(tabs[0]);
 
     return (
         <div className={cn(styles.container, defaultStyles.itemContainer)}>

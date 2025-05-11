@@ -7,16 +7,17 @@ type CoursesHubDetailsHeaderProps = {
     description?: string;
     action: string;
     onClick: () => void;
+    isActionPermitted?: boolean;
 }
 
-export const CoursesHubDetailsHeader = ({ title, description, action, onClick }: CoursesHubDetailsHeaderProps) => {
+export const CoursesHubDetailsHeader = ({ title, description, action, isActionPermitted = true, onClick }: CoursesHubDetailsHeaderProps) => {
     return (
         <div className={styles.headerContainer}>
             <div className={styles.titleContainer}>
                 <div className={styles.title}>{title}</div>
                 {description && <div className={styles.description}>{description}</div>}
             </div>
-            <div className={styles.action} onClick={onClick}>{action}</div>
+            {isActionPermitted && <div className={styles.action} onClick={onClick}>{action}</div>}
         </div>
     );
 };

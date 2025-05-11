@@ -35,7 +35,15 @@ import { Modal } from "@/components/Modal/Modal";
 import { CoursesHubEditorsModal } from "./CoursesHubEditors/CoursesHubEditorsModal/CoursesHubEditorsModal";
 import { CourseEditor } from "../../types/CourseEditor";
 import { LessonSaveType, LessonToSaveOnDraftResponse } from "../../types/LessonToSave";
-import { CoursesHubSideSection } from "./CoursesHubSideSection/CoursesHubSideSection";
+import { CoursesHubSideSection, CoursesHubSideSectionMainTabs } from "./CoursesHubSideSection/CoursesHubSideSection";
+import { usePermissions } from "@/hooks/usePermissions";
+
+const detailsPermissions = [
+    'view-subscribers',
+    'view-course-statistics',
+    'manage-owners',
+    'manage-moderators'
+];
 
 export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail }) => {
     const [courseSections, setCourseSections] = useState<SectionItem[]>(course.sections || []);
@@ -130,11 +138,14 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
         setSectionTitleError('');
     }, []);
 
+    const [viewSubscribers, viewStatistics, manageOwners, manageModerators] = usePermissions(detailsPermissions);
+
     return (
         <RightSidebar
             useSidebarHook={useNonPersistentSidebar}
             content={(classNames, setIsExpanded) => <div className={cn(classNames)}>
                 <RightSidebarModal<Section, SectionToSave>
+                    permissions={{ isEditionPermitted: true, isDeletionPermitted: true }}
                     useGetItemHook={useGetItemHook}
                     prefix={coursesHubSectionsPrefixTranslate}
                     apiPrefix={coursesHubSectionsPrefixApi}
@@ -196,6 +207,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                 editors={courseEditors || []}
                                 onSave={(editors) => setCourseEditors(editors)}
                                 onCancel={onClose as any}
+                                permissions={{ manageModerators, manageOwners }}
                             />
                         }
                     </Modal>
@@ -215,8 +227,11 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                 title={t(`${coursesHubEditorsPrefixTranslate}.name`)}
                                 action={`${t(`${coursesHubEditorsPrefixTranslate}.manage-editors`)}`}
                                 onClick={() => setIsModalOpen(true)}
+                                isActionPermitted={manageModerators || manageOwners}
                             />
-                            {courseEditors && !!courseEditors.length && <CoursesHubEditors editors={courseEditors} />}
+                            {courseEditors && !!courseEditors.length &&
+                                <CoursesHubEditors editors={courseEditors} />
+                            }
                             <div className={styles.sectionsContainer}>
                                 <CoursesHubDetailsHeader
                                     title={t(`${coursesHubSectionsPrefixTranslate}.name`)}
@@ -264,7 +279,15 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                             </div>
                         </div>
 
-                        <CoursesHubSideSection courseId={course._id} />
+                        {(viewSubscribers || viewStatistics) &&
+                            <CoursesHubSideSection
+                                courseId={course._id}
+                                tabs={Object.values(CoursesHubSideSectionMainTabs).filter(tab => {
+                                    return (tab === CoursesHubSideSectionMainTabs.Users && viewSubscribers) ||
+                                        (tab === CoursesHubSideSectionMainTabs.Statistics && viewStatistics);
+                                })}
+                            />
+                        }
 
                     </div>
                 </div>

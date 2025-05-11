@@ -23,6 +23,7 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
 
     return (
         <EnhancedItem<LessonToSaveOnDetails, LessonToSaveOnDetailsRequest>
+            permissions={{ isEditionPermitted: true, isDeletionPermitted: true }}
             containerStyles={styles.body}
             hasTitle={false}
             settingsContainerClassNames={styles.settingsContainer}

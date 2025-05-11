@@ -5,6 +5,7 @@ import eduflow.admin.course.dto.course.hub.id.CoursesHubGetByIdBigResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdBigResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
+import eduflow.admin.course.models.CourseCreatorModel
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.models.CourseSubscriptionModel
@@ -69,6 +70,7 @@ interface CourseMapper {
     fun toGetSmallDto(model: CourseModel, isUser: Boolean?): CourseGetByIdSmallResponse
 
     @Mapping(target = "_id", source = "course._id")
+    @Mapping(target = "createdAt", source = "course.createdAt")
     fun toSubscriptionWithCourseDto(
         subscription: CourseSubscriptionModel,
         course: CourseModel,
@@ -83,7 +85,13 @@ interface CourseMapper {
             title = course.title,
             imageUrl = course.imageUrl,
             description = course.description,
-            tags = course.tags
+            tags = course.tags,
+            u = CourseCreatorModel(
+                _id = course.u._id,
+                name = course.u.name,
+                username = course.u.username,
+            ),
+            createdAt = course.createdAt,
         )
     }
 

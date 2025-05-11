@@ -13,12 +13,10 @@ interface UserRepository : ReactiveMongoRepository<UserModel, String>, UserRepos
     fun findByUsername(username: String): Mono<UserModel?>
 
     @Query(value = "{ '_id': { \$in: ?0 } }", fields = "{ 'id': 1, 'name': 1, 'username': 1 }")
-    fun findByIdIn(ids: List<String>): Flux<BaseUser>
+    fun findByIdIn(ids: List<String>): Flux<UserModel.BaseUser>
 
     @Query("{ '_id': { \$nin: ?0 }, \$or: [ { 'name': { \$regex: ?1, \$options: 'i' } }, { 'username': { \$regex: ?1, \$options: 'i' } } ] }")
     fun findAllExcludingIds(excludedIds: List<String>?, searchQuery: String?): Flux<UserModel>
 
     fun countByUsernameContainingIgnoreCase(username: String?): Mono<Long>
-
-    data class BaseUser(val _id: String, val name: String, val username: String)
 }

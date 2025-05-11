@@ -4,10 +4,16 @@ import eduflow.admin.course.dto.course.CourseCreateRequest
 import eduflow.admin.course.dto.course.CourseUpdateRequest
 import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
+import eduflow.admin.course.models.CourseCreatorModel
 import eduflow.admin.course.models.CourseModel
+import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.repositories.course.CourseRepository
+import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
 import eduflow.admin.course.services.CourseService
 import eduflow.admin.dto.PaginationRequest
+import eduflow.admin.services.AuthenticationService
+import eduflow.user.DefaultRoles
+import eduflow.user.toLowerCase
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -17,7 +23,9 @@ import java.util.*
 @RequestMapping("/api/courses-hub")
 class CourseHubController(
     private val courseService: CourseService,
-    private val courseRepository: CourseRepository
+    private val courseRepository: CourseRepository,
+    private val subscriptionRepository: CourseSubscriptionRepository,
+    private val authenticationService: AuthenticationService
 ) {
     @GetMapping("/courses.get/{id}")
     fun getCourseById(
@@ -41,17 +49,28 @@ class CourseHubController(
 
     @PostMapping("/courses.create")
     fun createCourse(@RequestBody course: CourseCreateRequest): Mono<ResponseEntity<CourseModel>> {
+        val user = authenticationService.getCurrentUser()
         val newCourse = CourseModel(
             _id = UUID.randomUUID().toString(),
             title = course.title,
             description = course.description,
             imageUrl = course.imageUrl,
-            u = course.u,
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
+            u = CourseCreatorModel.fromUser(user)
         )
         return courseRepository.save(newCourse)
-            .map { ResponseEntity.ok(it) }
+            .flatMap { savedCourse ->
+                subscriptionRepository.save(
+                    CourseSubscriptionModel.create(
+                        userId = user._id,
+                        courseId = savedCourse._id,
+                        isSubscribed = true,
+                        isFavourite = false,
+                        roles = listOf(DefaultRoles.OWNER.toLowerCase())
+                    )
+                ).map { ResponseEntity.ok(savedCourse) }
+            }
     }
 
     @PostMapping("/courses.update/{id}")

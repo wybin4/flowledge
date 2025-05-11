@@ -113,37 +113,25 @@
             "name": "view assigned courses",
             "description": "allows the user to view only the courses they are assigned to."
         },
-        "edit-assigned-courses": {
-            "name": "edit assigned courses",
-            "description": "allows the user to edit courses they are assigned to."
+        "edit-course": {
+            "name": "edit course",
+            "description": "allows the user to edit course in the system."
         },
-        "edit-all-courses": {
-            "name": "edit all courses",
-            "description": "allows the user to edit any course in the system."
-        },
-        "delete-all-courses": {
-            "name": "delete any course",
-            "description": "allows the user to delete any course in the system."
-        },
-        "delete-assigned-course": {
-            "name": "delete assigned course",
-            "description": "allows the user to delete only courses they are assigned to."
+        "delete-course": {
+            "name": "delete course",
+            "description": "allows the user to delete course in the system."
         },
         "create-course": {
             "name": "create course",
             "description": "allows the user to create new courses."
         },
-        "view-own-stats": {
+        "view-own-statistics": {
             "name": "view own statistics",
             "description": "allows the user to view their own course statistics."
         },
-        "view-assigned-stats": {
-            "name": "view assigned statistics",
-            "description": "allows the user to view statistics for courses they are assigned to."
-        },
-        "view-all-stats": {
-            "name": "view all statistics",
-            "description": "allows the user to view statistics for all courses in the system."
+        "view-course-statistics": {
+            "name": "view course statistics",
+            "description": "allows the user to view statistics for courses."
         },
         "view-all-users": {
             "name": "view all users",
@@ -184,6 +172,10 @@
         "manage-owners": {
             "name": "manage owners",
             "description": "allows assigning and removing course owners."
+        },
+        "view-subscribers": {
+            "name": "view course subscribers",
+            "description": "allows the user to view the list of course subscribers."
         },
         "manage-subscribers": {
             "name": "manage course subscribers",

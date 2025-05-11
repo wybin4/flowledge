@@ -2,9 +2,10 @@ package eduflow.admin.course.mappers
 
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
+import eduflow.admin.course.models.CourseCreatorModel
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.models.CourseSubscriptionModel
-import eduflow.admin.user.repositories.UserRepository
+import eduflow.admin.user.models.UserModel
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 
@@ -12,6 +13,7 @@ import org.mapstruct.Mapping
 interface CourseSubscriptionMapper {
 
     @Mapping(target = "_id", source = "course._id")
+    @Mapping(target = "createdAt", source = "course.createdAt")
     fun toSubscriptionWithCourseDto(
         subscription: CourseSubscriptionModel,
         course: CourseModel,
@@ -26,14 +28,20 @@ interface CourseSubscriptionMapper {
             title = course.title,
             imageUrl = course.imageUrl,
             description = course.description,
-            tags = course.tags
+            tags = course.tags,
+            u = CourseCreatorModel(
+                _id = course.u._id,
+                name = course.u.name,
+                username = course.u.username,
+            ),
+            createdAt = course.createdAt,
         )
     }
 
     @Mapping(target = "_id", source = "subscription._id")
     fun toSubscriptionWithUserDto(
         subscription: CourseSubscriptionModel,
-        user: UserRepository.BaseUser,
+        user: UserModel.BaseUser,
     ): CourseSubscriptionGetByCourseIdResponse {
         return CourseSubscriptionGetByCourseIdResponse(
             _id = subscription._id,

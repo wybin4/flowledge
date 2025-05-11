@@ -9,20 +9,29 @@ import cn from "classnames";
 import { Editor } from "../../../../components/Editor/Editor";
 import { PageMode } from "@/types/PageMode";
 import ReactMarkdown from 'react-markdown';
-import { LessonItem, LessonStuff } from "../../types/LessonItem";
 import { StuffItem } from "@/stuff/components/StuffItem";
 import { Stuff } from "@/stuff/types/Stuff";
 import { StuffTypes } from "@/stuff/types/StuffTypes";
 import { SynopsisLessonTabs } from "@/courses/courses-hub/types/SynopsisLessonTabs";
+import { LessonStuff } from "../../types/LessonStuff";
 
 export type LessonsPageProps = {
     mode: PageMode;
-    lesson: LessonItem;
-    setLesson?: Dispatch<SetStateAction<LessonItem | undefined>>;
-    hasTitle?: boolean;
+    lesson: LessonPageItem;
+    setLesson?: Dispatch<SetStateAction<LessonPageItem>>;
 };
 
-export const LessonPage = ({ mode, lesson, setLesson, hasTitle = true }: LessonsPageProps) => {
+export type LessonPageItem = {
+    _id: string;
+    title?: string;
+    time?: string;
+    imageUrl?: string;
+    synopsisText?: string;
+    videoUrl?: string;
+    stuffList?: LessonStuff[];
+};
+
+export const LessonPage = ({ mode, lesson, setLesson }: LessonsPageProps) => {
     const tabs = Object.values(SynopsisLessonTabs);
     const [selectedTab, setSelectedTab] = useState<SynopsisLessonTabs>(tabs[0]);
     const isEditorMode = mode === PageMode.Editor;
@@ -45,7 +54,7 @@ export const LessonPage = ({ mode, lesson, setLesson, hasTitle = true }: Lessons
 
     return (
         <div className={styles.container}>
-            {hasTitle &&
+            {lesson.title &&
                 <div className={styles.titleContainer}>
                     <h1 className={styles.title}>{lesson.title}</h1>
                 </div>
@@ -70,26 +79,39 @@ export const LessonPage = ({ mode, lesson, setLesson, hasTitle = true }: Lessons
                     />
                 )}
             </InputBoxWrapper>
-            {!isEditorMode && selectedTab === SynopsisLessonTabs.Synopsis && <ReactMarkdown>{lesson.synopsis}</ReactMarkdown>}
-            {!isEditorMode && selectedTab === SynopsisLessonTabs.Stuff && lesson.stuffs && lesson.stuffs.length > 0 && lesson.stuffs.map(stuff => (
-                <StuffItem key={stuff._id} stuff={stuff as Stuff} onDownload={() => onDownloadStuff(stuff)} />
-            ))}
+            {!isEditorMode && selectedTab === SynopsisLessonTabs.Synopsis && (
+                <ReactMarkdown>
+                    {lesson.synopsisText}
+                </ReactMarkdown>
+            )}
+            {!isEditorMode &&
+                selectedTab === SynopsisLessonTabs.Stuff &&
+                lesson.stuffList &&
+                lesson.stuffList.length > 0 &&
+                lesson.stuffList.map(stuff => (
+                    <StuffItem
+                        key={stuff._id}
+                        stuff={stuff as Stuff}
+                        onDownload={() => onDownloadStuff(stuff)}
+                    />
+                ))
+            }
             {isEditorMode &&
                 <>
                     <StuffUpload
-                        stuffList={lesson.stuffs ?? [] as any}
-                        setStuffList={(stuffs) => {
-                            setLesson && setLesson((currentLesson: LessonItem | undefined) => {
+                        stuffList={lesson.stuffList ?? [] as any}
+                        setStuffList={(stuffList) => {
+                            setLesson && setLesson((currentLesson: LessonPageItem) => {
                                 if (currentLesson) {
                                     return {
-                                        ...currentLesson, stuffs: stuffs.map((stuff: Stuff) => ({
+                                        ...currentLesson, stuffList: stuffList.map((stuff: Stuff) => ({
                                             ...stuff,
                                             file: {
                                                 name: stuff.file?.name,
                                                 url: ''
                                             }
                                         })) ?? []
-                                    } as LessonItem;
+                                    } as LessonPageItem;
                                 }
                                 return currentLesson;
                             });
@@ -102,13 +124,13 @@ export const LessonPage = ({ mode, lesson, setLesson, hasTitle = true }: Lessons
                         className={cn({
                             [styles.empty]: selectedTab !== SynopsisLessonTabs.Synopsis
                         })}
-                        markdownText={lesson.synopsis ?? ''}
+                        markdownText={lesson.synopsisText ?? ''}
                         setMarkdownText={(text) => {
-                            setLesson && setLesson((currentLesson: LessonItem | undefined) => {
+                            setLesson && setLesson((currentLesson: LessonPageItem) => {
                                 if (currentLesson) {
                                     return {
-                                        ...currentLesson, synopsis: text
-                                    } as LessonItem;
+                                        ...currentLesson, synopsisText: text
+                                    } as LessonPageItem;
                                 }
                                 return currentLesson;
                             });

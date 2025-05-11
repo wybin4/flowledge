@@ -179,6 +179,19 @@ textarea {
   resize: none;
 }
 
+.md-editor .cm-editor,
+.md-editor .cm-scroller,
+.md-editor .cm-content {
+  overflow-x: hidden;
+}
+
+.md-editor .cm-line {
+  max-width: 28rem;
+
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+}
+
 .code-mirror-focused .ͼ1 .cm-foldPlaceholder {
   background-color: var(--red);
   border: none;

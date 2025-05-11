@@ -4,18 +4,18 @@ import eduflow.admin.course.dto.lesson.LessonUpdateRequest
 import eduflow.admin.course.dto.lesson.create.*
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.repositories.CourseLessonRepository
-import eduflow.user.Language
+import eduflow.admin.course.services.CourseLessonService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
-import java.util.*
 
 @RestController
 @RequestMapping("/api/courses-hub")
 class CourseLessonController(
     private val lessonRepository: CourseLessonRepository,
+    private val lessonService: CourseLessonService
 ) {
 
     @PostMapping("/lessons.create")
@@ -25,7 +25,7 @@ class CourseLessonController(
         return when (lesson) {
             is LessonCreateDraftRequest -> {
                 try {
-                    createDraft(lesson)
+                    lessonService.createDraft(lesson)
                 } catch (e: IllegalArgumentException) {
                     Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for draft"))
                 }
@@ -33,15 +33,36 @@ class CourseLessonController(
 
             is LessonAddVideoRequest -> {
                 try {
-                    addVideo(lesson)
+                    lessonService.addVideo(lesson)
                 } catch (e: IllegalArgumentException) {
                     Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for video"))
                 }
             }
 
+            is LessonRemoveVideoRequest -> {
+                try {
+                    lessonService.removeVideo(lesson)
+                } catch (e: IllegalArgumentException) {
+                    Mono.error<Any>(
+                        ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Invalid request body for video removing"
+                        )
+                    )
+                }
+            }
+
             is LessonAddDetailsRequest -> {
                 try {
-                    addDetails(lesson)
+                    lessonService.addDetails(lesson)
+                } catch (e: IllegalArgumentException) {
+                    Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for details"))
+                }
+            }
+
+            is LessonAddSynopsisAndStuffRequest -> {
+                try {
+                    lessonService.addSynopsisAndStuff(lesson)
                 } catch (e: IllegalArgumentException) {
                     Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for details"))
                 }
@@ -49,91 +70,6 @@ class CourseLessonController(
 
             else -> Mono.error<Any>(IllegalArgumentException("Invalid action parameter"))
         }
-    }
-
-    private fun createDraft(lesson: LessonCreateDraftRequest): Mono<LessonCreateResponse> {
-        val locale = Language.RU // TODO: get from user document
-
-        val draftCount = if (lesson.courseId != null) {
-            lessonRepository.countByCourseIdAndIsDraft(lesson.courseId, true).block() ?: 0
-        } else if (lesson.sectionId != null) {
-            lessonRepository.countBySectionIdAndIsDraft(lesson.sectionId, true).block() ?: 0
-        } else {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Either courseId or sectionId must be provided")
-        }
-
-        val title = when (locale) {
-            Language.RU -> "черновик лекции ${draftCount + 1}"
-            Language.EN -> "draft lecture ${draftCount + 1}"
-            else -> "Draft lecture ${draftCount + 1}"
-        }
-
-        val newLesson = CourseLessonModel(
-            _id = UUID.randomUUID().toString(),
-            title = title,
-            courseId = lesson.courseId,
-            sectionId = lesson.sectionId,
-            isVisible = false,
-            createdAt = Date(),
-            updatedAt = Date(),
-            isDraft = true
-        )
-
-        return lessonRepository.save(newLesson)
-            .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
-    }
-
-    private fun addVideo(lesson: LessonAddVideoRequest): Mono<LessonCreateResponse> {
-        if (lesson.videoId == null && (lesson.synopsis != null || lesson.survey != null)) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "synopsis and surveyText require videoId")
-        }
-        if (lesson.survey != null && lesson.synopsis == null) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "surveyText requires synopsis")
-        }
-
-        return lessonRepository.findById(lesson._id)
-            .flatMap { existingLesson ->
-                existingLesson.videoId = lesson.videoId
-                existingLesson.surveyText = lesson.survey
-                existingLesson.synopsisText = lesson.synopsis
-                lessonRepository.save(existingLesson)
-            }
-            .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
-    }
-
-    private fun addDetails(lesson: LessonAddDetailsRequest): Mono<LessonCreateResponse> {
-        return lessonRepository.findById(lesson._id)
-            .flatMap { existingLesson ->
-                if (lesson.autoDetect) {
-                    if (lesson.time != null || lesson.timeUnit != null) {
-                        return@flatMap Mono.error<CourseLessonModel>(
-                            ResponseStatusException(
-                                HttpStatus.BAD_REQUEST,
-                                "Time and timeUnit should be null when autoDetect is true"
-                            )
-                        )
-                    }
-                    // todo() - здесь будет логика для autoDetect
-                } else {
-                    if (lesson.time == null || lesson.timeUnit == null) {
-                        return@flatMap Mono.error<CourseLessonModel>(
-                            ResponseStatusException(
-                                HttpStatus.BAD_REQUEST,
-                                "Time and timeUnit should not be null when autoDetect is false"
-                            )
-                        )
-                    }
-                    existingLesson.time = "${lesson.time} ${lesson.timeUnit}"
-                }
-
-                existingLesson.isDraft = false
-                existingLesson.title = lesson.title
-                if (lesson.imageUrl != null) {
-                    existingLesson.imageUrl = lesson.imageUrl
-                }
-                lessonRepository.save(existingLesson)
-            }
-            .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
     }
 
     @PostMapping("/lessons.update/{id}")
@@ -165,6 +101,15 @@ class CourseLessonController(
             .onErrorResume { _: Throwable ->
                 Mono.just(ResponseEntity.notFound().build())
             }
+    }
+
+    @GetMapping("/lessons.get/{id}")
+    fun getLesson(
+        @PathVariable id: String
+    ): Mono<ResponseEntity<CourseLessonModel>> {
+        return lessonRepository.findById(id)
+            .map { ResponseEntity.ok(it) }
+            .defaultIfEmpty(ResponseEntity.notFound().build())
     }
 
 }

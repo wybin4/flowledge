@@ -1,11 +1,9 @@
 "use client";
 
-import { TablePageMode } from "@/types/TablePageMode";
 import { useTranslation } from "react-i18next";
-import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate, coursesHubPrefix } from "@/helpers/prefixes";
-import { PageLayoutHeader } from "@/components/PageLayout/PageLayoutHeader/PageLayoutHeader";
+import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate, coursesHubPrefix, uploadsPrefix } from "@/helpers/prefixes";
 import { FiniteSelector } from "@/components/FiniteSelector/FiniteSelector";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import styles from "./CreateLessonVideo.module.css";
 import { useIcon } from "@/hooks/useIcon";
 import { VideoUpload } from "@/components/Video/VideoUpload/VideoUpload";
@@ -19,13 +17,15 @@ import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import { integrationApiClient, neuralApiClient, userApiClient, userApiClientPrefix } from "@/apiClient";
 import { SynopsisCreateResponse } from "../../../dto/SynopsisCreateResponse";
 import { SurveyCreateResponse } from "../../../dto/SurveyCreateResponse";
-import { LessonSaveType, LessonToSaveOnDraftRequest, LessonToSaveOnDraftResponse } from "../../../types/LessonToSave";
+import { LessonAdditionalSaveType, LessonSaveType, LessonToSaveOnDraftRequest, LessonToSaveOnDraftResponse } from "../../../types/LessonToSave";
 import { usePathname, useRouter } from "next/navigation";
 import { SettingType, SettingValueType } from "@/types/Setting";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
 import { UpdatableSetting } from "@/hooks/useSettings";
 import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { CreateLessonChildrenProps } from "../CreateLesson";
+import { LessonGetByIdResponse } from "@/courses/courses-hub/dto/LessonGetByIdResponse";
 
 enum VideoActionType {
     Synopsis = 'generate-synopsis',
@@ -51,16 +51,40 @@ type VideoAction = {
     options?: Record<string, SettingValueType>
 };
 
-type CreateLessonVideoProps = {
-    _id: string;
-    mode: TablePageMode;
+interface CreateLessonVideoProps extends CreateLessonChildrenProps {
+    videoId?: string;
 }
 
-export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
+export const CreateLessonVideo = ({ lessonId, setLesson, videoId: initialVideoId }: CreateLessonVideoProps) => {
     const { t } = useTranslation();
 
+    useEffect(() => {
+        const fetchVideo = async () => {
+            if (initialVideoId) {
+                try {
+                    const response = await fetch(`${userApiClientPrefix}/api/${uploadsPrefix}.get/${initialVideoId}`, {
+                        credentials: 'include',
+                    });
+                    if (!response.ok) {
+                        throw new Error('File not found');
+                    }
+                    const contentDisposition = response.headers.get('Content-Disposition');
+                    const filename = contentDisposition?.split('filename=')[1]?.replace(/['"]/g, '') || 'video.mp4';
+                    const blob = await response.blob();
+                    const file = new File([blob], filename, { type: blob.type });
+                    setVideo(file);
+                } catch (error) {
+                    console.error('Error fetching video:', error);
+                }
+            }
+        };
+
+        fetchVideo();
+    }, [initialVideoId]);
+
+    const [removeVideo, setRemoveVideo] = useState<boolean>(false);
     const [video, setVideo] = useState<File | null>(null);
-    const [videoId, setVideoId] = useState<string | undefined>(undefined);
+    const [videoId, setVideoId] = useState<string | undefined>(initialVideoId);
     const [isVideoUploading, setIsVideoUploading] = useState<boolean>(false);
     const [isVideoUploadError, setIsVideoUploadError] = useState<string | undefined>(undefined);
 
@@ -85,8 +109,6 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
     const infoIcon = useIcon('info');
     const swapIcon = useIcon('swap');
     const videoUploadIcon = useIcon('video-upload');
-
-    const isEditMode = mode === TablePageMode.EDIT;
 
     const toggleVideoAction = useCallback((label: string) => {
         setVideoActions(prev =>
@@ -175,12 +197,29 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
         }
     };
 
+    const baseNextUrl = '?details=true';
+
     const onSave = useCallback(async (isDraft?: boolean) => {
-        if (!withVideo || !videoId) {
-            router.push('?details=true');
+        if (initialVideoId) {
+            router.push(baseNextUrl);
+            return;
         }
+
+        if (removeVideo && !withVideo) {
+            await saveLesson({
+                _id: lessonId,
+                type: LessonAdditionalSaveType.RemoveVideo,
+            });
+            router.push(baseNextUrl);
+            return;
+        }
+
+        if (!withVideo || !videoId) {
+            router.push(baseNextUrl);
+            return;
+        }
+
         try {
-            let lessonId: string | undefined;
             let synopsis: string | undefined, survey: string | undefined = undefined;
 
             if (!isDraft) {
@@ -200,18 +239,13 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
 
             setLoadingString(`${coursesHubLessonsPrefixTranslate}.creating`);
 
-            const result = await saveLesson({
+            await saveLesson({
                 videoId, survey, synopsis,
                 type: LessonSaveType.Video,
-                _id
+                _id: lessonId
             });
-            lessonId = result.lessonId;
 
-            if (lessonId) {
-                router.push(`${currentPath}/${lessonId}?details=true&hasVideo=${!!videoId}`)
-            } else {
-                console.error('Ошибка при сохранении');
-            }
+            router.push(`${baseNextUrl}&hasVideo=${!!videoId}`)
         } catch (error) {
             console.error('Ошибка при сохранении:', error);
             throw error;
@@ -230,7 +264,7 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
         >{backButton =>
             <>
                 <div className={styles.content}>
-                    <div className={styles.videoSelector}>
+                    {!initialVideoId && (<div className={styles.videoSelector}>
                         {videoSelectorOptions.map(option => (
                             <FiniteSelector
                                 key={option.label}
@@ -242,7 +276,7 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
                                 icon={checkIcon}
                             />
                         ))}
-                    </div>
+                    </div>)}
                     {withVideo && <>
                         <CreateLessonVideoHeader
                             title={t(`${translationPrefix}.upload-video.name`)}
@@ -253,6 +287,18 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
                         />
                         <VideoUpload
                             setId={setVideoId}
+                            handleDelete={() => {
+                                setVideoId(undefined);
+                                setVideo(null);
+                                setRemoveVideo(true);
+                                setLesson((lesson: LessonGetByIdResponse | undefined) => {
+                                    if (lesson) {
+                                        const { videoId, surveyText, synopsisText, ...rest } = lesson;
+                                        return rest;
+                                    }
+                                    return lesson;
+                                });
+                            }}
                             isUploading={isVideoUploading}
                             setIsUploading={setIsVideoUploading}
                             isUploadError={isVideoUploadError}
@@ -261,7 +307,7 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
                             setVideo={setVideo}
                             maxSize={fileUploadMaxSize}
                             apiClientPrefix={userApiClientPrefix}
-                            childrenOnVideo={
+                            childrenOnVideo={!initialVideoId && (
                                 <>
                                     <div className={styles.videoActions}>
                                         <CreateLessonVideoHeader
@@ -308,7 +354,7 @@ export const CreateLessonVideo = ({ _id, mode }: CreateLessonVideoProps) => {
                                         ))}
                                     </div>
                                 </>
-                            }
+                            )}
                         />
                     </>}
                     {!videoId &&

@@ -2,55 +2,38 @@
 
 import { ButtonBack } from "@/components/Button/ButtonBack/ButtonBack";
 import { StickyBottomBar } from "@/components/StickyBottomBar/StickyBottomBar";
-import { LessonPage } from "@/courses/courses-list/components/LessonPage/LessonPage";
-import { LessonItem } from "@/courses/courses-list/types/LessonItem";
-import { StuffTypes } from "@/stuff/types/StuffTypes";
+import { LessonPage, LessonPageItem } from "@/courses/courses-list/components/LessonPage/LessonPage";
 import { PageMode } from "@/types/PageMode";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./CreateLessonSynopsisAndStuff.module.css";
-import { coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
+import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
 import { Button, ButtonType } from "@/components/Button/Button";
 import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
+import { CreateLessonChildrenProps } from "../CreateLesson";
+import { LessonStuff } from "@/courses/courses-list/types/LessonStuff";
+import { userApiClient } from "@/apiClient";
+import { LessonSaveType } from "@/courses/courses-hub/types/LessonToSave";
 
-export const CreateLessonSynopsisAndStuff = ({ _id }: { _id: string }) => {
-    const initialLesson = {
-        _id,
-        title: "пример урока",
-        time: "30 минут",
-        synopsis: `
-## классификация case:
+interface CreateLessonSynopsisAndStuffProps extends CreateLessonChildrenProps {
+    synopsisText?: string;
+    stuffList?: LessonStuff[];
+}
 
-- средства анализа и проектирования (например, AllFusion Process Modeler (BPwin), Busines Modeller, IBM Rational Rose и др.);
-- средства проектирования баз данных (AllFusion Data Modeler (ERwin), Power Modeller, Emb ERStudio и др.);
-- средства разработки и тестирования приложений (TAU/Developer,TAU/Tester, MS VS.Net, Emb RAD-Studio и др.);
-- средства реинжиниринга процессов и документирования;
-            `,
-        imageUrl: 'http://localhost:3000/justpic1.png',
-        videoUrl: 'http://localhost:3000/justvideo.mp4',
-        stuffs: [
-            {
-                _id: '1',
-                type: StuffTypes.Link,
-                value: 'http://localhost:3000/courses-list/1/1',
-            },
-            {
-                _id: '2',
-                type: StuffTypes.Task,
-                file: {
-                    url: 'http://localhost:3000/justdoc.docx',
-                    name: 'justdoc.docx'
-                }
-            },
-        ]
+export const CreateLessonSynopsisAndStuff = ({ lessonId, synopsisText, stuffList }: CreateLessonSynopsisAndStuffProps) => {
+    const saveItem = () => userApiClient.post(
+        `${coursesHubLessonsPrefixApi}.create`, {
+        ...lesson, type: LessonSaveType.Synopsis
+    });
+
+    const initialLesson: LessonPageItem = {
+        _id: lessonId, synopsisText, stuffList
     };
 
-    const [lesson, setLesson] = useState<LessonItem | undefined>(initialLesson);
+    useEffect(() => {
+        setLesson(initialLesson);
+    }, [lessonId, synopsisText, JSON.stringify(stuffList)]);
 
-    if (!lesson) {
-        return null;
-    }
-
-    const saveItem = () => { };
+    const [lesson, setLesson] = useState<LessonPageItem>(initialLesson);
 
     return (
         <StickyBottomBar barContent={
@@ -58,7 +41,7 @@ export const CreateLessonSynopsisAndStuff = ({ _id }: { _id: string }) => {
                 <ButtonBack hasBackButtonIcon={false} />
                 {JSON.stringify(initialLesson) != JSON.stringify(lesson) &&
                     <Button
-                        onClick={() => saveItem()}
+                        onClick={saveItem}
                         prefix={coursesHubLessonsPrefixTranslate}
                         type={ButtonType.SAVE}
                         mode={FillBorderUnderlineMode.UNDERLINE}
@@ -69,7 +52,6 @@ export const CreateLessonSynopsisAndStuff = ({ _id }: { _id: string }) => {
         }>
             <LessonPage
                 mode={PageMode.Editor}
-                hasTitle={false}
                 lesson={lesson}
                 setLesson={setLesson}
             />

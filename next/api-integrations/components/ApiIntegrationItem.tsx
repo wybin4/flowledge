@@ -2,12 +2,13 @@
 
 import { ApiIntegration } from "../types/ApiIntegration";
 import { apiIntegrationsPrefix } from "@/helpers/prefixes";
-import { neuralApiClient } from "@/apiClient";
+import { integrationApiClient, neuralApiClient } from "@/apiClient";
 import EnhancedItem from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
 import { SettingType } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
 import { ApiIntegrationToSave } from "../types/ApiIntegrationToSave";
 import { fakeUser } from "@/helpers/fakeUser";
+import { usePermission } from "@/hooks/usePermission";
 
 interface ApiIntegrationItemProps {
     mode: TablePageMode;
@@ -15,10 +16,16 @@ interface ApiIntegrationItemProps {
 }
 
 export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
+    const isPermitted = usePermission('manage-integrations');
+
     return (
         <EnhancedItem<ApiIntegration, ApiIntegrationToSave>
             prefix={apiIntegrationsPrefix}
             mode={mode}
+            permissions={{
+                isEditionPermitted: isPermitted,
+                isDeletionPermitted: isPermitted
+            }}
             _id={_id}
             settingKeys={[
                 { name: 'enabled', types: [SettingType.Radio] },
@@ -26,11 +33,14 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
                 { name: 'secret', types: [SettingType.InputPassword] },
                 { name: 'script', types: [SettingType.Code] }
             ]}
-            apiClient={neuralApiClient}
+            apiClient={integrationApiClient}
             transformItemToSave={(item) => {
                 const { name, secret, script, enabled } = item;
                 const body = { name, secret, script, u: fakeUser, enabled };
                 return body;
+            }}
+            backButton={{
+                hasBackButtonIcon: true
             }}
             createEmptyItem={() => ({
                 _id: "",

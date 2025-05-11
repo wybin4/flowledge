@@ -48,7 +48,7 @@ export const MultiSettingWrapperBodyRenderer = ({
     if ((body && type === SettingType.Radio) || (!body && type !== SettingType.Radio)) {
         return null;
     }
-    
+
     return (
         <SettingWrapperBody
             key={index}

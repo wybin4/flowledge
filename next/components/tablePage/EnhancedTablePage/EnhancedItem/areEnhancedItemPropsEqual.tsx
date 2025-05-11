@@ -12,6 +12,7 @@ export const areEnhancedItemPropsEqual = <T, U>(prevProps: EnhancedItemProps<T, 
     return prevProps._id === nextProps._id &&
         prevProps.mode === nextProps.mode &&
         prevProps.title === nextProps.mode &&
+        JSON.stringify(prevProps.passedInitialValues) === JSON.stringify(nextProps.passedInitialValues) &&
         areSettingKeysEqual(prevProps.settingKeys, nextProps.settingKeys);
 }
 

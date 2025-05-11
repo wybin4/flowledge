@@ -40,7 +40,7 @@ class ApiIntegration(BaseModel):
     updatedAt: str
     enabled: bool
 
-@app.get("/api-integrations.get", response_model=List[Any])
+@app.get("/api/api-integrations.get", response_model=List[Any])
 async def get_api_integrations(page: int = 1, pageSize: int = 10, searchQuery: str = None, sortQuery: str = None):
     query = {}
     if searchQuery:
@@ -67,7 +67,7 @@ async def get_api_integrations(page: int = 1, pageSize: int = 10, searchQuery: s
         integrations.append(filtered_doc)
     return integrations
 
-@app.get("/api-integrations.count", response_model=int)
+@app.get("/api/api-integrations.count", response_model=int)
 async def get_api_integrations_count(searchQuery: str = None):
     query = {}
     if searchQuery:
@@ -76,7 +76,7 @@ async def get_api_integrations_count(searchQuery: str = None):
     count = await db.api_integrations.count_documents(query)
     return count
 
-@app.get("/api-integrations.get/{integration_id}", response_model=Any)
+@app.get("/api/api-integrations.get/{integration_id}", response_model=Any)
 async def get_api_integration(integration_id: str):
     try:
         doc = await db.api_integrations.find_one({"_id": integration_id})
@@ -86,7 +86,7 @@ async def get_api_integration(integration_id: str):
     except Exception as e:
         return {"error": f"Произошла ошибка: {str(e)}"}
 
-@app.post("/api-integrations.create", response_model=Any)
+@app.post("/api/api-integrations.create", response_model=Any)
 async def create_api_integration(integration: Dict[str, Any]):
     try:
         required_fields = ["name", "secret", "script", "u", "enabled"]
@@ -109,7 +109,7 @@ async def create_api_integration(integration: Dict[str, Any]):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Произошла ошибка: {str(e)}")
 
-@app.put("/api-integrations.update/{integration_id}", response_model=Any)
+@app.put("/api/api-integrations.update/{integration_id}", response_model=Any)
 async def update_api_integration(integration_id: str, integration: Dict[str, Any]):
     try:
         integration_data = {
@@ -134,7 +134,7 @@ async def update_api_integration(integration_id: str, integration: Dict[str, Any
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Произошла ошибка: {str(e)}")
 
-@app.delete("/api-integrations.delete/{integration_id}", response_model=Any)
+@app.delete("/api/api-integrations.delete/{integration_id}", response_model=Any)
 async def delete_api_integration(integration_id: str):
     try:
         result = await db.api_integrations.delete_one({"_id": integration_id})
@@ -187,7 +187,7 @@ class ExecuteScriptRequest(BaseModel):
     integration_id: str
     context: Dict[str, Any]
 
-@app.post("/survey.create")
+@app.post("/api/survey.create")
 async def execute_script_route(request: ExecuteScriptRequest):
     """
     Извлекает скрипт из базы данных по идентификатору интеграции и выполняет его.

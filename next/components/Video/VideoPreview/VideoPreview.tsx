@@ -9,11 +9,13 @@ type VideoPreviewProps = {
     size: number;
     isUploading: boolean;
     progress: number;
+    handleDelete: () => void;
 };
 
-export const VideoPreview = ({ name, size, isUploading, progress }: VideoPreviewProps) => {
+export const VideoPreview = ({ name, size, isUploading, progress, handleDelete }: VideoPreviewProps) => {
     const { t } = useTranslation();
     const videoIcon = useIcon('video');
+    const deleteIcon = useIcon('close');
 
     return (
         <div className={styles.video}>
@@ -26,6 +28,7 @@ export const VideoPreview = ({ name, size, isUploading, progress }: VideoPreview
                     </div>
                 </div>
             </div>
+            {!isUploading && <div onClick={handleDelete} className={styles.deleteIcon}>{deleteIcon}</div>}
             {isUploading && <FileLoader />}
         </div>
     );

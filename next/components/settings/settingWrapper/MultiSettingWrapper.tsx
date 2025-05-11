@@ -1,5 +1,5 @@
 "use client";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { ComplexSettingValueType, SettingOption, SettingType, SettingValue } from "@/types/Setting";
 import { SettingWrapperContainer } from "./SettingWrapperContainer";
 import styles from "./SettingWrapper.module.css";
@@ -38,6 +38,10 @@ export const MultiSettingWrapper = memo(({
 }: MultiSettingWrapperProps) => {
     const [settingProps, setSettingProps] = useState<MultiSettingWrapperSetting>(setting);
     const hasHeaderChildren = !!types.filter(type => type === SettingType.Radio).length;
+
+    useEffect(() => {
+        setSettingProps(sp => ({ ...sp, value: setting.value }));
+    }, [JSON.stringify(setting.value)]);
 
     const multiHandleSave = (
         newValue: UpdatableSetting,

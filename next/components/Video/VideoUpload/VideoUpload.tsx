@@ -7,7 +7,7 @@ import cn from "classnames";
 import { getFileSize } from "@/helpers/getFileSize";
 import { VideoPreview } from "../VideoPreview/VideoPreview";
 import { getAllowedFileFormats } from "@/helpers/getAllowedFileFormats";
-import { fakeUser } from "@/helpers/fakeUser";
+import { uploadsPrefix } from "@/helpers/prefixes";
 
 type VideoUploadProps = {
     isUploading: boolean;
@@ -20,6 +20,7 @@ type VideoUploadProps = {
     maxSize: number;
     apiClientPrefix: string;
     setId: (videoId: string) => void;
+    handleDelete: () => void;
 };
 
 type UploadedVideo = {
@@ -27,7 +28,7 @@ type UploadedVideo = {
 };
 
 export const VideoUpload = ({
-    video, setVideo, setId,
+    video, setVideo, setId, handleDelete,
     isUploading, setIsUploading,
     isUploadError, setIsUploadError,
     childrenOnVideo, maxSize, apiClientPrefix
@@ -49,11 +50,11 @@ export const VideoUpload = ({
     const uploadVideo = async (file: File): Promise<UploadedVideo> => {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', `${apiClientPrefix}/uploads.set`, true);
+            xhr.open('POST', `${apiClientPrefix}/api/${uploadsPrefix}.set`, true);
+            xhr.withCredentials = true;
 
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('userId', fakeUser._id);
 
             xhr.upload.onprogress = (event) => {
                 if (!event.lengthComputable) {
@@ -153,6 +154,7 @@ export const VideoUpload = ({
                         size={video.size}
                         isUploading={isUploading}
                         progress={progress}
+                        handleDelete={handleDelete}
                     />
                     {childrenOnVideo}
                 </>

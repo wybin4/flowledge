@@ -53,7 +53,6 @@ export interface EnhancedItemProps<T, U> extends BaseEnhancedItemProps {
     apiPrefix?: string;
     apiClient: ApiClientMethods;
     transformItemToSave: TransformItemToSave<T, U>;
-    createEmptyItem: () => T;
     useGetItemHook?: (callback: (item: T) => void) => (_id: string) => void;
 
     backButton?: ButtonBackProps & Pick<ButtonBackContainerProps, 'type' | 'compressBody'>;
@@ -64,11 +63,16 @@ export interface EnhancedItemProps<T, U> extends BaseEnhancedItemProps {
     hasDeleteDescription?: boolean;
 
     title?: string;
+
+    // createEmptyItem or passedInitialValues
+    createEmptyItem?: () => T;
+    passedInitialValues?: T;
 }
 
 const EnhancedItem = <T extends Identifiable, U>({
     _id, mode, prefix, apiPrefix, permissions,
     apiClient, queryParams,
+    passedInitialValues,
     settingKeys,
     transformItemToSave, createEmptyItem,
     useGetItemHook,
@@ -82,7 +86,7 @@ const EnhancedItem = <T extends Identifiable, U>({
     onActionCallback
 }: EnhancedItemProps<T, U>) => {
     const { t } = useTranslation();
-    const [item, setItem] = useState<T | undefined>(undefined);
+    const [item, setItem] = useState<T | undefined>(passedInitialValues);
     const [initialValues, setInitialValues] = useState<T | undefined>(undefined);
 
     const realPrefix = apiPrefix ?? prefix;
@@ -107,15 +111,14 @@ const EnhancedItem = <T extends Identifiable, U>({
             realPrefix, apiClient, setItemAndInitialValues, queryParams
         );
 
-
     useEffect(() => {
         if (isEditMode) {
             getItem(_id);
         } else {
-            const newItem = createEmptyItem();
+            const newItem = passedInitialValues ?? createEmptyItem?.();
             setItemAndInitialValues(newItem as T);
         }
-    }, [_id, mode]);
+    }, [_id, mode, JSON.stringify(passedInitialValues)]);
 
     const hasChanges = useCallback(() => {
         if (!initialValues || !item) return false;
@@ -125,7 +128,7 @@ const EnhancedItem = <T extends Identifiable, U>({
     if (!item) {
         return <div>{t('loading')}</div>;
     }
-   
+
     return (
         <ButtonBackContainer className={containerStyles} {...backButton}>{button =>
             <EnhancedItemBody<T>

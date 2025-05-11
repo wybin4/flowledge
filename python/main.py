@@ -107,7 +107,7 @@ def add_punctuation(text: str) -> str:
 class CreateSynopsisRequest(BaseModel):
     fileId: str
 
-@app.post("/synopsis.create")
+@app.post("/api/synopsis.create")
 async def create_synopsis(request: CreateSynopsisRequest):
     """Получает файл из GridFS по fileId, извлекает аудио, разбивает на чанки, обрабатывает параллельно и объединяет результат"""
     return {

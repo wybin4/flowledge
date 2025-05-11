@@ -122,7 +122,8 @@ export const Editor = ({ markdownText, setMarkdownText, className }: EditorProps
                 <MarkdownEditor
                     className={cn(focused ? 'code-mirror-focused' : 'code-mirror', 'editor-code')}
                     value={markdownText}
-                    height="600px"
+                    height='68vh'
+                    width='30rem'
                     onChange={(value, _) => {
                         setMarkdownText(value);
                     }}

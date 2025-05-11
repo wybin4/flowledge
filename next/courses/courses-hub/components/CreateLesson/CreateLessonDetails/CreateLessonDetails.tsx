@@ -11,21 +11,49 @@ import { TimeUnit } from "@/types/TimeUnit";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import styles from "./CreateLessonDetails.module.css";
+import { CreateLessonChildrenProps } from "../CreateLesson";
+import { parseTimeUnit } from "@/helpers/parseTimeUnit";
+import { useCallback, useEffect, useState } from "react";
 
-export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: boolean }) => {
+interface CreateLessonDetailsProps extends CreateLessonChildrenProps {
+    hasVideo: boolean;
+    title?: string;
+    time?: TimeUnit
+    imageUrl?: string;
+}
+
+export const CreateLessonDetails = ({ lessonId, title, time, imageUrl, hasVideo }: CreateLessonDetailsProps) => {
     const { t } = useTranslation();
     const translationPrefix = coursesHubLessonsPrefixTranslate;
+
+    const [lesson, setLesson] = useState<LessonToSaveOnDetails | undefined>(undefined);
+
+    useEffect(() => {
+        const { value, unit } = (time && parseTimeUnit(time)) ?? { value: 0, unit: TimeUnit.MINS };
+        const details: LessonToSaveOnDetails = {
+            _id: lessonId,
+            title: title ?? '',
+            imageUrl,
+            time: {
+                time: value,
+                timeUnit: unit,
+                autoDetect: false
+            }
+        };
+        setLesson(details);
+    }, [lessonId, title, imageUrl, time]);
 
     const minutesVal = t('minutes-abbr');
     const hoursVal = t('hours-abbr');
 
     const router = useRouter();
-
+   
     return (
         <EnhancedItem<LessonToSaveOnDetails, LessonToSaveOnDetailsRequest>
             permissions={{ isEditionPermitted: true, isDeletionPermitted: true }}
             containerStyles={styles.body}
             hasTitle={false}
+            passedInitialValues={lesson}
             settingsContainerClassNames={styles.settingsContainer}
             buttonContainerClassNames={styles.buttonContainer}
             mode={TablePageMode.CREATE}
@@ -91,15 +119,6 @@ export const CreateLessonDetails = ({ _id, hasVideo }: { _id: string, hasVideo: 
                 hasBackButtonIcon: false,
                 compressBody: false
             }}
-            createEmptyItem={() => ({
-                _id,
-                title: '',
-                time: {
-                    time: 0,
-                    timeUnit: TimeUnit.MINS,
-                    autoDetect: false
-                }
-            })}
         />
     )
 };

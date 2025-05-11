@@ -5,7 +5,7 @@ import { SettingType } from "@/types/Setting";
 import { TablePageMode } from "@/types/TablePageMode";
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { LessonToSaveVisibility } from "@/courses/courses-hub/types/LessonToSaveVisibility";
-import { CourseLessonItem } from "@/courses/courses-list/types/CourseLessonItem";
+import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 import { TimeUnit } from "@/types/TimeUnit";
 import { Card } from "@/components/Card/Card";
 import { ItemSize } from "@/types/ItemSize";
@@ -16,9 +16,9 @@ import { useTranslation } from "react-i18next";
 import { useIcon } from "@/hooks/useIcon";
 import { RightSidebarModalProps } from "../CoursesHubDetails";
 
-interface LessonRightSidebarModalProps extends RightSidebarModalProps<CourseLessonItem> {
-    selected: CourseLessonItem;
-    setSelected: Dispatch<SetStateAction<CourseLessonItem | undefined>>;
+interface LessonRightSidebarModalProps extends RightSidebarModalProps<LessonGetResponse> {
+    selected: LessonGetResponse;
+    setSelected: Dispatch<SetStateAction<LessonGetResponse | undefined>>;
 };
 
 export const LessonRightSidebarModal = ({
@@ -26,13 +26,6 @@ export const LessonRightSidebarModal = ({
     selected, setSelected, handleChange,
     setIsExpanded
 }: LessonRightSidebarModalProps) => {
-    const useGetItemHook = useCallback((callback: (item: CourseLessonItem) => void) => {
-        return (_id: string) => {
-            callback(selected);
-            return selected;
-        };
-    }, []);
-
     const crumbs = createLessonCrumbs(LessonSaveType.Draft, (currType, router) => {
         router.replace(`${courseId}/${selected._id}?${currType.toLowerCase()}=true`)
     });
@@ -47,9 +40,9 @@ export const LessonRightSidebarModal = ({
     }, []);
 
     return (
-        <RightSidebarModal<CourseLessonItem, LessonToSaveVisibility>
+        <RightSidebarModal<LessonGetResponse, LessonToSaveVisibility>
             permissions={{ isEditionPermitted: true, isDeletionPermitted: true }}
-            useGetItemHook={useGetItemHook}
+            passedInitialValues={selected}
             prefix={coursesHubLessonsPrefixTranslate}
             apiPrefix={coursesHubLessonsPrefixApi}
             title={`${t('edit')} "${selected.title}"`}
@@ -66,12 +59,6 @@ export const LessonRightSidebarModal = ({
             transformItemToSave={(item) => {
                 return { _id: item._id, isVisible: item.isVisible ?? false };
             }}
-            createEmptyItem={() => ({
-                _id: "",
-                isVisible: false,
-                title: "",
-                time: TimeUnit.MINS
-            })}
             onBackButtonClick={() => {
                 setIsExpanded(false);
                 clearState();

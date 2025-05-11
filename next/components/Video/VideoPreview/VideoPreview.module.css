@@ -30,3 +30,12 @@
     flex-direction: column;
     gap: 0.3rem;
 }
+
+.deleteIcon svg {
+    width: 0.8rem;
+    height: 0.8rem;
+
+    margin-right: 0.3rem;
+
+    cursor: pointer;
+}

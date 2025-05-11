@@ -35,7 +35,7 @@ import { CoursesHubSideSection, CoursesHubSideSectionMainTabs } from "./CoursesH
 import { usePermissions } from "@/hooks/usePermissions";
 import { SectionRightSidebarModal } from "./RightSidebars/SectionRightSidebarModal";
 import { LessonRightSidebarModal } from "./RightSidebars/LessonRightSidebarModal";
-import { CourseLessonItem } from "@/courses/courses-list/types/CourseLessonItem";
+import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 import { TablePageActionType } from "@/types/TablePageActionType";
 
 const detailsPermissions = [
@@ -59,7 +59,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
     const [courseEditors, setCourseEditors] = useState<CourseEditor[]>(course.editors || []);
     const [newSection, setNewSection] = useState<string | undefined>(undefined);
     const [selectedSectionIdToEdit, setSelectedSectionIdToEdit] = useState<string | undefined>(undefined);
-    const [selectedLessonToEdit, setSelectedLessonToEdit] = useState<CourseLessonItem | undefined>(undefined);
+    const [selectedLessonToEdit, setSelectedLessonToEdit] = useState<LessonGetResponse | undefined>(undefined);
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -153,7 +153,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
         }
     };
 
-    const lessonHandleChange: HandleChangeInRightSidebar<CourseLessonItem> = (type, item, id) => {
+    const lessonHandleChange: HandleChangeInRightSidebar<LessonGetResponse> = (type, item, id) => {
         setCourseSections(courseSections.map(section => {
             if (section.lessons) {
                 if (type === TablePageActionType.DELETE) {

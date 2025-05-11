@@ -8,7 +8,7 @@ import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useTranslation } from "react-i18next";
 import { useTranslatedTime } from "@/hooks/useTranslatedTime";
 import { ValidateSectionTitle } from "@/courses/courses-hub/components/CoursesHubDetails/CoursesHubDetails";
-import { CourseLessonItem } from "@/courses/courses-list/types/CourseLessonItem";
+import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 
 type CourseSectionProps = {
     className?: string;
@@ -18,7 +18,7 @@ type CourseSectionProps = {
     actions?: CollapsibleSectionActionProps[];
     validateSectionTitle?: ValidateSectionTitle;
     sectionTitleError?: string;
-    setLesson?: (lesson: CourseLessonItem) => void;
+    setLesson?: (lesson: LessonGetResponse) => void;
 }
 
 export const CourseSection = ({

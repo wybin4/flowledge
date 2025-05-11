@@ -1,3 +1,5 @@
+import { LessonStuff } from "@/courses/courses-list/types/LessonStuff";
+
 export enum LessonSaveType {
     Draft = 'DRAFT',
     Video = 'VIDEO',
@@ -6,8 +8,12 @@ export enum LessonSaveType {
     Survey = 'SURVEY'
 }
 
+export enum LessonAdditionalSaveType {
+    RemoveVideo = 'REMOVE-VIDEO',
+}
+
 interface LessonToSaveRequest {
-    type: LessonSaveType;
+    type: LessonSaveType | LessonAdditionalSaveType;
 }
 
 export interface LessonToSaveOnDraftRequest extends LessonToSaveRequest {

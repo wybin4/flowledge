@@ -12,9 +12,9 @@ export type ApiClientMethods = {
     delete: <T>(url: string, options?: Omit<ApiClientRequest['options'], 'method'>) => Promise<T>;
 };
 
-const createApiClient = (isBaseUrl: string, baseUrl?: string): ApiClientMethods => {
+const createApiClient = (baseUrl: string): ApiClientMethods => {
     const makeRequest = async <T>(url: string, options: RequestInit): Promise<T> => {
-        const response = await fetch(`${isBaseUrl ? '' : baseUrl}/api/${url}`, {
+        const response = await fetch(`${baseUrl}/api/${url}`, {
             ...options,
             credentials: 'include',
         });
@@ -83,9 +83,7 @@ const createApiClient = (isBaseUrl: string, baseUrl?: string): ApiClientMethods 
     };
 };
 
-// userApiClient поддерживает токены
 export const userApiClient = createApiClient(userApiClientPrefix);
 
-// neuralApiClient и integrationApiClient не поддерживают токены
 export const neuralApiClient = createApiClient('http://localhost:8000');
 export const integrationApiClient = createApiClient('http://localhost:8001');

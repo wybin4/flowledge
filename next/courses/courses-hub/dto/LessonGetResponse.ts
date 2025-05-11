@@ -1,6 +1,6 @@
 import { TimeUnit } from "@/types/TimeUnit";
 
-export interface CourseLessonItem {
+export interface LessonGetResponse {
     _id: string;
     title: string;
     time: TimeUnit;

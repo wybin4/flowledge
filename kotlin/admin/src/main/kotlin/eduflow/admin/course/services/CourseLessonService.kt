@@ -119,4 +119,13 @@ class CourseLessonService(
             }
             .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
     }
+
+    fun clearSurveyText(lessonId: String): Mono<Void> {
+        return lessonRepository.findById(lessonId)
+            .flatMap { lesson ->
+                val updatedLesson = lesson.copy(surveyText = null)
+                lessonRepository.save(updatedLesson)
+            }
+            .then()
+    }
 }

@@ -39,8 +39,9 @@ export const Card = ({
                     {dotText && <div className={styles.dot}>{dotText(size)}</div>}
                     <div className={styles.text}>{title(size)}</div>
                 </div>
-                {actions && actions.map(action => (
+                {actions && actions.map((action, index) => (
                     <div
+                        key={index}
                         className={cn(action.className, styles.action)}
                         onClick={action.onClick}
                     >

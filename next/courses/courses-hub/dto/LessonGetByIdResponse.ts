@@ -1,4 +1,5 @@
 import { TimeUnit } from "@/types/TimeUnit";
+import { Survey } from "../types/Survey";
 
 export interface LessonGetByIdResponse {
     _id: string;
@@ -13,6 +14,7 @@ export interface LessonGetByIdResponse {
     createdAt: Date;
     updatedAt: Date;
     surveyText?: string;
+    survey?: Survey;
     synopsisText?: string;
 
     isDraft?: boolean;

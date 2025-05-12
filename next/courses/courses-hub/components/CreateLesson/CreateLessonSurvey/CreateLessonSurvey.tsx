@@ -3,7 +3,7 @@
 import RightSidebar from "@/components/Sidebar/RightSidebar/RightSidebar";
 import { useTranslation } from "react-i18next";
 import styles from "./CreateLessonSurvey.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SurveyQuestionItem } from "./SurveyQuestion/SurveyQuestionItem";
 import cn from "classnames";
 import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
@@ -17,56 +17,50 @@ import { ItemSize } from "@/types/ItemSize";
 import { Button, ButtonType } from "@/components/Button/Button";
 import { ButtonBack } from "@/components/Button/ButtonBack/ButtonBack";
 import { StickyBottomBar } from "@/components/StickyBottomBar/StickyBottomBar";
-import { coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
+import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
 import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
+import { CreateLessonChildrenProps } from "../CreateLesson";
+import { parseSurveyText } from "@/courses/courses-hub/functions/parseSurveyText";
+import { LessonSaveType } from "@/courses/courses-hub/types/LessonToSave";
+import { userApiClient } from "@/apiClient";
+import { Survey } from "@/courses/courses-hub/types/Survey";
+import { usePathname, useRouter } from "next/navigation";
+import { removeLastSegment } from "@/helpers/removeLastSegment";
 
-type CreateLessonSurveyProps = {
+interface CreateLessonSurveyProps extends CreateLessonChildrenProps {
     selectedQuestionId?: string;
+    questions?: string;
+    survey?: Survey;
 };
 
-export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyProps) => {
+export const CreateLessonSurvey = ({ lessonId, selectedQuestionId, survey, questions: initialQuestions }: CreateLessonSurveyProps) => {
     const handleScrollToQuestion = useAddQuestionToUrl();
 
-    const initialQuestions = [{
-        _id: '1',
-        text: "какую цель преследует статья с проектами для начинающих python-разработчиков?",
-        choices: [{
-            _id: '1111',
-            text: "1",
-            isCorrect: true
-        }, {
-            _id: '2222',
-            text: "2",
-        }, {
-            _id: '3333',
-            text: "3",
-        }, {
-            _id: '4444',
-            text: "4",
-        }]
-    }, {
-        _id: '2',
-        text: "что помогут сделать предложенные в статье проекты для начинающих python-разработчиков?",
-        choices: [{
-            _id: '5555',
-            text: "1",
-        }, {
-            _id: '6666',
-            text: "2",
-        }, {
-            _id: '7777',
-            text: "3",
-            isCorrect: true
-        }, {
-            _id: '8888',
-            text: "4",
-        }]
-    }];
-    const [questions, setQuestions] = useState<SurveyQuestion[]>(initialQuestions);
+    const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
+
+    useEffect(() => {
+        try {
+            if (survey && survey.questions && survey.questions.length) {
+                setQuestions(survey.questions);
+                return;
+            }
+            if (initialQuestions) {
+                const survey = parseSurveyText(initialQuestions);
+                if (!survey.length) {
+                    return;
+                }
+                setQuestions(survey);
+            }
+        } catch (e) {
+            console.warn('Не удалось распарсить текст опроса')
+        }
+    }, [initialQuestions, JSON.stringify(survey)]);
 
     const canDeleteQuestions = questions.length > 1;
 
     const { t } = useTranslation();
+    const router = useRouter();
+    const currentPath = usePathname();
 
     const handleSetQuestion = (newQuestion?: SurveyQuestion, _id?: string) => {
         setQuestions(prevQuestions => {
@@ -85,7 +79,7 @@ export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyPro
         const newId = String(Date.now())
         const newQuestion: SurveyQuestion = {
             _id: newId,
-            text: t('type-here'),
+            title: t('type-here'),
             choices: []
         };
         setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
@@ -94,7 +88,15 @@ export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyPro
 
     useScrollToElement(selectedQuestionId);
 
-    const saveItem = () => { };
+    const saveLesson = () =>
+        userApiClient.post(
+            `${coursesHubLessonsPrefixApi}.create`, {
+            type: LessonSaveType.Survey,
+            _id: lessonId,
+            questions
+        }).then(_ => {
+            router.push(removeLastSegment(currentPath));
+        });
 
     return (
         <RightSidebar content={_ =>
@@ -115,10 +117,10 @@ export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyPro
                     className={styles.questionContainer}
                     renderItem={(item, index) => (
                         <SurveyQuestionItem
-                            _id={item._id}
-                            text={item.text}
-                            number={index + 1}
                             key={index}
+                            _id={item._id}
+                            title={item.title}
+                            number={index + 1}
                         />
                     )}
                 />
@@ -133,7 +135,7 @@ export const CreateLessonSurvey = ({ selectedQuestionId }: CreateLessonSurveyPro
                         <ButtonBack hasBackButtonIcon={false} />
                         {JSON.stringify(initialQuestions) != JSON.stringify(questions) &&
                             <Button
-                                onClick={() => saveItem()}
+                                onClick={saveLesson}
                                 prefix={coursesHubLessonsPrefixTranslate}
                                 type={ButtonType.SAVE}
                                 mode={FillBorderUnderlineMode.UNDERLINE}

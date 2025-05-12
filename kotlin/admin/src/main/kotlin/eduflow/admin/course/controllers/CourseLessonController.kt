@@ -1,10 +1,12 @@
 package eduflow.admin.course.controllers
 
+import eduflow.admin.course.dto.lesson.LessonGetResponse
 import eduflow.admin.course.dto.lesson.LessonUpdateRequest
 import eduflow.admin.course.dto.lesson.create.*
 import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.repositories.CourseLessonRepository
 import eduflow.admin.course.services.CourseLessonService
+import eduflow.admin.course.services.CourseSurveyService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,7 +17,8 @@ import reactor.core.publisher.Mono
 @RequestMapping("/api/courses-hub")
 class CourseLessonController(
     private val lessonRepository: CourseLessonRepository,
-    private val lessonService: CourseLessonService
+    private val lessonService: CourseLessonService,
+    private val surveyService: CourseSurveyService
 ) {
 
     @PostMapping("/lessons.create")
@@ -68,6 +71,14 @@ class CourseLessonController(
                 }
             }
 
+            is LessonAddSurveyRequest -> {
+                try {
+                    surveyService.addSurvey(lesson)
+                } catch (e: IllegalArgumentException) {
+                    Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for details"))
+                }
+            }
+
             else -> Mono.error<Any>(IllegalArgumentException("Invalid action parameter"))
         }
     }
@@ -106,8 +117,47 @@ class CourseLessonController(
     @GetMapping("/lessons.get/{id}")
     fun getLesson(
         @PathVariable id: String
-    ): Mono<ResponseEntity<CourseLessonModel>> {
+    ): Mono<ResponseEntity<LessonGetResponse>> {
         return lessonRepository.findById(id)
+            .flatMap { lesson ->
+                surveyService.getSurveyByLessonId(lesson._id)
+                    .map { survey ->
+                        LessonGetResponse(
+                            _id = lesson._id,
+                            courseId = lesson.courseId,
+                            createdAt = lesson.createdAt,
+                            imageUrl = lesson.imageUrl,
+                            isDraft = lesson.isDraft,
+                            isVisible = lesson.isVisible,
+                            sectionId = lesson.sectionId,
+                            surveyText = lesson.surveyText,
+                            synopsisText = lesson.synopsisText,
+                            survey = survey,
+                            time = lesson.time,
+                            title = lesson.title,
+                            updatedAt = lesson.updatedAt,
+                            videoId = lesson.videoId
+                        )
+                    }
+                    .defaultIfEmpty(
+                        LessonGetResponse(
+                            _id = lesson._id,
+                            courseId = lesson.courseId,
+                            createdAt = lesson.createdAt,
+                            imageUrl = lesson.imageUrl,
+                            isDraft = lesson.isDraft,
+                            isVisible = lesson.isVisible,
+                            sectionId = lesson.sectionId,
+                            surveyText = lesson.surveyText,
+                            synopsisText = lesson.synopsisText,
+                            survey = null,
+                            time = lesson.time,
+                            title = lesson.title,
+                            updatedAt = lesson.updatedAt,
+                            videoId = lesson.videoId
+                        )
+                    )
+            }
             .map { ResponseEntity.ok(it) }
             .defaultIfEmpty(ResponseEntity.notFound().build())
     }

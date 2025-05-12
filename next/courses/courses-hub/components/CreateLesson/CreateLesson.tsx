@@ -2,7 +2,6 @@
 
 import { EnhancedBreadcrumbs } from "@/components/EnhancedBreadcrumbs/EnhancedBreadcrumbs";
 import { coursesHubLessonsPrefixApi, coursesHubPrefix } from "@/helpers/prefixes";
-import { TablePageMode } from "@/types/TablePageMode";
 import { createLessonCrumbs } from "../../functions/createLessonCrumbs";
 import { LessonSaveType } from "../../types/LessonToSave";
 import { CreateLessonDetails } from "./CreateLessonDetails/CreateLessonDetails";
@@ -12,6 +11,7 @@ import { CreateLessonVideo } from "./CreateLessonVideo/CreateLessonVideo";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { userApiClient } from "@/apiClient";
 import { LessonGetByIdResponse } from "../../dto/LessonGetByIdResponse";
+import { enrichCrumbWithLesson } from "../../functions/enrichCrumbWithLesson";
 
 export type CreateLessonProps = Partial<Record<Lowercase<keyof typeof LessonSaveType>, string>> & {
     _id: string;
@@ -24,7 +24,7 @@ export interface CreateLessonChildrenProps {
     setLesson: Dispatch<SetStateAction<LessonGetByIdResponse | undefined>>;
 }
 
-export const CreateLesson = ({ _id, hasVideo, ...props }: CreateLessonProps) => {
+export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLessonProps) => {
     const [lesson, setLesson] = useState<LessonGetByIdResponse | undefined>(undefined);
 
     useEffect(() => {
@@ -59,7 +59,15 @@ export const CreateLesson = ({ _id, hasVideo, ...props }: CreateLessonProps) => 
                 stuffList={[]} // TODO
             />
         ),
-        [LessonSaveType.Survey]: () => <CreateLessonSurvey selectedQuestionId={_id} />,
+        [LessonSaveType.Survey]: () => (
+            <CreateLessonSurvey
+                lessonId={_id}
+                setLesson={setLesson}
+                selectedQuestionId={questionId}
+                questions={lesson?.surveyText}
+                survey={lesson?.survey}
+            />
+        ),
         [LessonSaveType.Draft]: () => null,
     };
 
@@ -69,9 +77,11 @@ export const CreateLesson = ({ _id, hasVideo, ...props }: CreateLessonProps) => 
             return (
                 <EnhancedBreadcrumbs
                     prefix={coursesHubPrefix}
-                    crumbs={createLessonCrumbs(type, (currType, router) => {
-                        router.push(`?${currType.toLowerCase()}=true`)
-                    })}
+                    crumbs={
+                        createLessonCrumbs(type, (currType, router) => {
+                            router.push(`?${currType.toLowerCase()}=true`)
+                        }).map(crumb => enrichCrumbWithLesson(crumb, lesson))
+                    }
                 >
                     {componentMap[type]()}
                 </EnhancedBreadcrumbs>

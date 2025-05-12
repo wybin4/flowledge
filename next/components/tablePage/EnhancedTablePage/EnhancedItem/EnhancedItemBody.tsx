@@ -13,7 +13,7 @@ import { MultiSettingWrapper, MultiSettingWrapperSetting } from "@/components/Se
 import React from "react";
 import cn from "classnames";
 
-export interface EnhancedItemBodyProps<T> extends BaseEnhancedItemProps {
+export interface EnhancedItemBodyProps<T> extends BaseEnhancedItemProps<T> {
     title: string;
 
     isEditMode: boolean;
@@ -108,7 +108,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
     return (
         <>
             {hasTitle && <h2 className={styles.title}>{title}</h2>}
-            {additionalChildren}
+            {additionalChildren?.(item)}
             <div className={cn(styles.settingsContainer, settingsContainerClassNames)}>{renderSettings()}</div>
             <div className={cn(styles.buttonContainer, buttonContainerClassNames)}>
                 {

@@ -6,7 +6,7 @@ import { Card } from "@/components/Card/Card";
 
 type SurveyQuestionItemProps = {
     _id: string;
-    text?: string;
+    title?: string;
     number: number;
     size?: ItemSize;
     children?: ReactNode;
@@ -15,7 +15,7 @@ type SurveyQuestionItemProps = {
 };
 
 export const SurveyQuestionItem = ({
-    _id, number, text,
+    _id, number, title,
     size = ItemSize.Little,
     handleDelete, deleteClassNames,
     children
@@ -30,7 +30,7 @@ export const SurveyQuestionItem = ({
         <Card
             id={!isLittle ? _id : ''}
             onClick={isLittle ? () => handleScrollToQuestion(_id) : undefined}
-            title={_ => isLittle ? text : `${t('questions.index')} ${number}`}
+            title={_ => isLittle ? title : `${t('questions.index')} ${number}`}
             dotText={_ => isLittle ? String(number) : '?'}
             actions={[
                 ...(handleDelete ? [{
@@ -39,6 +39,7 @@ export const SurveyQuestionItem = ({
                     className: deleteClassNames
                 }] : [])
             ]}
+            clickable={isLittle ? true : false}
             size={size}
         >{children}</Card>
     );

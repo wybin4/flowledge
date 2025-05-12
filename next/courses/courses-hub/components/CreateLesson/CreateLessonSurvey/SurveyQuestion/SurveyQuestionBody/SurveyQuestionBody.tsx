@@ -33,8 +33,8 @@ export const SurveyQuestionBody = ({
     }, [JSON.stringify(choices)]);
 
     const handleQuestionTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const text = e.target.value;
-        setQuestion({ ...question, text });
+        const title = e.target.value;
+        setQuestion({ ...question, title });
     };
 
     const handleDeleteQuestion = () => canDeleteQuestions && setQuestion(undefined, question._id);
@@ -50,7 +50,7 @@ export const SurveyQuestionBody = ({
             })}
             children={
                 <>
-                    <TextArea value={question.text} onChange={handleQuestionTextChange} />
+                    <TextArea value={question.title} onChange={handleQuestionTextChange} />
                     {!!choices.length && <div>{t('questions.choices.name')}</div>}
                     <SortableList
                         items={choices}

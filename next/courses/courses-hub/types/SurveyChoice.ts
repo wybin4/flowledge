@@ -1,5 +1,5 @@
 export type SurveyChoice = {
     isCorrect?: boolean;
-    text: string;
+    title: string;
     _id: string;
 };

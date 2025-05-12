@@ -16,7 +16,7 @@ export const SurveyChoiceBody = ({
     choice, setChoices,
     onDelete, deleteClassNames
 }: SurveyChoiceBodyProps) => {
-    const { _id, text, isCorrect } = choice;
+    const { _id, title, isCorrect } = choice;
 
     const correctIcon = useIcon('round-filled');
     const incorrectIcon = useIcon('round');
@@ -32,7 +32,7 @@ export const SurveyChoiceBody = ({
             })}>{
                     isCorrect ? correctIcon : incorrectIcon
                 }</div>
-            <Input type='text' value={text} onChange={handleChoiceTextChange} />
+            <Input type='text' value={title} onChange={handleChoiceTextChange} />
             <div
                 className={cn(styles.itemDelete, deleteClassNames)}
                 onClick={() => onDelete(_id)}

@@ -6,7 +6,6 @@ import { TablePageMode } from "@/types/TablePageMode";
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { LessonToSaveVisibility } from "@/courses/courses-hub/types/LessonToSaveVisibility";
 import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
-import { TimeUnit } from "@/types/TimeUnit";
 import { Card } from "@/components/Card/Card";
 import { ItemSize } from "@/types/ItemSize";
 import { LessonSaveType } from "@/courses/courses-hub/types/LessonToSave";
@@ -15,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useIcon } from "@/hooks/useIcon";
 import { RightSidebarModalProps } from "../CoursesHubDetails";
+import { enrichCrumbWithLesson } from "@/courses/courses-hub/functions/enrichCrumbWithLesson";
 
 interface LessonRightSidebarModalProps extends RightSidebarModalProps<LessonGetResponse> {
     selected: LessonGetResponse;
@@ -69,22 +69,24 @@ export const LessonRightSidebarModal = ({
                 setIsExpanded(false);
                 clearState();
             }}
-            additionalChildren={
+            additionalChildren={item => (
                 <div style={{ width: '93%', marginTop: '2rem' }}>
                     {
-                        crumbs.map((crumb, index) => (
-                            <Card
-                                key={index}
-                                title={_ => t(`${coursesHubPrefix}.${crumb.name}`)}
-                                onClick={() => crumb.onClick?.(router)}
-                                dotText={_ => crumb.onClick ? '—' : checkIcon}
-                                size={ItemSize.Little}
-                                clickable={!!crumb.onClick}
-                            />
-                        ))
+                        crumbs
+                            .map(crumb => enrichCrumbWithLesson(crumb, item))
+                            .map((crumb, index) => (
+                                <Card
+                                    key={index}
+                                    title={_ => t(`${coursesHubPrefix}.${crumb.name}`)}
+                                    onClick={() => crumb.onClick?.(router)}
+                                    dotText={_ => !crumb.checked ? '—' : checkIcon}
+                                    size={ItemSize.Little}
+                                    clickable={!!crumb.onClick}
+                                />
+                            ))
                     }
                 </div>
-            }
+            )}
         />
     );
 };

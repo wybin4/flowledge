@@ -1,4 +1,5 @@
 import { LessonStuff } from "@/courses/courses-list/types/LessonStuff";
+import { SurveyChoice } from "./SurveyChoice";
 
 export enum LessonSaveType {
     Draft = 'DRAFT',

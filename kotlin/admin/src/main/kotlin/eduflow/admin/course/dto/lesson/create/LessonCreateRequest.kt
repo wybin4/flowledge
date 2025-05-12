@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = LessonAddVideoRequest::class, name = "VIDEO"),
     JsonSubTypes.Type(value = LessonAddVideoRequest::class, name = "REMOVE-VIDEO"),
     JsonSubTypes.Type(value = LessonCreateDraftRequest::class, name = "DRAFT"),
-    JsonSubTypes.Type(value = LessonAddSynopsisAndStuffRequest::class, name = "SYNOPSIS")
+    JsonSubTypes.Type(value = LessonAddSynopsisAndStuffRequest::class, name = "SYNOPSIS"),
+    JsonSubTypes.Type(value = LessonAddSurveyRequest::class, name = "SURVEY")
 )
 sealed class LessonCreateRequest

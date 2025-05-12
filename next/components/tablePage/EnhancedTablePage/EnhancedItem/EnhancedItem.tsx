@@ -36,11 +36,11 @@ export type EnhancedItemSettingKey = {
     error?: string;
 };
 
-export interface BaseEnhancedItemProps {
+export interface BaseEnhancedItemProps<T> {
     prefix: string;
     mode: TablePageMode;
     additionalButtons?: (EnhancedItemAdditionalButton | ReactNode)[];
-    additionalChildren?: ReactNode;
+    additionalChildren?: (item?: T) => ReactNode;
     settingKeys: EnhancedItemSettingKey[];
     hasTitle?: boolean;
     settingsContainerClassNames?: string;
@@ -48,7 +48,7 @@ export interface BaseEnhancedItemProps {
     permissions: Omit<CUDPermissions, 'isCreationPermitted'>;
 }
 
-export interface EnhancedItemProps<T, U> extends BaseEnhancedItemProps {
+export interface EnhancedItemProps<T, U> extends BaseEnhancedItemProps<T> {
     _id?: string;
     apiPrefix?: string;
     apiClient: ApiClientMethods;

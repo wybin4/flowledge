@@ -2,6 +2,6 @@ import { SurveyChoice } from "./SurveyChoice";
 
 export type SurveyQuestion = {
     _id: string;
-    text: string;
+    title: string;
     choices: SurveyChoice[];
 };

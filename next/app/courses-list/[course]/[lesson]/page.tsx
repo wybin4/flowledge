@@ -1,15 +1,25 @@
+import { CourseListSurvey } from "@/courses/courses-list/components/CoursesListItem/CoursesListItem/CourseListSurvey/CourseListSurvey";
 import { LessonPage } from "@/courses/courses-list/components/LessonPage/LessonPage";
 import { StuffTypes } from "@/stuff/types/StuffTypes";
 import { PageMode } from "@/types/PageMode";
 
-export default async function DynamicCourseListLessonPage({ params }: { params: { lesson: string } }) {
+export default async function DynamicCourseListLessonPage(
+    { params, searchParams }: { params: { lesson: string; }; searchParams?: { survey?: boolean }; }
+) {
+    const { lesson } = await params;
+    const searchParamsRes = await searchParams;
+
+    if (searchParamsRes && searchParamsRes.survey) {
+        return <CourseListSurvey lessonId={lesson} />;
+    }
+
     return (<LessonPage
         mode={PageMode.Viewer}
         lesson={{
             _id: '1',
             title: "пример урока",
             time: "30 минут",
-            synopsis: `
+            synopsisText: `
 ## классификация case:
 
 - средства анализа и проектирования (например, AllFusion Process Modeler (BPwin), Busines Modeller, IBM Rational Rose и др.);
@@ -19,7 +29,7 @@ export default async function DynamicCourseListLessonPage({ params }: { params: 
             `,
             imageUrl: 'http://localhost:3000/justpic1.png',
             videoUrl: 'http://localhost:3000/justvideo.mp4',
-            stuffs: [
+            stuffList: [
                 {
                     _id: '1',
                     type: StuffTypes.Link,

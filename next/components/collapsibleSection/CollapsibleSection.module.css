@@ -105,7 +105,11 @@
     background-color: var(--red);
 }
 
-.tagTitle {
+.tagTitleContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
     margin-top: -2px;
 }
 
@@ -122,8 +126,22 @@
     gap: 1rem;
 }
 
-.childTitle {
+.childTitle,
+.childTitleContent {
     display: flex;
     gap: 1rem;
     align-items: center;
+}
+
+.tagTitleIcon svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.tagTitleIcon {
+    margin-bottom: -2px;
+}
+
+.tagWithIcon {
+    padding-top: 5px;
 }

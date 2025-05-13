@@ -11,10 +11,10 @@ import { useSurveyChoices } from "@/courses/courses-hub/hooks/useSurveyChoices";
 import { ItemSize } from "@/types/ItemSize";
 
 type SurveyQuestionBodyProps = {
-    number: number;
+    number?: number;
     question: SurveyQuestion;
-    setQuestion: (newQuestion?: SurveyQuestion, _id?: string) => void;
-    canDeleteQuestions: boolean;
+    setQuestion?: (newQuestion?: SurveyQuestion, _id?: string) => void;
+    canDeleteQuestions?: boolean;
 };
 
 export const SurveyQuestionBody = ({
@@ -29,15 +29,15 @@ export const SurveyQuestionBody = ({
     } = useSurveyChoices(question.choices);
 
     useEffect(() => {
-        setQuestion({ ...question, choices });
+        setQuestion?.({ ...question, choices });
     }, [JSON.stringify(choices)]);
 
     const handleQuestionTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const title = e.target.value;
-        setQuestion({ ...question, title });
+        setQuestion?.({ ...question, title });
     };
 
-    const handleDeleteQuestion = () => canDeleteQuestions && setQuestion(undefined, question._id);
+    const handleDeleteQuestion = () => canDeleteQuestions && setQuestion?.(undefined, question._id);
 
     return (
         <SurveyQuestionItem

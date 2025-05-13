@@ -314,6 +314,7 @@
         "details": "details",
         "synopsis": "synopsis and stuff",
         "survey": "survey",
+        "test-yourselt": "take a short survey",
         "sidebar": {
             "users": "subscribers",
             "add-users": "add subscribers",
@@ -466,5 +467,6 @@
         "__count__roles_few": "{{count}} roles selected",
         "__count__roles_many": "{{count}} roles selected"
     },
-    "view-all": "view all"
+    "view-all": "view all",
+    "mandatory": "mandatory"
 }

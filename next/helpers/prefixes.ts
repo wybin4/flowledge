@@ -9,6 +9,7 @@ export const coursesHubLessonsPrefixApi = 'courses-hub/lessons';
 export const courseSubscriptionsPrefix = 'course-subscriptions';
 export const coursesHubEditorsPrefixTranslate = 'courses-hub.editors';
 export const coursesHubEditorsPrefixApi = 'courses-hub/editors';
+export const coursesHubSurveysPrefixApi = 'courses-hub/surveys';
 export const coursesListPrefix = 'courses-list';
 export const coursesListPrefixApi = 'courses-list/courses';
 export const rolesPrefix = 'roles';

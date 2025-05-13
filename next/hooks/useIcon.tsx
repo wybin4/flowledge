@@ -67,6 +67,7 @@ import TagIcon from "../assets/tag.svg";
 import StatisticsIcon from "../assets/statistics.svg";
 import OptionsIcon from "../assets/options.svg";
 import LogoutIcon from "../assets/logout.svg";
+import FlagIcon from "../assets/flag.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -150,7 +151,9 @@ const icons = {
     'full-screen': <FullScreenIcon />,
 
     'statistics': <StatisticsIcon />,
-    'options': <OptionsIcon />
+    'options': <OptionsIcon />,
+
+    'flag': <FlagIcon />
 } as const;
 
 export type IconKey = keyof typeof icons;

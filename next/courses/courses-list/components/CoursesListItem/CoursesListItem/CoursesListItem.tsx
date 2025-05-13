@@ -2,7 +2,7 @@
 
 import styles from "./CoursesListItem.module.css";
 import { ReactNode, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { coursesListPrefix, coursesListPrefixApi } from "@/helpers/prefixes";
 import { CoursesListItemActions } from "../CoursesListItemActions/CoursesListItemActions";
 import cn from "classnames";
@@ -18,6 +18,7 @@ import { userApiClient } from "@/apiClient";
 import { ToggleFavouriteRequest } from "@/courses/courses-list/types/ToggleFavourite";
 import { fakeUser } from "@/helpers/fakeUser";
 import { CourseWithSubscriptionItem } from "@/courses/courses-list/types/CourseItem";
+import { useTranslation } from "react-i18next";
 
 type CoursesListItemProps = {
     course: CourseWithSubscriptionItem;
@@ -28,6 +29,7 @@ type CoursesListItemProps = {
 
 export const CoursesListItem = ({ isListPage, course, header, pointer = true }: CoursesListItemProps) => {
     const router = useRouter();
+    const currentPath = usePathname();
     const searchParams = useSearchParams();
     const [selectedMenuTab, setSelectedMenuTab] = useState<CourseTabs>(CourseTabs.Lessons);
     const pathnamePrefix = `${coursesListPrefix}/${course._id}`;
@@ -73,6 +75,8 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
         setSelectedMenuTab(tab);
     }
 
+    const { t } = useTranslation();
+
     return (
         <>
             <div className={styles.container}>
@@ -97,13 +101,16 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                             <CoursesListItemTags tags={course.tags} className={defaultStyles.itemContainer} />
                         }
                         {selectedMenuTab === CourseTabs.Lessons && course.sections && course.sections.length > 0 &&
-                            course.sections.map(section => (
-                                <CourseSection
-                                    key={section.section._id}
-                                    className={defaultStyles.itemContainer}
-                                    section={section}
-                                />
-                            ))
+                            <div>
+                                {course.sections.map(section => (
+                                    <CourseSection
+                                        key={section.section._id}
+                                        className={defaultStyles.itemContainer}
+                                        section={section}
+                                        setLesson={(lesson) => router.push(`${currentPath}/${lesson._id}`)}
+                                    />
+                                ))}
+                            </div>
                         }
                         {selectedMenuTab === CourseTabs.Comments &&
                             <CoursesListItemComments comments={course.comments ?? []} className={defaultStyles.itemContainer} />

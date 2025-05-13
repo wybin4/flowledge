@@ -7,7 +7,7 @@ import { Card } from "@/components/Card/Card";
 type SurveyQuestionItemProps = {
     _id: string;
     title?: string;
-    number: number;
+    number?: number;
     size?: ItemSize;
     children?: ReactNode;
     handleDelete?: () => void;

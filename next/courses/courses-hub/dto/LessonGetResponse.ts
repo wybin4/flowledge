@@ -4,7 +4,7 @@ import { Survey } from "../types/Survey";
 export interface LessonGetResponse {
     _id: string;
     title: string;
-    time: TimeUnit;
+    time?: TimeUnit;
     imageUrl?: string;
     additionalInfo?: string;
     isVisible?: boolean;
@@ -13,4 +13,6 @@ export interface LessonGetResponse {
     synopsisText?: string; // TODO: stuff
     surveyText?: string;
     survey?: Survey; // TODO: only id for small response
+
+    isMandatory?: boolean;
 }

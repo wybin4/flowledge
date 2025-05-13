@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useTranslatedTime } from "@/hooks/useTranslatedTime";
 import { ValidateSectionTitle } from "@/courses/courses-hub/components/CoursesHubDetails/CoursesHubDetails";
 import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
+import { useIcon } from "@/hooks/useIcon";
 
 type CourseSectionProps = {
     className?: string;
@@ -38,7 +39,6 @@ export const CourseSection = ({
 
     const childClassNames = {
         childClassName: styles.child,
-        titleContainerClassName: styles.childTitleContainer,
         titleClassName: styles.childTitle,
         timeClassName: styles.childTime,
         additionalInfoClassName: styles.childAdditionalInfo
@@ -51,7 +51,8 @@ export const CourseSection = ({
 
     const sectionActionsClassNamesRight = {
         className: styles.sectionActionRight,
-        titleClassName: styles.sectionActionTitle
+        titleClassName: styles.sectionActionTitle,
+        titleContainerClassName: styles.childTitleContainer
     };
 
     const sectionActions = actions?.map((action) => ({
@@ -61,6 +62,7 @@ export const CourseSection = ({
     }));
 
     const defaultChildProps = { isActive: false };
+    const flagIcon = useIcon('flag');
 
     if (typeof section === 'string') {
         return (
@@ -95,18 +97,30 @@ export const CourseSection = ({
                         onClick={() => setLesson?.(lesson)}
                         key={lesson._id}
                         title={lesson.title}
-                        time={translateTime(lesson.time) || lesson.time}
+                        time={(lesson.time ? translateTime(lesson.time) : lesson.time) || ''}
                         additionalInfo={lesson.additionalInfo}
                         isViewed={false}
-                        titleTags={[...(!lesson.isVisible ? [{
-                            title: t('invisible'), type: CollapsibleSectionTagType.Warning
-                        }] : [])]}
+                        titleTags={[
+                            ...(!lesson.isVisible ? [{
+                                title: t('invisible'), type: CollapsibleSectionTagType.Warning
+                            }] : []),
+                            ...(lesson.isMandatory ? [{
+                                title: t('mandatory'),
+                                icon: flagIcon,
+                                type: CollapsibleSectionTagType.Warning,
+                            }] : [])
+                        ]}
                         image={lesson.imageUrl &&
                             <CourseListImage
                                 imageUrl={lesson.imageUrl}
                                 title={lesson.title}
                                 size='medium'
                             />
+                        }
+                        titleContainerContentClassName={
+                            lesson.isMandatory
+                                ? styles.verticalChildTitleContainer
+                                : styles.horizontalChildTitleContainer
                         }
                         {...childClassNames}
                         {...defaultChildProps}

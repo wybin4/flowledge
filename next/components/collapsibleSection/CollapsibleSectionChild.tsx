@@ -17,6 +17,7 @@ type CollapsibleSectionChildProps = {
     titleTags?: CollapsibleSectionTitleTag[];
     childClassName?: string;
     titleContainerClassName?: string;
+    titleContainerContentClassName?: string;
     titleClassName?: string;
     timeClassName?: string;
     additionalInfoClassName?: string;
@@ -25,7 +26,7 @@ type CollapsibleSectionChildProps = {
 export default function CollapsibleSectionChild({
     id, title, time, image, additionalInfo, onClick,
     isActive = false, isViewed = false, titleTags,
-    childClassName, titleContainerClassName, titleClassName, timeClassName, additionalInfoClassName
+    childClassName, titleContainerClassName, titleContainerContentClassName, titleClassName, timeClassName, additionalInfoClassName
 }: CollapsibleSectionChildProps) {
     return (
         <div onClick={() => id && onClick?.(id)} className={cn(styles.child, childClassName, {
@@ -35,7 +36,7 @@ export default function CollapsibleSectionChild({
             <div className={cn(styles.childTitle, titleContainerClassName)}>
                 {image}
                 <div className={styles.childTitleContainer}>
-                    <div className={styles.childTitle}>
+                    <div className={cn(styles.childTitleContent, titleContainerContentClassName)}>
                         <div className={titleClassName}>{title}</div>
                         {titleTags && <CollapsibleSectionTitleTags titleTags={titleTags} />}
                     </div>

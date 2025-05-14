@@ -1,18 +1,18 @@
-package eduflow.admin.course.services
+package eduflow.admin.course.services.lesson
 
 import eduflow.admin.course.dto.lesson.create.LessonAddSurveyRequest
 import eduflow.admin.course.dto.lesson.create.LessonCreateResponse
-import eduflow.admin.course.models.survey.CourseSurveyChoiceModel
-import eduflow.admin.course.models.survey.CourseSurveyModel
-import eduflow.admin.course.models.survey.CourseSurveyQuestionModel
-import eduflow.admin.course.repositories.CourseSurveyRepository
+import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyChoiceModel
+import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyModel
+import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyQuestionModel
+import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
-class CourseSurveyService(
-    private val surveyRepository: CourseSurveyRepository,
+class CourseLessonSurveyService(
+    private val surveyRepository: CourseLessonSurveyRepository,
     private val lessonService: CourseLessonService
 ) {
     fun addSurvey(survey: LessonAddSurveyRequest): Mono<LessonCreateResponse> {
@@ -20,11 +20,11 @@ class CourseSurveyService(
             .flatMap { existingSurvey ->
                 val updatedSurvey = existingSurvey.copy(
                     questions = survey.questions.map { question ->
-                        CourseSurveyQuestionModel(
+                        CourseLessonSurveyQuestionModel(
                             _id = question._id ?: UUID.randomUUID().toString(),
                             title = question.title,
                             choices = question.choices.map { choice ->
-                                CourseSurveyChoiceModel(
+                                CourseLessonSurveyChoiceModel(
                                     _id = choice._id ?: UUID.randomUUID().toString(),
                                     title = choice.title,
                                     isCorrect = choice.isCorrect
@@ -37,15 +37,15 @@ class CourseSurveyService(
             }
             .switchIfEmpty(
                 Mono.defer {
-                    val newSurvey = CourseSurveyModel(
+                    val newSurvey = CourseLessonSurveyModel(
                         _id = UUID.randomUUID().toString(),
                         lessonId = survey._id,
                         questions = survey.questions.map { question ->
-                            CourseSurveyQuestionModel(
+                            CourseLessonSurveyQuestionModel(
                                 _id = UUID.randomUUID().toString(),
                                 title = question.title,
                                 choices = question.choices.map { choice ->
-                                    CourseSurveyChoiceModel(
+                                    CourseLessonSurveyChoiceModel(
                                         _id = UUID.randomUUID().toString(),
                                         title = choice.title,
                                         isCorrect = choice.isCorrect
@@ -63,7 +63,7 @@ class CourseSurveyService(
             }
     }
 
-    fun getSurveyByLessonId(lessonId: String): Mono<CourseSurveyModel> {
+    fun getSurveyByLessonId(lessonId: String): Mono<CourseLessonSurveyModel> {
         return surveyRepository.findByLessonId(lessonId)
     }
 }

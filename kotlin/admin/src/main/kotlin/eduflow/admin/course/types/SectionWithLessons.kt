@@ -1,9 +1,9 @@
 package eduflow.admin.course.types
 
-import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.models.CourseSectionModel
+import eduflow.admin.course.models.lesson.CourseLessonModel
 
-data class SectionWithLessons (
+data class SectionWithLessons(
     val section: CourseSectionModel,
     val lessons: List<CourseLessonModel>
 )

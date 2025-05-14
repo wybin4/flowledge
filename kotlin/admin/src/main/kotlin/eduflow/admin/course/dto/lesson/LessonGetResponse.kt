@@ -1,7 +1,7 @@
 package eduflow.admin.course.dto.lesson
 
-import eduflow.admin.course.models.survey.CourseSurveyModel
-import eduflow.course.CourseLesson
+import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyModel
+import eduflow.course.lesson.CourseLesson
 import java.util.*
 
 data class LessonGetResponse(
@@ -14,7 +14,7 @@ data class LessonGetResponse(
     override val sectionId: String?,
     override val surveyText: String?,
     override val synopsisText: String?,
-    val survey: CourseSurveyModel? = null,
+    val survey: CourseLessonSurveyModel? = null,
     override val time: String?,
     override val title: String,
     override val updatedAt: Date,

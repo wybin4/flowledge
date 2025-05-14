@@ -468,5 +468,9 @@
         "__count__roles_many": "{{count}} roles selected"
     },
     "view-all": "view all",
-    "mandatory": "mandatory"
+    "mandatory": "mandatory",
+    "select-one-choice": "select one choice",
+    "question": "question",
+    "from": "from",
+    "finish": "finish"
 }

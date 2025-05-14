@@ -28,16 +28,12 @@
     gap: 1rem;
 }
 
-.incorrectIcon {
+.icon {
+    margin-bottom: -3px;
+
     color: var(--description-text);
-}
-
-.correctionIcon {
     cursor: pointer;
-}
 
-.correctionIcon:hover {
-    filter: brightness(85%);
 }
 
 .correctIcon {

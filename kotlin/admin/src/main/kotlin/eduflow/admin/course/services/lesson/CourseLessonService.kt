@@ -1,8 +1,8 @@
-package eduflow.admin.course.services
+package eduflow.admin.course.services.lesson
 
 import eduflow.admin.course.dto.lesson.create.*
-import eduflow.admin.course.models.CourseLessonModel
-import eduflow.admin.course.repositories.CourseLessonRepository
+import eduflow.admin.course.models.lesson.CourseLessonModel
+import eduflow.admin.course.repositories.lessons.CourseLessonRepository
 import eduflow.user.Language
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service

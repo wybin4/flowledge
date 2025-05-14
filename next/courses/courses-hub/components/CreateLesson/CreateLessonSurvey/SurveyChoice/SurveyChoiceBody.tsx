@@ -40,6 +40,7 @@ export const SurveyChoiceBody = ({
                     {deleteIcon}
                 </div>
             </>}
+            handledIconClassName={styles.correctIcon}
         />
     );
 };

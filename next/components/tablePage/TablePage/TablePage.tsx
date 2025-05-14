@@ -1,10 +1,9 @@
-import { useIcon } from "@/hooks/useIcon";
 import { ReactNode } from "react";
 import styles from "./TablePage.module.css";
 import { IPagination } from "@/types/Pagination";
 import cn from "classnames";
-import { useTranslation } from "react-i18next";
 import { NothingFound } from "@/components/NothingFound/NothingFound";
+import { TablePagePagination } from "./TablePagePagination";
 
 type TablePageProps<T> = {
     header: ReactNode;
@@ -15,35 +14,24 @@ type TablePageProps<T> = {
 };
 
 export const TablePage = <T,>({ header, body, pagination, bodyStyles, tableStyles }: TablePageProps<T>) => {
-    const iconRight = useIcon('right');
-    const iconLeft = useIcon('left');
-
     if (pagination.totalCount === 0) {
         return (<NothingFound />);
     }
 
     return (
         <div className={styles.container}>
-            <div data-pagination='left' className={cn(styles.button, styles.buttonLeft, {
-                [styles.disabled]: pagination.currentPage === 1
-            })}>
-                <div>{pagination.currentPage - 1}/{pagination.totalPages}</div>
-                <div onClick={pagination.handlePreviousPage}>{iconLeft}</div>
-            </div>
+            <TablePagePagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                handlePreviousPage={pagination.handlePreviousPage}
+                handleNextPage={pagination.handleNextPage}
+            />
             <table className={cn(styles.table, tableStyles)}>
                 {header}
                 <tbody className={bodyStyles}>
                     {body}
                 </tbody>
             </table>
-            {!!pagination.totalPages &&
-                <div data-pagination='right' className={cn(styles.button, styles.buttonRight, 'tablePaginationButtonRight', {
-                    [styles.disabled]: pagination.currentPage === pagination.totalPages
-                })}>
-                    <div>{pagination.currentPage + 1}/{pagination.totalPages}</div>
-                    <div onClick={pagination.handleNextPage}>{iconRight}</div>
-                </div>
-            }
         </div>
     );
 };

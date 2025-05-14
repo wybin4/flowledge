@@ -474,5 +474,9 @@
         "__count__roles_many": "выбрано {{count}} ролей"
     },
     "view-all": "посмотреть всё",
-    "mandatory": "обязательно"
+    "mandatory": "обязательно",
+    "select-one-choice": "выберите один вариант ответа",
+    "question": "вопрос",
+    "from": "из",
+    "finish": "завершить"
 }

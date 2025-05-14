@@ -1,7 +1,7 @@
 package eduflow.admin.course.dto.course.hub.id
 
 import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
-import eduflow.admin.course.models.CourseLessonModel
+import eduflow.admin.course.models.lesson.CourseLessonModel
 import eduflow.admin.course.types.CourseEditor
 import eduflow.admin.course.types.SectionWithLessons
 

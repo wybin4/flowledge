@@ -2,6 +2,7 @@ import { ItemSize } from "@/types/ItemSize";
 import styles from "./Card.module.css";
 import cn from "classnames";
 import { ReactNode } from "react";
+import { CardContainer } from "./CardContainer";
 
 type CardProps = {
     id?: string;
@@ -27,12 +28,11 @@ export const Card = ({
     size = ItemSize.Little
 }: CardProps) => {
     return (
-        <div
+        <CardContainer
             id={id}
             onClick={onClick}
-            className={cn(styles.container, className, styles[size], {
-                [styles.pointer]: clickable
-            })}
+            className={className}
+            clickable={clickable}
         >
             <div className={styles.body}>
                 <div className={styles.title}>
@@ -50,6 +50,6 @@ export const Card = ({
                 ))}
             </div>
             {children}
-        </div>
+        </CardContainer>
     );
 };

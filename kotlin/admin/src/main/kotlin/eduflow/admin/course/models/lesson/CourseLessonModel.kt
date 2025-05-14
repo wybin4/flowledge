@@ -1,6 +1,6 @@
-package eduflow.admin.course.models
+package eduflow.admin.course.models.lesson
 
-import eduflow.course.CourseLesson
+import eduflow.course.lesson.CourseLesson
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 

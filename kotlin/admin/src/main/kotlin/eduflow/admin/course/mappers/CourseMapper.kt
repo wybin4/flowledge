@@ -6,9 +6,9 @@ import eduflow.admin.course.dto.course.id.CourseGetByIdBigResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
 import eduflow.admin.course.models.CourseCreatorModel
-import eduflow.admin.course.models.CourseLessonModel
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.models.lesson.CourseLessonModel
 import eduflow.admin.course.types.CourseEditor
 import eduflow.admin.course.types.SectionWithLessons
 import org.mapstruct.Mapper

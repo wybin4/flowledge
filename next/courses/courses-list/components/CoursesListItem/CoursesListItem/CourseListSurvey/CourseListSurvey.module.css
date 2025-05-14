@@ -1,0 +1,57 @@
+.count,
+.questionTitle {
+    width: 82%;
+}
+
+.questionTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+
+    margin-bottom: 0.7rem;
+}
+
+.questionDescription {
+    font-size: 0.9rem;
+    color: var(--description-text);
+
+    margin-bottom: 1.5rem;
+}
+
+.choiceContainer {
+    margin-bottom: 1rem;
+}
+
+.container {
+    display: flex;
+    align-items: flex-start;
+
+    height: 100%;
+}
+
+.questionContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+
+    height: 90vh;
+    width: 100%;
+
+    margin: 0 17rem;
+}
+
+.questionBody {
+    flex: 1;
+}
+
+.count {
+    display: flex;
+    justify-content: center;
+}
+
+.checkedChoice {
+    background-color: var(--button-tip) !important;
+}
+
+.checkedChoiceIcon {
+    color: var(--light);
+}

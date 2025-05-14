@@ -3,10 +3,10 @@ package eduflow.admin.course.controllers
 import eduflow.admin.course.dto.lesson.LessonGetResponse
 import eduflow.admin.course.dto.lesson.LessonUpdateRequest
 import eduflow.admin.course.dto.lesson.create.*
-import eduflow.admin.course.models.CourseLessonModel
-import eduflow.admin.course.repositories.CourseLessonRepository
-import eduflow.admin.course.services.CourseLessonService
-import eduflow.admin.course.services.CourseSurveyService
+import eduflow.admin.course.models.lesson.CourseLessonModel
+import eduflow.admin.course.repositories.lessons.CourseLessonRepository
+import eduflow.admin.course.services.lesson.CourseLessonService
+import eduflow.admin.course.services.lesson.CourseLessonSurveyService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono
 class CourseLessonController(
     private val lessonRepository: CourseLessonRepository,
     private val lessonService: CourseLessonService,
-    private val surveyService: CourseSurveyService
+    private val surveyService: CourseLessonSurveyService
 ) {
 
     @PostMapping("/lessons.create")

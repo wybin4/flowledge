@@ -1,4 +1,4 @@
-package eduflow.course
+package eduflow.course.lesson
 
 import java.util.*
 

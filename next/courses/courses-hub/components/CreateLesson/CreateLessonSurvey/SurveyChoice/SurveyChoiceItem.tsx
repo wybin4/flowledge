@@ -9,36 +9,38 @@ type SurveyChoiceItemProps = {
     actions?: ReactNode;
     text: ReactNode;
     setChoices: (fn: (prevChoices: SurveyChoice[]) => SurveyChoice[]) => void;
+    fieldToHandle?: keyof SurveyChoice;
+    handledIconClassName?: string;
 };
 
 export const SurveyChoiceItem = ({
-    text, choice, setChoices, actions
+    text,
+    choice, setChoices,
+    actions,
+    fieldToHandle = 'isCorrect', handledIconClassName
 }: SurveyChoiceItemProps) => {
-    const { isCorrect } = choice;
+    const isHandled = Boolean(choice[fieldToHandle]);
 
-    const correctIcon = useIcon('round-filled');
-    const incorrectIcon = useIcon('round');
+    const handledIcon = useIcon('round-filled');
+    const inhandledIcon = useIcon('round');
 
-    const handleToggleCorrect = () => {
+    const handleToggle = () => {
         setChoices(prevChoices =>
             prevChoices.map(c => {
                 if (c._id === choice._id) {
-                    return { ...c, isCorrect: !c.isCorrect };
+                    return { ...c, [fieldToHandle]: !c[fieldToHandle] };
                 } else {
-                    return { ...c, isCorrect: false };
+                    return { ...c, [fieldToHandle]: false };
                 }
             })
         );
     };
 
     return (
-        <div className={styles.bodyContainer}>
-            <div onClick={handleToggleCorrect} className={cn(styles.correctionIcon, {
-                [styles.correctIcon]: isCorrect,
-                [styles.incorrectIcon]: isCorrect
-            })}>{
-                    isCorrect ? correctIcon : incorrectIcon
-                }</div>
+        <div className={styles.bodyContainer} onClick={handleToggle}>
+            <div className={cn(styles.icon, isHandled ? handledIconClassName : undefined)}>
+                {isHandled ? handledIcon : inhandledIcon}
+            </div>
             {text}
             {actions}
         </div>

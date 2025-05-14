@@ -1,6 +1,6 @@
 package eduflow.admin.course.dto.course.id
 
-import eduflow.admin.course.models.CourseLessonModel
+import eduflow.admin.course.models.lesson.CourseLessonModel
 import eduflow.admin.course.types.SectionWithLessons
 
 data class CourseGetByIdBigResponse(

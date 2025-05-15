@@ -14,7 +14,9 @@ export const CoursesListItemComments = ({ className, comments }: CoursesListItem
     const { t } = useTranslation();
     const commentsCount = comments.length;
     const locale = useUserSetting<Language>('language') || Language.EN;
-    const commentsCountText = handlePluralTranslation(coursesListPrefix, t, commentsCount, 'comments', locale);
+    const commentsCountText = handlePluralTranslation(
+        `${coursesListPrefix}.comments`, t, commentsCount, 'comments', locale
+    );
 
     return (
         <div className={className}>

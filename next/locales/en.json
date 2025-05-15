@@ -332,13 +332,22 @@
     },
     "courses-list": {
         "menu": {
-            "lessons": "lessons",
-            "about": "about",
-            "comments": "comments"
-        },
-        "__count__comments_zero": "start discussion",
-        "__count__comments_one": "{{count}} comment",
-        "__count__comments_many": "{{count}} comments"
+            "lessons": {
+                "name": "lessons",
+                "synopsis": "synopsis",
+                "stuff": "stuff",
+                "survey": "survey"
+            },
+            "about": {
+                "name": "about"
+            },
+            "comments": {
+                "name": "comments",
+                "__count__comments_zero": "start discussion",
+                "__count__comments_one": "{{count}} comment",
+                "__count__comments_many": "{{count}} comments"
+            }
+        }
     },
     "save": "save",
     "cancel": "cancel",
@@ -347,11 +356,6 @@
     "draft": "draft",
     "create": "create",
     "back": "back",
-    "lesson": {
-        "synopsis": "synopsis",
-        "stuff": "stuff",
-        "survey": "survey"
-    },
     "stuff-upload": {
         "description": "what to upload",
         "placeholder": "supported formats: ",
@@ -472,5 +476,6 @@
     "select-one-choice": "select one choice",
     "question": "question",
     "from": "from",
-    "finish": "finish"
+    "finish": "finish",
+    "browser-unsupported-video": "your browser does not support video"
 }

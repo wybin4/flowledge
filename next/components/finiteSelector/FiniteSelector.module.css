@@ -17,7 +17,7 @@
 
 .activeFill,
 .activeFill:hover {
-    background-color: var(--light);
+    background-color: var(--light) !important;
     color: var(--dark);
 }
 

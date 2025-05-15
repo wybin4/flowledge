@@ -336,15 +336,22 @@
         }
     },
     "courses-list": {
-        "menu": {
-            "lessons": "лекции",
-            "about": "о курсе",
-            "comments": "комментарии"
+        "lessons": {
+            "name": "лекции",
+            "synopsis": "конспект",
+            "stuff": "материалы",
+            "survey": "тест"
         },
-        "__count__comments_zero": "начать обсуждение",
-        "__count__comments_one": "{{count}} комментарий",
-        "__count__comments_few": "{{count}} комментария",
-        "__count__comments_many": "{{count}} комментариев"
+        "about": {
+            "name": "о курсе"
+        },
+        "comments": {
+            "name": "комментарии",
+            "__count__comments_zero": "начать обсуждение",
+            "__count__comments_one": "{{count}} комментарий",
+            "__count__comments_few": "{{count}} комментария",
+            "__count__comments_many": "{{count}} комментариев"
+        }
     },
     "save": "сохранить",
     "cancel": "отмена",
@@ -353,11 +360,6 @@
     "draft": "черновик",
     "create": "создать",
     "back": "назад",
-    "lesson": {
-        "synopsis": "конспект",
-        "stuff": "материалы",
-        "survey": "тест"
-    },
     "stuff-upload": {
         "description": "что загружать",
         "placeholder": "поддерживаемые форматы:",
@@ -478,5 +480,6 @@
     "select-one-choice": "выберите один вариант ответа",
     "question": "вопрос",
     "from": "из",
-    "finish": "завершить"
+    "finish": "завершить",
+    "browser-unsupported-video": "ваш браузер не поддерживает видео"
 }

@@ -2,7 +2,7 @@
 
 import { ButtonBack } from "@/components/Button/ButtonBack/ButtonBack";
 import { StickyBottomBar } from "@/components/StickyBottomBar/StickyBottomBar";
-import { LessonPage, LessonPageItem } from "@/courses/courses-list/components/LessonPage/LessonPage";
+import { LessonPage } from "@/courses/components/LessonPage/LessonPage";
 import { PageMode } from "@/types/PageMode";
 import { useEffect, useState } from "react";
 import styles from "./CreateLessonSynopsisAndStuff.module.css";
@@ -13,6 +13,7 @@ import { CreateLessonChildrenProps } from "../CreateLesson";
 import { LessonStuff } from "@/courses/courses-list/types/LessonStuff";
 import { userApiClient } from "@/apiClient";
 import { LessonSaveType } from "@/courses/courses-hub/types/LessonToSave";
+import { LessonPageItem } from "@/courses/courses-list/types/LessonPageItem";
 
 interface CreateLessonSynopsisAndStuffProps extends CreateLessonChildrenProps {
     synopsisText?: string;

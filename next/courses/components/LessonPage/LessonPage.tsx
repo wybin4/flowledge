@@ -2,38 +2,36 @@
 
 import { StuffUpload } from "@/stuff/components/StuffUpload";
 import { Dispatch, SetStateAction, useState } from "react";
-import { FiniteSelector } from "../../../../components/FiniteSelector/FiniteSelector";
-import { InputBoxWrapper } from "../../../../components/InputBox/InputBoxWrapper";
+import { FiniteSelector } from "../../../components/FiniteSelector/FiniteSelector";
+import { InputBoxWrapper } from "../../../components/InputBox/InputBoxWrapper";
 import styles from "./LessonPage.module.css";
 import cn from "classnames";
-import { Editor } from "../../../../components/Editor/Editor";
+import { Editor } from "../../../components/Editor/Editor";
 import { PageMode } from "@/types/PageMode";
 import ReactMarkdown from 'react-markdown';
 import { StuffItem } from "@/stuff/components/StuffItem";
 import { Stuff } from "@/stuff/types/Stuff";
 import { StuffTypes } from "@/stuff/types/StuffTypes";
-import { SynopsisLessonTabs } from "@/courses/courses-hub/types/SynopsisLessonTabs";
-import { LessonStuff } from "../../types/LessonStuff";
+import { AdditionalLessonTabs, SynopsisLessonTabs } from "@/courses/types/SynopsisLessonTabs";
+import { LessonStuff } from "../../courses-list/types/LessonStuff";
+import { LessonPageItem } from "../../courses-list/types/LessonPageItem";
+import { useTranslation } from "react-i18next";
+import { coursesListPrefix } from "@/helpers/prefixes";
+import { CoursesListItemComments } from "../../courses-list/components/CoursesListItem/CoursesListItemComments/CoursesListItemComments";
 
 export type LessonsPageProps = {
     mode: PageMode;
     lesson: LessonPageItem;
+    additionalTabs?: AdditionalLessonTabs[];
     setLesson?: Dispatch<SetStateAction<LessonPageItem>>;
 };
 
-export type LessonPageItem = {
-    _id: string;
-    title?: string;
-    time?: string;
-    imageUrl?: string;
-    synopsisText?: string;
-    videoUrl?: string;
-    stuffList?: LessonStuff[];
-};
+export const LessonPage = ({ mode, lesson, setLesson, additionalTabs }: LessonsPageProps) => {
+    const tabs = [...Object.values(SynopsisLessonTabs), ...(additionalTabs || [])];
+    const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
-export const LessonPage = ({ mode, lesson, setLesson }: LessonsPageProps) => {
-    const tabs = Object.values(SynopsisLessonTabs);
-    const [selectedTab, setSelectedTab] = useState<SynopsisLessonTabs>(tabs[0]);
+    const { t } = useTranslation();
+
     const isEditorMode = mode === PageMode.Editor;
 
     const onDownloadStuff = (stuff: LessonStuff) => {
@@ -62,7 +60,7 @@ export const LessonPage = ({ mode, lesson, setLesson }: LessonsPageProps) => {
             {lesson.videoUrl && (
                 <video className={styles.video} controls poster={lesson.imageUrl}>
                     <source src={lesson.videoUrl} type="video/mp4" />
-                    Ваш браузер не поддерживает видео.
+                    {t('browser-unsupported-video')}
                 </video>
             )}
             <InputBoxWrapper className={styles.tabsContainer}>
@@ -71,7 +69,11 @@ export const LessonPage = ({ mode, lesson, setLesson }: LessonsPageProps) => {
                         key={tab}
                         value={tab}
                         selectedValue={selectedTab}
-                        label={`lesson.${tab}`}
+                        label={
+                            Object.values(SynopsisLessonTabs).includes(tab as SynopsisLessonTabs)
+                                ? `${coursesListPrefix}.lessons.${tab}`
+                                : `${coursesListPrefix}.${tab}.name`
+                        }
                         onClick={() => {
                             setSelectedTab(tab);
                         }}
@@ -83,6 +85,9 @@ export const LessonPage = ({ mode, lesson, setLesson }: LessonsPageProps) => {
                 <ReactMarkdown>
                     {lesson.synopsisText}
                 </ReactMarkdown>
+            )}
+            {!isEditorMode && selectedTab === AdditionalLessonTabs.Comments && (
+                <CoursesListItemComments comments={lesson.comments ?? []} />
             )}
             {!isEditorMode &&
                 selectedTab === SynopsisLessonTabs.Stuff &&

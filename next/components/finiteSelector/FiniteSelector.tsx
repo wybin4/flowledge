@@ -36,9 +36,8 @@ export const FiniteSelector = ({
         })}>
             {iconPosition === ChildrenPosition.TopRight && icon && iconNode}
             <div
-                className={cn(styles.item, isActive ? activeClassName : undefined, className, styles[mode], {
-                    [styles.active]: isActive,
-                    [styles[`active${mode[0].toUpperCase() + mode.slice(1)}`]]: isActive
+                className={cn(styles.item, isActive ? activeClassName || styles.active : undefined, className, styles[mode], {
+                    [activeClassName || styles[`active${mode[0].toUpperCase() + mode.slice(1)}`]]: isActive
                 })}
                 onClick={!disabled ? () => onClick() : undefined}
             >

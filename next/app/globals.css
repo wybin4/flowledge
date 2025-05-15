@@ -179,6 +179,14 @@ textarea {
   resize: none;
 }
 
+blockquote {
+  border-left: solid 3px var(--blue) !important;
+  color: var(--description-text) !important;
+
+  padding-left: 2rem !important;
+  margin-left: 0 !important;
+}
+
 .md-editor .cm-editor,
 .md-editor .cm-scroller,
 .md-editor .cm-content {

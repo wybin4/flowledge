@@ -20,7 +20,7 @@ export const CoursesListItemMenu = ({ className, selectedTab, setSelectedTab }: 
                     key={tab}
                     value={tab}
                     selectedValue={selectedTab}
-                    label={`${coursesListPrefix}.menu.${tab}`}
+                    label={`${coursesListPrefix}.${tab}.name`}
                     onClick={() => setSelectedTab(tab)}
                     className={styles.tab}
                 />

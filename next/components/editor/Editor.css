@@ -140,10 +140,6 @@
     color: var(--blue);
 }
 
-.editor-code .md-editor-preview blockquote {
-    border-left: solid 3px var(--blue);
-}
-
 /* elements props end */
 
 /* scrollbars start */

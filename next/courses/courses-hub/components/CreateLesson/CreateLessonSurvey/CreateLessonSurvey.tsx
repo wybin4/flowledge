@@ -26,6 +26,7 @@ import { userApiClient } from "@/apiClient";
 import { Survey } from "@/courses/courses-hub/types/Survey";
 import { usePathname, useRouter } from "next/navigation";
 import { removeLastSegment } from "@/helpers/removeLastSegment";
+import { RightSidebarWithStickyActions } from "@/components/Sidebar/RightSidebar/RightSidebarWithStickyActions/RightSidebarWithStickyActions";
 
 interface CreateLessonSurveyProps extends CreateLessonChildrenProps {
     selectedQuestionId?: string;
@@ -99,39 +100,38 @@ export const CreateLessonSurvey = ({ lessonId, selectedQuestionId, survey, quest
         });
 
     return (
-        <RightSidebar content={_ =>
-            <div className={styles.container}>
-                <div className={cn(styles.titleContainer, styles.mt)}>
-                    <div className={styles.titleText}>{t('questions.name')} ({questions.length})</div>
-                    <div
-                        onClick={handleAddQuestion}
-                        className={styles.titleButton}
-                    >
-                        {t('questions.add')}
-                    </div>
-                </div>
-                <SortableList
-                    items={questions}
-                    setItems={setQuestions}
-                    buttonPosition={ChildrenPosition.Left}
-                    className={styles.questionContainer}
-                    renderItem={(item, index) => (
-                        <SurveyQuestionItem
-                            key={index}
-                            _id={item._id}
-                            title={item.title}
-                            number={index + 1}
+        <>
+            <RightSidebarWithStickyActions
+                sidebar={{
+                    title: (<>
+                        <div>{t('questions.name')} ({questions.length})</div>
+                        <div
+                            onClick={handleAddQuestion}
+                            className={styles.titleButton}
+                        >
+                            {t('questions.add')}
+                        </div>
+                    </>),
+                    body: _ => (
+                        <SortableList
+                            items={questions}
+                            setItems={setQuestions}
+                            buttonPosition={ChildrenPosition.Left}
+                            className={styles.questionContainer}
+                            renderItem={(item, index) => (
+                                <SurveyQuestionItem
+                                    key={index}
+                                    _id={item._id}
+                                    title={item.title}
+                                    number={index + 1}
+                                />
+                            )}
                         />
-                    )}
-                />
-            </div>
-        }>{(isExpanded, toggleSidebar) => (
-
-            <div className={cn(styles.container, {
-                [styles.expanded]: isExpanded
-            })}>
-                <StickyBottomBar barContent={
-                    <div className={styles.buttonContainer}>
+                    ),
+                    containerClassName: styles.container
+                }}
+                stickyBottomBar={{
+                    actions: (<>
                         <ButtonBack hasBackButtonIcon={false} />
                         {JSON.stringify(initialQuestions) != JSON.stringify(questions) &&
                             <Button
@@ -142,13 +142,9 @@ export const CreateLessonSurvey = ({ lessonId, selectedQuestionId, survey, quest
                                 noEffects={true}
                             />
                         }
-                    </div>
-                }>
-                    <div className={cn(styles.titleContainer, styles.mb)}>
-                        <div></div>
-                        <MenuButton size={ItemSize.Little} isExpanded={isExpanded} onClick={toggleSidebar} />
-                    </div>
-                    {questions.map((question, index) => (
+                    </>),
+                    menuSize: ItemSize.Little,
+                    body: questions.map((question, index) => (
                         <SurveyQuestionBody
                             key={index}
                             number={index + 1}
@@ -156,9 +152,9 @@ export const CreateLessonSurvey = ({ lessonId, selectedQuestionId, survey, quest
                             setQuestion={handleSetQuestion}
                             canDeleteQuestions={canDeleteQuestions}
                         />
-                    ))}
-                </StickyBottomBar>
-            </div>
-        )}</RightSidebar>
+                    ))
+                }}
+            />
+        </>
     )
 };

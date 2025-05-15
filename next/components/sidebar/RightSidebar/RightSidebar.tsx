@@ -6,7 +6,7 @@ import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
 import { SidebarPosition } from "@/types/SidebarPosition";
 
-type RightSidebarClassNames = {
+export type RightSidebarClassNames = {
     containerClassName: string;
     headerClassName: string;
     contentClassName: string;

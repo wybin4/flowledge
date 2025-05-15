@@ -5,10 +5,10 @@ import cn from "classnames";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ReactNode } from "react";
 import { apiIntegrationsPrefix, coursesHubPrefix, coursesListPrefix, courseTagsPrefix, permissionsPrefix, privateSettingsPrefix, profilePrefix, userSettingsPrefix, usersPrefix } from "@/helpers/prefixes";
-import LeftSidebarIcon from "./LeftSidebarIcon/LeftSidebarIcon";
 import { clearTokensClient } from "@/auth/tokens";
 import { useRouter } from "next/navigation";
 import { usePermissions } from "@/hooks/usePermissions";
+import LeftSidebarIcon from "./LeftSidebarIcon/LeftSidebarIcon";
 
 const sidebarPermissions = [
     'view-private-settings',

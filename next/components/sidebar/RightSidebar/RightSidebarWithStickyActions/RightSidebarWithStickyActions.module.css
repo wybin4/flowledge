@@ -1,0 +1,47 @@
+.container [role='button'] {
+    width: 100%;
+}
+
+.titleContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.expanded {
+    width: 62%;
+    height: 93vh;
+
+    padding-left: 0.5rem;
+    padding-right: 3.5rem;
+
+    overflow: scroll;
+}
+
+.titleContainer h2 {
+    margin: 0;
+}
+
+.mb {
+    margin-bottom: 2.5rem;
+}
+
+.mt {
+    margin-top: 2.5rem;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 1rem;
+}
+
+.buttonContainer div {
+    font-size: 0.875rem;
+}
+
+.expanded .buttonContainer {
+    margin-right: 32%;
+}

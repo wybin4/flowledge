@@ -10,4 +10,5 @@ export type LessonPageItem = {
     stuffList?: LessonStuff[];
 
     comments?: string[];
+    courseName?: string;
 };

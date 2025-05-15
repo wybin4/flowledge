@@ -4,4 +4,33 @@
 
     padding-left: 0.5rem;
     padding-right: 3.5rem;
+
+    overflow: scroll;
+}
+
+.titleContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mb {
+    margin-bottom: 2rem;
+}
+
+.crumbsContainer {
+    background-color: var(--button);
+
+    padding: 0.3rem 0.8rem;
+
+    border-radius: 1rem;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 1rem;
+}
+
+.expanded .buttonContainer {
+    margin-right: 32%;
 }

@@ -9,10 +9,14 @@ import cn from "classnames";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useTranslation } from "react-i18next";
 
-export const Breadcrumbs = ({ position = ChildrenPosition.Top, currentPathName }: {
-    position?: ChildrenPosition.Top | ChildrenPosition.Left,
-    currentPathName?: string
-}): ReactNode => {
+type BreadcrumbsProps = {
+    position?: ChildrenPosition.Top | ChildrenPosition.Left;
+    currentPathName?: string;
+    pathNames?: string[];
+    className?: string;
+};
+
+export const Breadcrumbs = ({ position = ChildrenPosition.Top, pathNames = [], currentPathName, className }: BreadcrumbsProps): ReactNode => {
     const pathname = usePathname();
     const pathSegments = pathname.split("/").filter(Boolean);
     const separatorIcon = useIcon("separator");
@@ -23,14 +27,14 @@ export const Breadcrumbs = ({ position = ChildrenPosition.Top, currentPathName }
     let path = "";
 
     return (
-        <nav aria-label="breadcrumb">
+        <nav aria-label="breadcrumb" className={className}>
             <ul className={cn(styles.container, {
                 [styles.top]: position === ChildrenPosition.Top,
             })}>
                 {pathSegments.map((segment, index) => {
                     path += `/${segment}`;
                     const isLast = index === pathSegments.length - 1;
-                    const translatedSegment = index === 0 ? t(`sidebar.${segment}`) : decodeURIComponent(segment);
+                    const translatedSegment = pathNames[index - 1] ?? (index === 0 ? t(`sidebar.${segment}`) : decodeURIComponent(segment));
                     return (
                         <li key={path} className={styles.item}>
                             {index > 0 && <span className={styles.separator}>{separatorIcon}</span>}

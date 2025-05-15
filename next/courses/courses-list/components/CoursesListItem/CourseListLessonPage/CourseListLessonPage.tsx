@@ -15,6 +15,13 @@ import { MenuButton } from "@/components/MenuButton/MenuButton";
 import { ItemSize } from "@/types/ItemSize";
 import cn from "classnames";
 import { useNonPersistentSidebar } from "@/hooks/useNonPersistentSidebar";
+import CollapsibleSection from "@/components/CollapsibleSection/CollapsibleSection";
+import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { StickyBottomBar } from "@/components/StickyBottomBar/StickyBottomBar";
+import { Button, ButtonType } from "@/components/Button/Button";
+import { ButtonBack } from "@/components/Button/ButtonBack/ButtonBack";
+import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 
 export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
     const [lesson, setLesson] = useState<LessonPageItem | undefined>(undefined);
@@ -32,27 +39,56 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
 
     return (
         <RightSidebar
-            content={_ =>
+            content={classNames =>
                 <div>
+                    <div style={{ height: '5.5625rem' }}></div>
+                    <div style={{ overflowY: 'scroll', height: 'max-content' }}>
+                        <CollapsibleSection title='основные понятия' expandedByDefault={true} {...classNames}>
+                            дети
+                        </CollapsibleSection>
+                        <CollapsibleSection title='проектирование по' expandedByDefault={false} {...classNames}>
+                            дети
+                        </CollapsibleSection>
+                        <CollapsibleSection title='классические методы' expandedByDefault={false} {...classNames}>
+                            дети
+                        </CollapsibleSection>
+                    </div>
                 </div>
             }
         >{(isExpanded, toggleSidebar) => (
             <div className={cn(styles.container, {
                 [styles.expanded]: isExpanded
             })}>
-                <div className={cn(styles.titleContainer, styles.mb)}>
-                    <div></div>
-                    <MenuButton
-                        size={ItemSize.Medium}
-                        isExpanded={isExpanded}
-                        onClick={toggleSidebar}
+                <StickyBottomBar barContent={
+                    <div className={styles.buttonContainer}>
+                        <ButtonBack hasBackButtonIcon={false} />
+                        <Button
+                            onClick={() => { }}
+                            title={t('next')}
+                            type={ButtonType.SAVE}
+                            mode={FillBorderUnderlineMode.UNDERLINE}
+                            noEffects={true}
+                        />
+                    </div>
+                }>
+                    <div className={cn(styles.titleContainer, styles.mb)}>
+                        <Breadcrumbs
+                            pathNames={[lesson.courseName ?? '', lesson.title ?? '']}
+                            position={ChildrenPosition.Left}
+                            className={styles.crumbsContainer}
+                        />
+                        <MenuButton
+                            size={ItemSize.Medium}
+                            isExpanded={isExpanded}
+                            onClick={toggleSidebar}
+                        />
+                    </div>
+                    <LessonPage
+                        mode={PageMode.Viewer}
+                        lesson={lesson}
+                        additionalTabs={[AdditionalLessonTabs.Comments]}
                     />
-                </div>
-                <LessonPage
-                    mode={PageMode.Viewer}
-                    lesson={lesson}
-                    additionalTabs={[AdditionalLessonTabs.Comments]}
-                />
+                </StickyBottomBar>
             </div>
         )}</RightSidebar>
     );

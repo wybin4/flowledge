@@ -29,8 +29,62 @@
 .buttonContainer {
     display: flex;
     gap: 1rem;
+
 }
 
 .expanded .buttonContainer {
     margin-right: 32%;
+}
+
+.backButton {
+    margin-right: 1rem;
+}
+
+.button {
+    font-size: 1rem !important;
+}
+
+.sectionHeader {
+    width: 90%;
+
+    background-color: transparent !important;
+
+    padding: 0 1rem !important;
+    margin: 0 !important;
+}
+
+.sectionHeader svg {
+    margin-bottom: -4px;
+}
+
+.sectionContent {
+    margin: 0.3rem;
+}
+
+.sectionContentExpanded {
+    margin: 1.5rem;
+}
+
+.sectionDescription {
+    font-size: 0.875rem;
+    color: var(--description-text);
+}
+
+.sectionTitleTextContainer {
+    justify-content: flex-start;
+    flex-grow: 1;
+    gap: 0.4rem !important;
+
+    height: 3.75rem;
+}
+
+.sectionContentContainer {
+    margin-bottom: 1rem;
+}
+
+.sectionContainer {
+    padding: 0 !important;
+    margin: 0 1.2rem !important;
+
+    height: fit-content !important;
 }

@@ -1,10 +1,10 @@
-package eduflow.admin.course.dto.lesson
+package eduflow.admin.course.dto.lesson.get
 
 import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyModel
 import eduflow.course.lesson.CourseLesson
 import java.util.*
 
-data class LessonGetResponse(
+data class LessonGetHubResponse(
     override val _id: String,
     override val courseId: String?,
     override val createdAt: Date,

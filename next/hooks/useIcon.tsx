@@ -68,6 +68,7 @@ import StatisticsIcon from "../assets/statistics.svg";
 import OptionsIcon from "../assets/options.svg";
 import LogoutIcon from "../assets/logout.svg";
 import FlagIcon from "../assets/flag.svg";
+import SurveyIcon from "../assets/survey.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -153,7 +154,8 @@ const icons = {
     'statistics': <StatisticsIcon />,
     'options': <OptionsIcon />,
 
-    'flag': <FlagIcon />
+    'flag': <FlagIcon />,
+    'survey': <SurveyIcon />
 } as const;
 
 export type IconKey = keyof typeof icons;

@@ -351,7 +351,10 @@
             "__count__comments_one": "{{count}} комментарий",
             "__count__comments_few": "{{count}} комментария",
             "__count__comments_many": "{{count}} комментариев"
-        }
+        },
+        "next-material": "к следующему материалу",
+        "lesson": "лекция",
+        "test-yourself": "проверь себя"
     },
     "save": "сохранить",
     "cancel": "отмена",

@@ -347,7 +347,10 @@
                 "__count__comments_one": "{{count}} comment",
                 "__count__comments_many": "{{count}} comments"
             }
-        }
+        },
+        "next-material": "to the next material",
+        "lesson": "lesson",
+        "test-yourself": "test yourself"
     },
     "save": "save",
     "cancel": "cancel",

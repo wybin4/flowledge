@@ -1,6 +1,6 @@
 import { TextArea } from "@/components/TextArea/TextArea";
 import { t } from "i18next";
-import { SurveyQuestionItem } from "../SurveyQuestionItem";
+import { SurveyQuestionItem } from "../SurveyQuestionItem/SurveyQuestionItem";
 import styles from "./SurveyQuestionBody.module.css";
 import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
 import { SortableList } from "@/components/Sortable/SortableList";

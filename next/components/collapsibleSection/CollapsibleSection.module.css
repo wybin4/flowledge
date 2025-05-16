@@ -27,10 +27,21 @@
 .actionIcon {
     transition: transform 0.3s ease-in-out;
 
+}
+
+.expand0 {
+    transform: rotate(0deg);
+}
+
+.expand-180 {
+    transform: rotate(-180deg);
+}
+
+.collapse-90 {
     transform: rotate(-90deg);
 }
 
-.expanded {
+.collapse0 {
     transform: rotate(0deg);
 }
 

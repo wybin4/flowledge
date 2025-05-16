@@ -18,3 +18,18 @@
     width: 12.5rem;
     height: 7rem;
 }
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--hover-dark);
+}
+
+.icon svg {
+    width: 2rem;
+    height: 2rem;
+
+    color: var(--description-text);
+}

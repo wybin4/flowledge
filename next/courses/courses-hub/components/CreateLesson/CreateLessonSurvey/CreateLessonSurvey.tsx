@@ -4,7 +4,7 @@ import RightSidebar from "@/components/Sidebar/RightSidebar/RightSidebar";
 import { useTranslation } from "react-i18next";
 import styles from "./CreateLessonSurvey.module.css";
 import { useEffect, useState } from "react";
-import { SurveyQuestionItem } from "./SurveyQuestion/SurveyQuestionItem";
+import { SurveyQuestionItem } from "./SurveyQuestion/SurveyQuestionItem/SurveyQuestionItem";
 import cn from "classnames";
 import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
 import { SurveyQuestionBody } from "./SurveyQuestion/SurveyQuestionBody/SurveyQuestionBody";

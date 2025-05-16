@@ -25,6 +25,9 @@ type CollapsibleSectionProps = {
     containerClassName?: string;
     headerClassName?: string;
     contentClassName?: string;
+    contentExpandedClassName?: string;
+    expandedDeg?: number;
+    collapsedDeg?: number;
     iconPrefix?: string;
     isEditTitle?: boolean;
     validateTitle?: (title: string) => boolean;
@@ -34,8 +37,10 @@ type CollapsibleSectionProps = {
 export default function CollapsibleSection({
     expandedByDefault, actions,
     children, iconPrefix = '',
+    expandedDeg = 0, collapsedDeg = -90,
     title, titleTags, onTitleSave, setTitle, isEditTitle,
-    containerClassName, headerClassName, contentClassName,
+    containerClassName, headerClassName,
+    contentClassName, contentExpandedClassName,
     validateTitle, titleError
 }: CollapsibleSectionProps) {
     const { t } = useTranslation();
@@ -74,8 +79,18 @@ export default function CollapsibleSection({
                         }</div>
                         {titleTags && <CollapsibleSectionTitleTags titleTags={titleTags} />}
                     </h3>
-                    {!isEditTitle && <div className={cn(styles.actionIcon, { [styles.expanded]: isExpanded })}>{expandIcon}</div>}
-                    {isEditTitle && <div onClick={handleSaveTitle} className={cn(styles.actionIcon, styles.editIcon)}>+</div>}
+                    {!isEditTitle && <div className={cn(
+                        styles.actionIcon,
+                        { [styles[`expand${expandedDeg}`]]: isExpanded },
+                        { [styles[`collapse${collapsedDeg}`]]: !isExpanded }
+                    )}>{expandIcon}</div>}
+                    {isEditTitle &&
+                        <div
+                            onClick={handleSaveTitle}
+                            className={cn(styles.actionIcon, styles.editIcon)}>
+                            +
+                        </div>
+                    }
                 </div>
                 <div className={styles.rightActions}>
                     {rightActions && rightActions.map((action, index) => (
@@ -84,8 +99,8 @@ export default function CollapsibleSection({
                 </div>
             </div>
             {titleError !== '' && <div className={styles.titleError}>{titleError}</div>}
-            <div className={cn(contentClassName, { 
-                [styles.hidden]: !isExpanded ,
+            <div className={cn(isExpanded ? contentExpandedClassName : contentClassName, {
+                [styles.hidden]: !isExpanded,
                 [styles.containerWithItems]: children !== undefined && isExpanded
             })}>
                 {children}

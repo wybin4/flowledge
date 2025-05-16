@@ -1,0 +1,9 @@
+.card div {
+    font-size: 0.875rem;
+}
+
+.delete {
+    white-space: nowrap;
+
+    padding-right: 1rem;
+}

@@ -1,9 +1,12 @@
 package eduflow.admin.course.controllers
 
-import eduflow.admin.course.dto.lesson.LessonGetResponse
 import eduflow.admin.course.dto.lesson.LessonUpdateRequest
 import eduflow.admin.course.dto.lesson.create.*
+import eduflow.admin.course.dto.lesson.get.LessonGetHubResponse
+import eduflow.admin.course.dto.lesson.get.LessonGetListResponse
 import eduflow.admin.course.models.lesson.CourseLessonModel
+import eduflow.admin.course.repositories.CourseSectionRepository
+import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.repositories.lessons.CourseLessonRepository
 import eduflow.admin.course.services.lesson.CourseLessonService
 import eduflow.admin.course.services.lesson.CourseLessonSurveyService
@@ -12,16 +15,19 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 @RestController
-@RequestMapping("/api/courses-hub")
+@RequestMapping("/api")
 class CourseLessonController(
     private val lessonRepository: CourseLessonRepository,
     private val lessonService: CourseLessonService,
+    private val courseRepository: CourseRepository,
+    private val sectionRepository: CourseSectionRepository,
     private val surveyService: CourseLessonSurveyService
 ) {
 
-    @PostMapping("/lessons.create")
+    @PostMapping("/courses-hub/lessons.create")
     fun createLesson(
         @RequestBody lesson: LessonCreateRequest
     ): Mono<*> {
@@ -83,7 +89,7 @@ class CourseLessonController(
         }
     }
 
-    @PostMapping("/lessons.update/{id}")
+    @PostMapping("/courses-hub/lessons.update/{id}")
     fun updateLessonTitle(
         @PathVariable id: String,
         @RequestBody request: LessonUpdateRequest
@@ -103,7 +109,7 @@ class CourseLessonController(
             .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
     }
 
-    @DeleteMapping("/lessons.delete/{id}")
+    @DeleteMapping("/courses-hub/lessons.delete/{id}")
     fun deleteLesson(
         @PathVariable id: String
     ): Mono<ResponseEntity<Void>> {
@@ -114,15 +120,15 @@ class CourseLessonController(
             }
     }
 
-    @GetMapping("/lessons.get/{id}")
-    fun getLesson(
+    @GetMapping("/courses-hub/lessons.get/{id}")
+    fun getLessonForHub(
         @PathVariable id: String
-    ): Mono<ResponseEntity<LessonGetResponse>> {
+    ): Mono<ResponseEntity<LessonGetHubResponse>> {
         return lessonRepository.findById(id)
             .flatMap { lesson ->
                 surveyService.getSurveyByLessonId(lesson._id)
                     .map { survey ->
-                        LessonGetResponse(
+                        LessonGetHubResponse(
                             _id = lesson._id,
                             courseId = lesson.courseId,
                             createdAt = lesson.createdAt,
@@ -140,7 +146,7 @@ class CourseLessonController(
                         )
                     }
                     .defaultIfEmpty(
-                        LessonGetResponse(
+                        LessonGetHubResponse(
                             _id = lesson._id,
                             courseId = lesson.courseId,
                             createdAt = lesson.createdAt,
@@ -157,6 +163,66 @@ class CourseLessonController(
                             videoId = lesson.videoId
                         )
                     )
+            }
+            .map { ResponseEntity.ok(it) }
+            .defaultIfEmpty(ResponseEntity.notFound().build())
+    }
+
+    @GetMapping("/courses-list/lessons.get/{id}")
+    fun getLessonForList(
+        @PathVariable id: String
+    ): Mono<ResponseEntity<LessonGetListResponse>> {
+        return lessonRepository.findById(id)
+            .switchIfEmpty {
+                Mono.empty()
+            }
+            .flatMap { lesson ->
+                lesson.sectionId?.let { sectionId ->
+                    sectionRepository.findById(sectionId)
+                        .flatMap { section ->
+                            courseRepository.findById(section.courseId)
+                                .map { course ->
+                                    LessonGetListResponse(
+                                        _id = lesson._id,
+                                        courseId = section.courseId,
+                                        courseName = course.title,
+                                        imageUrl = lesson.imageUrl,
+                                        sectionId = lesson.sectionId,
+                                        synopsisText = lesson.synopsisText,
+                                        time = lesson.time,
+                                        title = lesson.title,
+                                        videoId = lesson.videoId
+                                    )
+                                }
+                        }
+                        .switchIfEmpty {
+                            Mono.just(
+                                LessonGetListResponse(
+                                    _id = lesson._id,
+                                    courseId = null,
+                                    courseName = null,
+                                    imageUrl = lesson.imageUrl,
+                                    sectionId = lesson.sectionId,
+                                    synopsisText = lesson.synopsisText,
+                                    time = lesson.time,
+                                    title = lesson.title,
+                                    videoId = lesson.videoId
+                                )
+                            )
+                        }
+                } ?: Mono.just(
+                    LessonGetListResponse(
+                        _id = lesson._id,
+                        courseId = null,
+                        courseName = null,
+                        imageUrl = lesson.imageUrl,
+                        sectionId = lesson.sectionId,
+                        synopsisText = lesson.synopsisText,
+                        time = lesson.time,
+                        title = lesson.title,
+                        videoId = lesson.videoId
+                    )
+                )
             }
             .map { ResponseEntity.ok(it) }
             .defaultIfEmpty(ResponseEntity.notFound().build())

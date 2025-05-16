@@ -3,6 +3,8 @@ import { ReactNode } from "react";
 import { useAddQuestionToUrl } from "@/courses/courses-hub/hooks/useAddQuestionToUrl";
 import { ItemSize } from "@/types/ItemSize";
 import { Card } from "@/components/Card/Card";
+import styles from "./SurveyQuestionItem.module.css";
+import cn from "classnames";
 
 type SurveyQuestionItemProps = {
     _id: string;
@@ -36,11 +38,12 @@ export const SurveyQuestionItem = ({
                 ...(handleDelete ? [{
                     title: t('questions.delete'),
                     onClick: handleDelete,
-                    className: deleteClassNames
+                    className: cn(deleteClassNames, styles.delete)
                 }] : [])
             ]}
             clickable={isLittle ? true : false}
             size={size}
+            className={styles.card}
         >{children}</Card>
     );
 };

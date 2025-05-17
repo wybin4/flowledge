@@ -44,47 +44,31 @@
     font-size: 1rem !important;
 }
 
-.sectionHeader {
-    width: 90%;
+.sectionTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
 
-    background-color: transparent !important;
-
-    padding: 0 1rem !important;
-    margin: 0 !important;
-}
-
-.sectionHeader svg {
-    margin-bottom: -4px;
-}
-
-.sectionContent {
-    margin: 0.3rem;
-}
-
-.sectionContentExpanded {
-    margin: 1.5rem;
+    margin: 0;
+    margin-bottom: 1.5rem;
 }
 
 .sectionDescription {
-    font-size: 0.875rem;
+    font-size: 1rem;
+    font-weight: 400;
     color: var(--description-text);
 }
 
-.sectionTitleTextContainer {
-    justify-content: flex-start;
-    flex-grow: 1;
-    gap: 0.4rem !important;
-
-    height: 3.75rem;
+.sidebarContainer {
+    margin: 1.2rem;
 }
 
-.sectionContentContainer {
-    margin-bottom: 1rem;
+.lessonsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
 }
 
-.sectionContainer {
-    padding: 0 !important;
-    margin: 0 1.2rem !important;
-
-    height: fit-content !important;
+.negMt {
+    margin-top: -1.2rem;
+    margin-left: -0.5rem;
 }

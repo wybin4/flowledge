@@ -11,9 +11,7 @@ import reactor.core.publisher.Mono
 @Repository
 interface CourseLessonRepository : ReactiveMongoRepository<CourseLessonModel, String>,
     ReactiveSortingRepository<CourseLessonModel, String> {
-    fun findByCourseId(courseId: String): Flux<CourseLessonModel>
-
-    fun findBySectionId(sectionId: String): Flux<CourseLessonModel>
+    fun findBySectionIdAndIsVisible(sectionId: String, isVisible: Boolean): Flux<CourseLessonModel>
 
     fun countByCourseIdAndIsDraft(courseId: String, isDraft: Boolean): Mono<Long>
 

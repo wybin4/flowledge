@@ -1,0 +1,44 @@
+.lessonHeader {
+    width: 90%;
+
+    background-color: transparent !important;
+
+    padding: 0 1rem !important;
+    margin: 0 !important;
+}
+
+.lessonHeader svg {
+    margin-bottom: -4px;
+}
+
+.lessonContent {
+    margin: 0.2rem;
+}
+
+.lessonContentExpanded {
+    margin: 1.5rem;
+}
+
+.lessonDescription {
+    font-size: 0.875rem;
+    color: var(--description-text);
+}
+
+.lessonTitleTextContainer {
+    justify-content: flex-start;
+    flex-grow: 1;
+    gap: 0.4rem !important;
+
+    height: 3.75rem;
+}
+
+.lessonContentContainer {
+    margin-bottom: 1rem;
+}
+
+.lessonContainer {
+    padding: 0 !important;
+    margin: 0 !important;
+
+    height: fit-content !important;
+}

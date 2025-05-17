@@ -339,6 +339,7 @@
         "lessons": {
             "name": "лекции",
             "synopsis": "конспект",
+            "video": "видео",
             "stuff": "материалы",
             "survey": "тест"
         },
@@ -354,7 +355,10 @@
         },
         "next-material": "к следующему материалу",
         "lesson": "лекция",
-        "test-yourself": "проверь себя"
+        "test-yourself": "проверь себя",
+        "watch-video": "посмотри видео",
+        "read-synopsis": "прочти конспект к видео",
+        "section": "раздел"
     },
     "save": "сохранить",
     "cancel": "отмена",

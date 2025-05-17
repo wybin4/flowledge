@@ -177,44 +177,9 @@ class CourseLessonController(
                 Mono.empty()
             }
             .flatMap { lesson ->
-                lesson.sectionId?.let { sectionId ->
-                    sectionRepository.findById(sectionId)
-                        .flatMap { section ->
-                            courseRepository.findById(section.courseId)
-                                .map { course ->
-                                    LessonGetListResponse(
-                                        _id = lesson._id,
-                                        courseId = section.courseId,
-                                        courseName = course.title,
-                                        imageUrl = lesson.imageUrl,
-                                        sectionId = lesson.sectionId,
-                                        synopsisText = lesson.synopsisText,
-                                        time = lesson.time,
-                                        title = lesson.title,
-                                        videoId = lesson.videoId
-                                    )
-                                }
-                        }
-                        .switchIfEmpty {
-                            Mono.just(
-                                LessonGetListResponse(
-                                    _id = lesson._id,
-                                    courseId = null,
-                                    courseName = null,
-                                    imageUrl = lesson.imageUrl,
-                                    sectionId = lesson.sectionId,
-                                    synopsisText = lesson.synopsisText,
-                                    time = lesson.time,
-                                    title = lesson.title,
-                                    videoId = lesson.videoId
-                                )
-                            )
-                        }
-                } ?: Mono.just(
+                Mono.just(
                     LessonGetListResponse(
                         _id = lesson._id,
-                        courseId = null,
-                        courseName = null,
                         imageUrl = lesson.imageUrl,
                         sectionId = lesson.sectionId,
                         synopsisText = lesson.synopsisText,

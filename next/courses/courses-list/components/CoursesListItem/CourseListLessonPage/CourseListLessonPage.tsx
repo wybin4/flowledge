@@ -4,10 +4,9 @@ import { PageMode } from "@/types/PageMode";
 import { useEffect, useState } from "react";
 import { LessonPage } from "../../../../components/LessonPage/LessonPage";
 import { userApiClient } from "@/apiClient";
-import { coursesListLessonsPrefixApi, coursesListPrefix, coursesListPrefixApi } from "@/helpers/prefixes";
+import { coursesListLessonsPrefixApi, coursesListPrefix, coursesListSectionsPrefixApi } from "@/helpers/prefixes";
 import { useTranslation } from "react-i18next";
 import { LessonPageItem } from "@/courses/courses-list/types/LessonPageItem";
-import { AdditionalLessonTabs } from "@/courses/types/SynopsisLessonTabs";
 import RightSidebar from "@/components/Sidebar/RightSidebar/RightSidebar";
 import styles from "./CourseListLessonPage.module.css";
 import { MenuButton } from "@/components/MenuButton/MenuButton";
@@ -22,80 +21,81 @@ import { ButtonBack } from "@/components/Button/ButtonBack/ButtonBack";
 import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import CollapsibleSectionChild from "@/components/CollapsibleSection/CollapsibleSectionChild";
 import { CourseListImage } from "../CourseListImage/CourseListImage";
-import { useIcon } from "@/hooks/useIcon";
 import defaultStyles from "@/courses/styles/Default.module.css";
+import { SynopsisLessonTabs } from "@/courses/types/SynopsisLessonTabs";
+import { LessonPageSectionItem } from "@/courses/courses-list/types/LessonPageSectionItem";
+import { CourseListLessonSidebarItem } from "./CourseListLessonSidebarItem/CourseListLessonSidebarItem";
+import { CourseListLessonSidebarItemChild } from "./CourseListLessonSidebarItem/CourseListLessonSidebarItemChild";
 
 export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
-    const [lesson, setLesson] = useState<LessonPageItem | undefined>(undefined);
+    const [currentLesson, setLesson] = useState<LessonPageItem | undefined>(undefined);
+    const [section, setSection] = useState<LessonPageSectionItem | undefined>(undefined);
     const { t } = useTranslation();
-
-    const surveyIcon = useIcon('survey');
 
     useEffect(() => {
         userApiClient.get<LessonPageItem>(
             `${coursesListLessonsPrefixApi}.get/${lessonId}`
-        ).then(lesson => setLesson(lesson));
+        ).then(currentLesson => {
+            setLesson(currentLesson);
+            if (currentLesson.sectionId && !section) {
+                userApiClient.get<LessonPageSectionItem>(
+                    `${coursesListSectionsPrefixApi}/${currentLesson.sectionId}.lessons`
+                ).then(section => {
+                    setSection(section);
+                });
+            }
+        });
     }, [lessonId]);
 
-    if (!lesson) {
+    if (!currentLesson || !section) {
         return <>{t('loading')}</>;
     }
 
     return (
         <RightSidebar
             content={({ headerClassName }) =>
-                <div>
-                    <div style={{ height: '5.5625rem' }}></div>
-                    <div>
-                        <CollapsibleSection
-                            title='основные понятия'
-                            expandedDeg={-180}
-                            collapsedDeg={0}
-                            expandedByDefault={true}
-                            headerClassName={cn(
-                                styles.sectionHeader,
-                                headerClassName
-                            )}
-                            contentClassName={styles.sectionContent}
-                            contentExpandedClassName={styles.sectionContentExpanded}
-                            containerClassName={cn(defaultStyles.itemContainer, styles.sectionContainer)}
-                        >
-                            <CollapsibleSectionChild
+                <div className={styles.sidebarContainer}>
+                    <div className={styles.sectionDescription}>{t(`${coursesListPrefix}.section`)}</div>
+                    <h2 className={styles.sectionTitle}>{section.title}</h2>
+                    <div className={styles.lessonsContainer}>
+                        {section.lessons.map((lesson, index) => (
+                            <CourseListLessonSidebarItem
+                                key={index}
                                 title={lesson.title}
-                                description={t(`${coursesListPrefix}.lesson`)}
-                                isViewed={false}
-                                image={lesson.imageUrl &&
-                                    <CourseListImage
+                                expandedByDefault={lesson._id === currentLesson._id}
+                                headerClassName={headerClassName}
+                            >
+                                {!lesson.hasSynopsis && !lesson.surveyId && !lesson.videoId && (
+                                    <div className={cn(styles.sectionDescription, styles.negMt)}>
+                                        {t('nothing-found')}
+                                    </div>
+                                )}
+                                {lesson.videoId && (
+                                    <CourseListLessonSidebarItemChild
+                                        title={lesson.title}
                                         imageUrl={lesson.imageUrl}
-                                        title={lesson.title}
-                                        size='medium'
+                                        name='video'
+                                        description='watch-video'
                                     />
-                                }
-                                childClassName={styles.sectionContentContainer}
-                                titleTextContainerClassName={styles.sectionTitleTextContainer}
-                                descriptionClassName={styles.sectionDescription}
-                            />
-                            <CollapsibleSectionChild
-                                title={t(`${coursesListPrefix}.lessons.survey`)}
-                                description={t(`${coursesListPrefix}.test-yourself`)}
-                                isViewed={false}
-                                image={lesson.imageUrl &&
-                                    <CourseListImage
-                                        icon={surveyIcon}
+                                )}
+                                {lesson.hasSynopsis && (
+                                    <CourseListLessonSidebarItemChild
                                         title={lesson.title}
-                                        size='medium'
+                                        imageUrl={lesson.imageUrl}
+                                        name='synopsis'
+                                        description='read-synopsis'
                                     />
-                                }
-                                titleTextContainerClassName={styles.sectionTitleTextContainer}
-                                descriptionClassName={styles.sectionDescription}
-                            />
-                        </CollapsibleSection>
-                        {/* <CollapsibleSection title='проектирование по' expandedByDefault={false} >
-                            дети
-                        </CollapsibleSection>
-                        <CollapsibleSection title='классические методы' expandedByDefault={false} >
-                            дети
-                        </CollapsibleSection> */}
+                                )}
+                                {lesson.surveyId && (
+                                    <CourseListLessonSidebarItemChild
+                                        title={lesson.title}
+                                        imageUrl={lesson.imageUrl}
+                                        name='survey'
+                                        description='test-yourself'
+                                    />
+                                )}
+                            </CourseListLessonSidebarItem>
+                        ))}
                     </div>
                 </div>
             }
@@ -118,7 +118,7 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
                 }>
                     <div className={cn(styles.titleContainer, styles.mb)}>
                         <Breadcrumbs
-                            pathNames={[lesson.courseName ?? '', lesson.title ?? '']}
+                            pathNames={[section.courseName ?? '', currentLesson.title ?? '']}
                             position={ChildrenPosition.Left}
                             className={styles.crumbsContainer}
                         />
@@ -130,8 +130,8 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
                     </div>
                     <LessonPage
                         mode={PageMode.Viewer}
-                        lesson={lesson}
-                        additionalTabs={[AdditionalLessonTabs.Comments]}
+                        lesson={currentLesson}
+                        tabs={[SynopsisLessonTabs.Synopsis]}
                     />
                 </StickyBottomBar>
             </div>

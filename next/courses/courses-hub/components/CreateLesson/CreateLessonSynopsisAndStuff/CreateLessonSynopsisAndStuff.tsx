@@ -27,7 +27,7 @@ export const CreateLessonSynopsisAndStuff = ({ lessonId, synopsisText, stuffList
     });
 
     const initialLesson: LessonPageItem = {
-        _id: lessonId, synopsisText, stuffList
+        _id: lessonId, title: '', time: '', synopsisText, stuffList
     };
 
     useEffect(() => {
@@ -54,6 +54,7 @@ export const CreateLessonSynopsisAndStuff = ({ lessonId, synopsisText, stuffList
             <LessonPage
                 mode={PageMode.Editor}
                 lesson={lesson}
+                title={lesson.title}
                 setLesson={setLesson}
             />
         </StickyBottomBar>

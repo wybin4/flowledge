@@ -5,11 +5,9 @@ export type LessonPageItem = {
     title: string;
     time: string;
     imageUrl?: string;
+    sectionId?: string;
 
     synopsisText?: string;
     videoUrl?: string;
     stuffList?: LessonStuff[];
-
-    comments?: string[];
-    courseName?: string;
 };

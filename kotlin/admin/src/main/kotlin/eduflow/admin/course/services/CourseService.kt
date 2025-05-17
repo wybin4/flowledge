@@ -55,18 +55,12 @@ class CourseService(
     ): Mono<ResponseEntity<out CourseGetByIdResponse>> {
         val isUser = userId != null
         return courseRepository.findById(id).flatMap { course ->
-            if (isUser) {
+            if (!isSmall) {
                 tagService.getUpdatedTagsByCourse(course).flatMap { updatedTags ->
                     processCourse(course.updateTags(updatedTags), isSmall, isUser, id)
                 }
             } else {
-                if (!isSmall) {
-                    tagService.getUpdatedTagsByCourse(course).flatMap { updatedTags ->
-                        processCourse(course.updateTags(updatedTags), isSmall, isUser, id)
-                    }
-                } else {
-                    processCourse(course, isSmall, isUser, id)
-                }
+                processCourse(course, isSmall, isUser, id)
             }
         }.switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
     }

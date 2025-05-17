@@ -14,7 +14,7 @@ export enum CollapsibleSectionTagType {
     Warning = 'warning',
 }
 
-type CollapsibleSectionProps = {
+export type CollapsibleSectionProps = {
     title: string;
     titleTags?: CollapsibleSectionTitleTag[];
     setTitle?: (title: string) => void;

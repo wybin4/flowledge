@@ -331,26 +331,28 @@
         }
     },
     "courses-list": {
-        "menu": {
-            "lessons": {
-                "name": "lessons",
-                "synopsis": "synopsis",
-                "stuff": "stuff",
-                "survey": "survey"
-            },
-            "about": {
-                "name": "about"
-            },
-            "comments": {
-                "name": "comments",
-                "__count__comments_zero": "start discussion",
-                "__count__comments_one": "{{count}} comment",
-                "__count__comments_many": "{{count}} comments"
-            }
+        "lessons": {
+            "name": "lessons",
+            "video": "video",
+            "synopsis": "synopsis",
+            "stuff": "stuff",
+            "survey": "survey"
+        },
+        "about": {
+            "name": "about"
         },
         "next-material": "to the next material",
         "lesson": "lesson",
-        "test-yourself": "test yourself"
+        "test-yourself": "test yourself",
+        "watch-video": "watch video",
+        "read-synopsis": "read video synopsis",
+        "comments": {
+            "name": "comments",
+            "__count__comments_zero": "start discussion",
+            "__count__comments_one": "{{count}} comment",
+            "__count__comments_many": "{{count}} comments"
+        },
+        "section": "section"
     },
     "save": "save",
     "cancel": "cancel",

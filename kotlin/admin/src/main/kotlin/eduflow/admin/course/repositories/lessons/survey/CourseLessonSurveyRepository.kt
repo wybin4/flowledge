@@ -4,10 +4,12 @@ import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyModel
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.data.repository.reactive.ReactiveSortingRepository
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
 interface CourseLessonSurveyRepository : ReactiveMongoRepository<CourseLessonSurveyModel, String>,
     ReactiveSortingRepository<CourseLessonSurveyModel, String> {
     fun findByLessonId(lessonId: String): Mono<CourseLessonSurveyModel>
+    fun findByLessonIdIn(lessonIds: List<String>): Flux<CourseLessonSurveyModel>
 }

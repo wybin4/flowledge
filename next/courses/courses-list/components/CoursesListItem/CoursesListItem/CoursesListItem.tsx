@@ -52,8 +52,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
             `${coursesListPrefixApi}.toggle-favourite/${course._id}`, {
             isFavourite: newIsFavourite,
             userId: fakeUser._id
-        }
-        );
+        });
     }
 
     const actions = (
@@ -74,8 +73,6 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
         router.push(`?tab=${tab}`);
         setSelectedMenuTab(tab);
     }
-
-    const { t } = useTranslation();
 
     return (
         <>

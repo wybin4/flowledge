@@ -354,6 +354,8 @@
             "__count__comments_many": "{{count}} комментариев"
         },
         "next-material": "к следующему материалу",
+        "next-lesson": "к следующей лекции",
+        "back-to-materials": "назад к материалам",
         "lesson": "лекция",
         "test-yourself": "проверь себя",
         "watch-video": "посмотри видео",

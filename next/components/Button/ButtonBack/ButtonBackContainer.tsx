@@ -21,7 +21,9 @@ export const ButtonBackContainer = ({
 }: ButtonBackContainerProps) => {
     return (
         <div className={cn(styles.container, className)}>
-            {type === ChildrenPosition.Left && <ButtonBack {...props} />}
+            {type === ChildrenPosition.Left || type === ChildrenPosition.TopRight && (
+                <ButtonBack backButtonStyles={styles.topRight} {...props} />
+            )}
             <div className={cn(styles.body, {
                 [styles.compressed]: compressBody,
                 [styles.full]: !compressBody

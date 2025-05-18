@@ -40,3 +40,9 @@
     width: 1.5rem;
     height: 1.5rem;
 }
+
+.topRight {
+    align-items: center;
+
+    height: max-content;
+}

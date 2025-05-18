@@ -36,7 +36,7 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
             apiClient={integrationApiClient}
             transformItemToSave={(item) => {
                 const { name, secret, script, enabled } = item;
-                const body = { name, secret, script, u: fakeUser, enabled };
+                const body = { name, secret, script, u: fakeUser, enabled }; // TODO!!!!!
                 return body;
             }}
             backButton={{

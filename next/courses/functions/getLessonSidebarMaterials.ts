@@ -17,7 +17,8 @@ export const getLessonSidebarMaterials = (lesson: LessonPageSectionLessonItemMap
     return [
         {
             type: 'video', description: 'watch-video',
-            condition: !!lesson.videoUrl, tab: 'video'
+            condition: !!lesson.videoUrl, tab: 'video',
+            selected: true
         },
         {
             type: 'synopsis', description: 'read-synopsis',

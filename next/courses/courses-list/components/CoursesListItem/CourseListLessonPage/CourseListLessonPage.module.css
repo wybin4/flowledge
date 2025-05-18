@@ -72,3 +72,7 @@
     margin-top: -1.2rem;
     margin-left: -0.5rem;
 }
+
+.surveyContainer {
+    gap: 0 !important;
+}

@@ -23,7 +23,11 @@ import { CourseListLessonSidebarItem } from "./CourseListLessonSidebarItem/Cours
 import { CourseListLessonSidebarItemChild } from "./CourseListLessonSidebarItem/CourseListLessonSidebarItemChild";
 import { getLessonSidebarMaterials, LessonSidebarMaterials } from "@/courses/functions/getLessonSidebarMaterials";
 import { mapLessonToPage } from "@/courses/functions/mapLessonToPage";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { CourseListSurvey } from "../CoursesListItem/CourseListSurvey/CourseListSurvey";
+import { CourseListLessonPageStickyBottomBar } from "./CourseListLessonPageStickyBottomBar";
+import { removeLastSegment } from "@/helpers/removeLastSegment";
+import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
 
 interface SidebarItem extends Omit<LessonPageSectionItem, 'lessons'> {
     lessons: {
@@ -32,7 +36,12 @@ interface SidebarItem extends Omit<LessonPageSectionItem, 'lessons'> {
     }[];
 };
 
-export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
+type CourseListLessonPageProps = {
+    lessonId: string;
+    isSurvey?: boolean;
+};
+
+export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPageProps) => {
     const [currentLesson, setCurrentLesson] = useState<LessonPageItem | undefined>(undefined);
     const [currentLessonMaterials, setCurrentLessonMaterials] = useState<LessonSidebarMaterials[] | undefined>(undefined);
     const [currentLessonMaterial, setCurrentLessonMaterial] = useState<LessonSidebarMaterials | undefined>(undefined);
@@ -41,6 +50,7 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
     const { t } = useTranslation();
 
     const router = useRouter();
+    const currentPath = usePathname();
 
     useEffect(() => {
         userApiClient.get<LessonPageItem>(
@@ -62,9 +72,12 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
                                 materials
                             };
                         });
-                        const currentLessonMaterials = lessons.find(lesson => lesson.lesson._id === currentLessonRes._id)?.materials;
-                        setCurrentLessonMaterials(currentLessonMaterials);
                         setSection({ ...sectionRes, lessons });
+                        const currentLessonMaterials = lessons.find(lesson => lesson.lesson._id === currentLessonRes._id)?.materials;
+                        if (currentLessonMaterials && currentLessonMaterials.length) {
+                            setCurrentLessonMaterial(currentLessonMaterials[0]);
+                            setCurrentLessonMaterials(currentLessonMaterials);
+                        }
                     }
                 });
             }
@@ -75,7 +88,7 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
         return <>{t('loading')}</>;
     }
 
-    const handleMaterialClick = (materialType: string) => {
+    const updateSelectedMaterial = (materialType: string) => {
         setCurrentLessonMaterials((clm) =>
             clm?.map(m => ({
                 ...m,
@@ -85,6 +98,79 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
         const currentLessonMaterial = currentLessonMaterials?.find(m => m.type === materialType);
         setCurrentLessonMaterial(currentLessonMaterial);
     };
+
+    const handleMaterialClick = (materialType: string) => {
+        updateSelectedMaterial(materialType);
+    };
+
+    const handleMaterialAction = (material: LessonSidebarMaterials) => {
+        handleMaterialClick(material.type);
+        material.onClick?.(router);
+    };
+
+    const getNextLessonId = (currentLessonId: string): string | undefined => {
+        if (!section) return undefined;
+
+        const lessons = section.lessons;
+        const currentIndex = lessons.findIndex(lesson => lesson.lesson._id === currentLessonId);
+
+        if (currentIndex === -1) return undefined;
+
+        const nextIndex = (currentIndex + 1) % lessons.length;
+        return lessons[nextIndex].lesson._id;
+    };
+
+    const navigateMaterial = (direction: 'next' | 'previous') => {
+        if (!currentLessonMaterials || !currentLessonMaterial) return;
+
+        const currentIndex = currentLessonMaterials.findIndex(m => m.type === currentLessonMaterial.type);
+        let nextIndex;
+
+        if (direction === 'next') {
+            nextIndex = (currentIndex + 1) % currentLessonMaterials.length; // Циклический переход к следующему
+        } else {
+            nextIndex = (currentIndex - 1 + currentLessonMaterials.length) % currentLessonMaterials.length; // Циклический переход к предыдущему
+        }
+
+        const nextMaterial = currentLessonMaterials[nextIndex];
+        handleMaterialAction(nextMaterial);
+    };
+
+    const handleNextMaterialClick = () => {
+        navigateMaterial('next');
+    };
+
+    const handlePreviousMaterialClick = () => {
+        navigateMaterial('previous');
+    };
+
+    const handleNextLessonClick = () => {
+        const nextLessonId = getNextLessonId(lessonId);
+        const basePath = removeLastSegment(currentPath);
+        if (nextLessonId) {
+            router.push(`${basePath}/${nextLessonId}`);
+        }
+    };
+
+    if (isSurvey) {
+        return (
+            <CourseListLessonPageStickyBottomBar
+                titlePostfix='next-lesson'
+                onClick={handleNextLessonClick}
+                hasBackButton={false}
+            >
+                <ButtonBackContainer
+                    backButtonText={t(`${coursesListPrefix}.back-to-materials`)}
+                    type={ChildrenPosition.TopRight}
+                    onBackButtonClick={handlePreviousMaterialClick}
+                    className={styles.surveyContainer}
+                    compressBody={false}
+                >{_ => (
+                    <CourseListSurvey lessonId={lessonId} />
+                )}</ButtonBackContainer>
+            </CourseListLessonPageStickyBottomBar>
+        );
+    }
 
     return (
         <RightSidebar
@@ -108,10 +194,7 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
                                 {materials.map((material, index) => (
                                     <CourseListLessonSidebarItemChild
                                         key={index}
-                                        onClick={() => {
-                                            handleMaterialClick(material.type);
-                                            material.onClick?.(router);
-                                        }}
+                                        onClick={() => handleMaterialAction(material)}
                                         title={currentLesson.title}
                                         imageUrl={currentLesson.imageUrl}
                                         name={material.type}
@@ -127,19 +210,10 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
             <div className={cn(styles.container, {
                 [styles.expanded]: isExpanded
             })}>
-                <StickyBottomBar barContent={
-                    <div className={styles.buttonContainer}>
-                        <ButtonBack hasBackButtonIcon={false} backButtonStyles={styles.backButton} />
-                        <Button
-                            onClick={() => { }}
-                            title={t(`${coursesListPrefix}.next-material`)}
-                            type={ButtonType.SAVE}
-                            mode={FillBorderUnderlineMode.UNDERLINE}
-                            noEffects={true}
-                            className={styles.button}
-                        />
-                    </div>
-                }>
+                <CourseListLessonPageStickyBottomBar
+                    titlePostfix='next-material'
+                    onClick={handleNextMaterialClick}
+                >
                     <div className={cn(styles.titleContainer, styles.mb)}>
                         <Breadcrumbs
                             pathNames={[section.courseName ?? '', currentLesson.title ?? '']}
@@ -160,8 +234,7 @@ export const CourseListLessonPage = ({ lessonId }: { lessonId: string }) => {
                             tabs={currentLessonMaterial.tab ? [currentLessonMaterial.tab] : undefined}
                         />
                     )}
-
-                </StickyBottomBar>
+                </CourseListLessonPageStickyBottomBar>
             </div>
         )}</RightSidebar>
     );

@@ -16,9 +16,7 @@ import { CourseSection } from "@/courses/components/CourseSection/CourseSection"
 import { CoursesListItemComments } from "../CoursesListItemComments/CoursesListItemComments";
 import { userApiClient } from "@/apiClient";
 import { ToggleFavouriteRequest } from "@/courses/courses-list/types/ToggleFavourite";
-import { fakeUser } from "@/helpers/fakeUser";
 import { CourseWithSubscriptionItem } from "@/courses/courses-list/types/CourseItem";
-import { useTranslation } from "react-i18next";
 
 type CoursesListItemProps = {
     course: CourseWithSubscriptionItem;
@@ -50,8 +48,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
     const handleToggleFavourite = (newIsFavourite: boolean) => {
         userApiClient.post<ToggleFavouriteRequest>(
             `${coursesListPrefixApi}.toggle-favourite/${course._id}`, {
-            isFavourite: newIsFavourite,
-            userId: fakeUser._id
+            isFavourite: newIsFavourite
         });
     }
 

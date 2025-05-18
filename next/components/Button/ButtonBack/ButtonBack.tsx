@@ -10,14 +10,15 @@ export type ButtonBackProps = {
     backButtonIcon?: ReactNode;
     hasBackButtonIcon?: boolean;
     hasBackButtonText?: boolean;
+    backButtonText?: string;
     backButtonStyles?: string;
     isBackWithRouter?: boolean;
 }
 
 export const ButtonBack = ({
+    backButtonText, hasBackButtonText = true,
     onBackButtonClick,
     backButtonIcon, hasBackButtonIcon = true,
-    hasBackButtonText = true,
     backButtonStyles,
     isBackWithRouter = true,
 }: ButtonBackProps) => {
@@ -33,7 +34,7 @@ export const ButtonBack = ({
                 router.back();
             }
         }}>
-            {hasBackButtonIcon ? backButtonIcon ? backButtonIcon : iconArrowLeft : undefined} {hasBackButtonText ? t('back') : ''}
+            {hasBackButtonIcon ? backButtonIcon ? backButtonIcon : iconArrowLeft : undefined} {hasBackButtonText ? backButtonText ? backButtonText : t('back') : ''}
         </div>
     );
 }

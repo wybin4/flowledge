@@ -58,7 +58,8 @@ class CourseListController(
         @PathVariable id: String,
         @RequestBody body: ToggleFavouriteRequest
     ): Mono<ResponseEntity<Unit>> {
-        val userId = body.userId
+        val user = authenticationService.getCurrentUser()
+        val userId = user._id
         val isFavourite = body.isFavourite
 
         return courseSubscriptionRepository.findByCourseIdAndUserId(id, userId)

@@ -342,6 +342,8 @@
             "name": "about"
         },
         "next-material": "to the next material",
+        "next-lesson": "to the next lesson",
+        "back-to-materials": "back to the materials",
         "lesson": "lesson",
         "test-yourself": "test yourself",
         "watch-video": "watch video",

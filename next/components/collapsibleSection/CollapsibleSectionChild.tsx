@@ -8,7 +8,7 @@ import CollapsibleSectionTitleTags, { CollapsibleSectionTitleTag } from "./Colla
 type CollapsibleSectionChildProps = {
     id?: string;
     title: string;
-    onClick?: (id: string) => void;
+    onClick?: (id?: string) => void;
     additionalInfo?: string;
     time?: string;
     description?: string;
@@ -35,7 +35,8 @@ export default function CollapsibleSectionChild({
     timeClassName, additionalInfoClassName
 }: CollapsibleSectionChildProps) {
     return (
-        <div onClick={() => id && onClick?.(id)} className={cn(styles.child, childClassName, {
+        <div onClick={() => 
+            onClick?.(id)} className={cn(styles.child, childClassName, {
             [styles.active]: isActive,
             [styles.viewed]: isViewed
         })}>

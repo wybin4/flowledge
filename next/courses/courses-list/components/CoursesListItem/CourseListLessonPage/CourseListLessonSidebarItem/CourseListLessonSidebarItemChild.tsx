@@ -9,16 +9,19 @@ type CourseListLessonSidebarItemChildProps = {
     title: string;
     name: string;
     description: string;
+    onClick: () => void;
 }
 
 export const CourseListLessonSidebarItemChild = ({
     title, imageUrl,
-    name, description
+    name, description,
+    onClick
 }: CourseListLessonSidebarItemChildProps) => {
     const { t } = useTranslation();
 
     return (
         <CollapsibleSectionChild
+            onClick={onClick}
             title={t(`${coursesListPrefix}.lessons.${name}`)}
             description={t(`${coursesListPrefix}.${description}`)}
             isViewed={false}

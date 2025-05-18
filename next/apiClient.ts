@@ -1,7 +1,9 @@
 import { getTokensClient } from './auth/tokens';
 import { onLoginError, refreshTokens } from './auth/auth';
+import { uploadsPrefix } from './helpers/prefixes';
 
 export const userApiClientPrefix = 'http://localhost:8080';
+export const uploadsApiPrefix = `${userApiClientPrefix}/api/${uploadsPrefix}`;
 
 export type ApiClientRequest = { url: string, options?: RequestInit };
 

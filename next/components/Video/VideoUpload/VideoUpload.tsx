@@ -7,7 +7,7 @@ import cn from "classnames";
 import { getFileSize } from "@/helpers/getFileSize";
 import { VideoPreview } from "../VideoPreview/VideoPreview";
 import { getAllowedFileFormats } from "@/helpers/getAllowedFileFormats";
-import { uploadsPrefix } from "@/helpers/prefixes";
+import { uploadsApiPrefix } from "@/apiClient";
 
 type VideoUploadProps = {
     isUploading: boolean;
@@ -18,7 +18,6 @@ type VideoUploadProps = {
     setVideo: (video: File | null) => void;
     childrenOnVideo?: ReactNode;
     maxSize: number;
-    apiClientPrefix: string;
     setId: (videoId: string) => void;
     handleDelete: () => void;
 };
@@ -31,7 +30,7 @@ export const VideoUpload = ({
     video, setVideo, setId, handleDelete,
     isUploading, setIsUploading,
     isUploadError, setIsUploadError,
-    childrenOnVideo, maxSize, apiClientPrefix
+    childrenOnVideo, maxSize
 }: VideoUploadProps) => {
     const { t } = useTranslation();
 
@@ -50,7 +49,7 @@ export const VideoUpload = ({
     const uploadVideo = async (file: File): Promise<UploadedVideo> => {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', `${apiClientPrefix}/api/${uploadsPrefix}.set`, true);
+            xhr.open('POST', `${uploadsApiPrefix}.set`, true);
             xhr.withCredentials = true;
 
             const formData = new FormData();

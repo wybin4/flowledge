@@ -306,7 +306,6 @@ export const CreateLessonVideo = ({ lessonId, setLesson, videoId: initialVideoId
                             video={video}
                             setVideo={setVideo}
                             maxSize={fileUploadMaxSize}
-                            apiClientPrefix={userApiClientPrefix}
                             childrenOnVideo={!initialVideoId && (
                                 <>
                                     <div className={styles.videoActions}>

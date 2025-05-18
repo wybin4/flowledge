@@ -8,6 +8,6 @@ export type LessonPageItem = {
     sectionId?: string;
 
     synopsisText?: string;
-    videoUrl?: string;
+    videoId?: string;
     stuffList?: LessonStuff[];
 };

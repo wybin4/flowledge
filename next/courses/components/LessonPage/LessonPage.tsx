@@ -1,7 +1,7 @@
 "use client";
 
 import { StuffUpload } from "@/stuff/components/StuffUpload";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FiniteSelector } from "../../../components/FiniteSelector/FiniteSelector";
 import { InputBoxWrapper } from "../../../components/InputBox/InputBoxWrapper";
 import styles from "./LessonPage.module.css";
@@ -18,18 +18,29 @@ import { LessonPageItem } from "../../courses-list/types/LessonPageItem";
 import { useTranslation } from "react-i18next";
 import { coursesListPrefix } from "@/helpers/prefixes";
 
+
+export type LessonsPageFlags = {
+    hideVideo?: boolean;
+};
+
 export type LessonsPageProps = {
     mode: PageMode;
-    lesson: LessonPageItem;
+    lesson: LessonPageItem & { videoUrl?: string; };
     title?: string;
-    tabs?: SynopsisLessonTabs[];
+    tabs?: SynopsisLessonTabs[] | string[];
     setLesson?: Dispatch<SetStateAction<LessonPageItem>>;
+    flags?: LessonsPageFlags;
 };
 
 export const LessonPage = ({
-    mode, title: initialTitle, lesson, setLesson, tabs = Object.values(SynopsisLessonTabs)
+    mode, flags,
+    title: initialTitle,
+    lesson, setLesson,
+    tabs = Object.values(SynopsisLessonTabs)
 }: LessonsPageProps) => {
     const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
+
+    useEffect(() => setSelectedTab(tabs[0]), [JSON.stringify(tabs)]);
 
     const { t } = useTranslation();
 
@@ -60,13 +71,13 @@ export const LessonPage = ({
                     <h1 className={styles.title}>{title}</h1>
                 </div>
             }
-            {lesson.videoUrl && (
+            {!flags?.hideVideo && lesson.videoUrl && (
                 <video className={styles.video} controls poster={lesson.imageUrl}>
                     <source src={lesson.videoUrl} type="video/mp4" />
                     {t('browser-unsupported-video')}
                 </video>
             )}
-            {tabs.length > 1 && (
+            {isEditorMode && tabs.length > 1 && (
                 <InputBoxWrapper className={styles.tabsContainer}>
                     {tabs.map(tab =>
                         <FiniteSelector

@@ -2,9 +2,9 @@
 
 import { userApiClient } from "@/apiClient";
 import { SurveyChoiceItem } from "@/courses/courses-hub/components/CreateLesson/CreateLessonSurvey/SurveyChoice/SurveyChoiceItem";
-import { Survey } from "@/courses/courses-hub/types/Survey";
+import { Survey } from "@/courses/types/Survey";
 import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
-import { coursesHubSurveysPrefixApi } from "@/helpers/prefixes";
+import { coursesListPrefix, surveysPrefix } from "@/helpers/prefixes";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./CourseListSurvey.module.css";
@@ -13,26 +13,43 @@ import { TablePagePagination } from "@/components/TablePage/TablePage/TablePageP
 import { SurveyChoice } from "@/courses/courses-hub/types/SurveyChoice";
 import cn from "classnames";
 import { getCheckedChoiceIds } from "@/courses/functions/getCheckedChoiceIds";
+import { SurveyResult } from "@/courses/types/SurveyResult";
+import { CourseListSurveyResultModalContent } from "./CourseListSurveyResultModalContent/CourseListSurveyResultModalContent";
+import { Modal } from "@/components/Modal/Modal";
+import { SurveyGetByIdResponse } from "@/courses/courses-list/dtos/SurveyGetByIdResponse";
+import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { CourseListLessonPageStickyBottomBar } from "../../CourseListLessonPage/CourseListLessonPageStickyBottomBar";
 
 type CourseListSurveyProps = {
     lessonId: string;
+    onExit: () => void;
+    onBack: () => void;
+    onNext: () => void;
 };
 
-export const CourseListSurvey = ({ lessonId }: CourseListSurveyProps) => {
+export const CourseListSurvey = ({ lessonId, onExit, onBack, onNext }: CourseListSurveyProps) => {
     const [selectedQuestion, setSelectedQuestion] = useState<SurveyQuestion | undefined>();
     const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
     const [surveyId, setSurveyId] = useState<string | undefined>();
+    const [surveyResult, setSurveyResult] = useState<SurveyResult | undefined>(undefined);
+    const [hasInitialResult, setHasInitialResult] = useState<boolean>(false);
 
     const { t } = useTranslation();
 
     useEffect(() => {
-        userApiClient.get<Survey>(
-            `${coursesHubSurveysPrefixApi}.get/${lessonId}`
-        ).then(survey => {
+        userApiClient.get<SurveyGetByIdResponse>(
+            `${surveysPrefix}.get/${lessonId}`
+        ).then(({ survey, result }) => {
             if (survey.questions.length) {
                 setQuestions(survey.questions);
                 setSelectedQuestion(survey.questions[0]);
                 setSurveyId(survey._id);
+            }
+
+            if (result) {
+                setHasInitialResult(true);
+                setSurveyResult(result);
             }
         });
     }, [lessonId]);
@@ -81,46 +98,106 @@ export const CourseListSurvey = ({ lessonId }: CourseListSurveyProps) => {
     };
 
     const handleFinish = () => {
-        userApiClient.post(`${coursesHubSurveysPrefixApi}.attempt`, {
+        userApiClient.post<SurveyResult>(`${surveysPrefix}.attempt`, {
             surveyId, userChoices: getCheckedChoiceIds(questions)
-        }).then(res => console.warn(res))
+        }).then(res => setSurveyResult(res));
     };
 
-    return (<>
-        {selectedQuestion && (
-            <div className={styles.container}>
-                <TablePagePagination
-                    currentPage={currentQuestionIndex}
-                    totalPages={totalQuestions}
-                    handlePreviousPage={handlePreviousQuestion}
-                    handleNextPage={handleNextQuestion}
-                    hideRightButton={!hasCheckedChoices}
-                    onRightButtonClick={isLastQuestion ? handleFinish : undefined}
-                    rightButton={isLastQuestion && (
-                        <div>{t('finish')}</div>
-                    )}
-                />
-                <div className={styles.questionContainer}>
-                    <div className={styles.count}>{t('question')} {currentQuestionIndex} {t('from')} {totalQuestions}</div>
-                    <div className={styles.questionBody}>
-                        <div className={styles.questionTitle}>{selectedQuestion.title}</div>
-                        <div className={styles.questionDescription}>{t('select-one-choice')}</div>
-                        {selectedQuestion.choices.map((choice, index) => (
-                            <CardContainer key={index} className={cn(styles.choiceContainer, {
-                                [styles.checkedChoice]: choice.isChecked
-                            })}>
-                                <SurveyChoiceItem
-                                    choice={choice}
-                                    fieldToHandle='isChecked'
-                                    setChoices={setChoices(selectedQuestion._id)}
-                                    text={<div>{choice.title}</div>}
-                                    handledIconClassName={styles.checkedChoiceIcon}
-                                />
-                            </CardContainer>
-                        ))}
-                    </div>
+    const handleRetry = () => {
+        setHasInitialResult(false);
+        setSurveyResult(undefined);
+
+        const resetQuestions = questions.map(question => ({
+            ...question,
+            choices: question.choices.map(choice => ({
+                ...choice,
+                isChecked: false
+            }))
+        }));
+        setQuestions(resetQuestions);
+        setSelectedQuestion(resetQuestions[0]);
+    };
+
+    return (
+        <>
+            {hasInitialResult && surveyResult && (
+                <div className={styles.resultContainer}>
+                    <CourseListSurveyResultModalContent
+                        isInitial={true}
+                        result={surveyResult}
+                        onExit={onExit}
+                        onStart={() => {
+                            handleRetry();
+                            setSurveyResult(undefined);
+                        }}
+                    />
                 </div>
-            </div>
-        )}
-    </>);
+            )}
+            {!hasInitialResult && (
+                <CourseListLessonPageStickyBottomBar
+                    titlePostfix='next-lesson'
+                    onClick={onNext}
+                    hasBackButton={false}
+                >
+                    <ButtonBackContainer
+                        backButtonText={t(`${coursesListPrefix}.back-to-materials`)}
+                        type={ChildrenPosition.TopRight}
+                        onBackButtonClick={onBack}
+                        className={styles.surveyContainer}
+                        compressBody={false}
+                    >{_ => (
+                        <>
+                            <Modal isOpen={!!surveyResult}>{_ =>
+                                <>
+                                    {surveyResult && (
+                                        <CourseListSurveyResultModalContent
+                                            isInitial={false}
+                                            result={surveyResult}
+                                            onExit={onExit}
+                                            onRetry={handleRetry}
+                                        />
+                                    )}
+                                </>
+                            }</Modal>
+                            {selectedQuestion && (
+                                <div className={styles.container}>
+                                    <TablePagePagination
+                                        currentPage={currentQuestionIndex}
+                                        totalPages={totalQuestions}
+                                        handlePreviousPage={handlePreviousQuestion}
+                                        handleNextPage={handleNextQuestion}
+                                        hideRightButton={!hasCheckedChoices}
+                                        onRightButtonClick={isLastQuestion ? handleFinish : undefined}
+                                        rightButton={isLastQuestion && (
+                                            <div>{t('finish')}</div>
+                                        )}
+                                    />
+                                    <div className={styles.questionContainer}>
+                                        <div className={styles.count}>{t('question')} {currentQuestionIndex} {t('from')} {totalQuestions}</div>
+                                        <div className={styles.questionBody}>
+                                            <div className={styles.questionTitle}>{selectedQuestion.title}</div>
+                                            <div className={styles.questionDescription}>{t('select-one-choice')}</div>
+                                            {selectedQuestion.choices.map((choice, index) => (
+                                                <CardContainer key={index} className={cn(styles.choiceContainer, {
+                                                    [styles.checkedChoice]: choice.isChecked
+                                                })}>
+                                                    <SurveyChoiceItem
+                                                        choice={choice}
+                                                        fieldToHandle='isChecked'
+                                                        setChoices={setChoices(selectedQuestion._id)}
+                                                        text={<div>{choice.title}</div>}
+                                                        handledIconClassName={styles.checkedChoiceIcon}
+                                                    />
+                                                </CardContainer>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}</ButtonBackContainer>
+                </CourseListLessonPageStickyBottomBar>
+            )}
+        </>
+    );
 };

@@ -1,0 +1,103 @@
+.resultText {
+    font-size: 1.2rem;
+    font-weight: 700;
+
+    text-align: center;
+
+    max-width: 15rem;
+}
+
+.resultIcon svg {
+    width: 3.75rem;
+    height: 3.75rem;
+
+    color: var(--light);
+}
+
+.resultContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    margin-top: 4rem;
+    margin-bottom: 2rem;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    text-align: center;
+
+    max-width: 5rem;
+}
+
+.colText {
+    font-size: 0.875rem;
+    color: var(--description-text);
+}
+
+.colsContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+
+    height: 100%;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex: 1;
+    gap: 1rem;
+
+    width: 85%;
+
+    padding-right: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+
+    width: 100%;
+
+    border: solid 1px var(--input-border);
+    border-radius: 1rem;
+
+    padding: 0.7rem;
+
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: var(--input-border);
+}
+
+.light {
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+.light:hover {
+    background-color: var(--secondary-light);
+}
+
+.resultDescription {
+    font-size: 0.98rem;
+    color: var(--description-text);
+}

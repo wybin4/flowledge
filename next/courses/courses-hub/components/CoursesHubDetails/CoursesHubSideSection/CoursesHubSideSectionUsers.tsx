@@ -33,7 +33,7 @@ export const CoursesHubSideSectionUsers = ({ prefix, courseId, setTab }: Courses
 
     useEffect(() => {
         userApiClient.get<SubscriptionWithUserResponse[]>(
-            `${courseSubscriptionsPrefix}.get/${courseId}/${setQueryParams({ pageSize })}`
+            `${courseSubscriptionsPrefix}.get/${courseId}${setQueryParams({ pageSize })}`
         ).then(users => {
             setSubscribers(users.map(u => ({
                 value: u._id,
@@ -43,7 +43,7 @@ export const CoursesHubSideSectionUsers = ({ prefix, courseId, setTab }: Courses
         });
 
         userApiClient.get<number>(
-            `${courseSubscriptionsPrefix}.count/${courseId}/${setQueryParams({ pageSize })}`
+            `${courseSubscriptionsPrefix}.count/${courseId}${setQueryParams({ pageSize })}`
         ).then(count => {
             setSubscribersCount(count);
         });

@@ -36,7 +36,7 @@
     height: 90vh;
     width: 100%;
 
-    margin: 0 7rem;
+    margin: 0 7rem 0 1rem;
 }
 
 .questionBody {
@@ -54,4 +54,11 @@
 
 .checkedChoiceIcon {
     color: var(--light);
+}
+
+.resultContainer {
+    width: 45%;
+    height: 70vh;
+
+    margin: 2rem auto;
 }

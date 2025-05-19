@@ -127,9 +127,9 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
         let nextIndex;
 
         if (direction === 'next') {
-            nextIndex = (currentIndex + 1) % currentLessonMaterials.length; // Циклический переход к следующему
+            nextIndex = (currentIndex + 1) % currentLessonMaterials.length;
         } else {
-            nextIndex = (currentIndex - 1 + currentLessonMaterials.length) % currentLessonMaterials.length; // Циклический переход к предыдущему
+            nextIndex = (currentIndex - 1 + currentLessonMaterials.length) % currentLessonMaterials.length;
         }
 
         const nextMaterial = currentLessonMaterials[nextIndex];
@@ -152,23 +152,22 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
         }
     };
 
+    const handleExitFromSurvey = () => {
+        if (currentLesson._id) {
+            const basePath = removeLastSegment(currentPath);
+            router.push(`${basePath}/${currentLesson._id}`);
+            handlePreviousMaterialClick();
+        }
+    };
+
     if (isSurvey) {
         return (
-            <CourseListLessonPageStickyBottomBar
-                titlePostfix='next-lesson'
-                onClick={handleNextLessonClick}
-                hasBackButton={false}
-            >
-                <ButtonBackContainer
-                    backButtonText={t(`${coursesListPrefix}.back-to-materials`)}
-                    type={ChildrenPosition.TopRight}
-                    onBackButtonClick={handlePreviousMaterialClick}
-                    className={styles.surveyContainer}
-                    compressBody={false}
-                >{_ => (
-                    <CourseListSurvey lessonId={lessonId} />
-                )}</ButtonBackContainer>
-            </CourseListLessonPageStickyBottomBar>
+            <CourseListSurvey
+                lessonId={lessonId}
+                onExit={handleExitFromSurvey}
+                onBack={handlePreviousMaterialClick}
+                onNext={handleNextLessonClick}
+            />
         );
     }
 

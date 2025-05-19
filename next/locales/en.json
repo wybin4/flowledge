@@ -354,7 +354,20 @@
             "__count__comments_one": "{{count}} comment",
             "__count__comments_many": "{{count}} comments"
         },
-        "section": "section"
+        "section": "section",
+        "survey": {
+            "passed": "congratulations! the survey has been successfully passed",
+            "failed": "the survey is not passed! try again",
+            "attempts-exhausted": "unfortunately, attempts have been exhausted",
+            "current-result": "current result",
+            "best-result": "best result",
+            "pass-threshold": "passing threshold",
+            "details": "details",
+            "retry": "retry",
+            "exit": "exit",
+            "start": "start",
+            "attempts": "attempts"
+        }
     },
     "save": "save",
     "cancel": "cancel",

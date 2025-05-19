@@ -7,3 +7,8 @@
 
     margin-top: 10rem;
 }
+
+.icon svg {
+    width: 3.75rem;
+    height: 3.75rem;
+}

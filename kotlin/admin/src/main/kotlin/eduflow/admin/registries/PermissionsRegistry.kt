@@ -40,7 +40,7 @@ class PermissionsRegistry {
         )
 
         return roleRepository.findAll()
-            .map { it.name }  // Получаем все существующие имена ролей
+            .map { it.name }
             .collectList()
             .flatMap { existingRoleNames ->
                 val rolesToAdd = defaultRoles.filter { it.name !in existingRoleNames }

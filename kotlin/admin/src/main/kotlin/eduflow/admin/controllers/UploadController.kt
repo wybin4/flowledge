@@ -34,13 +34,6 @@ class UploadController(
         }
     }
 
-    @GetMapping("/uploads/progress/{fileId}")
-    fun getUploadProgress(@PathVariable fileId: String): ResponseEntity<Map<String, Any>> {
-        val progress = 100
-
-        return ResponseEntity.ok(mapOf("fileId" to fileId, "progress" to progress))
-    }
-
     @GetMapping("/uploads.get/{fileId}")
     fun getFile(@PathVariable fileId: String): ResponseEntity<Resource> {
         return try {

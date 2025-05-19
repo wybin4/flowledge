@@ -1,5 +1,5 @@
 import { TimeUnit } from "@/types/TimeUnit";
-import { Survey } from "../types/Survey";
+import { Survey } from "../../types/Survey";
 
 export interface LessonGetByIdResponse {
     _id: string;

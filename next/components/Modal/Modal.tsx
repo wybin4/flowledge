@@ -21,6 +21,7 @@ export const Modal = ({
         style={{
             overlay: {
                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 2,
             },
             content: {
                 top: '50%',
@@ -33,7 +34,7 @@ export const Modal = ({
                 border: 'none',
                 borderRadius: '1rem',
                 width: `${width}rem`,
-                height: `${height}rem`
+                height: `${height}rem`,
             },
         }}
     >{children(onClose)}</ReactModal>

@@ -23,7 +23,7 @@ import { CreateLessonChildrenProps } from "../CreateLesson";
 import { parseSurveyText } from "@/courses/courses-hub/functions/parseSurveyText";
 import { LessonSaveType } from "@/courses/courses-hub/types/LessonToSave";
 import { userApiClient } from "@/apiClient";
-import { Survey } from "@/courses/courses-hub/types/Survey";
+import { Survey } from "@/courses/types/Survey";
 import { usePathname, useRouter } from "next/navigation";
 import { removeLastSegment } from "@/helpers/removeLastSegment";
 import { RightSidebarWithStickyActions } from "@/components/Sidebar/RightSidebar/RightSidebarWithStickyActions/RightSidebarWithStickyActions";

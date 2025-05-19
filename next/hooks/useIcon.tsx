@@ -13,7 +13,9 @@ import PasswordShowIcon from "../assets/password-show.svg";
 import AccessIcon from "../assets/access.svg";
 import RightIcon from "../assets/right.svg";
 import LeftIcon from "../assets/left.svg";
-import NothingIcon from "../assets/nothing.svg";
+import HelloIcon from "../assets/hello.svg";
+import SadIcon from "../assets/sad.svg";
+import SmileIcon from "../assets/smile.svg";
 import SearchIcon from "../assets/search.svg";
 import SeparatorIcon from "../assets/separator.svg";
 import ExpandIcon from "../assets/expand.svg";
@@ -107,7 +109,10 @@ const icons = {
     'expand-little': <ExpandLittleIcon />,
     'locked': <LockedIcon />,
 
-    'nothing': <NothingIcon />,
+    'hello': <HelloIcon />,
+    'sad': <SadIcon />,
+    'smile': <SmileIcon />,
+    
     'menu': <MenuIcon />,
     'sort': <SortIcon />,
 

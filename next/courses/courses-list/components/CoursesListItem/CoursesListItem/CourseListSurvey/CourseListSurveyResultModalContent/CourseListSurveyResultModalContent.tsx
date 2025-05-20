@@ -7,7 +7,7 @@ import styles from "./CourseListSurveyResultModalContent.module.css";
 import { useIcon } from "@/hooks/useIcon";
 import cn from "classnames";
 import { CourseListSurveyResult } from "./CourseListSurveyResult";
-import { getSurveyResultPostfix } from "@/courses/functions/getSurveyResultPostfix";
+import { getSurveyResultPostfix } from "@/courses/courses-list/functions/getSurveyResultPostfix";
 
 type CourseListSurveyResultModalContentProps = {
     result: SurveyResult;
@@ -15,11 +15,13 @@ type CourseListSurveyResultModalContentProps = {
     onRetry?: () => void;
     onExit: () => void;
     onStart?: () => void;
+    onNext: () => void;
+    titleNext: string;
 };
 
 export const CourseListSurveyResultModalContent = ({
-    result, isInitial,
-    onRetry, onExit, onStart
+    result, isInitial, titleNext,
+    onRetry, onExit, onStart, onNext
 }: CourseListSurveyResultModalContentProps) => {
     const { t } = useTranslation();
     const prefix = `${coursesListPrefix}.survey.`;
@@ -73,6 +75,14 @@ export const CourseListSurveyResultModalContent = ({
                             {t(`${prefix}start`)}
                         </div>
                     )}
+                    <div
+                        className={cn(styles.button, {
+                            [styles.light]: !onStart
+                        })}
+                        onClick={onNext}
+                    >
+                        {t(`${coursesListPrefix}.${titleNext}`)}
+                    </div>
                     {<div className={cn(styles.button, {
                         [styles.light]: !onStart
                     })} onClick={onExit}>

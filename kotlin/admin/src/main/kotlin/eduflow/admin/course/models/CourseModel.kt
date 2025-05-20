@@ -13,7 +13,8 @@ data class CourseModel(
     override val u: CourseCreatorModel,
     override val createdAt: Date,
     override val updatedAt: Date,
-    override val tags: List<String>? = null
+    override val tags: List<String>? = null,
+    override var sections: List<String>? = null
 ) : Course {
     fun updateTags(updatedTags: Map<String, List<String>>): CourseModel {
         return this.copy(tags = updatedTags[this._id] ?: emptyList())

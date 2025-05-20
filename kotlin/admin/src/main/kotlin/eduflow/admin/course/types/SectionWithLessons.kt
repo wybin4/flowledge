@@ -5,5 +5,5 @@ import eduflow.admin.course.models.lesson.CourseLessonModel
 
 data class SectionWithLessons(
     val section: CourseSectionModel,
-    val lessons: List<CourseLessonModel>
+    val lessons: List<CourseLessonModel>? = null
 )

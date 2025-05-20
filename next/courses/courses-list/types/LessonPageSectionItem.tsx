@@ -2,6 +2,7 @@ export interface LessonPageSectionItem {
     title: string;
     courseId: string;
     courseName: string;
+    nextSectionLessonId?: string;
     lessons: LessonPageSectionLessonItem[];
 };
 

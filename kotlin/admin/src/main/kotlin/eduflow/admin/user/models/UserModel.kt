@@ -2,6 +2,7 @@ package eduflow.admin.user.models
 
 import eduflow.admin.models.UserServicesModel
 import eduflow.admin.models.UserSettingModel
+import eduflow.user.Language
 import eduflow.user.User
 import eduflow.user.UserEmail
 import org.springframework.data.mongodb.core.mapping.Document
@@ -28,6 +29,10 @@ data class UserModel(
             name = name,
             username = username,
         )
+    }
+
+    fun getLocale(): Language {
+        return settings.language
     }
 }
 

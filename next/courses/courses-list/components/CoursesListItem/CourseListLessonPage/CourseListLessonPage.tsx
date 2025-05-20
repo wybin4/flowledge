@@ -14,27 +14,16 @@ import { ItemSize } from "@/types/ItemSize";
 import cn from "classnames";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
-import { StickyBottomBar } from "@/components/StickyBottomBar/StickyBottomBar";
-import { Button, ButtonType } from "@/components/Button/Button";
-import { ButtonBack } from "@/components/Button/ButtonBack/ButtonBack";
-import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
-import { LessonPageSectionItem, LessonPageSectionLessonItem, LessonPageSectionLessonItemMapped } from "@/courses/courses-list/types/LessonPageSectionItem";
+import { LessonPageSectionItem, LessonPageSectionLessonItem } from "@/courses/courses-list/types/LessonPageSectionItem";
 import { CourseListLessonSidebarItem } from "./CourseListLessonSidebarItem/CourseListLessonSidebarItem";
 import { CourseListLessonSidebarItemChild } from "./CourseListLessonSidebarItem/CourseListLessonSidebarItemChild";
-import { getLessonSidebarMaterials, LessonSidebarMaterials } from "@/courses/functions/getLessonSidebarMaterials";
-import { mapLessonToPage } from "@/courses/functions/mapLessonToPage";
+import { getLessonSidebarMaterials, LessonSidebarMaterials } from "@/courses/courses-list/functions/getLessonSidebarMaterials";
+import { mapLessonToPage } from "@/courses/courses-list/functions/mapLessonToPage";
 import { usePathname, useRouter } from "next/navigation";
 import { CourseListSurvey } from "../CoursesListItem/CourseListSurvey/CourseListSurvey";
 import { CourseListLessonPageStickyBottomBar } from "./CourseListLessonPageStickyBottomBar";
 import { removeLastSegment } from "@/helpers/removeLastSegment";
-import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackContainer";
-
-interface SidebarItem extends Omit<LessonPageSectionItem, 'lessons'> {
-    lessons: {
-        lesson: LessonPageSectionLessonItemMapped;
-        materials: LessonSidebarMaterials[];
-    }[];
-};
+import { CourseListLessonSidebarItem as SidebarItem } from "@/courses/courses-list/types/CourseListLessonSidebarItem";
 
 type CourseListLessonPageProps = {
     lessonId: string;
@@ -65,13 +54,14 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
                     if (sectionRes) {
                         const lessons = sectionRes.lessons.map(lesson => {
                             const transformedLesson = mapLessonToPage<LessonPageSectionLessonItem>(lesson);
-                            const materials = getLessonSidebarMaterials(transformedLesson);
+                            const materials = getLessonSidebarMaterials(transformedLesson, styles);
 
                             return {
                                 lesson: transformedLesson,
                                 materials
                             };
                         });
+
                         setSection({ ...sectionRes, lessons });
                         const currentLessonMaterials = lessons.find(lesson => lesson.lesson._id === currentLessonRes._id)?.materials;
                         if (currentLessonMaterials && currentLessonMaterials.length) {
@@ -114,10 +104,11 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
         const lessons = section.lessons;
         const currentIndex = lessons.findIndex(lesson => lesson.lesson._id === currentLessonId);
 
-        if (currentIndex === -1) return undefined;
+        if (currentIndex === -1 || currentIndex === lessons.length - 1) {
+            return undefined;
+        }
 
-        const nextIndex = (currentIndex + 1) % lessons.length;
-        return lessons[nextIndex].lesson._id;
+        return lessons[currentIndex + 1].lesson._id;
     };
 
     const navigateMaterial = (direction: 'next' | 'previous') => {
@@ -140,6 +131,18 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
         navigateMaterial('next');
     };
 
+    const handleNextSectionClick = () => {
+        const basePath = removeLastSegment(currentPath);
+        if (section.nextSectionLessonId) {
+            router.push(`${basePath}/${section.nextSectionLessonId}`);
+        }
+    };
+
+    const handleFinishCourseClick = () => {
+        const basePath = removeLastSegment(currentPath);
+        router.push(basePath);
+    };
+
     const handlePreviousMaterialClick = () => {
         navigateMaterial('previous');
     };
@@ -160,13 +163,40 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
         }
     };
 
+    const getNext = () => {
+        const currentLessonId = currentLesson._id;
+        const nextLessonId = getNextLessonId(currentLessonId);
+
+        const currentMaterialIndex = currentLessonMaterials?.findIndex(m => m.type === currentLessonMaterial?.type) ?? -1;
+        const nextMaterialExists = currentMaterialIndex !== -1 && currentMaterialIndex < ((currentLessonMaterials?.length || 0) - 1);
+
+        const isLessonFinished = !nextMaterialExists;
+        const isSectionFinished = nextLessonId === undefined && isLessonFinished;
+        const isCourseFinished = !section.nextSectionLessonId;
+
+        if (isSectionFinished) {
+            return {
+                titlePostfix: isCourseFinished ? 'finish' : 'next-section',
+                onClick: isCourseFinished ? handleFinishCourseClick : handleNextSectionClick
+            };
+        } else {
+            return {
+                titlePostfix: isLessonFinished ? 'next-lesson' : 'next-material',
+                onClick: isLessonFinished ? handleNextLessonClick : handleNextMaterialClick
+            };
+        }
+    };
+
+    const { titlePostfix: nextTitlePostfix, onClick: onNext } = getNext();
+
     if (isSurvey) {
         return (
             <CourseListSurvey
+                titlePostfix={nextTitlePostfix}
                 lessonId={lessonId}
                 onExit={handleExitFromSurvey}
                 onBack={handlePreviousMaterialClick}
-                onNext={handleNextLessonClick}
+                onNext={onNext}
             />
         );
     }
@@ -194,8 +224,8 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
                                     <CourseListLessonSidebarItemChild
                                         key={index}
                                         onClick={() => handleMaterialAction(material)}
-                                        title={currentLesson.title}
-                                        imageUrl={currentLesson.imageUrl}
+                                        title={lesson.title}
+                                        imageUrl={lesson.imageUrl}
                                         name={material.type}
                                         description={material.description}
                                     />
@@ -210,8 +240,8 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
                 [styles.expanded]: isExpanded
             })}>
                 <CourseListLessonPageStickyBottomBar
-                    titlePostfix='next-material'
-                    onClick={handleNextMaterialClick}
+                    titlePostfix={nextTitlePostfix}
+                    onClick={onNext}
                 >
                     <div className={cn(styles.titleContainer, styles.mb)}>
                         <Breadcrumbs
@@ -230,11 +260,13 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
                             mode={PageMode.Viewer}
                             lesson={currentLesson}
                             flags={currentLessonMaterial.flags}
+                            classNames={currentLessonMaterial.classNames}
                             tabs={currentLessonMaterial.tab ? [currentLessonMaterial.tab] : undefined}
                         />
                     )}
                 </CourseListLessonPageStickyBottomBar>
             </div>
-        )}</RightSidebar>
+        )
+            }</RightSidebar>
     );
 };

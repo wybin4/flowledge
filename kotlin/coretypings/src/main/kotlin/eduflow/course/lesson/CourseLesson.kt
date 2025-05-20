@@ -7,8 +7,7 @@ interface CourseLesson {
     val title: String
     val time: String?
     val imageUrl: String?
-    val sectionId: String?
-    val courseId: String?
+    val sectionId: String
     val isVisible: Boolean
     val isDraft: Boolean?
     val videoId: String?

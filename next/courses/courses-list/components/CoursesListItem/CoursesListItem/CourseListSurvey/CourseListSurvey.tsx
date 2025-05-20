@@ -26,9 +26,10 @@ type CourseListSurveyProps = {
     onExit: () => void;
     onBack: () => void;
     onNext: () => void;
+    titlePostfix: string;
 };
 
-export const CourseListSurvey = ({ lessonId, onExit, onBack, onNext }: CourseListSurveyProps) => {
+export const CourseListSurvey = ({ lessonId, onExit, onBack, onNext, titlePostfix }: CourseListSurveyProps) => {
     const [selectedQuestion, setSelectedQuestion] = useState<SurveyQuestion | undefined>();
     const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
     const [surveyId, setSurveyId] = useState<string | undefined>();
@@ -123,6 +124,7 @@ export const CourseListSurvey = ({ lessonId, onExit, onBack, onNext }: CourseLis
             {hasInitialResult && surveyResult && (
                 <div className={styles.resultContainer}>
                     <CourseListSurveyResultModalContent
+                        titleNext={titlePostfix}
                         isInitial={true}
                         result={surveyResult}
                         onExit={onExit}
@@ -130,12 +132,13 @@ export const CourseListSurvey = ({ lessonId, onExit, onBack, onNext }: CourseLis
                             handleRetry();
                             setSurveyResult(undefined);
                         }}
+                        onNext={onNext}
                     />
                 </div>
             )}
             {!hasInitialResult && (
                 <CourseListLessonPageStickyBottomBar
-                    titlePostfix='next-lesson'
+                    titlePostfix={titlePostfix}
                     onClick={onNext}
                     hasBackButton={false}
                 >
@@ -151,10 +154,12 @@ export const CourseListSurvey = ({ lessonId, onExit, onBack, onNext }: CourseLis
                                 <>
                                     {surveyResult && (
                                         <CourseListSurveyResultModalContent
+                                            titleNext={titlePostfix}
                                             isInitial={false}
                                             result={surveyResult}
                                             onExit={onExit}
                                             onRetry={handleRetry}
+                                            onNext={onNext}
                                         />
                                     )}
                                 </>

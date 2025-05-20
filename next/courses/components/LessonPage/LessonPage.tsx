@@ -30,16 +30,18 @@ export type LessonsPageProps = {
     tabs?: SynopsisLessonTabs[] | string[];
     setLesson?: Dispatch<SetStateAction<LessonPageItem>>;
     flags?: LessonsPageFlags;
+    classNames?: string;
 };
 
 export const LessonPage = ({
     mode, flags,
     title: initialTitle,
     lesson, setLesson,
-    tabs = Object.values(SynopsisLessonTabs)
+    tabs = Object.values(SynopsisLessonTabs),
+    classNames
 }: LessonsPageProps) => {
     const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
-
+  
     useEffect(() => setSelectedTab(tabs[0]), [JSON.stringify(tabs)]);
 
     const { t } = useTranslation();
@@ -65,7 +67,7 @@ export const LessonPage = ({
     const title = initialTitle ?? t(`${coursesListPrefix}.lessons.${selectedTab}`);
 
     return (
-        <div className={styles.container}>
+        <div className={cn(styles.container, classNames)}>
             {title &&
                 <div className={styles.titleContainer}>
                     <h1 className={styles.title}>{title}</h1>

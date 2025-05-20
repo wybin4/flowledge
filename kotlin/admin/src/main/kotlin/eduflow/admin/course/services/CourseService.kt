@@ -79,57 +79,102 @@ class CourseService(
             }
 
             false -> {
+                // Загружаем секции курса
                 val sectionsMono = if (isUser) {
                     sectionRepository.findByCourseIdAndIsVisible(courseId, isUser).collectList()
                 } else {
                     sectionRepository.findByCourseId(courseId).collectList()
                 }
-                val lessonsMono = sectionsMono.flatMap { sections ->
-                    val sectionIds = sections.map { it._id }
-                    if (isUser) {
-                        lessonRepository.findByCourseIdOrSectionIdsAndIsVisible(
-                            courseId, sectionIds, isUser
-                        ).collectList()
-                    } else {
-                        lessonRepository.findByCourseIdOrSectionIds(
-                            courseId, sectionIds
-                        ).collectList()
-                    }
-                }
-                sectionsMono.zipWith(lessonsMono).flatMap { tuple ->
-                    val sections = tuple.t1
-                    val allLessons = tuple.t2
 
-                    val lessonsInSections = sections.map { section ->
-                        SectionWithLessons(
-                            section = section,
-                            lessons = allLessons.filter { lesson -> lesson.sectionId == section._id })
-                    }
+                sectionsMono.flatMap { sections ->
+                    // Собираем все идентификаторы уроков из всех секций
+                    val lessonIds = sections.flatMap { it.lessons ?: emptyList() }
 
-                    val standaloneLessons = allLessons.filter { lesson -> lesson.sectionId == null }
+                    // Если уроков нет, возвращаем секции с пустыми уроками
+                    if (lessonIds.isEmpty()) {
+                        val sectionsWithEmptyLessons = sections.map { section ->
+                            SectionWithLessons(
+                                section = section,
+                                lessons = emptyList()
+                            )
+                        }
 
-                    if (!isUser) {
-                        subscriptionService.getEditorsByCourseId(courseId)
-                            .collectList()
-                            .map { editors ->
-                                courseMapper.toCoursesHubGetByIdBigDto(
+                        if (!isUser) {
+                            subscriptionService.getEditorsByCourseId(courseId)
+                                .collectList()
+                                .map { editors ->
+                                    courseMapper.toCoursesHubGetByIdBigDto(
+                                        model = course,
+                                        sectionModels = sectionsWithEmptyLessons,
+                                        editors = editors
+                                    )
+                                }
+                        } else {
+                            Mono.just(
+                                courseMapper.toCoursesListGetByIdBigDto(
                                     model = course,
-                                    sections = lessonsInSections,
-                                    lessons = standaloneLessons,
-                                    editors = editors
+                                    sectionModels = sectionsWithEmptyLessons,
                                 ) as CourseGetByIdResponse
-                            }
+                            )
+                        }
                     } else {
-                        Mono.just(
-                            courseMapper.toCoursesListGetByIdBigDto(
-                                model = course,
-                                sections = lessonsInSections,
-                                lessons = standaloneLessons
-                            ) as CourseGetByIdResponse
-                        )
+                        val lessonsMono = if (isUser) {
+                            lessonRepository.findByIdInAndIsVisible(lessonIds, isUser).collectList()
+                        } else {
+                            lessonRepository.findByIdIn(lessonIds).collectList()
+                        }
+
+                        lessonsMono.flatMap { allLessons ->
+                            val sectionsWithLessons = sections.map { section ->
+                                SectionWithLessons(
+                                    section = section,
+                                    lessons = allLessons.filter { lesson -> section.lessons?.contains(lesson._id) == true }
+                                )
+                            }
+
+                            if (!isUser) {
+                                subscriptionService.getEditorsByCourseId(courseId)
+                                    .collectList()
+                                    .map { editors ->
+                                        courseMapper.toCoursesHubGetByIdBigDto(
+                                            model = course,
+                                            sectionModels = sectionsWithLessons,
+                                            editors = editors
+                                        )
+                                    }
+                            } else {
+                                Mono.just(
+                                    courseMapper.toCoursesListGetByIdBigDto(
+                                        model = course,
+                                        sectionModels = sectionsWithLessons,
+                                    ) as CourseGetByIdResponse
+                                )
+                            }
+                        }
                     }
                 }.map { ResponseEntity.ok(it) }
             }
         }
+    }
+
+    fun removeSectionIdFromCourse(courseId: String, sectionId: String): Mono<Void> {
+        return courseRepository.findById(courseId)
+            .flatMap { course ->
+                val updatedSections = course.sections?.toMutableList() ?: mutableListOf()
+                updatedSections.remove(sectionId)
+
+                course.sections = updatedSections
+                courseRepository.save(course).then()
+            }
+    }
+
+    fun addSectionIdToCourse(courseId: String, sectionId: String): Mono<Void> {
+        return courseRepository.findById(courseId)
+            .flatMap { course ->
+                val updatedSections = course.sections?.toMutableList() ?: mutableListOf()
+                updatedSections.add(sectionId)
+                course.sections = updatedSections
+                courseRepository.save(course).then()
+            }
     }
 }

@@ -9,4 +9,5 @@ interface CourseSection {
     val isVisible: Boolean
     val createdAt: Date
     val updatedAt: Date
+    val lessons: List<String>?
 }

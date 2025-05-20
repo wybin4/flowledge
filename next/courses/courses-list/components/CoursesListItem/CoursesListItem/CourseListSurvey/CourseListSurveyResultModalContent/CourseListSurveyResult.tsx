@@ -3,7 +3,7 @@
 import { useTranslation } from "react-i18next";
 import styles from "./CourseListSurveyResultModalContent.module.css";
 import { useIcon } from "@/hooks/useIcon";
-import { getSurveyResultPostfix } from "@/courses/functions/getSurveyResultPostfix";
+import { getSurveyResultPostfix } from "@/courses/courses-list/functions/getSurveyResultPostfix";
 
 type CourseListSurveyResultProps = {
     prefix: string;

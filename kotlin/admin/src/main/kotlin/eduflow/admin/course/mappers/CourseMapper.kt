@@ -1,14 +1,9 @@
 package eduflow.admin.course.mappers
 
-import eduflow.admin.course.dto.course.hub.get.CourseHubGetResponse
 import eduflow.admin.course.dto.course.hub.id.CoursesHubGetByIdBigResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdBigResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
-import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
-import eduflow.admin.course.models.CourseCreatorModel
 import eduflow.admin.course.models.CourseModel
-import eduflow.admin.course.models.CourseSubscriptionModel
-import eduflow.admin.course.models.lesson.CourseLessonModel
 import eduflow.admin.course.types.CourseEditor
 import eduflow.admin.course.types.SectionWithLessons
 import org.mapstruct.Mapper
@@ -16,13 +11,11 @@ import org.mapstruct.Mapping
 
 @Mapper(componentModel = "spring")
 interface CourseMapper {
-    fun toHubGetDto(model: CourseModel): CourseHubGetResponse
-
     @Mapping(target = "_id", source = "model._id")
+    @Mapping(target = "sections", source = "sectionModels")
     fun toCoursesListGetByIdBigDto(
         model: CourseModel,
-        lessons: List<CourseLessonModel> = emptyList(),
-        sections: List<SectionWithLessons> = emptyList()
+        sectionModels: List<SectionWithLessons> = emptyList()
     ): CourseGetByIdBigResponse {
         return CourseGetByIdBigResponse(
             _id = model._id,
@@ -30,16 +23,15 @@ interface CourseMapper {
             imageUrl = model.imageUrl,
             description = model.description,
             tags = model.tags,
-            lessons = lessons,
-            sections = sections,
+            sections = sectionModels,
         )
     }
 
     @Mapping(target = "_id", source = "model._id")
+    @Mapping(target = "sections", source = "sectionModels")
     fun toCoursesHubGetByIdBigDto(
         model: CourseModel,
-        lessons: List<CourseLessonModel> = emptyList(),
-        sections: List<SectionWithLessons> = emptyList(),
+        sectionModels: List<SectionWithLessons> = emptyList(),
         editors: List<CourseEditor> = emptyList()
     ): CoursesHubGetByIdBigResponse {
         return CoursesHubGetByIdBigResponse(
@@ -48,8 +40,7 @@ interface CourseMapper {
             imageUrl = model.imageUrl,
             description = model.description,
             tags = model.tags,
-            lessons = lessons,
-            sections = sections,
+            sections = sectionModels,
             editors = editors
         )
     }
@@ -68,31 +59,5 @@ interface CourseMapper {
         expression = "java(isUser == false ? model.getCreatedAt() : null)"
     )
     fun toGetSmallDto(model: CourseModel, isUser: Boolean?): CourseGetByIdSmallResponse
-
-    @Mapping(target = "_id", source = "course._id")
-    @Mapping(target = "createdAt", source = "course.createdAt")
-    fun toSubscriptionWithCourseDto(
-        subscription: CourseSubscriptionModel,
-        course: CourseModel,
-    ): CourseSubscriptionGetByUserIdResponse {
-        return CourseSubscriptionGetByUserIdResponse(
-            _id = course._id,
-            courseId = subscription.courseId,
-            isFavourite = subscription.isFavourite,
-            isSubscribed = subscription.isSubscribed,
-            roles = subscription.roles,
-            userId = subscription.userId,
-            title = course.title,
-            imageUrl = course.imageUrl,
-            description = course.description,
-            tags = course.tags,
-            u = CourseCreatorModel(
-                _id = course.u._id,
-                name = course.u.name,
-                username = course.u.username,
-            ),
-            createdAt = course.createdAt,
-        )
-    }
 
 }

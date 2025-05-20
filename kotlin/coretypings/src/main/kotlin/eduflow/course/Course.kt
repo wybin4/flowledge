@@ -1,6 +1,6 @@
 package eduflow.course
 
-import java.util.Date
+import java.util.*
 
 interface Course {
     val _id: String
@@ -11,4 +11,5 @@ interface Course {
     val createdAt: Date
     val updatedAt: Date
     val tags: List<String>?
+    val sections: List<String>?
 }

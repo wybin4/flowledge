@@ -129,4 +129,8 @@ class CourseLessonSurveyService(
             userAttempts = userAttempts
         )
     }
+
+    fun getSurveysForLessons(lessonIds: List<String>): Mono<List<CourseLessonSurveyModel>> {
+        return surveyRepository.findByLessonIdIn(lessonIds).collectList()
+    }
 }

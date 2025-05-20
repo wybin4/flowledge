@@ -5,11 +5,11 @@ import eduflow.admin.course.dto.lesson.create.*
 import eduflow.admin.course.dto.lesson.get.LessonGetHubResponse
 import eduflow.admin.course.dto.lesson.get.LessonGetListResponse
 import eduflow.admin.course.models.lesson.CourseLessonModel
-import eduflow.admin.course.repositories.CourseSectionRepository
-import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.repositories.lessons.CourseLessonRepository
+import eduflow.admin.course.services.CourseSectionService
 import eduflow.admin.course.services.lesson.CourseLessonService
 import eduflow.admin.course.services.lesson.CourseLessonSurveyService
+import eduflow.admin.services.AuthenticationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -22,9 +22,9 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class CourseLessonController(
     private val lessonRepository: CourseLessonRepository,
     private val lessonService: CourseLessonService,
-    private val courseRepository: CourseRepository,
-    private val sectionRepository: CourseSectionRepository,
-    private val surveyService: CourseLessonSurveyService
+    private val sectionService: CourseSectionService,
+    private val surveyService: CourseLessonSurveyService,
+    private val authenticationService: AuthenticationService,
 ) {
 
     @PostMapping("/courses-hub/lessons.create")
@@ -34,7 +34,8 @@ class CourseLessonController(
         return when (lesson) {
             is LessonCreateDraftRequest -> {
                 try {
-                    lessonService.createDraft(lesson)
+                    val user = authenticationService.getCurrentUser()
+                    lessonService.createDraft(lesson, user.getLocale())
                 } catch (e: IllegalArgumentException) {
                     Mono.error<Any>(ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body for draft"))
                 }
@@ -113,12 +114,17 @@ class CourseLessonController(
     fun deleteLesson(
         @PathVariable id: String
     ): Mono<ResponseEntity<Void>> {
-        return lessonRepository.deleteById(id)
+        return lessonRepository.findById(id)
+            .flatMap { lesson ->
+                sectionService.removeLessonFromSection(lesson.sectionId, id)
+                    .then(lessonRepository.deleteById(id))
+            }
             .then(Mono.just<ResponseEntity<Void>>(ResponseEntity.noContent().build()))
             .onErrorResume { _: Throwable ->
                 Mono.just(ResponseEntity.notFound().build())
             }
     }
+
 
     @GetMapping("/courses-hub/lessons.get/{id}")
     fun getLessonForHub(
@@ -130,7 +136,6 @@ class CourseLessonController(
                     .map { survey ->
                         LessonGetHubResponse(
                             _id = lesson._id,
-                            courseId = lesson.courseId,
                             createdAt = lesson.createdAt,
                             imageUrl = lesson.imageUrl,
                             isDraft = lesson.isDraft,
@@ -148,7 +153,6 @@ class CourseLessonController(
                     .defaultIfEmpty(
                         LessonGetHubResponse(
                             _id = lesson._id,
-                            courseId = lesson.courseId,
                             createdAt = lesson.createdAt,
                             imageUrl = lesson.imageUrl,
                             isDraft = lesson.isDraft,

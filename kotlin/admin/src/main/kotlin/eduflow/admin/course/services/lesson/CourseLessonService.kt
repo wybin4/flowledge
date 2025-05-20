@@ -1,7 +1,9 @@
 package eduflow.admin.course.services.lesson
 
 import eduflow.admin.course.dto.lesson.create.*
+import eduflow.admin.course.models.CourseSectionModel
 import eduflow.admin.course.models.lesson.CourseLessonModel
+import eduflow.admin.course.repositories.CourseSectionRepository
 import eduflow.admin.course.repositories.lessons.CourseLessonRepository
 import eduflow.user.Language
 import org.springframework.http.HttpStatus
@@ -13,37 +15,49 @@ import java.util.*
 @Service
 class CourseLessonService(
     private val lessonRepository: CourseLessonRepository,
+    private val sectionRepository: CourseSectionRepository
 ) {
-    fun createDraft(lesson: LessonCreateDraftRequest): Mono<LessonCreateResponse> {
-        val locale = Language.RU // TODO: get from user document
+    fun createDraft(lesson: LessonCreateDraftRequest, locale: Language): Mono<LessonCreateResponse> {
+        return sectionRepository.findById(lesson.sectionId)
+            .flatMap { section ->
+                val draftChecks = section.lessons?.map { lessonId ->
+                    lessonRepository.findById(lessonId)
+                        .map { it.isDraft ?: false }
+                        .defaultIfEmpty(false)
+                } ?: emptyList()
 
-        val draftCount = if (lesson.courseId != null) {
-            lessonRepository.countByCourseIdAndIsDraft(lesson.courseId, true).block() ?: 0
-        } else if (lesson.sectionId != null) {
-            lessonRepository.countBySectionIdAndIsDraft(lesson.sectionId, true).block() ?: 0
-        } else {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Either courseId or sectionId must be provided")
-        }
+                Mono.zip(draftChecks) { results: Array<Any> ->
+                    results.count { it as Boolean }
+                }
+                    .flatMap { draftCount ->
+                        val title = when (locale) {
+                            Language.RU -> "черновик лекции ${draftCount + 1}"
+                            Language.EN -> "draft lecture ${draftCount + 1}"
+                            else -> "draft lecture ${draftCount + 1}"
+                        }
 
-        val title = when (locale) {
-            Language.RU -> "черновик лекции ${draftCount + 1}"
-            Language.EN -> "draft lecture ${draftCount + 1}"
-            else -> "Draft lecture ${draftCount + 1}"
-        }
+                        val newLesson = CourseLessonModel(
+                            _id = UUID.randomUUID().toString(),
+                            title = title,
+                            sectionId = lesson.sectionId,
+                            isVisible = false,
+                            createdAt = Date(),
+                            updatedAt = Date(),
+                            isDraft = true
+                        )
 
-        val newLesson = CourseLessonModel(
-            _id = UUID.randomUUID().toString(),
-            title = title,
-            courseId = lesson.courseId,
-            sectionId = lesson.sectionId,
-            isVisible = false,
-            createdAt = Date(),
-            updatedAt = Date(),
-            isDraft = true
-        )
+                        lessonRepository.save(newLesson)
+                            .flatMap { savedLesson ->
+                                val updatedLessons = section.lessons?.toMutableList() ?: mutableListOf()
+                                updatedLessons.add(savedLesson._id)
 
-        return lessonRepository.save(newLesson)
-            .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
+                                section.lessons = updatedLessons
+                                sectionRepository.save(section)
+                                    .then(Mono.just(LessonCreateResponse(savedLesson._id)))
+                            }
+                    }
+            }
+            .switchIfEmpty(Mono.error(NoSuchElementException("Section not found")))
     }
 
     fun addVideo(lesson: LessonAddVideoRequest): Mono<LessonCreateResponse> {
@@ -87,7 +101,7 @@ class CourseLessonService(
                             )
                         )
                     }
-                    // todo() - здесь будет логика для autoDetect
+                    // TODO: здесь будет логика для autoDetect
                 } else {
                     if (lesson.time == null || lesson.timeUnit == null) {
                         return@flatMap Mono.error<CourseLessonModel>(
@@ -127,5 +141,12 @@ class CourseLessonService(
                 lessonRepository.save(updatedLesson)
             }
             .then()
+    }
+
+    fun getVisibleLessons(section: CourseSectionModel): Mono<List<CourseLessonModel>> {
+        val lessonIds = section.lessons ?: emptyList()
+        return lessonRepository.findAllById(lessonIds)
+            .filter { it.isVisible }
+            .collectList()
     }
 }

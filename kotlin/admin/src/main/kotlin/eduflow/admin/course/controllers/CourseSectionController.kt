@@ -2,13 +2,12 @@ package eduflow.admin.course.controllers
 
 import eduflow.admin.course.dto.section.SectionCreateRequest
 import eduflow.admin.course.dto.section.SectionUpdateRequest
-import eduflow.admin.course.dto.section.lessons.SectionGetLessonsItemResponse
 import eduflow.admin.course.dto.section.lessons.SectionGetLessonsResponse
 import eduflow.admin.course.models.CourseSectionModel
 import eduflow.admin.course.repositories.CourseSectionRepository
 import eduflow.admin.course.repositories.course.CourseRepository
-import eduflow.admin.course.repositories.lessons.CourseLessonRepository
-import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyRepository
+import eduflow.admin.course.services.CourseSectionService
+import eduflow.admin.course.services.CourseService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -19,8 +18,8 @@ import java.util.*
 class CourseSectionController(
     private val sectionRepository: CourseSectionRepository,
     private val courseRepository: CourseRepository,
-    private val lessonRepository: CourseLessonRepository,
-    private val surveyRepository: CourseLessonSurveyRepository
+    private val courseService: CourseService,
+    private val sectionService: CourseSectionService,
 ) {
 
     @PostMapping("/courses-hub/sections.create")
@@ -33,7 +32,14 @@ class CourseSectionController(
             createdAt = Date(),
             updatedAt = Date()
         )
+
         return sectionRepository.save(newSection)
+            .flatMap { savedSection ->
+                courseService.addSectionIdToCourse(
+                    savedSection.courseId, savedSection._id
+                )
+            }
+            .then(Mono.just(newSection))
     }
 
     @PostMapping("/courses-hub/sections.update/{id}")
@@ -48,9 +54,7 @@ class CourseSectionController(
                     isVisible = request.isVisible ?: existingSection.isVisible
                 )
                 sectionRepository.save(updatedSection)
-                    .map { savedSection: CourseSectionModel ->
-                        ResponseEntity.ok(savedSection)
-                    }
+                    .map { savedSection: CourseSectionModel -> ResponseEntity.ok(savedSection) }
             }
             .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
     }
@@ -59,11 +63,14 @@ class CourseSectionController(
     fun deleteSection(
         @PathVariable id: String
     ): Mono<ResponseEntity<Void>> {
-        return sectionRepository.deleteById(id)
-            .then(Mono.just<ResponseEntity<Void>>(ResponseEntity.noContent().build()))
-            .onErrorResume { _: Throwable ->
-                Mono.just(ResponseEntity.notFound().build())
+        return sectionRepository.findById(id)
+            .flatMap { section ->
+                courseService
+                    .removeSectionIdFromCourse(section.courseId, id)
+                    .then(sectionRepository.deleteById(id))
             }
+            .then(Mono.just<ResponseEntity<Void>>(ResponseEntity.noContent().build()))
+            .onErrorResume { _: Throwable -> Mono.just(ResponseEntity.notFound().build()) }
     }
 
     @GetMapping("/courses-list/sections/{sectionId}.lessons")
@@ -73,34 +80,11 @@ class CourseSectionController(
         return sectionRepository.findById(sectionId)
             .flatMap { section ->
                 courseRepository.findById(section.courseId)
-                    .zipWith(lessonRepository.findBySectionIdAndIsVisible(sectionId, true).collectList())
-                    .flatMap { tuple ->
-                        val course = tuple.t1
-                        val lessons = tuple.t2
-                        val lessonIds = lessons.map { it._id }
-                        surveyRepository.findByLessonIdIn(lessonIds).collectList()
-                            .map { surveys ->
-                                val lessonsWithSurveys = lessons.map { lesson ->
-                                    val survey = surveys.find { it.lessonId == lesson._id }
-                                    SectionGetLessonsItemResponse(
-                                        _id = lesson._id,
-                                        title = lesson.title,
-                                        videoId = lesson.videoId,
-                                        imageUrl = lesson.imageUrl,
-                                        surveyId = survey?._id,
-                                        hasSynopsis = lesson.synopsisText?.isNotEmpty(),
-                                    )
-                                }
-                                SectionGetLessonsResponse(
-                                    title = section.title,
-                                    courseId = section.courseId,
-                                    courseName = course.title,
-                                    lessons = lessonsWithSurveys
-                                )
-                            }
-                    }
+                    .flatMap { course -> sectionService.getLessonsResponse(section, course) }
             }
             .map { ResponseEntity.ok(it) }
             .defaultIfEmpty(ResponseEntity.notFound().build())
     }
+
+
 }

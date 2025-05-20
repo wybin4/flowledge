@@ -76,3 +76,9 @@
 .surveyContainer {
     gap: 0 !important;
 }
+
+.videoContainer {
+    max-width: 55vw !important;
+
+    margin: 0 auto;
+}

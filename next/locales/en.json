@@ -343,6 +343,8 @@
         },
         "next-material": "to the next material",
         "next-lesson": "to the next lesson",
+        "next-section": "to the next section",
+        "finish": "finish course",
         "back-to-materials": "back to the materials",
         "lesson": "lesson",
         "test-yourself": "test yourself",

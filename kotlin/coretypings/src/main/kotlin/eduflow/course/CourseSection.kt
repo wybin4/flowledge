@@ -10,4 +10,5 @@ interface CourseSection {
     val createdAt: Date
     val updatedAt: Date
     val lessons: List<String>?
+    val courseVersions: List<String>
 }

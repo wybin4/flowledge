@@ -9,4 +9,5 @@ export interface Course {
         name: string;
     };
     tags: string[];
+    isPublished?: boolean;
 }

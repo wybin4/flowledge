@@ -1,5 +1,6 @@
 package eduflow.admin.course.models.lesson
 
+import eduflow.admin.utils.generateId
 import eduflow.course.lesson.CourseLesson
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
@@ -18,4 +19,24 @@ data class CourseLessonModel(
     override var surveyText: String? = null,
     override var synopsisText: String? = null,
     override var isDraft: Boolean? = null,
-) : CourseLesson
+    override val courseVersions: List<String>,
+) : CourseLesson {
+    companion object {
+        fun create(
+            title: String,
+            sectionId: String,
+            courseVersions: List<String>
+        ): CourseLessonModel {
+            return CourseLessonModel(
+                _id = generateId(),
+                title = title,
+                sectionId = sectionId,
+                isVisible = false,
+                createdAt = Date(),
+                updatedAt = Date(),
+                isDraft = true,
+                courseVersions = courseVersions,
+            )
+        }
+    }
+}

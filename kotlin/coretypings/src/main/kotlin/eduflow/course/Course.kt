@@ -12,4 +12,6 @@ interface Course {
     val updatedAt: Date
     val tags: List<String>?
     val sections: List<String>?
+    val isPublished: Boolean?
+    val versions: List<String>?
 }

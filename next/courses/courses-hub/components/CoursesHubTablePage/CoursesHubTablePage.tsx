@@ -92,11 +92,16 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 { name: 'description', types: [SettingType.TextArea] },
                 { name: 'imageUrl', types: [SettingType.InputText] },
                 getTagsSettingKey(tags),
+                {
+                    name: 'isPublished', types: [SettingType.Radio],
+                    hasDescription: false,
+                    additionalProps: { withWrapper: false }
+                },
             ]}
             transformItemToSave={(item) => {
-                const { title, description, imageUrl, tags: tagsToSave } = item;
+                const { title, description, imageUrl, tags: tagsToSave, isPublished } = item;
                 const body = {
-                    title, description, imageUrl, tags: tagsToSave
+                    title, description, imageUrl, tags: tagsToSave, isPublished
                 };
                 return body;
             }}
@@ -108,7 +113,8 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 u: fakeUser,
                 createdAt: "",
                 updatedAt: "",
-                tags: []
+                tags: [],
+                isPublished: false
             })}
             additionalButtons={[
                 isEditionPermitted ? {

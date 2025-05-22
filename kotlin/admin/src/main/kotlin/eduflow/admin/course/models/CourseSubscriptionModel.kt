@@ -1,5 +1,6 @@
 package eduflow.admin.course.models
 
+import eduflow.admin.utils.generateId
 import eduflow.course.CourseSubscription
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
@@ -24,7 +25,7 @@ data class CourseSubscriptionModel(
             roles: List<String>? = null
         ): CourseSubscriptionModel {
             return CourseSubscriptionModel(
-                _id = UUID.randomUUID().toString(),
+                _id = generateId(),
                 userId = userId,
                 courseId = courseId,
                 isSubscribed = isSubscribed,

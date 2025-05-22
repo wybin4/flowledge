@@ -4,7 +4,6 @@ import eduflow.admin.course.dto.course.CourseCreateRequest
 import eduflow.admin.course.dto.course.CourseUpdateRequest
 import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
-import eduflow.admin.course.models.CourseCreatorModel
 import eduflow.admin.course.models.CourseModel
 import eduflow.admin.course.models.CourseSubscriptionModel
 import eduflow.admin.course.repositories.course.CourseRepository
@@ -17,7 +16,6 @@ import eduflow.user.toLowerCase
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
-import java.util.*
 
 @RestController
 @RequestMapping("/api/courses-hub")
@@ -50,14 +48,11 @@ class CourseHubController(
     @PostMapping("/courses.create")
     fun createCourse(@RequestBody course: CourseCreateRequest): Mono<ResponseEntity<CourseModel>> {
         val user = authenticationService.getCurrentUser()
-        val newCourse = CourseModel(
-            _id = UUID.randomUUID().toString(),
+        val newCourse = CourseModel.create(
             title = course.title,
             description = course.description,
             imageUrl = course.imageUrl,
-            createdAt = Date(),
-            updatedAt = Date(),
-            u = CourseCreatorModel.fromUser(user)
+            user = user
         )
         return courseRepository.save(newCourse)
             .flatMap { savedCourse ->
@@ -84,7 +79,8 @@ class CourseHubController(
                     title = course.title,
                     description = course.description,
                     imageUrl = course.imageUrl,
-                    tags = course.tags
+                    tags = course.tags,
+                    isPublished = course.isPublished
                 )
                 courseRepository.save(updatedCourse)
             }

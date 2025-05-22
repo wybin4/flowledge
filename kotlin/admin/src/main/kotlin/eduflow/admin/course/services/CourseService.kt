@@ -71,6 +71,7 @@ class CourseService(
         isUser: Boolean,
         courseId: String
     ): Mono<ResponseEntity<out CourseGetByIdResponse>> {
+        println(course)
         return when (isSmall) {
             true -> {
                 Mono.just(
@@ -79,7 +80,6 @@ class CourseService(
             }
 
             false -> {
-                // Загружаем секции курса
                 val sectionsMono = if (isUser) {
                     sectionRepository.findByCourseIdAndIsVisible(courseId, isUser).collectList()
                 } else {
@@ -87,10 +87,8 @@ class CourseService(
                 }
 
                 sectionsMono.flatMap { sections ->
-                    // Собираем все идентификаторы уроков из всех секций
                     val lessonIds = sections.flatMap { it.lessons ?: emptyList() }
 
-                    // Если уроков нет, возвращаем секции с пустыми уроками
                     if (lessonIds.isEmpty()) {
                         val sectionsWithEmptyLessons = sections.map { section ->
                             SectionWithLessons(
@@ -168,13 +166,13 @@ class CourseService(
             }
     }
 
-    fun addSectionIdToCourse(courseId: String, sectionId: String): Mono<Void> {
+    fun addSectionIdToCourse(courseId: String, sectionId: String): Mono<CourseModel> {
         return courseRepository.findById(courseId)
             .flatMap { course ->
                 val updatedSections = course.sections?.toMutableList() ?: mutableListOf()
                 updatedSections.add(sectionId)
                 course.sections = updatedSections
-                courseRepository.save(course).then()
+                courseRepository.save(course)
             }
     }
 }

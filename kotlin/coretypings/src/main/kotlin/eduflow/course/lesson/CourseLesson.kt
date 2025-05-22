@@ -15,4 +15,5 @@ interface CourseLesson {
     val surveyText: String?
     val createdAt: Date
     val updatedAt: Date
+    val courseVersions: List<String>
 }

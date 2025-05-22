@@ -1,5 +1,7 @@
 .withoutWrapper {
     padding: 0;
+
+    margin-bottom: -1rem;
 }
 
 .end {

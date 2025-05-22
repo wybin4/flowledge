@@ -220,6 +220,7 @@
         "createdAt": "создан",
         "description": "описание",
         "imageUrl": "обложка",
+        "isPublished": "опубликован",
         "edit-content": "редактировать содержимое",
         "select-from-users-list": "выберите пользователей из списка",
         "editors": {

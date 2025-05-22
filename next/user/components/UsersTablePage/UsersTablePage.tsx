@@ -1,7 +1,7 @@
 "use client";
 
 import { userApiClient } from "@/apiClient";
-import { getRolesFromScope } from "@/collections/Roles";
+import { getRolesFromScope, getRolesFromScopes } from "@/collections/Roles";
 import { CRUDTablePage } from "@/components/TablePage/CRUDTablePage/CRUDTablePage";
 import { getDataPageWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getDataPageWithApi";
 import { getTotalCountWithApi } from "@/components/TablePage/EnhancedTablePage/functions/getTotalCountWithApi";
@@ -22,7 +22,9 @@ import { useTranslation } from "react-i18next";
 
 export const UsersTablePage = ({ mode }: { mode?: TablePageMode }) => {
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
-    const rolesFromCurrentScope = getRolesFromScope(RoleScope.Users);
+    const usersRolesFromCurrentScope = getRolesFromScope(RoleScope.Users);
+    const coursesRolesFromCurrentScope = getRolesFromScopes([RoleScope.Users, RoleScope.Courses]);
+    const rolesFromCurrentScope = [...usersRolesFromCurrentScope, ...coursesRolesFromCurrentScope];
 
     const { t } = useTranslation();
 

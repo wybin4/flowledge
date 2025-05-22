@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
-import java.util.*
 
 @Service
 class CourseLessonService(
@@ -36,14 +35,10 @@ class CourseLessonService(
                             else -> "draft lecture ${draftCount + 1}"
                         }
 
-                        val newLesson = CourseLessonModel(
-                            _id = UUID.randomUUID().toString(),
+                        val newLesson = CourseLessonModel.create(
                             title = title,
                             sectionId = lesson.sectionId,
-                            isVisible = false,
-                            createdAt = Date(),
-                            updatedAt = Date(),
-                            isDraft = true
+                            courseVersions = listOfNotNull(section.courseVersions.lastOrNull())
                         )
 
                         lessonRepository.save(newLesson)

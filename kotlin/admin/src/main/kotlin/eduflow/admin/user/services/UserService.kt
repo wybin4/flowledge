@@ -9,6 +9,7 @@ import eduflow.admin.user.dto.get.UserGetResponse
 import eduflow.admin.user.dto.get.UserGetSmallResponse
 import eduflow.admin.user.models.UserModel
 import eduflow.admin.user.repositories.UserRepository
+import eduflow.admin.utils.generateId
 import eduflow.user.DefaultRoles
 import eduflow.user.Language
 import eduflow.user.Theme
@@ -92,7 +93,7 @@ class UserService(private val userRepository: UserRepository) : PaginationAndSor
     ): Mono<UserModel> {
         val now = Date()
         val newUser = UserModel(
-            _id = UUID.randomUUID().toString(),
+            _id = generateId(),
             _updatedAt = now,
             roles = roles?.takeIf { it.isNotEmpty() } ?: listOf(DefaultRoles.USER.toLowerCase()),
             createdAt = now,

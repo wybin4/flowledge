@@ -24,6 +24,11 @@
     margin-top: -4px;
 }
 
+.multiOptionIcon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 .multiOptionText {
     flex: 1;
 }

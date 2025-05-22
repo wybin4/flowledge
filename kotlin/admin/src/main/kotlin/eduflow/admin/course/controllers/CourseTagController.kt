@@ -5,13 +5,13 @@ import eduflow.admin.course.models.CourseTagModel
 import eduflow.admin.course.repositories.tag.CourseTagRepository
 import eduflow.admin.course.services.CourseTagService
 import eduflow.admin.dto.PaginationRequest
+import eduflow.admin.utils.generateId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.util.*
 
 @RestController
 @RequestMapping("/api")
@@ -39,7 +39,7 @@ class CourseTagController(
                 Mono.error(ResponseStatusException(HttpStatus.CONFLICT, "Tag with this name already exists"))
             }
             .switchIfEmpty(
-                tagRepository.save(CourseTagModel(_id = UUID.randomUUID().toString(), name = request.name))
+                tagRepository.save(CourseTagModel(_id = generateId(), name = request.name))
                     .then(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()))
             )
             .onErrorResume { e ->

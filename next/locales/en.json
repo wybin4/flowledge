@@ -220,6 +220,7 @@
         "createdAt": "created at",
         "description": "description",
         "imageUrl": "cover",
+        "isPublished": "published",
         "edit-content": "edit content",
         "select-from-users-list": "select users",
         "editors": {

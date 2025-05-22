@@ -8,10 +8,10 @@ import eduflow.admin.course.repositories.CourseSectionRepository
 import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.services.CourseSectionService
 import eduflow.admin.course.services.CourseService
+import eduflow.admin.utils.generateId
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
-import java.util.*
 
 @RestController
 @RequestMapping("/api")
@@ -24,22 +24,24 @@ class CourseSectionController(
 
     @PostMapping("/courses-hub/sections.create")
     fun createSection(@RequestBody section: SectionCreateRequest): Mono<CourseSectionModel> {
-        val newSection = CourseSectionModel(
-            _id = UUID.randomUUID().toString(),
-            title = section.title,
-            courseId = section.courseId,
-            isVisible = section.isVisible,
-            createdAt = Date(),
-            updatedAt = Date()
-        )
+        val sectionId = generateId()
 
-        return sectionRepository.save(newSection)
-            .flatMap { savedSection ->
-                courseService.addSectionIdToCourse(
-                    savedSection.courseId, savedSection._id
+        return courseRepository.findById(section.courseId)
+            .flatMap { course ->
+                val newSection = CourseSectionModel.create(
+                    _id = sectionId,
+                    title = section.title,
+                    courseId = section.courseId,
+                    isVisible = section.isVisible,
+                    courseVersions = listOfNotNull(course.versions?.lastOrNull())
                 )
+
+                sectionRepository.save(newSection)
+                    .flatMap { savedSection ->
+                        courseService.addSectionIdToCourse(savedSection.courseId, savedSection._id)
+                    }
+                    .then(Mono.just(newSection))
             }
-            .then(Mono.just(newSection))
     }
 
     @PostMapping("/courses-hub/sections.update/{id}")

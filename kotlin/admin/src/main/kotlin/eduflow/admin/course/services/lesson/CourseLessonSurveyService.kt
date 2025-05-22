@@ -5,10 +5,10 @@ import eduflow.admin.course.dto.lesson.create.LessonCreateResponse
 import eduflow.admin.course.dto.survey.SurveyResultGetResponse
 import eduflow.admin.course.models.lesson.survey.*
 import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyRepository
+import eduflow.admin.utils.generateId
 import eduflow.course.lesson.survey.CourseLessonSurveyAnswer
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import java.util.*
 
 @Service
 class CourseLessonSurveyService(
@@ -23,11 +23,11 @@ class CourseLessonSurveyService(
                     passThreshold = survey.passThreshold ?: existingSurvey.passThreshold,
                     questions = survey.questions.map { question ->
                         CourseLessonSurveyQuestionModel(
-                            _id = question._id ?: UUID.randomUUID().toString(),
+                            _id = question._id ?: generateId(),
                             title = question.title,
                             choices = question.choices.map { choice ->
                                 CourseLessonSurveyChoiceModel(
-                                    _id = choice._id ?: UUID.randomUUID().toString(),
+                                    _id = choice._id ?: generateId(),
                                     title = choice.title,
                                     isCorrect = choice.isCorrect
                                 )
@@ -40,17 +40,17 @@ class CourseLessonSurveyService(
             .switchIfEmpty(
                 Mono.defer {
                     val newSurvey = CourseLessonSurveyModel(
-                        _id = UUID.randomUUID().toString(),
+                        _id = generateId(),
                         maxAttempts = survey.maxAttempts ?: 1,
                         passThreshold = survey.passThreshold ?: 50,
                         lessonId = survey._id,
                         questions = survey.questions.map { question ->
                             CourseLessonSurveyQuestionModel(
-                                _id = UUID.randomUUID().toString(),
+                                _id = generateId(),
                                 title = question.title,
                                 choices = question.choices.map { choice ->
                                     CourseLessonSurveyChoiceModel(
-                                        _id = UUID.randomUUID().toString(),
+                                        _id = generateId(),
                                         title = choice.title,
                                         isCorrect = choice.isCorrect
                                     )

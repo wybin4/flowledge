@@ -5,4 +5,5 @@ data class CourseUpdateRequest(
     val description: String,
     val imageUrl: String,
     val tags: List<String>,
+    val isPublished: Boolean
 )

@@ -4,6 +4,7 @@ import eduflow.admin.course.dto.lesson.LessonUpdateRequest
 import eduflow.admin.course.dto.lesson.create.*
 import eduflow.admin.course.dto.lesson.get.LessonGetHubResponse
 import eduflow.admin.course.dto.lesson.get.LessonGetListResponse
+import eduflow.admin.course.mappers.CourseLessonMapper
 import eduflow.admin.course.models.lesson.CourseLessonModel
 import eduflow.admin.course.repositories.lessons.CourseLessonRepository
 import eduflow.admin.course.services.CourseSectionService
@@ -25,6 +26,7 @@ class CourseLessonController(
     private val sectionService: CourseSectionService,
     private val surveyService: CourseLessonSurveyService,
     private val authenticationService: AuthenticationService,
+    private val lessonMapper: CourseLessonMapper,
 ) {
 
     @PostMapping("/courses-hub/lessons.create")
@@ -134,38 +136,10 @@ class CourseLessonController(
             .flatMap { lesson ->
                 surveyService.getSurveyByLessonId(lesson._id)
                     .map { survey ->
-                        LessonGetHubResponse(
-                            _id = lesson._id,
-                            createdAt = lesson.createdAt,
-                            imageUrl = lesson.imageUrl,
-                            isDraft = lesson.isDraft,
-                            isVisible = lesson.isVisible,
-                            sectionId = lesson.sectionId,
-                            surveyText = lesson.surveyText,
-                            synopsisText = lesson.synopsisText,
-                            survey = survey,
-                            time = lesson.time,
-                            title = lesson.title,
-                            updatedAt = lesson.updatedAt,
-                            videoId = lesson.videoId
-                        )
+                        lessonMapper.toLessonGetHubResponse(lesson, survey)
                     }
                     .defaultIfEmpty(
-                        LessonGetHubResponse(
-                            _id = lesson._id,
-                            createdAt = lesson.createdAt,
-                            imageUrl = lesson.imageUrl,
-                            isDraft = lesson.isDraft,
-                            isVisible = lesson.isVisible,
-                            sectionId = lesson.sectionId,
-                            surveyText = lesson.surveyText,
-                            synopsisText = lesson.synopsisText,
-                            survey = null,
-                            time = lesson.time,
-                            title = lesson.title,
-                            updatedAt = lesson.updatedAt,
-                            videoId = lesson.videoId
-                        )
+                        lessonMapper.toLessonGetHubResponse(lesson, null)
                     )
             }
             .map { ResponseEntity.ok(it) }

@@ -11,3 +11,9 @@ export function getRolesFromScope(scope: RoleScope): IRole[] {
         ]
     });
 }
+
+export function getRolesFromScopes(scopes: RoleScope[]): IRole[] {
+    return Roles.collection.chain().find({
+        $and: scopes.map(scope => ({ scopes: { $contains: scope } }))
+    }).data();
+}

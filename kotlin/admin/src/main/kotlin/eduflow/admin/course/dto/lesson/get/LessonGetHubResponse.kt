@@ -17,5 +17,6 @@ data class LessonGetHubResponse(
     override val time: String?,
     override val title: String,
     override val updatedAt: Date,
-    override val videoId: String?
+    override val videoId: String?,
+    override val courseVersions: List<String>
 ) : CourseLesson

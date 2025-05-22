@@ -45,11 +45,6 @@ interface CourseMapper {
         )
     }
 
-    @Mapping(target = "_id", source = "model._id")
-    @Mapping(target = "title", source = "model.title")
-    @Mapping(target = "imageUrl", source = "model.imageUrl")
-    @Mapping(target = "description", source = "model.description")
-    @Mapping(target = "tags", source = "model.tags")
     @Mapping(
         target = "u",
         expression = "java(isUser == false ? model.getU() : null)"

@@ -8,6 +8,7 @@ import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyAttemp
 import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyRepository
 import eduflow.admin.course.services.lesson.CourseLessonSurveyService
 import eduflow.admin.services.AuthenticationService
+import eduflow.admin.utils.generateId
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -65,7 +66,7 @@ class CourseSurveyController(
                 val score = surveyService.calculateScore(answers)
 
                 val attempt = CourseLessonSurveyAttemptModel(
-                    _id = UUID.randomUUID().toString(),
+                    _id = generateId(),
                     surveyId = request.surveyId,
                     userId = userId,
                     completedAt = Date(),

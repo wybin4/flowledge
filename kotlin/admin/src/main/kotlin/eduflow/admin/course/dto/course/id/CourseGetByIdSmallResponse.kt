@@ -11,5 +11,6 @@ data class CourseGetByIdSmallResponse(
     override val tags: List<String>?,
     val u: CourseCreator? = null,
     val createdAt: Date? = null,
-    val isFavourite: Boolean? = null
+    val isFavourite: Boolean? = null,
+    val isPublished: Boolean? = null
 ) : CourseGetByIdResponse

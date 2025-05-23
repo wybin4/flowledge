@@ -1,6 +1,6 @@
 package eduflow.admin.course.dto.subscription.progress
 
-enum class CourseInitiateProgressTypeRequest {
+enum class CourseProgressTypeRequest {
     VIDEO,
     SYNOPSIS,
     SURVEY,

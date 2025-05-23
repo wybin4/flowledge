@@ -4,7 +4,7 @@ import { PageMode } from "@/types/PageMode";
 import { useEffect, useState } from "react";
 import { LessonPage } from "../../../../components/LessonPage/LessonPage";
 import { userApiClient } from "@/apiClient";
-import { coursesListLessonsPrefixApi, coursesListPrefix, coursesListSectionsPrefixApi } from "@/helpers/prefixes";
+import { courseProgressPrefix, coursesListLessonsPrefixApi, coursesListPrefix, coursesListSectionsPrefixApi, courseSubscriptionsPrefix } from "@/helpers/prefixes";
 import { useTranslation } from "react-i18next";
 import { LessonPageItem } from "@/courses/courses-list/types/LessonPageItem";
 import RightSidebar from "@/components/Sidebar/RightSidebar/RightSidebar";
@@ -24,6 +24,11 @@ import { CourseListSurvey } from "../CoursesListItem/CourseListSurvey/CourseList
 import { CourseListLessonPageStickyBottomBar } from "./CourseListLessonPageStickyBottomBar";
 import { removeLastSegment } from "@/helpers/removeLastSegment";
 import { CourseListLessonSidebarItem as SidebarItem } from "@/courses/courses-list/types/CourseListLessonSidebarItem";
+import { ScrollTracker } from "@/components/ScrollTracker/ScrollTracker";
+import { SynopsisLessonTabs } from "@/courses/types/SynopsisLessonTabs";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
+import { findSubscriptionByCourseId } from "@/collections/CourseSubscriptions";
+import { useCourseSubscription } from "@/courses/hooks/useCourseSubscription";
 
 type CourseListLessonPageProps = {
     lessonId: string;
@@ -37,10 +42,17 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
     const [currentLessonMaterial, setCurrentLessonMaterial] = useState<LessonSidebarMaterials | undefined>(undefined);
     const [section, setSection] = useState<SidebarItem | undefined>(undefined);
 
+    const [currentProgress, setCurrentProgress] = useState<number>(0);
+    const [lastSentProgress, setLastSentProgress] = useState<number>(0);
+
     const { t } = useTranslation();
 
     const router = useRouter();
     const currentPath = usePathname();
+
+    const pathSegments = currentPath.split('/');
+    const courseId = pathSegments[2];
+    const subscription = useCourseSubscription(courseId);
 
     useEffect(() => {
         if (!version) {
@@ -83,7 +95,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
         return <>{t('loading')}</>;
     }
 
-    const updateSelectedMaterial = (materialType: string) => {
+    const updateSelectedMaterial = (materialType: LessonSaveType) => {
         setCurrentLessonMaterials((clm) =>
             clm?.map(m => ({
                 ...m,
@@ -94,7 +106,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
         setCurrentLessonMaterial(currentLessonMaterial);
     };
 
-    const handleMaterialClick = (materialType: string) => {
+    const handleMaterialClick = (materialType: LessonSaveType) => {
         updateSelectedMaterial(materialType);
     };
 
@@ -132,18 +144,21 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
         handleMaterialAction(nextMaterial);
     };
 
-    const handleNextMaterialClick = () => {
+    const handleNextMaterialClick = async () => {
+        await sendProgressOnNavigation();
         navigateMaterial('next');
     };
 
-    const handleNextSectionClick = () => {
+    const handleNextSectionClick = async () => {
+        await sendProgressOnNavigation();
         const basePath = removeLastSegment(currentPath);
         if (section.nextSectionLessonId) {
             router.push(`${basePath}/${section.nextSectionLessonId}`);
         }
     };
 
-    const handleFinishCourseClick = () => {
+    const handleFinishCourseClick = async () => {
+        await sendProgressOnNavigation();
         const basePath = removeLastSegment(currentPath);
         router.push(basePath);
     };
@@ -152,7 +167,8 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
         navigateMaterial('previous');
     };
 
-    const handleNextLessonClick = () => {
+    const handleNextLessonClick = async () => {
+        await sendProgressOnNavigation();
         const nextLessonId = getNextLessonId(lessonId);
         const basePath = removeLastSegment(currentPath);
         if (nextLessonId) {
@@ -191,8 +207,28 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
             };
         }
     };
-
     const { titlePostfix: nextTitlePostfix, onClick: onNext } = getNext();
+
+    const sendProgress = async (lessonId: string, progress: number) => {
+        if (currentLessonMaterial && subscription) {
+            try {
+                await userApiClient.post(`${courseSubscriptionsPrefix}/${courseProgressPrefix}.send`,
+                    { progress, lessonId, type: currentLessonMaterial.type, subscriptionId: subscription.subId }
+                );
+                console.log("Progress sent:", progress);
+            } catch (error) {
+                console.error("Failed to send progress:", error);
+            }
+        }
+    };
+
+    const sendProgressOnNavigation = async () => {
+        if (currentProgress !== lastSentProgress) {
+            await sendProgress(lessonId, currentProgress);
+            setLastSentProgress(currentProgress);
+            setCurrentProgress(0);
+        }
+    };
 
     if (isSurvey) {
         return (
@@ -231,7 +267,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
                                         onClick={() => handleMaterialAction(material)}
                                         title={lesson.title}
                                         imageUrl={lesson.imageUrl}
-                                        name={material.type}
+                                        name={material.type.toLowerCase()}
                                         description={material.description}
                                     />
                                 ))}
@@ -241,12 +277,20 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
                 </div>
             }
         >{(isExpanded, toggleSidebar) => (
-            <div className={cn(styles.container, {
-                [styles.expanded]: isExpanded
-            })}>
+            <ScrollTracker
+                setScrollPercent={setCurrentProgress}
+                className={cn(styles.container, {
+                    [styles.expanded]: isExpanded,
+                    [styles.scrollable]: currentLessonMaterial?.tab == SynopsisLessonTabs.Synopsis,
+                    [styles.scrollableExpanded]: currentLessonMaterial?.tab == SynopsisLessonTabs.Synopsis && isExpanded
+                })}
+            >
                 <CourseListLessonPageStickyBottomBar
                     titlePostfix={nextTitlePostfix}
                     onClick={onNext}
+                    className={cn(styles.stickyBar, {
+                        [styles.stickyBarExpanded]: !isExpanded
+                    })}
                 >
                     <div className={cn(styles.titleContainer, styles.mb)}>
                         <Breadcrumbs
@@ -267,11 +311,11 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
                             flags={currentLessonMaterial.flags}
                             classNames={currentLessonMaterial.classNames}
                             tabs={currentLessonMaterial.tab ? [currentLessonMaterial.tab] : undefined}
+                            onProgress={setCurrentProgress}
                         />
                     )}
                 </CourseListLessonPageStickyBottomBar>
-            </div>
-        )
-            }</RightSidebar>
+            </ScrollTracker>
+        )}</RightSidebar>
     );
 };

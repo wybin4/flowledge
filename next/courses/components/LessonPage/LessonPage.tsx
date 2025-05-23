@@ -17,7 +17,7 @@ import { LessonStuff } from "../../courses-list/types/LessonStuff";
 import { LessonPageItem } from "../../courses-list/types/LessonPageItem";
 import { useTranslation } from "react-i18next";
 import { coursesListPrefix } from "@/helpers/prefixes";
-
+import { VideoPlayer } from "@/components/VideoPlayer/VideoPlayer";
 
 export type LessonsPageFlags = {
     hideVideo?: boolean;
@@ -31,17 +31,18 @@ export type LessonsPageProps = {
     setLesson?: Dispatch<SetStateAction<LessonPageItem>>;
     flags?: LessonsPageFlags;
     classNames?: string;
+    onProgress: (percent: number) => void;
 };
 
 export const LessonPage = ({
     mode, flags,
     title: initialTitle,
-    lesson, setLesson,
+    lesson, setLesson, onProgress,
     tabs = Object.values(SynopsisLessonTabs),
     classNames
 }: LessonsPageProps) => {
     const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
-  
+
     useEffect(() => setSelectedTab(tabs[0]), [JSON.stringify(tabs)]);
 
     const { t } = useTranslation();
@@ -74,10 +75,12 @@ export const LessonPage = ({
                 </div>
             }
             {!flags?.hideVideo && lesson.videoUrl && (
-                <video className={styles.video} controls poster={lesson.imageUrl}>
-                    <source src={lesson.videoUrl} type="video/mp4" />
-                    {t('browser-unsupported-video')}
-                </video>
+                <VideoPlayer
+                    src={lesson.videoUrl}
+                    poster={lesson.imageUrl}
+                    className={styles.video}
+                    setPercentWatched={onProgress}
+                />
             )}
             {isEditorMode && tabs.length > 1 && (
                 <InputBoxWrapper className={styles.tabsContainer}>

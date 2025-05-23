@@ -14,27 +14,31 @@ type CourseListLessonPageStickyBottomBarProps = {
     children: ReactNode;
     titlePostfix: string;
     hasBackButton?: boolean;
+    className?: string;
 };
 
 export const CourseListLessonPageStickyBottomBar = ({
-    children, onClick, titlePostfix, hasBackButton = true
+    children, onClick, titlePostfix, hasBackButton = true, className
 }: CourseListLessonPageStickyBottomBarProps) => {
     const { t } = useTranslation();
 
     return (
-        <StickyBottomBar barContent={
-            <div className={styles.buttonContainer}>
-                {hasBackButton && <ButtonBack hasBackButtonIcon={false} backButtonStyles={styles.backButton} />}
-                <Button
-                    onClick={onClick}
-                    title={t(`${coursesListPrefix}.${titlePostfix}`)}
-                    type={ButtonType.SAVE}
-                    mode={FillBorderUnderlineMode.UNDERLINE}
-                    noEffects={true}
-                    className={styles.button}
-                />
-            </div>
-        }>
+        <StickyBottomBar
+            barContent={
+                <div className={styles.buttonContainer}>
+                    {hasBackButton && <ButtonBack hasBackButtonIcon={false} backButtonStyles={styles.backButton} />}
+                    <Button
+                        onClick={onClick}
+                        title={t(`${coursesListPrefix}.${titlePostfix}`)}
+                        type={ButtonType.SAVE}
+                        mode={FillBorderUnderlineMode.UNDERLINE}
+                        noEffects={true}
+                        className={styles.button}
+                    />
+                </div>
+            }
+            className={className}
+        >
             {children}
         </StickyBottomBar>
     );

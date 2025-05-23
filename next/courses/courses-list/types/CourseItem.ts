@@ -8,4 +8,6 @@ export interface CourseItem extends ICourse {
 }
 
 export type CourseWithSubscriptionItem =
-    CourseItem & Pick<CourseSubscriptionItem, 'isFavourite' | 'isSubscribed' | 'progress' | 'courseVersion'>;
+    CourseItem & Pick<CourseSubscriptionItem, 'isFavourite' | 'isSubscribed' | 'courseVersion'> & {
+        progress?: number;
+    };

@@ -8,6 +8,18 @@
     overflow: scroll;
 }
 
+.scrollableExpanded {
+    position: inherit !important;
+}
+
+.scrollable {
+    position: fixed;
+
+    padding-right: 5rem;
+
+    overflow-x: hidden !important;
+}
+
 .titleContainer {
     display: flex;
     justify-content: space-between;
@@ -80,5 +92,13 @@
 .videoContainer {
     max-width: 55vw !important;
 
-    margin: 0 auto;
+    margin: 0 auto !important;
+}
+
+.scrollable .stickyBar {
+    padding-bottom: 4.5rem !important;
+}
+
+.scrollable .stickyBarExpanded {
+    padding-bottom: 4rem !important;
 }

@@ -5,5 +5,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
 data class CourseProgressModel(
-    override val sections: List<CourseProgressSectionModel>
+    override val sections: List<CourseProgressSectionModel>,
+    override val progress: Double? = null
 ) : CourseProgress

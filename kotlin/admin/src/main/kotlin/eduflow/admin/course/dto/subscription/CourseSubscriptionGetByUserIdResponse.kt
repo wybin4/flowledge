@@ -6,8 +6,7 @@ import java.util.*
 
 data class CourseSubscriptionGetByUserIdResponse(
     // sub
-    val _id: String,
-    val courseId: String,
+    val subId: String,
     var isFavourite: Boolean?,
     val isSubscribed: Boolean?,
     val courseVersion: String?,
@@ -15,6 +14,7 @@ data class CourseSubscriptionGetByUserIdResponse(
     val roles: List<String>?,
     val userId: String,
     // course
+    val _id: String,
     val title: String,
     val imageUrl: String? = null,
     val description: String? = null,

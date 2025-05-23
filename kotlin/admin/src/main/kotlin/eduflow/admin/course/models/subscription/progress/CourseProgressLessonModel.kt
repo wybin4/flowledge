@@ -8,6 +8,6 @@ data class CourseProgressLessonModel(
     override val _id: String,
     override val progress: Double,
     override val isSurveyPassed: Boolean? = null,
-    override val synopsisProgress: Int? = null,
-    override val videoProgress: Int? = null
+    override val synopsisProgress: Double? = null,
+    override val videoProgress: Double? = null
 ) : CourseProgressLesson

@@ -3,4 +3,5 @@ export interface Section {
     title: string;
     courseId: string;
     isVisible: boolean;
+    progress?: number;
 }

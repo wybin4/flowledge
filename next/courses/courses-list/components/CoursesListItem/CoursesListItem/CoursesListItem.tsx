@@ -20,6 +20,9 @@ import { CourseWithSubscriptionItem } from "@/courses/courses-list/types/CourseI
 import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 import { getFirstValidLessonType } from "@/courses/courses-list/functions/getFirstValidLessonType";
 import { LessonSaveType } from "@/courses/types/LessonSaveType";
+import { useTranslation } from "react-i18next";
+import { Tag, TagType } from "@/components/Tag/Tag";
+import ProgressBar from "@/components/ProgressBar/ProgressBar";
 
 type CoursesListItemProps = {
     course: CourseWithSubscriptionItem;
@@ -34,6 +37,8 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
     const searchParams = useSearchParams();
     const [selectedMenuTab, setSelectedMenuTab] = useState<CourseTabs>(CourseTabs.Lessons);
     const pathnamePrefix = `${coursesListPrefix}/${course._id}`;
+
+    const { t } = useTranslation();
 
     useEffect(() => {
         const tab = searchParams.get('tab') as CourseTabs | null;
@@ -98,9 +103,26 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                     course={course}
                     isListPage={isListPage}
                     pointer={pointer}
-                    handleClick={handleClick}
+                    handleClick={isListPage ? handleClick : undefined}
                     actions={actions}
                     header={header}
+                    underTitle={
+                        <div className={styles.underTitle}>
+                            {!isListPage && (
+                                <>
+                                    {!course.progress && (
+                                        <Tag
+                                            tag={t(`${coursesListPrefix}.course-not-started`)}
+                                            type={TagType.Info}
+                                        />
+                                    )}
+                                    {course.progress && (
+                                        <ProgressBar progress={course.progress} />
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    }
                 />
                 <div className={styles.menuContainer}>
                     <div>
@@ -131,17 +153,20 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                                 ))}
                             </div>
                         }
-                        {selectedMenuTab === CourseTabs.Comments &&
-                            <CoursesListItemComments comments={course.comments ?? []} className={defaultStyles.itemContainer} />
-                        }
+                        {selectedMenuTab === CourseTabs.Comments && (
+                            <CoursesListItemComments
+                                comments={course.comments ?? []}
+                                className={defaultStyles.itemContainer}
+                            />
+                        )}
                     </div>
-                    {!isListPage &&
+                    {!isListPage && (
                         <CoursesListItemMenu
                             className={defaultStyles.itemContainer}
                             selectedTab={selectedMenuTab}
                             setSelectedTab={onMenuTabChange}
                         />
-                    }
+                    )}
                 </div>
             </div>
         </>

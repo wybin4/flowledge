@@ -5,6 +5,6 @@ export const CourseSubscriptions = new CachedCollectionWithPagination<CourseSubs
     'course-subscriptions'
 );
 
-export const findSubscriptionByCourseId = (courseId: string): CourseSubscriptionItem | null => {
-    return CourseSubscriptions.collection.findOne({ courseId });
+export const findSubscriptionByCourseId = (_id: string): CourseSubscriptionItem | null => {
+    return CourseSubscriptions.collection.findOne({ _id });
 };

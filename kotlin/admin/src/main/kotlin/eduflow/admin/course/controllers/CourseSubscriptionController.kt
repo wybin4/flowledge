@@ -4,6 +4,7 @@ import eduflow.admin.course.dto.subscription.CourseSubscriptionCreateRequest
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
 import eduflow.admin.course.dto.subscription.progress.CourseInitiateProgressRequest
+import eduflow.admin.course.dto.subscription.progress.CourseSendProgressRequest
 import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
 import eduflow.admin.course.services.subscription.CourseProgressService
@@ -92,5 +93,11 @@ class CourseSubscriptionController(
                     )
                 }
             }
+    }
+
+    @PostMapping("/course-subscriptions/progress.send")
+    fun sendProgress(@RequestBody body: CourseSendProgressRequest): Mono<ResponseEntity<Unit>> {
+        return progressService.send(body)
+            .then(Mono.just(ResponseEntity.ok(Unit)))
     }
 }

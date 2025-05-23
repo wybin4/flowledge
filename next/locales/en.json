@@ -377,7 +377,8 @@
             "exit": "exit",
             "start": "start",
             "attempts": "attempts"
-        }
+        },
+        "course-not-started": "course not started"
     },
     "save": "save",
     "cancel": "cancel",

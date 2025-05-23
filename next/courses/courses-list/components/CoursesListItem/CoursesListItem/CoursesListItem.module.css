@@ -13,3 +13,9 @@
 
     padding: 1rem;
 }
+
+.underTitle {
+    display: flex;
+
+    margin-top: 0.5rem;
+}

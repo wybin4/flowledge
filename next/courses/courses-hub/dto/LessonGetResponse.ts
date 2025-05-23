@@ -15,4 +15,6 @@ export interface LessonGetResponse {
     survey?: Survey; // TODO: only id for small response
 
     isMandatory?: boolean;
+
+    progress?: number;
 }

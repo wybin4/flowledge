@@ -2,9 +2,10 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { LessonPageSectionLessonItemMapped } from "../types/LessonPageSectionItem";
 import { SynopsisLessonTabs } from "../../types/SynopsisLessonTabs";
 import { LessonsPageFlags } from "../../components/LessonPage/LessonPage";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 export type LessonSidebarMaterials = {
-    type: string;
+    type: LessonSaveType;
     description: string;
     condition: boolean;
     tab?: SynopsisLessonTabs | string;
@@ -22,19 +23,22 @@ export const getLessonSidebarMaterials = (
 ): LessonSidebarMaterials[] => {
     return [
         {
-            type: 'video', description: 'watch-video',
+            description: 'watch-video',
             condition: !!lesson.videoUrl, tab: 'video',
-            selected: true, classNames: styles.videoContainer
+            selected: true, classNames: styles.videoContainer,
+            type: LessonSaveType.Video
         },
         {
-            type: 'synopsis', description: 'read-synopsis',
+            description: 'read-synopsis',
             flags: { hideVideo: true },
-            condition: lesson.hasSynopsis, tab: SynopsisLessonTabs.Synopsis
+            condition: lesson.hasSynopsis, tab: SynopsisLessonTabs.Synopsis,
+            type: LessonSaveType.Synopsis
         },
         {
-            type: 'survey', description: 'test-yourself',
+            description: 'test-yourself',
             condition: !!lesson.surveyId,
-            onClick: (router: AppRouterInstance) => router.push('?survey=true')
+            onClick: (router: AppRouterInstance) => router.push('?survey=true'),
+            type: LessonSaveType.Survey
         }
     ].filter(material => material.condition);
 };

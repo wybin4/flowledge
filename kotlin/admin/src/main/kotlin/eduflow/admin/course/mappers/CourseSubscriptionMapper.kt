@@ -12,15 +12,16 @@ import org.mapstruct.Mapping
 @Mapper(componentModel = "spring")
 interface CourseSubscriptionMapper {
 
-    @Mapping(target = "_id", source = "course._id")
+    @Mapping(target = "subId", source = "subscription._id")
+    @Mapping(target = "_id", source = "subscription.courseId")
     @Mapping(target = "createdAt", source = "course.createdAt")
     fun toSubscriptionWithCourseDto(
         subscription: CourseSubscriptionModel,
         course: CourseModel,
     ): CourseSubscriptionGetByUserIdResponse {
         return CourseSubscriptionGetByUserIdResponse(
-            _id = course._id,
-            courseId = subscription.courseId,
+            subId = subscription._id,
+            _id = subscription.courseId,
             isFavourite = subscription.isFavourite,
             isSubscribed = subscription.isSubscribed,
             roles = subscription.roles,

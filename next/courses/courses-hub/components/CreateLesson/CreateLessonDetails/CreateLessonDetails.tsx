@@ -2,7 +2,7 @@
 
 import { userApiClient } from "@/apiClient";
 import EnhancedItem from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
-import { LessonSaveType, LessonToSaveOnDetails, LessonToSaveOnDetailsRequest, LessonToSaveOnDetailsRequestTime } from "@/courses/courses-hub/types/LessonToSave";
+import { LessonToSaveOnDetails, LessonToSaveOnDetailsRequest, LessonToSaveOnDetailsRequestTime } from "@/courses/courses-hub/types/LessonToSave";
 import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { SettingType, SettingValue } from "@/types/Setting";
@@ -13,7 +13,8 @@ import { useTranslation } from "react-i18next";
 import styles from "./CreateLessonDetails.module.css";
 import { CreateLessonChildrenProps } from "../CreateLesson";
 import { parseTimeUnit } from "@/helpers/parseTimeUnit";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 interface CreateLessonDetailsProps extends CreateLessonChildrenProps {
     hasVideo: boolean;
@@ -47,7 +48,7 @@ export const CreateLessonDetails = ({ lessonId, title, time, imageUrl, hasVideo 
     const hoursVal = t('hours-abbr');
 
     const router = useRouter();
-   
+
     return (
         <EnhancedItem<LessonToSaveOnDetails, LessonToSaveOnDetailsRequest>
             permissions={{ isEditionPermitted: true, isDeletionPermitted: true }}

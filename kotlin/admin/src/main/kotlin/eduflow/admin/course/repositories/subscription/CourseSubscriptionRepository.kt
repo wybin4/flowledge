@@ -1,6 +1,6 @@
 package eduflow.admin.course.repositories.subscription
 
-import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.types.UserWithCourseRole
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository

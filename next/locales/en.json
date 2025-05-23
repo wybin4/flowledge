@@ -220,7 +220,14 @@
         "createdAt": "created at",
         "description": "description",
         "imageUrl": "cover",
-        "isPublished": "published",
+        "isPublished": {
+            "name": "published",
+            "description": "if the course is published, any changes to the content will result in a new version"
+        },
+        "status": "status",
+        "unpublished": "unpublished",
+        "published": "published",
+        "latest-version": "version",
         "edit-content": "edit content",
         "select-from-users-list": "select users",
         "editors": {

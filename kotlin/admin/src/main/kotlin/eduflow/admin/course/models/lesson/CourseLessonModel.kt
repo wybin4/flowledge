@@ -11,21 +11,26 @@ data class CourseLessonModel(
     override var imageUrl: String? = null,
     override var time: String? = null,
     override var title: String,
+
     override val sectionId: String,
+
     override val isVisible: Boolean,
+    override var isDraft: Boolean? = null,
+
     override var videoId: String? = null,
-    override val createdAt: Date,
-    override val updatedAt: Date,
     override var surveyText: String? = null,
     override var synopsisText: String? = null,
-    override var isDraft: Boolean? = null,
-    override val courseVersions: List<String>,
+    override val surveyId: String? = null,
+
+    override val createdAt: Date,
+    override val updatedAt: Date,
 ) : CourseLesson {
+    fun getIsVisible(): Boolean = isVisible
+
     companion object {
         fun create(
             title: String,
-            sectionId: String,
-            courseVersions: List<String>
+            sectionId: String
         ): CourseLessonModel {
             return CourseLessonModel(
                 _id = generateId(),
@@ -35,7 +40,6 @@ data class CourseLessonModel(
                 createdAt = Date(),
                 updatedAt = Date(),
                 isDraft = true,
-                courseVersions = courseVersions,
             )
         }
     }

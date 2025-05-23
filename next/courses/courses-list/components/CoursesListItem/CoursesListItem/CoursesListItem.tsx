@@ -3,7 +3,7 @@
 import styles from "./CoursesListItem.module.css";
 import { ReactNode, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { coursesListPrefix, coursesListPrefixApi } from "@/helpers/prefixes";
+import { courseProgressPrefix, coursesListPrefix, coursesListPrefixApi, courseSubscriptionsPrefix } from "@/helpers/prefixes";
 import { CoursesListItemActions } from "../CoursesListItemActions/CoursesListItemActions";
 import cn from "classnames";
 import { CoursesListItemDescription } from "../../../../components/CoursesListItemDescription/CoursesListItemDescription";
@@ -17,6 +17,9 @@ import { CoursesListItemComments } from "../CoursesListItemComments/CoursesListI
 import { userApiClient } from "@/apiClient";
 import { ToggleFavouriteRequest } from "@/courses/courses-list/types/ToggleFavourite";
 import { CourseWithSubscriptionItem } from "@/courses/courses-list/types/CourseItem";
+import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
+import { getFirstValidLessonType } from "@/courses/courses-list/functions/getFirstValidLessonType";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 type CoursesListItemProps = {
     course: CourseWithSubscriptionItem;
@@ -59,7 +62,8 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
             isExpanded={!isListPage}
             className={cn({
                 [styles.actionsRight]: isListPage,
-            })} />
+            })}
+        />
     );
 
     const onReadMore = () => {
@@ -70,6 +74,22 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
         router.push(`?tab=${tab}`);
         setSelectedMenuTab(tab);
     }
+
+    const handleOnHasNoProgressClick = async (lesson: LessonGetResponse, type: LessonSaveType) => {
+        let version = course.courseVersion;
+
+        if (!course.progress) {
+            const response = await userApiClient.post<string>(
+                `${courseSubscriptionsPrefix}/${courseProgressPrefix}.initiate`, {
+                courseId: course._id, lessonId: lesson._id, type
+            });
+            version = response || course.courseVersion;
+        }
+
+        if (version) {
+            router.push(`${currentPath}/${lesson._id}?version=${version}`);
+        }
+    };
 
     return (
         <>
@@ -101,7 +121,12 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                                         key={section.section._id}
                                         className={defaultStyles.itemContainer}
                                         section={section}
-                                        setLesson={(lesson) => router.push(`${currentPath}/${lesson._id}`)}
+                                        setLesson={lesson => {
+                                            const type = getFirstValidLessonType(lesson);
+                                            if (type) {
+                                                handleOnHasNoProgressClick(lesson, type);
+                                            }
+                                        }}
                                     />
                                 ))}
                             </div>

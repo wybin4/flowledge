@@ -1,6 +1,7 @@
 package eduflow.admin.course.dto.subscription
 
 import eduflow.admin.course.models.CourseCreatorModel
+import eduflow.admin.course.models.subscription.progress.CourseProgressModel
 import java.util.*
 
 data class CourseSubscriptionGetByUserIdResponse(
@@ -9,6 +10,8 @@ data class CourseSubscriptionGetByUserIdResponse(
     val courseId: String,
     var isFavourite: Boolean?,
     val isSubscribed: Boolean?,
+    val courseVersion: String?,
+    val progress: CourseProgressModel?,
     val roles: List<String>?,
     val userId: String,
     // course

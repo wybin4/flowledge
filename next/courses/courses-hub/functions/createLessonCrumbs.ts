@@ -1,5 +1,5 @@
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 import { EnhancedCrumb } from "@/types/EnhancedCrumb";
-import { LessonSaveType } from "../types/LessonToSave";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const createLessonCrumbs = (

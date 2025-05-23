@@ -1,7 +1,7 @@
 package eduflow.admin.course.controllers
 
 import eduflow.admin.course.dto.editor.CourseEditorsUpdateRequest
-import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -42,7 +42,6 @@ class CourseEditorController(
                                     CourseSubscriptionModel.create(
                                         userId = editor._id,
                                         courseId = request.courseId,
-                                        isSubscribed = true,
                                         isFavourite = false
                                     )
                                 )

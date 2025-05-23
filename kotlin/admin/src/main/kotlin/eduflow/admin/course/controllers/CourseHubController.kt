@@ -4,11 +4,11 @@ import eduflow.admin.course.dto.course.CourseCreateRequest
 import eduflow.admin.course.dto.course.CourseUpdateRequest
 import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
-import eduflow.admin.course.models.CourseModel
-import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.models.course.CourseModel
+import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
-import eduflow.admin.course.services.CourseService
+import eduflow.admin.course.services.course.CourseService
 import eduflow.admin.dto.PaginationRequest
 import eduflow.admin.services.AuthenticationService
 import eduflow.user.DefaultRoles
@@ -28,9 +28,10 @@ class CourseHubController(
     @GetMapping("/courses.get/{id}")
     fun getCourseById(
         @PathVariable id: String,
-        @RequestParam(name = "isSmall", required = true) isSmall: Boolean
+        @RequestParam(name = "isSmall", required = true) isSmall: Boolean,
+        @RequestParam(required = false) version: String?
     ): Mono<ResponseEntity<out CourseGetByIdResponse>> {
-        return courseService.getCourseById(id, isSmall)
+        return courseService.getCourseById(id, isSmall, version)
     }
 
     @GetMapping("/courses.get")

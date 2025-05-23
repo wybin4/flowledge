@@ -1,32 +1,28 @@
 "use client";
 
-import RightSidebar from "@/components/Sidebar/RightSidebar/RightSidebar";
 import { useTranslation } from "react-i18next";
 import styles from "./CreateLessonSurvey.module.css";
 import { useEffect, useState } from "react";
 import { SurveyQuestionItem } from "./SurveyQuestion/SurveyQuestionItem/SurveyQuestionItem";
-import cn from "classnames";
 import { SurveyQuestion } from "@/courses/courses-hub/types/SurveyQuestion";
 import { SurveyQuestionBody } from "./SurveyQuestion/SurveyQuestionBody/SurveyQuestionBody";
 import { SortableList } from "@/components/Sortable/SortableList";
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { useScrollToElement } from "@/hooks/useScrollToElement";
 import { useAddQuestionToUrl } from "@/courses/courses-hub/hooks/useAddQuestionToUrl";
-import { MenuButton } from "@/components/MenuButton/MenuButton";
 import { ItemSize } from "@/types/ItemSize";
 import { Button, ButtonType } from "@/components/Button/Button";
 import { ButtonBack } from "@/components/Button/ButtonBack/ButtonBack";
-import { StickyBottomBar } from "@/components/StickyBottomBar/StickyBottomBar";
 import { coursesHubLessonsPrefixApi, coursesHubLessonsPrefixTranslate } from "@/helpers/prefixes";
 import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import { CreateLessonChildrenProps } from "../CreateLesson";
 import { parseSurveyText } from "@/courses/courses-hub/functions/parseSurveyText";
-import { LessonSaveType } from "@/courses/courses-hub/types/LessonToSave";
 import { userApiClient } from "@/apiClient";
 import { Survey } from "@/courses/types/Survey";
 import { usePathname, useRouter } from "next/navigation";
 import { removeLastSegment } from "@/helpers/removeLastSegment";
 import { RightSidebarWithStickyActions } from "@/components/Sidebar/RightSidebar/RightSidebarWithStickyActions/RightSidebarWithStickyActions";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 interface CreateLessonSurveyProps extends CreateLessonChildrenProps {
     selectedQuestionId?: string;

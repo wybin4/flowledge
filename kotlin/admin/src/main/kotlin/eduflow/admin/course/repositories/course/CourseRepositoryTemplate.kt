@@ -1,6 +1,6 @@
 package eduflow.admin.course.repositories.course
 
-import eduflow.admin.course.models.CourseModel
+import eduflow.admin.course.models.course.CourseModel
 import eduflow.admin.repositories.PaginationAndSortingRepository
 import reactor.core.publisher.Flux
 

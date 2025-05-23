@@ -12,5 +12,6 @@ data class CourseGetByIdSmallResponse(
     val u: CourseCreator? = null,
     val createdAt: Date? = null,
     val isFavourite: Boolean? = null,
-    val isPublished: Boolean? = null
+    val isPublished: Boolean? = null,
+    val version: String
 ) : CourseGetByIdResponse

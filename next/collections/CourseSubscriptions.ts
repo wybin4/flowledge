@@ -4,3 +4,7 @@ import { CourseSubscriptionItem } from "@/courses/courses-list/types/CourseSubsc
 export const CourseSubscriptions = new CachedCollectionWithPagination<CourseSubscriptionItem>(
     'course-subscriptions'
 );
+
+export const findSubscriptionByCourseId = (courseId: string): CourseSubscriptionItem | null => {
+    return CourseSubscriptions.collection.findOne({ courseId });
+};

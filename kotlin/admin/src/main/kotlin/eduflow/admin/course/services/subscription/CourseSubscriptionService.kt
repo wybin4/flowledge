@@ -1,11 +1,12 @@
-package eduflow.admin.course.services
+package eduflow.admin.course.services.subscription
 
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
 import eduflow.admin.course.mappers.CourseSubscriptionMapper
-import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
+import eduflow.admin.course.services.CourseTagService
 import eduflow.admin.course.types.CourseEditor
 import eduflow.admin.user.repositories.UserRepository
 import org.springframework.stereotype.Service
@@ -73,11 +74,15 @@ class CourseSubscriptionService(
             }
     }
 
-    fun getCourseBySubscription(subscription: CourseSubscriptionModel): Mono<CourseSubscriptionGetByUserIdResponse> {
+    fun getCourseBySubscription(
+        subscription: CourseSubscriptionModel
+    ): Mono<CourseSubscriptionGetByUserIdResponse> {
         return courseRepository.findById(subscription.courseId)
             .flatMap { course ->
                 tagService.getUpdatedTagsByCourse(course).map { updatedTags ->
-                    subscriptionMapper.toSubscriptionWithCourseDto(subscription, course.updateTags(updatedTags))
+                    subscriptionMapper.toSubscriptionWithCourseDto(
+                        subscription, course.updateTags(updatedTags)
+                    )
                 }
             }
     }

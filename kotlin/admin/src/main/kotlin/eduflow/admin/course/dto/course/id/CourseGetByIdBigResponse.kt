@@ -8,6 +8,5 @@ data class CourseGetByIdBigResponse(
     override val imageUrl: String? = null,
     override val description: String,
     override val tags: List<String>?,
-    val sections: List<SectionWithLessons>,
-    val isFavourite: Boolean? = null
+    val sections: List<SectionWithLessons>
 ) : CourseGetByIdResponse

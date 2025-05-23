@@ -6,17 +6,22 @@ import java.util.*
 
 data class LessonGetHubResponse(
     override val _id: String,
-    override val createdAt: Date,
-    override val imageUrl: String?,
-    override val isDraft: Boolean?,
-    override val isVisible: Boolean,
-    override val sectionId: String,
-    override val surveyText: String?,
-    override val synopsisText: String?,
-    val survey: CourseLessonSurveyModel? = null,
     override val time: String?,
     override val title: String,
-    override val updatedAt: Date,
+    override val imageUrl: String?,
+
+    override val isDraft: Boolean?,
+    override val isVisible: Boolean,
+
+    override val sectionId: String,
+
     override val videoId: String?,
-    override val courseVersions: List<String>
-) : CourseLesson
+    override val synopsisText: String?,
+    override val surveyText: String?,
+    override val surveyId: String?,
+    val survey: CourseLessonSurveyModel? = null,
+
+    override val createdAt: Date,
+    override val updatedAt: Date,
+
+    ) : CourseLesson

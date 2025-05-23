@@ -94,7 +94,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 getTagsSettingKey(tags),
                 {
                     name: 'isPublished', types: [SettingType.Radio],
-                    hasDescription: false,
+                    hasDescription: true,
                     additionalProps: { withWrapper: false }
                 },
             ]}
@@ -114,7 +114,8 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 createdAt: "",
                 updatedAt: "",
                 tags: [],
-                isPublished: false
+                isPublished: false,
+                version: "0.1"
             })}
             additionalButtons={[
                 isEditionPermitted ? {
@@ -130,6 +131,8 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 { name: 'imageUrl', type: EnhancedItemType.Image },
                 { name: 'title', type: EnhancedItemType.Text },
                 { name: 'creator', type: EnhancedItemType.Text },
+                { name: 'isPublished', type: EnhancedItemType.Text },
+                { name: 'version', type: EnhancedItemType.Text },
                 { name: 'createdAt', type: EnhancedItemType.Text },
             ]}
             permissions={{

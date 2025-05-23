@@ -8,13 +8,13 @@ import { LessonToSaveVisibility } from "@/courses/courses-hub/types/LessonToSave
 import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 import { Card } from "@/components/Card/Card";
 import { ItemSize } from "@/types/ItemSize";
-import { LessonSaveType } from "@/courses/courses-hub/types/LessonToSave";
 import { createLessonCrumbs } from "@/courses/courses-hub/functions/createLessonCrumbs";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useIcon } from "@/hooks/useIcon";
 import { RightSidebarModalProps } from "../CoursesHubDetails";
 import { enrichCrumbWithLesson } from "@/courses/courses-hub/functions/enrichCrumbWithLesson";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 interface LessonRightSidebarModalProps extends RightSidebarModalProps<LessonGetResponse> {
     selected: LessonGetResponse;
@@ -45,6 +45,7 @@ export const LessonRightSidebarModal = ({
             passedInitialValues={selected}
             prefix={coursesHubLessonsPrefixTranslate}
             apiPrefix={coursesHubLessonsPrefixApi}
+            queryParams={{ courseId }}
             title={`${t('edit')} "${selected.title}"`}
             mode={TablePageMode.EDIT}
             _id={selected._id}
@@ -57,7 +58,7 @@ export const LessonRightSidebarModal = ({
             hasDeleteDescription={false}
             apiClient={userApiClient}
             transformItemToSave={(item) => {
-                return { _id: item._id, isVisible: item.isVisible ?? false };
+                return { _id: item._id, isVisible: item.isVisible ?? false, courseId };
             }}
             onBackButtonClick={() => {
                 setIsExpanded(false);

@@ -1,8 +1,9 @@
-package eduflow.admin.course.models
+package eduflow.admin.course.models.course
 
+import eduflow.admin.course.models.CourseCreatorModel
 import eduflow.admin.user.models.UserModel
 import eduflow.admin.utils.generateId
-import eduflow.course.Course
+import eduflow.course.course.Course
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 
@@ -16,10 +17,33 @@ data class CourseModel(
     override val createdAt: Date,
     override val updatedAt: Date,
     override val tags: List<String>? = null,
-    override var sections: List<String>? = null,
     override val isPublished: Boolean? = null,
-    override val versions: List<String>?
+    override var versions: List<CourseVersionModel>
 ) : Course {
+    fun getIsPublished(): Boolean? = isPublished
+
+    fun getLatestVersionName(): String? {
+        return versions.lastOrNull()?.name
+    }
+
+    fun getLatestVersion(): CourseVersionModel? {
+        return versions.lastOrNull()
+    }
+
+    fun createNewVersion(isMajor: Boolean): CourseVersionModel {
+        val latestVersion = getLatestVersion()
+        val newVersionName = latestVersion?.let {
+            val versionParts = it.name.split(".")
+            if (isMajor) {
+                "${versionParts[0].toInt() + 1}.0"
+            } else {
+                "${versionParts[0]}.${versionParts[1].toInt() + 1}"
+            }
+        } ?: "1.0"
+
+        return CourseVersionModel(name = newVersionName)
+    }
+
     fun updateTags(updatedTags: Map<String, List<String>>): CourseModel {
         return this.copy(tags = updatedTags[this._id] ?: emptyList())
     }
@@ -40,7 +64,7 @@ data class CourseModel(
                 updatedAt = Date(),
                 u = CourseCreatorModel.fromUser(user),
                 isPublished = null,
-                versions = listOf("0.1")
+                versions = listOf(CourseVersionModel.create())
             )
         }
     }

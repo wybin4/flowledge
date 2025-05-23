@@ -11,5 +11,7 @@ data class CoursesHubGetByIdBigResponse(
     override val description: String,
     override val tags: List<String>?,
     val sections: List<SectionWithLessons>,
-    val editors: List<CourseEditor>
+    val editors: List<CourseEditor>,
+    val isPublished: Boolean? = null,
+    val version: String
 ) : CourseGetByIdResponse

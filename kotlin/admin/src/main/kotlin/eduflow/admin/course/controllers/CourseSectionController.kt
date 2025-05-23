@@ -7,8 +7,7 @@ import eduflow.admin.course.models.CourseSectionModel
 import eduflow.admin.course.repositories.CourseSectionRepository
 import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.services.CourseSectionService
-import eduflow.admin.course.services.CourseService
-import eduflow.admin.utils.generateId
+import eduflow.admin.course.services.course.CourseVersionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -18,30 +17,25 @@ import reactor.core.publisher.Mono
 class CourseSectionController(
     private val sectionRepository: CourseSectionRepository,
     private val courseRepository: CourseRepository,
-    private val courseService: CourseService,
+    private val courseVersionService: CourseVersionService,
     private val sectionService: CourseSectionService,
 ) {
 
     @PostMapping("/courses-hub/sections.create")
     fun createSection(@RequestBody section: SectionCreateRequest): Mono<CourseSectionModel> {
-        val sectionId = generateId()
+        val newSection = CourseSectionModel.create(
+            title = section.title,
+            courseId = section.courseId,
+            isVisible = section.isVisible
+        )
 
-        return courseRepository.findById(section.courseId)
-            .flatMap { course ->
-                val newSection = CourseSectionModel.create(
-                    _id = sectionId,
-                    title = section.title,
-                    courseId = section.courseId,
-                    isVisible = section.isVisible,
-                    courseVersions = listOfNotNull(course.versions?.lastOrNull())
+        return sectionRepository.save(newSection)
+            .flatMap { savedSection ->
+                courseVersionService.addSection(
+                    savedSection.courseId, savedSection._id
                 )
-
-                sectionRepository.save(newSection)
-                    .flatMap { savedSection ->
-                        courseService.addSectionIdToCourse(savedSection.courseId, savedSection._id)
-                    }
-                    .then(Mono.just(newSection))
             }
+            .then(Mono.just(newSection))
     }
 
     @PostMapping("/courses-hub/sections.update/{id}")
@@ -55,9 +49,16 @@ class CourseSectionController(
                     title = request.title ?: existingSection.title,
                     isVisible = request.isVisible ?: existingSection.isVisible
                 )
-                sectionRepository.save(updatedSection)
-                    .map { savedSection: CourseSectionModel -> ResponseEntity.ok(savedSection) }
+
+                if (request.isVisible != null && request.isVisible != existingSection.isVisible) {
+                    courseVersionService
+                        .copySections(existingSection.courseId)
+                        .then(sectionRepository.save(updatedSection))
+                } else {
+                    sectionRepository.save(updatedSection)
+                }
             }
+            .map { savedSection: CourseSectionModel -> ResponseEntity.ok(savedSection) }
             .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
     }
 
@@ -67,9 +68,8 @@ class CourseSectionController(
     ): Mono<ResponseEntity<Void>> {
         return sectionRepository.findById(id)
             .flatMap { section ->
-                courseService
-                    .removeSectionIdFromCourse(section.courseId, id)
-                    .then(sectionRepository.deleteById(id))
+                courseVersionService
+                    .removeSection(section.courseId, id)
             }
             .then(Mono.just<ResponseEntity<Void>>(ResponseEntity.noContent().build()))
             .onErrorResume { _: Throwable -> Mono.just(ResponseEntity.notFound().build()) }
@@ -77,16 +77,18 @@ class CourseSectionController(
 
     @GetMapping("/courses-list/sections/{sectionId}.lessons")
     fun getLessonsBySectionId(
-        @PathVariable sectionId: String
+        @PathVariable sectionId: String,
+        @RequestParam(required = false) version: String?
     ): Mono<ResponseEntity<SectionGetLessonsResponse>> {
         return sectionRepository.findById(sectionId)
             .flatMap { section ->
                 courseRepository.findById(section.courseId)
-                    .flatMap { course -> sectionService.getLessonsResponse(section, course) }
+                    .flatMap { course ->
+                        sectionService.getLessonsResponse(section, course, version)
+                    }
             }
             .map { ResponseEntity.ok(it) }
             .defaultIfEmpty(ResponseEntity.notFound().build())
     }
-
 
 }

@@ -10,4 +10,5 @@ export interface Course {
     };
     tags: string[];
     isPublished?: boolean;
+    version: string;
 }

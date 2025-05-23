@@ -1,13 +1,4 @@
-import { LessonStuff } from "@/courses/courses-list/types/LessonStuff";
-import { SurveyChoice } from "./SurveyChoice";
-
-export enum LessonSaveType {
-    Draft = 'DRAFT',
-    Video = 'VIDEO',
-    Details = 'DETAILS',
-    Synopsis = 'SYNOPSIS',
-    Survey = 'SURVEY'
-}
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 export enum LessonAdditionalSaveType {
     RemoveVideo = 'REMOVE-VIDEO',

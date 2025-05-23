@@ -15,7 +15,6 @@ export const useSaveItem = async<T, U>({
     _id?: string,
     item: T | undefined
 }) => {
-    const method = isCreate ? 'POST' : 'PUT';
     const url = isCreate ? `${prefix}.create` : `${prefix}.update/${_id}`;
     if (item) {
         const body = transformItem ? transformItem(item) : item;

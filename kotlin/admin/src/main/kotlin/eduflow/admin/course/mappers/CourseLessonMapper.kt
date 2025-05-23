@@ -10,6 +10,5 @@ import org.mapstruct.Mapping
 interface CourseLessonMapper {
     @Mapping(target = "_id", source = "lesson._id")
     @Mapping(target = "survey", source = "survey")
-    @Mapping(target = "courseVersions", source = "lesson.courseVersions")
     fun toLessonGetHubResponse(lesson: CourseLessonModel, survey: CourseLessonSurveyModel?): LessonGetHubResponse
 }

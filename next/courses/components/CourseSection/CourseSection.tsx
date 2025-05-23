@@ -1,5 +1,5 @@
 import { SectionItem } from "@/courses/types/SectionItem";
-import CollapsibleSection, { CollapsibleSectionTagType } from "@/components/CollapsibleSection/CollapsibleSection";
+import CollapsibleSection from "@/components/CollapsibleSection/CollapsibleSection";
 import CollapsibleSectionChild from "@/components/CollapsibleSection/CollapsibleSectionChild";
 import styles from "./CourseSection.module.css";
 import { CourseListImage } from "../../courses-list/components/CoursesListItem/CourseListImage/CourseListImage";
@@ -10,6 +10,7 @@ import { useTranslatedTime } from "@/hooks/useTranslatedTime";
 import { ValidateSectionTitle } from "@/courses/courses-hub/components/CoursesHubDetails/CoursesHubDetails";
 import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 import { useIcon } from "@/hooks/useIcon";
+import { TagType } from "@/components/Tag/Tag";
 
 type CourseSectionProps = {
     className?: string;
@@ -85,7 +86,7 @@ export const CourseSection = ({
             <CollapsibleSection
                 title={section.section.title}
                 titleTags={[...(!section.section.isVisible ? [{
-                    title: t('invisible'), type: CollapsibleSectionTagType.Warning
+                    title: t('invisible'), type: TagType.Warning
                 }] : [])]}
                 expandedByDefault={true}
                 iconPrefix='-little'
@@ -102,12 +103,12 @@ export const CourseSection = ({
                         isViewed={false}
                         titleTags={[
                             ...(!lesson.isVisible ? [{
-                                title: t('invisible'), type: CollapsibleSectionTagType.Warning
+                                title: t('invisible'), type: TagType.Warning
                             }] : []),
                             ...(lesson.isMandatory ? [{
                                 title: t('mandatory'),
                                 icon: flagIcon,
-                                type: CollapsibleSectionTagType.Warning,
+                                type: TagType.Warning,
                             }] : [])
                         ]}
                         image={lesson.imageUrl &&

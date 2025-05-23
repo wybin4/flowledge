@@ -78,7 +78,7 @@ export const CoursesHubEditorItem = ({
             child={(size) => {
                 const currRoles = getCurrentRoles(roles, editor.disabled, permissions);
                 return (size === ItemSize.Little
-                    ? <Tag tag={formatRoleName(selectedRole)} size={size} isHovered={false} />
+                    ? <Tag tag={formatRoleName(selectedRole)} size={size} />
                     : <InfiniteSelector
                         width='8rem'
                         onChange={handleRoleChange}

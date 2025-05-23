@@ -3,10 +3,10 @@ package eduflow.admin.course.controllers
 import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
 import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
 import eduflow.admin.course.dto.course.list.ToggleFavouriteRequest
-import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
-import eduflow.admin.course.services.CourseService
 import eduflow.admin.course.services.CourseTagService
+import eduflow.admin.course.services.course.CourseService
 import eduflow.admin.dto.PaginationRequest
 import eduflow.admin.ldap.LDAPService
 import eduflow.admin.services.AuthenticationService
@@ -48,9 +48,12 @@ class CourseListController(
     }
 
     @GetMapping("/courses.get/{id}")
-    fun getCourseById(@PathVariable id: String): Mono<ResponseEntity<out CourseGetByIdResponse>> {
+    fun getCourseById(
+        @PathVariable id: String,
+        @RequestParam(required = false) version: String = "latest"
+    ): Mono<ResponseEntity<out CourseGetByIdResponse>> {
         val user = authenticationService.getCurrentUser()
-        return courseService.getCourseById(id, false, user._id)
+        return courseService.getCourseById(id, false, user._id, version)
     }
 
     @PostMapping("/courses.toggle-favourite/{id}")
@@ -68,7 +71,6 @@ class CourseListController(
                     CourseSubscriptionModel.create(
                         userId = userId,
                         courseId = id,
-                        isSubscribed = true,
                         isFavourite = isFavourite
                     )
                 )

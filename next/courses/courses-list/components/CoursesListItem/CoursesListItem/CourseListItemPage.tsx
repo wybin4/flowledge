@@ -6,18 +6,32 @@ import { CoursesListItem } from "./CoursesListItem";
 import { useGetItem } from "@/hooks/useGetItem";
 import { coursesListPrefixApi } from "@/helpers/prefixes";
 import { userApiClient } from "@/apiClient";
-import { CourseItem } from "@/courses/courses-list/types/CourseItem";
+import { CourseItem, CourseWithSubscriptionItem } from "@/courses/courses-list/types/CourseItem";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { findSubscriptionByCourseId } from "@/collections/CourseSubscriptions";
 
 export const CourseListItemPage = ({ _id }: { _id: string }) => {
-    const [course, setCourse] = useState<CourseItem | undefined>(undefined);
+    const [course, setCourse] = useState<CourseWithSubscriptionItem | undefined>(undefined);
     const { t } = useTranslation();
 
     useEffect(() => {
         const fetchCourse = async () => {
-            const data = await useGetItem<CourseItem>(coursesListPrefixApi, userApiClient, _id);
-            setCourse(data);
+            const courseRes = await useGetItem<CourseItem>(coursesListPrefixApi, userApiClient, _id);
+            if (courseRes) {
+                const subRes = findSubscriptionByCourseId(courseRes._id);
+                if (subRes) {
+                    setCourse({
+                        ...courseRes,
+                        isFavourite: subRes.isFavourite,
+                        isSubscribed: subRes.isSubscribed,
+                        progress: subRes.progress,
+                        courseVersion: subRes.courseVersion
+                    });
+                } else {
+                    setCourse(courseRes);
+                }
+            }
         };
 
         fetchCourse();

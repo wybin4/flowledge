@@ -3,7 +3,6 @@
 import { EnhancedBreadcrumbs } from "@/components/EnhancedBreadcrumbs/EnhancedBreadcrumbs";
 import { coursesHubLessonsPrefixApi, coursesHubPrefix } from "@/helpers/prefixes";
 import { createLessonCrumbs } from "../../functions/createLessonCrumbs";
-import { LessonSaveType } from "../../types/LessonToSave";
 import { CreateLessonDetails } from "./CreateLessonDetails/CreateLessonDetails";
 import { CreateLessonSurvey } from "./CreateLessonSurvey/CreateLessonSurvey";
 import { CreateLessonSynopsisAndStuff } from "./CreateLessonSynopsisAndStuff/CreateLessonSynopsisAndStuff";
@@ -12,6 +11,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { userApiClient } from "@/apiClient";
 import { LessonGetByIdResponse } from "../../dto/LessonGetByIdResponse";
 import { enrichCrumbWithLesson } from "../../functions/enrichCrumbWithLesson";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 export type CreateLessonProps = Partial<Record<Lowercase<keyof typeof LessonSaveType>, string>> & {
     _id: string;

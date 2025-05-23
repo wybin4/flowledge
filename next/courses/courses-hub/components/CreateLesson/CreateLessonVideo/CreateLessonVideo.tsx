@@ -17,7 +17,7 @@ import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import { integrationApiClient, neuralApiClient, userApiClient, userApiClientPrefix } from "@/apiClient";
 import { SynopsisCreateResponse } from "../../../dto/SynopsisCreateResponse";
 import { SurveyCreateResponse } from "../../../dto/SurveyCreateResponse";
-import { LessonAdditionalSaveType, LessonSaveType, LessonToSaveOnDraftRequest, LessonToSaveOnDraftResponse } from "../../../types/LessonToSave";
+import { LessonAdditionalSaveType, LessonToSaveOnDraftRequest, LessonToSaveOnDraftResponse } from "../../../types/LessonToSave";
 import { usePathname, useRouter } from "next/navigation";
 import { SettingType, SettingValueType } from "@/types/Setting";
 import { SettingWrapper } from "@/components/Settings/SettingWrapper/SettingWrapper";
@@ -26,6 +26,7 @@ import { ButtonBackContainer } from "@/components/Button/ButtonBack/ButtonBackCo
 import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { CreateLessonChildrenProps } from "../CreateLesson";
 import { LessonGetByIdResponse } from "@/courses/courses-hub/dto/LessonGetByIdResponse";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 enum VideoActionType {
     Synopsis = 'generate-synopsis',

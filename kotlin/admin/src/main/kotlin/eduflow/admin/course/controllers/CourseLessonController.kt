@@ -7,7 +7,7 @@ import eduflow.admin.course.dto.lesson.get.LessonGetListResponse
 import eduflow.admin.course.mappers.CourseLessonMapper
 import eduflow.admin.course.models.lesson.CourseLessonModel
 import eduflow.admin.course.repositories.lessons.CourseLessonRepository
-import eduflow.admin.course.services.CourseSectionService
+import eduflow.admin.course.services.course.CourseVersionService
 import eduflow.admin.course.services.lesson.CourseLessonService
 import eduflow.admin.course.services.lesson.CourseLessonSurveyService
 import eduflow.admin.services.AuthenticationService
@@ -23,7 +23,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class CourseLessonController(
     private val lessonRepository: CourseLessonRepository,
     private val lessonService: CourseLessonService,
-    private val sectionService: CourseSectionService,
+    private val courseVersionService: CourseVersionService,
     private val surveyService: CourseLessonSurveyService,
     private val authenticationService: AuthenticationService,
     private val lessonMapper: CourseLessonMapper,
@@ -93,7 +93,7 @@ class CourseLessonController(
     }
 
     @PostMapping("/courses-hub/lessons.update/{id}")
-    fun updateLessonTitle(
+    fun updateLessonDetails(
         @PathVariable id: String,
         @RequestBody request: LessonUpdateRequest
     ): Mono<ResponseEntity<CourseLessonModel>> {
@@ -106,19 +106,28 @@ class CourseLessonController(
                     videoId = request.videoId ?: existingLesson.videoId,
                     isVisible = request.isVisible ?: existingLesson.isVisible
                 )
+
                 lessonRepository.save(updatedLesson)
-                    .map { ResponseEntity.ok(it) }
+                    .flatMap { savedLesson ->
+                        if (request.isVisible != null && request.isVisible != existingLesson.isVisible) {
+                            courseVersionService.copyLessons(request.courseId, savedLesson._id)
+                                .thenReturn(ResponseEntity.ok(savedLesson))
+                        } else {
+                            Mono.just(ResponseEntity.ok(savedLesson))
+                        }
+                    }
             }
             .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()))
     }
 
     @DeleteMapping("/courses-hub/lessons.delete/{id}")
     fun deleteLesson(
-        @PathVariable id: String
+        @PathVariable id: String,
+        @RequestParam courseId: String
     ): Mono<ResponseEntity<Void>> {
         return lessonRepository.findById(id)
             .flatMap { lesson ->
-                sectionService.removeLessonFromSection(lesson.sectionId, id)
+                courseVersionService.removeLessonFromSection(courseId, lesson.sectionId, id)
                     .then(lessonRepository.deleteById(id))
             }
             .then(Mono.just<ResponseEntity<Void>>(ResponseEntity.noContent().build()))
@@ -127,20 +136,23 @@ class CourseLessonController(
             }
     }
 
-
     @GetMapping("/courses-hub/lessons.get/{id}")
     fun getLessonForHub(
         @PathVariable id: String
     ): Mono<ResponseEntity<LessonGetHubResponse>> {
         return lessonRepository.findById(id)
             .flatMap { lesson ->
-                surveyService.getSurveyByLessonId(lesson._id)
-                    .map { survey ->
-                        lessonMapper.toLessonGetHubResponse(lesson, survey)
-                    }
-                    .defaultIfEmpty(
-                        lessonMapper.toLessonGetHubResponse(lesson, null)
-                    )
+                if (lesson.surveyId != null) {
+                    surveyService.getSurvey(lesson.surveyId)
+                        .map { survey ->
+                            lessonMapper.toLessonGetHubResponse(lesson, survey)
+                        }
+                        .defaultIfEmpty(
+                            lessonMapper.toLessonGetHubResponse(lesson, null)
+                        )
+                } else {
+                    Mono.just(lessonMapper.toLessonGetHubResponse(lesson, null))
+                }
             }
             .map { ResponseEntity.ok(it) }
             .defaultIfEmpty(ResponseEntity.notFound().build())

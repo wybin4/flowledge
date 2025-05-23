@@ -220,7 +220,14 @@
         "createdAt": "создан",
         "description": "описание",
         "imageUrl": "обложка",
-        "isPublished": "опубликован",
+        "isPublished": {
+            "name": "опубликован",
+            "description": "eсли курс опубликован, любые изменения в содержимом приведут к созданию новой версии"
+        },
+        "status": "статус",
+        "published": "опубликован",
+        "unpublished": "не опубликован",
+        "latest-version": "версия",
         "edit-content": "редактировать содержимое",
         "select-from-users-list": "выберите пользователей из списка",
         "editors": {

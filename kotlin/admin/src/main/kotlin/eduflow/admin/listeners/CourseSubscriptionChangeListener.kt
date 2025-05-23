@@ -1,8 +1,8 @@
 package eduflow.admin.listeners
 
 import com.mongodb.client.model.changestream.OperationType
-import eduflow.admin.course.models.CourseSubscriptionModel
-import eduflow.admin.course.services.CourseSubscriptionService
+import eduflow.admin.course.models.subscription.CourseSubscriptionModel
+import eduflow.admin.course.services.subscription.CourseSubscriptionService
 import eduflow.admin.services.WebSocketNotificationService
 import org.springframework.stereotype.Component
 

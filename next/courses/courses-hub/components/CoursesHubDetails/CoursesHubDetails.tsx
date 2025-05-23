@@ -30,13 +30,16 @@ import { getErrorByRegex } from "@/helpers/getErrorByRegex";
 import { Modal } from "@/components/Modal/Modal";
 import { CoursesHubEditorsModal } from "./CoursesHubEditors/CoursesHubEditorsModal/CoursesHubEditorsModal";
 import { CourseEditor } from "../../types/CourseEditor";
-import { LessonSaveType, LessonToSaveOnDraftResponse } from "../../types/LessonToSave";
+import { LessonToSaveOnDraftResponse } from "../../types/LessonToSave";
 import { CoursesHubSideSection, CoursesHubSideSectionMainTabs } from "./CoursesHubSideSection/CoursesHubSideSection";
 import { usePermissions } from "@/hooks/usePermissions";
 import { SectionRightSidebarModal } from "./RightSidebars/SectionRightSidebarModal";
 import { LessonRightSidebarModal } from "./RightSidebars/LessonRightSidebarModal";
 import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 import { TablePageActionType } from "@/types/TablePageActionType";
+import { Tag, TagType } from "@/components/Tag/Tag";
+import { getPublicationStatus } from "../../functions/getPublicationStatus";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 const detailsPermissions = [
     'view-subscribers',
@@ -216,8 +219,25 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     </Modal>
                     <CoursesItemHeader
                         course={course}
-                        header={<Breadcrumbs position={ChildrenPosition.Left} currentPathName={t(`${coursesHubPrefix}.current-course`)} />}
+                        header={
+                            <Breadcrumbs
+                                position={ChildrenPosition.Left}
+                                currentPathName={t(`${coursesHubPrefix}.current-course`)}
+                            />
+                        }
                         pointer={false}
+                        underTitle={
+                            <div className={styles.underTitle}>
+                                <Tag
+                                    tag={getPublicationStatus(t, course.isPublished)}
+                                    type={TagType.Warning}
+                                />
+                                <Tag
+                                    tag={`v${course.version}`}
+                                    type={TagType.Info}
+                                />
+                            </div>
+                        }
                     />
                     <CoursesListItemDescription
                         description={course.description}
@@ -273,7 +293,10 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                             onClick: () => {
                                                 userApiClient.post<LessonToSaveOnDraftResponse>(
                                                     `${coursesHubLessonsPrefixApi}.create`,
-                                                    { type: LessonSaveType.Draft, sectionId: section.section._id }
+                                                    {
+                                                        type: LessonSaveType.Draft,
+                                                        sectionId: section.section._id, courseId: section.section.courseId
+                                                    }
                                                 ).then(({ lessonId }) => {
                                                     router.push(`/${coursesHubPrefix}/${course._id}/${lessonId}?video=true`);
                                                 })

@@ -1,6 +1,6 @@
 package eduflow.admin.course.services
 
-import eduflow.admin.course.models.CourseModel
+import eduflow.admin.course.models.course.CourseModel
 import eduflow.admin.course.models.CourseTagModel
 import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.repositories.tag.CourseTagRepository

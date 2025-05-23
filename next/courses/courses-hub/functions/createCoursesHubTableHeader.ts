@@ -8,6 +8,8 @@ export const createCoursesHubTableHeader = (t: TFunction, onSort: (name: string,
         { name: 'imageUrl' },
         { name: 'title.name' },
         { name: 'creator' },
+        { name: 'status' },
+        { name: 'latest-version' },
         {
             name: 'createdAt', isSortable: true,
             onSort: (position?: TopBottomPosition) => {

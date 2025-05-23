@@ -4,6 +4,7 @@ import eduflow.admin.course.dto.survey.SurveyAttemptCreateRequest
 import eduflow.admin.course.dto.survey.SurveyGetByIdResponse
 import eduflow.admin.course.dto.survey.SurveyResultGetResponse
 import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyAttemptModel
+import eduflow.admin.course.repositories.lessons.CourseLessonRepository
 import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyAttemptRepository
 import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyRepository
 import eduflow.admin.course.services.lesson.CourseLessonSurveyService
@@ -20,7 +21,8 @@ class CourseSurveyController(
     private val surveyRepository: CourseLessonSurveyRepository,
     private val surveyService: CourseLessonSurveyService,
     private val attemptRepository: CourseLessonSurveyAttemptRepository,
-    private val authenticationService: AuthenticationService
+    private val authenticationService: AuthenticationService,
+    private val lessonRepository: CourseLessonRepository
 ) {
 
     @GetMapping("/surveys.get/{id}")
@@ -30,24 +32,31 @@ class CourseSurveyController(
         val user = authenticationService.getCurrentUser()
         val userId = user._id
 
-        return surveyRepository.findByLessonId(id)
-            .flatMap { survey ->
-                attemptRepository.findBySurveyIdAndUserId(survey._id, userId)
-                    .collectList()
-                    .flatMap { attempts ->
-                        val result = if (attempts.isNotEmpty()) {
-                            val currentAttempt = attempts.last()
-                            surveyService.calculateSurveyResultOnAttempt(
-                                survey, attempts, currentAttempt
-                            )
-                        } else {
-                            null
-                        }
+        return lessonRepository.findById(id)
+            .flatMap { lesson ->
+                if (lesson.surveyId != null) {
+                    surveyRepository.findById(lesson.surveyId)
+                        .flatMap { survey ->
+                            attemptRepository.findBySurveyIdAndUserId(survey._id, userId)
+                                .collectList()
+                                .flatMap { attempts ->
+                                    val result = if (attempts.isNotEmpty()) {
+                                        val currentAttempt = attempts.last()
+                                        surveyService.calculateSurveyResultOnAttempt(
+                                            survey, attempts, currentAttempt
+                                        )
+                                    } else {
+                                        null
+                                    }
 
-                        Mono.just(ResponseEntity.ok(SurveyGetByIdResponse(survey, result)))
-                    }
+                                    Mono.just(ResponseEntity.ok(SurveyGetByIdResponse(survey, result)))
+                                }
+                        }
+                        .defaultIfEmpty(ResponseEntity.notFound().build())
+                } else {
+                    Mono.just(ResponseEntity.notFound().build())
+                }
             }
-            .defaultIfEmpty(ResponseEntity.notFound().build())
             .onErrorResume {
                 Mono.just(ResponseEntity.badRequest().build())
             }

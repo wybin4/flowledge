@@ -3,8 +3,8 @@ package eduflow.admin.course.mappers
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
 import eduflow.admin.course.models.CourseCreatorModel
-import eduflow.admin.course.models.CourseModel
-import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.models.course.CourseModel
+import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.user.models.UserModel
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -35,6 +35,8 @@ interface CourseSubscriptionMapper {
                 username = course.u.username,
             ),
             createdAt = course.createdAt,
+            courseVersion = subscription.courseVersion,
+            progress = subscription.progress,
         )
     }
 

@@ -1,10 +1,10 @@
 package eduflow.admin.course.services.lesson
 
 import eduflow.admin.course.dto.lesson.create.*
-import eduflow.admin.course.models.CourseSectionModel
 import eduflow.admin.course.models.lesson.CourseLessonModel
-import eduflow.admin.course.repositories.CourseSectionRepository
+import eduflow.admin.course.repositories.course.CourseRepository
 import eduflow.admin.course.repositories.lessons.CourseLessonRepository
+import eduflow.admin.course.services.course.CourseVersionService
 import eduflow.user.Language
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -14,45 +14,49 @@ import reactor.core.publisher.Mono
 @Service
 class CourseLessonService(
     private val lessonRepository: CourseLessonRepository,
-    private val sectionRepository: CourseSectionRepository
+    private val courseRepository: CourseRepository,
+    private val courseVersionService: CourseVersionService,
 ) {
-    fun createDraft(lesson: LessonCreateDraftRequest, locale: Language): Mono<LessonCreateResponse> {
-        return sectionRepository.findById(lesson.sectionId)
-            .flatMap { section ->
-                val draftChecks = section.lessons?.map { lessonId ->
-                    lessonRepository.findById(lessonId)
-                        .map { it.isDraft ?: false }
-                        .defaultIfEmpty(false)
-                } ?: emptyList()
+    fun createDraft(request: LessonCreateDraftRequest, locale: Language): Mono<LessonCreateResponse> {
+        return courseRepository.findById(request.courseId)
+            .flatMap { course ->
+                val latestVersion = course.getLatestVersion()
+                if (latestVersion != null) {
+                    val sectionToUpdate = latestVersion.sections?.find { it._id == request.sectionId }
+                    if (sectionToUpdate != null) {
+                        lessonRepository.countBySectionIdAndIsDraft(request.sectionId, true)
+                            .flatMap { draftCount ->
+                                val title = when (locale) {
+                                    Language.RU -> "черновик лекции ${draftCount + 1}"
+                                    Language.EN -> "draft lecture ${draftCount + 1}"
+                                    else -> "draft lecture ${draftCount + 1}"
+                                }
 
-                Mono.zip(draftChecks) { results: Array<Any> ->
-                    results.count { it as Boolean }
-                }
-                    .flatMap { draftCount ->
-                        val title = when (locale) {
-                            Language.RU -> "черновик лекции ${draftCount + 1}"
-                            Language.EN -> "draft lecture ${draftCount + 1}"
-                            else -> "draft lecture ${draftCount + 1}"
-                        }
+                                val newLesson = CourseLessonModel.create(
+                                    title = title,
+                                    sectionId = request.sectionId
+                                )
 
-                        val newLesson = CourseLessonModel.create(
-                            title = title,
-                            sectionId = lesson.sectionId,
-                            courseVersions = listOfNotNull(section.courseVersions.lastOrNull())
-                        )
-
-                        lessonRepository.save(newLesson)
-                            .flatMap { savedLesson ->
-                                val updatedLessons = section.lessons?.toMutableList() ?: mutableListOf()
-                                updatedLessons.add(savedLesson._id)
-
-                                section.lessons = updatedLessons
-                                sectionRepository.save(section)
-                                    .then(Mono.just(LessonCreateResponse(savedLesson._id)))
+                                lessonRepository.save(newLesson)
+                                    .flatMap { savedLesson ->
+                                        courseVersionService.addLessonToSection(
+                                            courseId = request.courseId,
+                                            sectionId = request.sectionId
+                                        ) { section ->
+                                            val updatedLessons = section.lessons?.toMutableList() ?: mutableListOf()
+                                            updatedLessons.add(savedLesson._id)
+                                            section.copy(lessons = updatedLessons)
+                                        }
+                                            .then(Mono.just(LessonCreateResponse(savedLesson._id)))
+                                    }
                             }
+                    } else {
+                        Mono.error(NoSuchElementException("Секция не найдена"))
                     }
+                } else {
+                    Mono.error(IllegalStateException("Нет версий для обновления"))
+                }
             }
-            .switchIfEmpty(Mono.error(NoSuchElementException("Section not found")))
     }
 
     fun addVideo(lesson: LessonAddVideoRequest): Mono<LessonCreateResponse> {
@@ -129,19 +133,18 @@ class CourseLessonService(
             .map { savedLesson -> LessonCreateResponse(savedLesson._id) }
     }
 
-    fun clearSurveyText(lessonId: String): Mono<Void> {
+    fun clearSurveyText(lessonId: String, surveyId: String): Mono<Void> {
         return lessonRepository.findById(lessonId)
             .flatMap { lesson ->
-                val updatedLesson = lesson.copy(surveyText = null)
+                val updatedLesson = lesson.copy(surveyText = null, surveyId = surveyId)
                 lessonRepository.save(updatedLesson)
             }
             .then()
     }
 
-    fun getVisibleLessons(section: CourseSectionModel): Mono<List<CourseLessonModel>> {
-        val lessonIds = section.lessons ?: emptyList()
-        return lessonRepository.findAllById(lessonIds)
-            .filter { it.isVisible }
+    fun getVisibleLessonsByIds(ids: List<String>): Mono<List<CourseLessonModel>> {
+        return lessonRepository.findByIdInAndIsVisible(ids, true)
             .collectList()
     }
+
 }

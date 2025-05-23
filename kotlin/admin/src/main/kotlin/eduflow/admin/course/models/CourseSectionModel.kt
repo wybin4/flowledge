@@ -11,25 +11,20 @@ data class CourseSectionModel(
     override val isVisible: Boolean,
     override val createdAt: Date,
     override val updatedAt: Date,
-    override var lessons: List<String>? = null,
-    override val courseVersions: List<String>
 ) : CourseSection {
     companion object {
         fun create(
-            _id: String?,
             title: String,
             courseId: String,
-            isVisible: Boolean = false,
-            courseVersions: List<String>
+            isVisible: Boolean = false
         ): CourseSectionModel {
             return CourseSectionModel(
-                _id = _id ?: generateId(),
+                _id = generateId(),
                 title = title,
                 courseId = courseId,
                 isVisible = isVisible,
                 createdAt = Date(),
-                updatedAt = Date(),
-                courseVersions = courseVersions
+                updatedAt = Date()
             )
         }
     }

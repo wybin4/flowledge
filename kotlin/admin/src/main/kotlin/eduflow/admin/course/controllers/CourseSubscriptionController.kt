@@ -3,10 +3,13 @@ package eduflow.admin.course.controllers
 import eduflow.admin.course.dto.subscription.CourseSubscriptionCreateRequest
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
 import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
-import eduflow.admin.course.models.CourseSubscriptionModel
+import eduflow.admin.course.dto.subscription.progress.CourseInitiateProgressRequest
+import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
-import eduflow.admin.course.services.CourseSubscriptionService
+import eduflow.admin.course.services.subscription.CourseProgressService
+import eduflow.admin.course.services.subscription.CourseSubscriptionService
 import eduflow.admin.services.AuthenticationService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
@@ -17,6 +20,7 @@ import reactor.core.publisher.Mono
 class CourseSubscriptionController(
     private val subscriptionService: CourseSubscriptionService,
     private val subscriptionRepository: CourseSubscriptionRepository,
+    private val progressService: CourseProgressService,
     private val authenticationService: AuthenticationService
 ) {
 
@@ -67,5 +71,26 @@ class CourseSubscriptionController(
                     }
             }
             .then(Mono.just(ResponseEntity.ok(Unit)))
+    }
+
+    @PostMapping("/course-subscriptions/progress.initiate")
+    fun initiateProgress(@RequestBody body: CourseInitiateProgressRequest): Mono<ResponseEntity<String?>> {
+        val user = authenticationService.getCurrentUser()
+        val userId = user._id
+        return progressService.initiate(body, userId)
+            .flatMap { sub ->
+                Mono.just(ResponseEntity.ok(sub.courseVersion))
+            }
+            .onErrorResume { error ->
+                when (error) {
+                    is NoSuchElementException -> Mono.just(
+                        ResponseEntity.status(HttpStatus.NOT_FOUND).body(error.message)
+                    )
+
+                    else -> Mono.just(
+                        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error")
+                    )
+                }
+            }
     }
 }

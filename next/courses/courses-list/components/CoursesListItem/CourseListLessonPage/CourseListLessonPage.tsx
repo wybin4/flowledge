@@ -28,9 +28,10 @@ import { CourseListLessonSidebarItem as SidebarItem } from "@/courses/courses-li
 type CourseListLessonPageProps = {
     lessonId: string;
     isSurvey?: boolean;
+    version?: string;
 };
 
-export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPageProps) => {
+export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseListLessonPageProps) => {
     const [currentLesson, setCurrentLesson] = useState<LessonPageItem | undefined>(undefined);
     const [currentLessonMaterials, setCurrentLessonMaterials] = useState<LessonSidebarMaterials[] | undefined>(undefined);
     const [currentLessonMaterial, setCurrentLessonMaterial] = useState<LessonSidebarMaterials | undefined>(undefined);
@@ -42,6 +43,10 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
     const currentPath = usePathname();
 
     useEffect(() => {
+        if (!version) {
+            return;
+        }
+
         userApiClient.get<LessonPageItem>(
             `${coursesListLessonsPrefixApi}.get/${lessonId}`
         ).then(currentLessonRes => {
@@ -49,7 +54,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey }: CourseListLessonPag
             setCurrentLesson(transformedLesson);
             if (currentLessonRes.sectionId && !section) {
                 userApiClient.get<LessonPageSectionItem>(
-                    `${coursesListSectionsPrefixApi}/${currentLessonRes.sectionId}.lessons`
+                    `${coursesListSectionsPrefixApi}/${currentLessonRes.sectionId}.lessons?version=${version}`
                 ).then(sectionRes => {
                     if (sectionRes) {
                         const lessons = sectionRes.lessons.map(lesson => {

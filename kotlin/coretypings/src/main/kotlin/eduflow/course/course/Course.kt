@@ -1,5 +1,6 @@
-package eduflow.course
+package eduflow.course.course
 
+import eduflow.course.CourseCreator
 import java.util.*
 
 interface Course {
@@ -11,7 +12,6 @@ interface Course {
     val createdAt: Date
     val updatedAt: Date
     val tags: List<String>?
-    val sections: List<String>?
     val isPublished: Boolean?
-    val versions: List<String>?
+    val versions: List<CourseVersion>
 }

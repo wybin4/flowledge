@@ -12,8 +12,8 @@ import { FillBorderUnderlineMode } from "@/types/FillBorderUnderlineMode";
 import { CreateLessonChildrenProps } from "../CreateLesson";
 import { LessonStuff } from "@/courses/courses-list/types/LessonStuff";
 import { userApiClient } from "@/apiClient";
-import { LessonSaveType } from "@/courses/courses-hub/types/LessonToSave";
 import { LessonPageItem } from "@/courses/courses-list/types/LessonPageItem";
+import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 interface CreateLessonSynopsisAndStuffProps extends CreateLessonChildrenProps {
     synopsisText?: string;

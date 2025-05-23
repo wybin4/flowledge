@@ -9,4 +9,6 @@ export interface CoursesHubDetail {
     sections?: SectionItem[];
     tags?: string[];
     editors: CourseEditor[];
+    isPublished?: boolean;
+    version: string;
 }

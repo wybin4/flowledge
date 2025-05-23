@@ -14,9 +14,15 @@ type CoursesItemHeaderProps = {
     isListPage?: boolean;
     handleClick?: () => void;
     actions?: ReactNode;
+    underTitle?: ReactNode;
 }
 
-export const CoursesItemHeader = ({ isListPage = false, course, header, pointer = true, handleClick, actions }: CoursesItemHeaderProps) => {
+export const CoursesItemHeader = ({
+    course, header, underTitle,
+    handleClick, actions,
+    isListPage = false,
+    pointer = true,
+}: CoursesItemHeaderProps) => {
     return (
         <div className={cn(defaultStyles.itemContainer, {
             [styles.pointer]: pointer,
@@ -37,7 +43,7 @@ export const CoursesItemHeader = ({ isListPage = false, course, header, pointer 
                         <div className={styles.title}>
                             <div className={styles.titleSubtext}>{course.tags?.join(', ')}</div>
                             <div className={styles.titleText}>{course.title}</div>
-                            <div className={styles.titleProgress}>4%</div>
+                            {underTitle}
                         </div>
                     </div>
                     {isListPage && actions}

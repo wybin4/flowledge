@@ -76,7 +76,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
             getTotalCount: () => Promise.resolve(0),
         };
     }, [viewAll, viewAssigned]);
-
+    
     return (
         <CRUDTablePage<Course, CourseToSave, CoursesHubTableItem>
             prefix={coursesHubPrefix}
@@ -115,7 +115,8 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 updatedAt: "",
                 tags: [],
                 isPublished: false,
-                version: "0.1"
+                versionId: "",
+                versionName: "0.1"
             })}
             additionalButtons={[
                 isEditionPermitted ? {
@@ -132,7 +133,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 { name: 'title', type: EnhancedItemType.Text },
                 { name: 'creator', type: EnhancedItemType.Text },
                 { name: 'isPublished', type: EnhancedItemType.Text },
-                { name: 'version', type: EnhancedItemType.Text },
+                { name: 'versionName', type: EnhancedItemType.Text },
                 { name: 'createdAt', type: EnhancedItemType.Text },
             ]}
             permissions={{

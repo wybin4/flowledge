@@ -128,7 +128,7 @@ const EnhancedItem = <T extends Identifiable, U>({
     if (!item) {
         return <div>{t('loading')}</div>;
     }
-
+    
     return (
         <ButtonBackContainer className={containerStyles} {...backButton}>{button =>
             <EnhancedItemBody<T>

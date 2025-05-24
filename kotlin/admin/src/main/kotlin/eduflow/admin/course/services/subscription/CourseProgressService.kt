@@ -1,25 +1,23 @@
 package eduflow.admin.course.services.subscription
 
-import eduflow.admin.course.dto.subscription.progress.CourseInitiateProgressRequest
 import eduflow.admin.course.dto.subscription.progress.CourseProgressTypeRequest
 import eduflow.admin.course.dto.subscription.progress.CourseSendProgressRequest
-import eduflow.admin.course.models.course.CourseVersionModel
-import eduflow.admin.course.models.lesson.CourseLessonModel
+import eduflow.admin.course.dto.subscription.progress.initiate.CourseInitiateProgressRequest
+import eduflow.admin.course.models.course.version.CourseVersionLessonModel
+import eduflow.admin.course.models.course.version.CourseVersionModel
 import eduflow.admin.course.models.subscription.CourseSubscriptionModel
 import eduflow.admin.course.models.subscription.progress.CourseProgressLessonModel
 import eduflow.admin.course.models.subscription.progress.CourseProgressModel
 import eduflow.admin.course.models.subscription.progress.CourseProgressSectionModel
-import eduflow.admin.course.repositories.course.CourseRepository
-import eduflow.admin.course.repositories.lessons.CourseLessonRepository
 import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
+import eduflow.admin.course.services.course.CourseVersionService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
 class CourseProgressService(
-    private val courseRepository: CourseRepository,
     private val subscriptionRepository: CourseSubscriptionRepository,
-    private val lessonRepository: CourseLessonRepository,
+    private val versionService: CourseVersionService
 ) {
     fun initiate(
         request: CourseInitiateProgressRequest,
@@ -31,7 +29,12 @@ class CourseProgressService(
 
         return subscriptionRepository.findByCourseIdAndUserId(courseId, userId)
             .flatMap { existingSubscription ->
-                processCourseAndCreateProgress(courseId, lessonId, type).flatMap { (sectionProgress, latestVersion) ->
+                processCourseAndCreateProgress(
+                    courseId,
+                    null,
+                    lessonId,
+                    type
+                ).flatMap { (sectionProgress, latestVersion) ->
                     val updatedProgress = existingSubscription.progress?.let { progress ->
                         val updatedSections = progress.sections + sectionProgress
                         val totalProgress = calculateTotalProgress(updatedSections)
@@ -50,14 +53,19 @@ class CourseProgressService(
                     val updatedSubscription = existingSubscription.copy(
                         isSubscribed = true,
                         progress = updatedProgress,
-                        courseVersion = existingSubscription.courseVersion ?: latestVersion.name
+                        courseVersion = existingSubscription.courseVersion ?: latestVersion._id
                     )
 
                     subscriptionRepository.save(updatedSubscription)
                 }
             }
             .switchIfEmpty(
-                processCourseAndCreateProgress(courseId, lessonId, type).flatMap { (sectionProgress, latestVersion) ->
+                processCourseAndCreateProgress(
+                    courseId,
+                    null,
+                    lessonId,
+                    type
+                ).flatMap { (sectionProgress, latestVersion) ->
                     val totalProgress = calculateTotalProgress(listOf(sectionProgress))
                     CourseSubscriptionModel.create(
                         userId = userId,
@@ -65,7 +73,7 @@ class CourseProgressService(
                         isSubscribed = true,
                         isFavourite = false,
                         roles = null,
-                        courseVersion = latestVersion.name,
+                        courseVersion = latestVersion._id,
                         progress = CourseProgressModel(
                             sections = listOf(sectionProgress),
                             progress = totalProgress
@@ -85,6 +93,7 @@ class CourseProgressService(
             .flatMap { existingSubscription ->
                 processCourseAndCreateProgress(
                     existingSubscription.courseId,
+                    existingSubscription.courseVersion,
                     lessonId,
                     type
                 ).flatMap { (sectionProgress, latestVersion) ->
@@ -129,7 +138,7 @@ class CourseProgressService(
                     val updatedSubscription = existingSubscription.copy(
                         isSubscribed = true,
                         progress = updatedProgress,
-                        courseVersion = existingSubscription.courseVersion ?: latestVersion.name
+                        courseVersion = existingSubscription.courseVersion ?: latestVersion._id
                     )
 
                     subscriptionRepository.save(updatedSubscription)
@@ -142,35 +151,36 @@ class CourseProgressService(
 
     private fun processCourseAndCreateProgress(
         courseId: String,
+        versionId: String?,
         lessonId: String,
         type: CourseProgressTypeRequest
     ): Mono<Pair<CourseProgressSectionModel, CourseVersionModel>> {
-        return courseRepository.findById(courseId)
-            .flatMap { course ->
-                val latestVersion = course.getLatestVersion()
-                    ?: return@flatMap Mono.error(NoSuchElementException("Версия курса не найдена"))
-
-                val section = latestVersion.sections
-                    ?.find { section -> section.lessons?.contains(lessonId) == true }
-                    ?: return@flatMap Mono.error(NoSuchElementException("Секция с уроком не найдена"))
+        return versionService.getTargetVersion(courseId, versionId)
+            .flatMap { latestVersion ->
+                val (section, lesson) = latestVersion.sections
+                    ?.asSequence()
+                    ?.mapNotNull { section ->
+                        section.lessons
+                            ?.find { it._id == lessonId }
+                            ?.let { lesson -> section to lesson }
+                    }
+                    ?.firstOrNull()
+                    ?: return@flatMap Mono.error(NoSuchElementException("Секция или урок не найдены"))
 
                 val sectionId = section._id
                 val totalLessons = section.lessons?.size ?: 0
 
-                lessonRepository.findById(lessonId)
-                    .map { lesson ->
-                        val totalItems = calculateTotalItems(lesson)
-                        val lessonProgress = createLessonProgress(lessonId, type, totalItems)
-                        val sectionProgress = createSectionProgress(sectionId, totalLessons, lessonProgress)
-                        sectionProgress to latestVersion
-                    }
+                val totalItems = calculateTotalItems(lesson)
+                val lessonProgress = createLessonProgress(lessonId, type, totalItems)
+                val sectionProgress = createSectionProgress(sectionId, totalLessons, lessonProgress)
+                Mono.just(sectionProgress to latestVersion)
             }
     }
 
-    private fun calculateTotalItems(lesson: CourseLessonModel): Int {
+    private fun calculateTotalItems(lesson: CourseVersionLessonModel): Int {
         return listOfNotNull(
             lesson.videoId,
-            lesson.synopsisText,
+            lesson.hasSynopsis,
             lesson.surveyId
         ).size
     }

@@ -1,101 +1,116 @@
 package eduflow.admin.course.services.course
 
 import eduflow.admin.course.models.course.CourseModel
-import eduflow.admin.course.models.course.CourseVersionModel
-import eduflow.admin.course.models.course.CourseVersionSectionModel
+import eduflow.admin.course.models.course.version.CourseVersionModel
+import eduflow.admin.course.models.course.version.CourseVersionSectionModel
 import eduflow.admin.course.repositories.course.CourseRepository
+import eduflow.admin.course.repositories.course.version.CourseVersionRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class CourseVersionService(private val courseRepository: CourseRepository) {
+class CourseVersionService(
+    private val courseRepository: CourseRepository,
+    private val courseVersionRepository: CourseVersionRepository
+) {
+    private fun updateExistingVersion(
+        versionId: String,
+        updateSections: (List<CourseVersionSectionModel>) -> List<CourseVersionSectionModel>
+    ): Mono<Void> {
+        return courseVersionRepository.findById(versionId)
+            .flatMap { versionToUpdate ->
+                val updatedSections = updateSections(versionToUpdate.sections ?: emptyList())
+                courseVersionRepository.save(versionToUpdate.copy(sections = updatedSections))
+                    .then()
+            }
+    }
 
-    private fun updateVersion(
+    private fun createNewVersion(
         courseId: String,
+        versionName: String,
         isMajor: Boolean,
         updateSections: (List<CourseVersionSectionModel>) -> List<CourseVersionSectionModel>
     ): Mono<Void> {
         return courseRepository.findById(courseId)
             .flatMap { course ->
-                val latestVersion = course.getLatestVersion()
-                if (latestVersion != null) {
-                    val updatedSections = updateSections(latestVersion.sections ?: emptyList())
+                val latestVersionId = course.versions.lastOrNull()
+                    ?: return@flatMap Mono.error(IllegalStateException("Нет версий для обновления"))
 
-                    val newVersion = course.createNewVersion(isMajor = isMajor)
-                    val updatedVersions = course.versions.toMutableList()
-                    updatedVersions.add(newVersion.copy(sections = updatedSections))
+                courseVersionRepository.findById(latestVersionId)
+                    .flatMap { latestVersion ->
+                        val updatedSections = updateSections(latestVersion.sections ?: emptyList())
+                        val newVersion = CourseVersionModel.create(versionName, isMajor)
+                        val updatedVersions = course.versions.toMutableList()
+                        updatedVersions.add(newVersion._id)
 
-                    course.versions = updatedVersions
-                    courseRepository.save(course).then()
-                } else {
-                    Mono.error(IllegalStateException("Нет версий для обновления"))
-                }
+                        courseVersionRepository.save(newVersion.copy(sections = updatedSections))
+                            .then(courseRepository.save(course.copy(versions = updatedVersions)))
+                            .then()
+                    }
             }
     }
 
-    fun removeSection(courseId: String, sectionId: String): Mono<Void> {
-        return updateVersion(courseId, isMajor = true) { sections ->
-            sections.filterNot { it._id == sectionId }
-        }
-    }
-
-    fun addSection(courseId: String, sectionId: String): Mono<CourseModel> {
-        return updateVersion(courseId, isMajor = true) { sections ->
-            sections + CourseVersionSectionModel(_id = sectionId)
-        }.then(courseRepository.findById(courseId))
-    }
-
-    fun removeLessonFromSection(courseId: String, sectionId: String, lessonId: String): Mono<Void> {
-        return updateVersion(courseId, isMajor = false) { sections ->
-            sections.map { section ->
-                if (section._id == sectionId) {
-                    section.copy(lessons = section.lessons?.filterNot { it == lessonId })
-                } else {
-                    section
-                }
-            }
-        }
-    }
-
-    fun addLessonToSection(
+    fun updateCurrentVersion(
         courseId: String,
-        sectionId: String,
-        updateSection: (CourseVersionSectionModel) -> CourseVersionSectionModel
-    ): Mono<Void> {
-        return updateVersion(courseId, isMajor = false) { sections ->
-            sections.map { section ->
-                if (section._id == sectionId) {
-                    updateSection(section)
-                } else {
-                    section
-                }
-            }
-        }
-    }
-
-    fun copySections(courseId: String): Mono<Void> {
-        return updateVersion(courseId, isMajor = true) { sections ->
-            sections
-        }
-    }
-
-    fun getTargetVersion(course: CourseModel, version: String): CourseVersionModel? {
-        return if (version == "latest") {
-            course.versions.lastOrNull()
+        sections: List<CourseVersionSectionModel>? = null,
+        versionId: String? = null,
+        versionName: String,
+        isMajor: Boolean = false,
+    ): Mono<Unit> {
+        return if (versionId == null) {
+            createNewVersion(courseId, versionName, isMajor) { sections ?: emptyList() }
         } else {
-            course.versions.find { it.name == version }
-        }
+            updateExistingVersion(versionId) { sections ?: it }
+        }.thenReturn(Unit)
     }
 
-    fun copyLessons(courseId: String, lessonId: String): Mono<Void> {
-        return updateVersion(courseId, isMajor = false) { sections ->
-            sections.map { section ->
-                if (section.lessons?.contains(lessonId) == true) {
-                    section.copy(lessons = section.lessons)
+    private fun _getTargetVersion(
+        courseId: String,
+        versionId: String? = null,
+        callback: ((CourseModel, CourseVersionModel) -> Mono<Unit>)? = null,
+        callbackWithPair: ((CourseModel, CourseVersionModel) -> Mono<Pair<CourseModel, CourseVersionModel>>)? = null
+    ): Mono<Pair<CourseModel, CourseVersionModel>> {
+        return courseRepository.findById(courseId)
+            .flatMap { course ->
+                if (versionId == null) {
+                    val latestVersionId = course.versions.lastOrNull()
+                        ?: return@flatMap Mono.error(IllegalStateException("Нет версий для обновления"))
+                    courseVersionRepository.findById(latestVersionId)
                 } else {
-                    section
+                    versionId.let {
+                        courseVersionRepository.findById(it)
+                    }
                 }
+                    .flatMap { version ->
+                        val callbackMono = callback?.invoke(course, version) ?: Mono.empty()
+                        val callbackWithPairMono =
+                            callbackWithPair?.invoke(course, version) ?: Mono.just(course to version)
+                        callbackMono.then(callbackWithPairMono)
+                    }
             }
-        }
+    }
+
+    fun getTargetVersion(
+        courseId: String,
+        versionId: String? = null,
+        callback: (CourseModel, CourseVersionModel) -> Mono<Unit> = { _, _ -> Mono.empty() }
+    ): Mono<CourseVersionModel> {
+        return _getTargetVersion(
+            courseId = courseId,
+            versionId = versionId,
+            callback = callback
+        ).map { it.second }
+    }
+
+    fun getTargetVersionPair(
+        courseId: String,
+        versionId: String? = null,
+        callbackWithPair: ((CourseModel, CourseVersionModel) -> Mono<Pair<CourseModel, CourseVersionModel>>)? = null
+    ): Mono<Pair<CourseModel, CourseVersionModel>> {
+        return _getTargetVersion(
+            courseId = courseId,
+            versionId = versionId,
+            callbackWithPair = callbackWithPair
+        )
     }
 }

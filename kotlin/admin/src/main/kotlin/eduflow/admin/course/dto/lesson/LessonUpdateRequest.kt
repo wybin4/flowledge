@@ -4,7 +4,7 @@ data class LessonUpdateRequest(
     val title: String?,
     val time: String?,
     val imageUrl: String?,
-    val videoId: String?,
     val isVisible: Boolean?,
     val courseId: String,
+    val versionId: String
 )

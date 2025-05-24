@@ -10,5 +10,6 @@ export interface CoursesHubDetail {
     tags?: string[];
     editors: CourseEditor[];
     isPublished?: boolean;
-    version: string;
+    versionId: string;
+    versionName: string;
 }

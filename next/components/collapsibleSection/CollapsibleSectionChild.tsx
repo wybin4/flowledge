@@ -24,10 +24,11 @@ type CollapsibleSectionChildProps = {
     descriptionClassName?: string;
     timeClassName?: string;
     additionalInfoClassName?: string;
+    children?: ReactNode;
 };
 
 export default function CollapsibleSectionChild({
-    id, title, time, description, image, additionalInfo, onClick,
+    id, title, time, description, image, additionalInfo, children, onClick,
     isActive = false, isViewed = false, titleTags,
     childClassName,
     titleContainerClassName, titleContainerContentClassName, titleTextContainerClassName, titleClassName,
@@ -35,11 +36,11 @@ export default function CollapsibleSectionChild({
     timeClassName, additionalInfoClassName
 }: CollapsibleSectionChildProps) {
     return (
-        <div onClick={() => 
+        <div onClick={() =>
             onClick?.(id)} className={cn(styles.child, childClassName, {
-            [styles.active]: isActive,
-            [styles.viewed]: isViewed
-        })}>
+                [styles.active]: isActive,
+                [styles.viewed]: isViewed
+            })}>
             <div className={cn(styles.childTitle, titleContainerClassName)}>
                 {image}
                 <div className={cn(styles.childTitleContainer, titleTextContainerClassName)}>
@@ -49,6 +50,7 @@ export default function CollapsibleSectionChild({
                         {titleTags && <CollapsibleSectionTitleTags titleTags={titleTags} />}
                     </div>
                     {additionalInfo && <div className={additionalInfoClassName}>{additionalInfo}</div>}
+                    {children && <div>{children}</div>}
                 </div>
             </div>
             <div className={timeClassName}>{time}</div>

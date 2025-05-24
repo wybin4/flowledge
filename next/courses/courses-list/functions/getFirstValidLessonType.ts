@@ -3,10 +3,10 @@ import { checkLessonProperty } from "@/courses/functions/checkLessonProperty";
 import { LessonSaveType } from "@/courses/types/LessonSaveType";
 
 export const getFirstValidLessonType = (lesson: LessonGetResponse): LessonSaveType | null => {
-    const excludedTypes = [LessonSaveType.Draft, LessonSaveType.Details];
+    const excludedTypes = [LessonSaveType.Draft.toLowerCase(), LessonSaveType.Details.toLowerCase()];
 
     for (const type of Object.values(LessonSaveType)) {
-        if (!excludedTypes.includes(type) && checkLessonProperty(lesson, type)) {
+        if (!excludedTypes.includes(type.toLowerCase()) && checkLessonProperty(lesson, type.toLowerCase())) {
             return type;
         }
     }

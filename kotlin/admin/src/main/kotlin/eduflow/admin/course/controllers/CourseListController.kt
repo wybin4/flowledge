@@ -50,10 +50,10 @@ class CourseListController(
     @GetMapping("/courses.get/{id}")
     fun getCourseById(
         @PathVariable id: String,
-        @RequestParam(required = false) version: String = "latest"
+        @RequestParam(required = false) versionId: String? = null
     ): Mono<ResponseEntity<out CourseGetByIdResponse>> {
         val user = authenticationService.getCurrentUser()
-        return courseService.getCourseById(id, false, user._id, version)
+        return courseService.getCourseById(id, false, user._id, versionId)
     }
 
     @PostMapping("/courses.toggle-favourite/{id}")

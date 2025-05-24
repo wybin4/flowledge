@@ -1,3 +1,6 @@
 package eduflow.admin.course.dto.lesson.create
 
-data class LessonRemoveVideoRequest(val _id: String) : LessonCreateRequest()
+data class LessonRemoveVideoRequest(
+    override val _id: String,
+    override val courseId: String,
+) : LessonCreateRequest(courseId), LessonUpdateVideoRequest

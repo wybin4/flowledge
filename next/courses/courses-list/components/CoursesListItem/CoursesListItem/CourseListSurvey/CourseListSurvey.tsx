@@ -22,6 +22,7 @@ import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { CourseListLessonPageStickyBottomBar } from "../../CourseListLessonPage/CourseListLessonPageStickyBottomBar";
 
 type CourseListSurveyProps = {
+    courseId: string;
     lessonId: string;
     onExit: () => void;
     onBack: () => void;
@@ -29,7 +30,7 @@ type CourseListSurveyProps = {
     titlePostfix: string;
 };
 
-export const CourseListSurvey = ({ lessonId, onExit, onBack, onNext, titlePostfix }: CourseListSurveyProps) => {
+export const CourseListSurvey = ({ courseId, lessonId, onExit, onBack, onNext, titlePostfix }: CourseListSurveyProps) => {
     const [selectedQuestion, setSelectedQuestion] = useState<SurveyQuestion | undefined>();
     const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
     const [surveyId, setSurveyId] = useState<string | undefined>();
@@ -40,7 +41,7 @@ export const CourseListSurvey = ({ lessonId, onExit, onBack, onNext, titlePostfi
 
     useEffect(() => {
         userApiClient.get<SurveyGetByIdResponse>(
-            `${surveysPrefix}.get/${lessonId}`
+            `${surveysPrefix}.get/${lessonId}?courseId=${courseId}`
         ).then(({ survey, result }) => {
             if (survey.questions.length) {
                 setQuestions(survey.questions);

@@ -1,13 +1,19 @@
-import React from 'react';
-import styles from './ProgressBar.module.css';
+import React from "react";
+import styles from "./ProgressBar.module.css";
+import cn from "classnames";
+import { ItemSize } from "@/types/ItemSize";
 
 interface ProgressBarProps {
     progress: number;
+    withWrapper?: boolean;
+    size?: ItemSize;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
+const ProgressBar = ({ progress, withWrapper = false, size = ItemSize.Little }: ProgressBarProps) => {
     return (
-        <div className={styles.container}>
+        <div className={cn(styles.container, styles[size], {
+            [styles.wrapper]: withWrapper
+        })}>
             <div>{Math.round(progress * 100) / 100}%</div>
             <div className={styles.progressBarContainer}>
                 <div

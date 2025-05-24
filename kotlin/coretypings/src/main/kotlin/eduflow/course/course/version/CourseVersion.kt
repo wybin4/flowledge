@@ -1,6 +1,7 @@
-package eduflow.course.course
+package eduflow.course.course.version
 
 interface CourseVersion {
+    val _id: String
     val name: String
     val sections: List<CourseVersionSection>?
 }

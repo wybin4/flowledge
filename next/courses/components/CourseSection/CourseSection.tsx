@@ -11,6 +11,7 @@ import { ValidateSectionTitle } from "@/courses/courses-hub/components/CoursesHu
 import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 import { useIcon } from "@/hooks/useIcon";
 import { TagType } from "@/components/Tag/Tag";
+import ProgressBar from "@/components/ProgressBar/ProgressBar";
 
 type CourseSectionProps = {
     className?: string;
@@ -100,6 +101,11 @@ export const CourseSection = ({
                         title={lesson.title}
                         time={(lesson.time ? translateTime(lesson.time) : lesson.time) || ''}
                         additionalInfo={lesson.additionalInfo}
+                        children={
+                            <>
+                                {lesson.progress && <ProgressBar progress={lesson.progress} />}
+                            </>
+                        }
                         isViewed={false}
                         titleTags={[
                             ...(!lesson.isVisible ? [{

@@ -1,6 +1,6 @@
 package eduflow.admin.course.dto.course.id
 
-import eduflow.admin.course.types.SectionWithLessons
+import eduflow.admin.course.dto.course.section.SectionWithLessonsResponse
 
 data class CourseGetByIdBigResponse(
     override val _id: String,
@@ -8,5 +8,7 @@ data class CourseGetByIdBigResponse(
     override val imageUrl: String? = null,
     override val description: String,
     override val tags: List<String>?,
-    val sections: List<SectionWithLessons>
+    val sections: List<SectionWithLessonsResponse>,
+    val versionId: String,
+    override val versionName: String
 ) : CourseGetByIdResponse

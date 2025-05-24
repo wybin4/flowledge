@@ -12,6 +12,7 @@ import { userApiClient } from "@/apiClient";
 import { LessonGetByIdResponse } from "../../dto/LessonGetByIdResponse";
 import { enrichCrumbWithLesson } from "../../functions/enrichCrumbWithLesson";
 import { LessonSaveType } from "@/courses/types/LessonSaveType";
+import { usePathname } from "next/navigation";
 
 export type CreateLessonProps = Partial<Record<Lowercase<keyof typeof LessonSaveType>, string>> & {
     _id: string;
@@ -22,14 +23,20 @@ export type CreateLessonProps = Partial<Record<Lowercase<keyof typeof LessonSave
 export interface CreateLessonChildrenProps {
     lessonId: string;
     setLesson: Dispatch<SetStateAction<LessonGetByIdResponse | undefined>>;
+    courseId: string;
 }
 
 export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLessonProps) => {
     const [lesson, setLesson] = useState<LessonGetByIdResponse | undefined>(undefined);
 
+    const currentPath = usePathname();
+
+    const pathSegments = currentPath.split('/');
+    const courseId = pathSegments[2];
+
     useEffect(() => {
         userApiClient.get<LessonGetByIdResponse>(
-            `${coursesHubLessonsPrefixApi}.get/${_id}`
+            `${coursesHubLessonsPrefixApi}.get/${_id}?courseId=${courseId}`
         ).then(lesson => setLesson(lesson));
     }, [_id]);
 
@@ -37,6 +44,7 @@ export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLess
         [LessonSaveType.Video]: () => (
             <CreateLessonVideo
                 lessonId={_id}
+                courseId={courseId}
                 setLesson={setLesson}
                 videoId={lesson?.videoId}
             />
@@ -44,6 +52,7 @@ export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLess
         [LessonSaveType.Details]: () => (
             <CreateLessonDetails
                 lessonId={_id}
+                courseId={courseId}
                 time={lesson?.time}
                 title={lesson?.title}
                 imageUrl={lesson?.imageUrl}
@@ -54,6 +63,7 @@ export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLess
         [LessonSaveType.Synopsis]: () => (
             <CreateLessonSynopsisAndStuff
                 lessonId={_id}
+                courseId={courseId}
                 setLesson={setLesson}
                 synopsisText={lesson?.synopsisText}
                 stuffList={[]} // TODO
@@ -62,6 +72,7 @@ export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLess
         [LessonSaveType.Survey]: () => (
             <CreateLessonSurvey
                 lessonId={_id}
+                courseId={courseId}
                 setLesson={setLesson}
                 selectedQuestionId={questionId}
                 questions={lesson?.surveyText}

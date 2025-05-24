@@ -23,6 +23,7 @@ import { LessonSaveType } from "@/courses/types/LessonSaveType";
 import { useTranslation } from "react-i18next";
 import { Tag, TagType } from "@/components/Tag/Tag";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
+import { ItemSize } from "@/types/ItemSize";
 
 type CoursesListItemProps = {
     course: CourseWithSubscriptionItem;
@@ -84,11 +85,11 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
         let version = course.courseVersion;
 
         if (!course.progress) {
-            const response = await userApiClient.post<string>(
+            const { versionId } = await userApiClient.post<{ versionId: string }>(
                 `${courseSubscriptionsPrefix}/${courseProgressPrefix}.initiate`, {
                 courseId: course._id, lessonId: lesson._id, type
             });
-            version = response || course.courseVersion;
+            version = versionId || course.courseVersion;
         }
 
         if (version) {
@@ -117,7 +118,11 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                                         />
                                     )}
                                     {course.progress && (
-                                        <ProgressBar progress={course.progress} />
+                                        <ProgressBar
+                                            progress={course.progress}
+                                            withWrapper={true}
+                                            size={ItemSize.Medium}
+                                        />
                                     )}
                                 </>
                             )}

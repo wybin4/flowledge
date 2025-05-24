@@ -1,5 +1,7 @@
 package eduflow.admin.course.models.lesson.survey
 
+import eduflow.admin.course.dto.lesson.create.LessonAddSurveyQuestionRequest
+import eduflow.admin.utils.generateId
 import eduflow.course.lesson.survey.CourseLessonSurvey
 import org.springframework.data.mongodb.core.mapping.Document
 
@@ -9,4 +11,30 @@ data class CourseLessonSurveyModel(
     override val questions: List<CourseLessonSurveyQuestionModel>,
     override val maxAttempts: Int = 1,
     override val passThreshold: Int = 50
-) : CourseLessonSurvey
+) : CourseLessonSurvey {
+    companion object {
+        fun create(
+            maxAttempts: Int? = null,
+            passThreshold: Int? = null,
+            questions: List<LessonAddSurveyQuestionRequest>
+        ): CourseLessonSurveyModel {
+            return CourseLessonSurveyModel(
+                _id = generateId(),
+                maxAttempts = maxAttempts ?: 1,
+                passThreshold = passThreshold ?: 50,
+                questions = questions.map { question ->
+                    CourseLessonSurveyQuestionModel(
+                        _id = generateId(),
+                        title = question.title,
+                        choices = question.choices.map { choice ->
+                            CourseLessonSurveyChoiceModel.create(
+                                title = choice.title,
+                                isCorrect = choice.isCorrect
+                            )
+                        }
+                    )
+                }
+            )
+        }
+    }
+}

@@ -233,7 +233,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                     type={TagType.Warning}
                                 />
                                 <Tag
-                                    tag={`v${course.version}`}
+                                    tag={`v${course.versionName}`}
                                     type={TagType.Info}
                                 />
                             </div>

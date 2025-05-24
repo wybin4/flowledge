@@ -13,5 +13,5 @@ interface Course {
     val updatedAt: Date
     val tags: List<String>?
     val isPublished: Boolean?
-    val versions: List<CourseVersion>
+    val versions: List<String>
 }

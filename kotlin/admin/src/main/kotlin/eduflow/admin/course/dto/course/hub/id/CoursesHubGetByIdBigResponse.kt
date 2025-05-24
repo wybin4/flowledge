@@ -1,8 +1,8 @@
 package eduflow.admin.course.dto.course.hub.id
 
 import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
+import eduflow.admin.course.dto.course.section.SectionWithLessonsResponse
 import eduflow.admin.course.types.CourseEditor
-import eduflow.admin.course.types.SectionWithLessons
 
 data class CoursesHubGetByIdBigResponse(
     override val _id: String,
@@ -10,8 +10,9 @@ data class CoursesHubGetByIdBigResponse(
     override val imageUrl: String? = null,
     override val description: String,
     override val tags: List<String>?,
-    val sections: List<SectionWithLessons>,
+    val sections: List<SectionWithLessonsResponse>,
     val editors: List<CourseEditor>,
     val isPublished: Boolean? = null,
-    val version: String
+    val versionId: String,
+    override val versionName: String
 ) : CourseGetByIdResponse

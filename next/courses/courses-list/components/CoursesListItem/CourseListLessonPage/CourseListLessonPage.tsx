@@ -27,7 +27,6 @@ import { CourseListLessonSidebarItem as SidebarItem } from "@/courses/courses-li
 import { ScrollTracker } from "@/components/ScrollTracker/ScrollTracker";
 import { SynopsisLessonTabs } from "@/courses/types/SynopsisLessonTabs";
 import { LessonSaveType } from "@/courses/types/LessonSaveType";
-import { findSubscriptionByCourseId } from "@/collections/CourseSubscriptions";
 import { useCourseSubscription } from "@/courses/hooks/useCourseSubscription";
 
 type CourseListLessonPageProps = {
@@ -60,13 +59,13 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
         }
 
         userApiClient.get<LessonPageItem>(
-            `${coursesListLessonsPrefixApi}.get/${lessonId}`
+            `${coursesListLessonsPrefixApi}.get/${lessonId}?courseId=${courseId}`
         ).then(currentLessonRes => {
             const transformedLesson = mapLessonToPage<LessonPageItem>(currentLessonRes);
             setCurrentLesson(transformedLesson);
             if (currentLessonRes.sectionId && !section) {
                 userApiClient.get<LessonPageSectionItem>(
-                    `${coursesListSectionsPrefixApi}/${currentLessonRes.sectionId}.lessons?version=${version}`
+                    `${coursesListSectionsPrefixApi}/${currentLessonRes.sectionId}.lessons?version=${version}&courseId=${courseId}`
                 ).then(sectionRes => {
                     if (sectionRes) {
                         const lessons = sectionRes.lessons.map(lesson => {
@@ -233,6 +232,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
     if (isSurvey) {
         return (
             <CourseListSurvey
+                courseId={courseId}
                 titlePostfix={nextTitlePostfix}
                 lessonId={lessonId}
                 onExit={handleExitFromSurvey}

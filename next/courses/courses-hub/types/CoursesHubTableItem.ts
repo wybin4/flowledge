@@ -5,5 +5,6 @@ export type CoursesHubTableItem = {
     createdAt: string;
     imageUrl: string;
     isPublished: string;
-    version: string;
+    versionId: string;
+    versionName: string;
 };

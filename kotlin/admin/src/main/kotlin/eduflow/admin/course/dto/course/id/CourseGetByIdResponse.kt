@@ -6,4 +6,5 @@ interface CourseGetByIdResponse {
     val imageUrl: String?
     val description: String
     val tags: List<String>?
+    val versionName: String
 }

@@ -10,18 +10,13 @@ data class LessonGetHubResponse(
     override val title: String,
     override val imageUrl: String?,
 
-    override val isDraft: Boolean?,
-    override val isVisible: Boolean,
+    val isDraft: Boolean?,
 
-    override val sectionId: String,
-
-    override val videoId: String?,
     override val synopsisText: String?,
     override val surveyText: String?,
-    override val surveyId: String?,
     val survey: CourseLessonSurveyModel? = null,
+    val videoId: String? = null,
 
     override val createdAt: Date,
     override val updatedAt: Date,
-
-    ) : CourseLesson
+) : CourseLesson

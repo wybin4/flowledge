@@ -12,6 +12,7 @@ export const mapCoursesHubToTable = (course: Course, locale: string, t: TFunctio
         createdAt: getFormattedDateWithTime(course.createdAt, locale),
         isPublished: getPublicationStatus(t, course.isPublished),
         imageUrl: course.imageUrl,
-        version: course.version
+        versionId: course.versionId,
+        versionName: course.versionName
     }
 }

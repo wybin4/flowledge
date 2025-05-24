@@ -68,7 +68,12 @@ export const CourseListItemPage = ({ _id }: { _id: string }) => {
 
     useEffect(() => {
         const fetchCourse = async () => {
-            const courseRes = await useGetItem<CourseItem>(coursesListPrefixApi, userApiClient, _id);
+            const courseRes = await useGetItem<CourseItem>(
+                coursesListPrefixApi,
+                userApiClient,
+                _id,
+                { ...(subscription?.courseVersion && { versionId: subscription.courseVersion }) }
+            );
             if (courseRes) {
                 if (subscription) {
                     setCourse(setCourseWithProgress(courseRes, subscription));

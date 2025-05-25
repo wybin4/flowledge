@@ -10,13 +10,12 @@ import { useTranslation } from "react-i18next";
 import { CourseSubscriptionItem } from "../../types/CourseSubscriptionItem";
 
 type CoursesListInfiniteProps = {
-    subscriptions?: CourseSubscriptionItem[];
     excludedIds: string[];
     searchQuery: string;
 };
 
 export const CoursesListInfinite = ({
-    subscriptions, excludedIds,
+    excludedIds,
     searchQuery
 }: CoursesListInfiniteProps) => {
     const [courses, setCourses] = useState<CourseWithSubscriptionItem[] | undefined>(undefined);
@@ -34,18 +33,11 @@ export const CoursesListInfinite = ({
     });
 
     useEffect(() => {
-        if (subscriptions && subscriptions.length) {
-            const filteredData = (data as CourseWithSubscriptionItem[]).filter(
-                course => !excludedIds.includes(course._id)
-            );
-            setCourses([...subscriptions, ...filteredData]);
-        } else if (data.length) {
-            const filteredData = (data as CourseWithSubscriptionItem[]).filter(
-                course => !excludedIds.includes(course._id)
-            );
-            setCourses(filteredData);
-        }
-    }, [subscriptions, data, excludedIds]);
+        const filteredData = (data as CourseWithSubscriptionItem[]).filter(
+            course => !excludedIds.includes(course._id)
+        );
+        setCourses(filteredData);
+    }, [data, excludedIds]);
 
     if (!courses || !courses.length) {
         return null;

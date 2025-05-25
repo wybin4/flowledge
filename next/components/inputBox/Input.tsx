@@ -20,7 +20,7 @@ type InputProps = {
     inputClassName?: string;
 };
 
-export type InputType = 'number' | 'text' | 'password';
+export type InputType = 'number' | 'text' | 'password' | 'image';
 
 export const Input = memo(({
     type, value, placeholder, className, onChange, onClick,

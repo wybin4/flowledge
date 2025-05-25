@@ -60,7 +60,7 @@ export const UsersTablePage = ({ mode }: { mode?: TablePageMode }) => {
             setSelectedItemId={setSelectedItemId}
             mode={mode}
             settingKeys={[
-                { name: 'avatar', types: [SettingType.InputText] },
+                { name: 'avatar', types: [SettingType.InputImage] },
                 { name: 'name', types: [SettingType.InputText] },
                 { name: 'username', types: [SettingType.InputText] },
                 { name: 'password', types: [SettingType.InputPassword] },

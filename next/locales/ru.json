@@ -384,7 +384,10 @@
             "start": "пройти",
             "attempts": "попытки"
         },
-        "course-not-started": "курс не начат"
+        "course-not-started": "курс не начат",
+        "__gender__passed_male": "пройден",
+        "__gender__passed_female": "пройдена",
+        "__gender__passed_neural": "пройдено"
     },
     "save": "сохранить",
     "cancel": "отмена",
@@ -478,6 +481,8 @@
     "all-courses": "все курсы",
     "there-are-no-options": "нет доступных опций",
     "tags": "теги",
+    "duration": "срок изучения",
+    "type": "виды",
     "course-tags": {
         "name": {
             "name": "название тега",
@@ -514,5 +519,9 @@
     "question": "вопрос",
     "from": "из",
     "finish": "завершить",
-    "browser-unsupported-video": "ваш браузер не поддерживает видео"
+    "browser-unsupported-video": "ваш браузер не поддерживает видео",
+    "enter-new-password": "введите новый пароль",
+    "upload": "загрузить",
+    "my-courses": "мои курсы",
+    "search": "поиск"
 }

@@ -1,6 +1,7 @@
 import { JSX } from "react";
 import styles from "./CourseListImage.module.css";
 import cn from 'classnames';
+import { Image } from "@/components/Image/Image";
 
 type CourseListImageProps = {
     imageUrl?: string;
@@ -17,6 +18,6 @@ export const CourseListImage = ({ imageUrl, icon, title, size = 'large' }: Cours
     }
 
     return (
-        <img className={cn(styles.image, styles[size])} src={imageUrl} alt={title} />
+        <Image src={imageUrl} alt={title} className={cn(styles.image, styles[size])} />
     );
 };

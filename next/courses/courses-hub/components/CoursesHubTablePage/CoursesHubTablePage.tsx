@@ -76,7 +76,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
             getTotalCount: () => Promise.resolve(0),
         };
     }, [viewAll, viewAssigned]);
-    
+
     return (
         <CRUDTablePage<Course, CourseToSave, CoursesHubTableItem>
             prefix={coursesHubPrefix}
@@ -90,7 +90,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
             settingKeys={[
                 { name: 'title', types: [SettingType.InputText], hasDescription: true },
                 { name: 'description', types: [SettingType.TextArea] },
-                { name: 'imageUrl', types: [SettingType.InputText] },
+                { name: 'imageUrl', types: [SettingType.InputImage] },
                 getTagsSettingKey(tags),
                 {
                     name: 'isPublished', types: [SettingType.Radio],

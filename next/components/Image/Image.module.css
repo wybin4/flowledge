@@ -1,0 +1,24 @@
+.img {
+    border-radius: 100%;
+
+    object-fit: cover;
+}
+
+.alt,
+.img {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.alt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--green);
+    border-radius: 0.3125rem;
+
+    color: white !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+}

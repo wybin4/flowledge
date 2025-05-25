@@ -22,6 +22,11 @@
     font-size: 0.875rem;
 }
 
+.description {
+    color: var(--secondary-light);
+    font-size: 0.85rem;
+}
+
 .wrapper {
     background-color: var(--button);
     color: var(--secondary-light);
@@ -30,6 +35,10 @@
     border-radius: 0.6rem;
 
     padding: 0.25rem 0.6rem;
+}
+
+.big {
+    width: 100%;
 }
 
 .medium {

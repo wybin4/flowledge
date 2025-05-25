@@ -7,10 +7,13 @@ import cn from "classnames";
 import { usePasswordInput } from "@/hooks/usePasswordInput";
 import { Input, InputType } from "@/components/InputBox/Input";
 import { useDebouncedSave } from "@/hooks/useDebouncedSave";
+import { useTranslation } from "react-i18next";
 
 export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000, disabled }: SettingWrapperProps) => {
     const isPassword = setting.type === SettingType.InputPassword;
     const passwordInputProps = usePasswordInput();
+
+    const { t } = useTranslation();
 
     const type = isPassword
         ? passwordInputProps.type
@@ -20,7 +23,8 @@ export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000, di
 
     const icon = isPassword
         ? passwordInputProps.icon
-        : useIcon(type as IconKey);
+        : setting.type === SettingType.InputImage
+            ? useIcon('image') : useIcon(type as IconKey);
 
     const onClickIcon = isPassword ? passwordInputProps.togglePassword : undefined;
 
@@ -38,7 +42,7 @@ export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000, di
 
         setInputValue(value);
     };
-    
+
     return (
         <Input
             type={type as InputType}
@@ -46,7 +50,13 @@ export const SettingInput = memo(({ setting, handleSave, debounceTime = 1000, di
             onChange={handleChange}
             icon={icon}
             onClickIcon={onClickIcon}
-            placeholder={setting.placeholder}
+            placeholder={
+                setting.type === SettingType.InputImage
+                    ? t('upload')
+                    : setting.type === SettingType.InputPassword
+                        ? t('enter-new-password')
+                        : setting.placeholder
+            }
             iconClassName={cn({ [styles.inputIconPointer]: isPassword })}
             disabled={disabled}
         />

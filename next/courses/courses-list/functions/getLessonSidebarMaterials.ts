@@ -3,6 +3,7 @@ import { LessonPageSectionLessonItemMapped } from "../types/LessonPageSectionIte
 import { SynopsisLessonTabs } from "../../types/SynopsisLessonTabs";
 import { LessonsPageFlags } from "../../components/LessonPage/LessonPage";
 import { LessonSaveType } from "@/courses/types/LessonSaveType";
+import { Gender } from "@/types/Gender";
 
 export type LessonSidebarMaterials = {
     type: LessonSaveType;
@@ -13,6 +14,8 @@ export type LessonSidebarMaterials = {
     flags?: LessonsPageFlags;
     classNames?: string;
     onClick?: (router: AppRouterInstance) => void;
+    progress?: number;
+    gender: Gender;
 };
 
 export const getLessonSidebarMaterials = (
@@ -26,19 +29,22 @@ export const getLessonSidebarMaterials = (
             description: 'watch-video',
             condition: !!lesson.videoUrl, tab: 'video',
             selected: true, classNames: styles.videoContainer,
-            type: LessonSaveType.Video
+            type: LessonSaveType.Video,
+            gender: Gender.Neural
         },
         {
             description: 'read-synopsis',
             flags: { hideVideo: true },
             condition: lesson.hasSynopsis, tab: SynopsisLessonTabs.Synopsis,
-            type: LessonSaveType.Synopsis
+            type: LessonSaveType.Synopsis,
+            gender: Gender.Male
         },
         {
             description: 'test-yourself',
             condition: !!lesson.surveyId,
             onClick: (router: AppRouterInstance) => router.push('?survey=true'),
-            type: LessonSaveType.Survey
+            type: LessonSaveType.Survey,
+            gender: Gender.Male
         }
     ].filter(material => material.condition);
 };

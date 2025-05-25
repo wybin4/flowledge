@@ -16,7 +16,9 @@ export const useCourseSubscription = (_id: string): CourseSubscriptionItem | nul
         CourseSubscriptions.eventName,
         CourseSubscriptions,
         (newState) => {
-            setSubscription(newState || null);
+            if (Array.isArray(newState)) {
+                setSubscription(newState[0] as CourseSubscriptionItem);
+            }
         }
     );
 

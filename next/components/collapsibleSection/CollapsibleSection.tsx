@@ -21,7 +21,7 @@ export type CollapsibleSectionProps = {
     onTitleSave?: () => void;
     children?: ReactNode;
     actions?: CollapsibleSectionActionProps[];
-    expandedByDefault: boolean;
+    expandedByDefault?: boolean;
     containerClassName?: string;
     headerClassName?: string;
     contentClassName?: string;
@@ -35,7 +35,7 @@ export type CollapsibleSectionProps = {
 };
 
 export default function CollapsibleSection({
-    expandedByDefault, actions,
+    expandedByDefault = false, actions,
     children, iconPrefix = '',
     expandedDeg = 0, collapsedDeg = -90,
     title, titleTags, onTitleSave, setTitle, isEditTitle,

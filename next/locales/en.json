@@ -378,7 +378,8 @@
             "start": "start",
             "attempts": "attempts"
         },
-        "course-not-started": "course not started"
+        "course-not-started": "course not started",
+        "__gender__passed": "passed"
     },
     "save": "save",
     "cancel": "cancel",
@@ -472,6 +473,8 @@
     "all-courses": "all courses",
     "there-are-no-options": "there are no options",
     "tags": "tags",
+    "duration": "duration",
+    "type": "type",
     "course-tags": {
         "name": {
             "name": "tag name",
@@ -508,5 +511,9 @@
     "question": "question",
     "from": "from",
     "finish": "finish",
-    "browser-unsupported-video": "your browser does not support video"
+    "browser-unsupported-video": "your browser does not support video",
+    "enter-new-password": "enter new password",
+    "upload": "upload",
+    "my-courses": "my courses",
+    "search": "search"
 }

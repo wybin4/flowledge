@@ -39,6 +39,7 @@ export const SettingWrapperBody = memo(({
         case SettingType.InputPassword:
         case SettingType.InputText:
         case SettingType.InputNumber:
+        case SettingType.InputImage:
             return (
                 <SettingInput
                     handleSave={handleSave}

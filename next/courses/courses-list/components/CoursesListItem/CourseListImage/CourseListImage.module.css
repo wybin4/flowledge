@@ -1,22 +1,28 @@
 .image {
     object-fit: cover;
 
-    border-radius: 0.5rem;
+    border-radius: 0.5rem !important;
 }
 
 .medium {
-    width: 6.25rem;
-    height: 3.75rem;
+    width: 6.25rem !important;
+    height: 3.75rem !important;
+
+    font-size: 1.5rem !important;
 }
 
 .large {
-    width: 8.875rem;
-    height: 5.125rem;
+    width: 8.875rem !important;
+    height: 5.125rem !important;
+
+    font-size: 2rem !important;
 }
 
 .xlarge {
-    width: 12.5rem;
-    height: 7rem;
+    width: 12.5rem !important;
+    height: 7rem !important;
+
+    font-size: 3rem !important;
 }
 
 .icon {

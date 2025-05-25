@@ -1,4 +1,4 @@
 export enum EnhancedItemType {
     Image = 'image',
-    Text = 'text',
+    Text = 'text'
 }

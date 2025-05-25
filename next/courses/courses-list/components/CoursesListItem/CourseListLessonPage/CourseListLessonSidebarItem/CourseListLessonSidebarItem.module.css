@@ -24,6 +24,10 @@
     color: var(--description-text);
 }
 
+.lessonDescriptionWhenProgress {
+    margin-bottom: -5px;
+}
+
 .lessonTitleTextContainer {
     justify-content: flex-start;
     flex-grow: 1;

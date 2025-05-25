@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { Tag, TagType } from "@/components/Tag/Tag";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import { ItemSize } from "@/types/ItemSize";
+import { Gender } from "@/types/Gender";
 
 type CoursesListItemProps = {
     course: CourseWithSubscriptionItem;
@@ -42,13 +43,15 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
     const { t } = useTranslation();
 
     useEffect(() => {
-        const tab = searchParams.get('tab') as CourseTabs | null;
-        if (!tab) {
-            router.push(`?tab=${CourseTabs.Lessons}`);
-        } else {
-            setSelectedMenuTab(tab);
+        if (!isListPage) {
+            const tab = searchParams.get('tab') as CourseTabs | null;
+            if (!tab) {
+                router.push(`?tab=${CourseTabs.Lessons}`);
+            } else {
+                setSelectedMenuTab(tab);
+            }
         }
-    }, [searchParams]);
+    }, [searchParams, isListPage]);
 
     const handleClick = () => {
         router.push(pathnamePrefix);
@@ -108,24 +111,26 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                     actions={actions}
                     header={header}
                     underTitle={
-                        <div className={styles.underTitle}>
-                            {!isListPage && (
-                                <>
-                                    {!course.progress && (
-                                        <Tag
-                                            tag={t(`${coursesListPrefix}.course-not-started`)}
-                                            type={TagType.Info}
-                                        />
-                                    )}
-                                    {course.progress && (
-                                        <ProgressBar
-                                            progress={course.progress}
-                                            withWrapper={true}
-                                            size={ItemSize.Medium}
-                                        />
-                                    )}
-                                </>
-                            )}
+                        <div className={cn({
+                            [styles.underTitle]: !isListPage
+                        })}>
+                            <>
+                                {!isListPage && !course.progress && (
+                                    <Tag
+                                        tag={t(`${coursesListPrefix}.course-not-started`)}
+                                        type={TagType.Info}
+                                    />
+                                )}
+                                {course.progress && (
+                                    <ProgressBar
+                                        progress={course.progress}
+                                        gender={Gender.Male}
+                                        prefix={coursesListPrefix}
+                                        withWrapper={!isListPage}
+                                        size={ItemSize.Medium}
+                                    />
+                                )}
+                            </>
                         </div>
                     }
                 />

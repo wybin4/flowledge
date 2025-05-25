@@ -6,4 +6,5 @@ export interface CourseListLessonSidebarItem extends Omit<LessonPageSectionItem,
         lesson: LessonPageSectionLessonItemMapped;
         materials: LessonSidebarMaterials[];
     }[];
+    progress?: number;
 };

@@ -12,6 +12,8 @@ import { LessonGetResponse } from "@/courses/courses-hub/dto/LessonGetResponse";
 import { useIcon } from "@/hooks/useIcon";
 import { TagType } from "@/components/Tag/Tag";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
+import { Gender } from "@/types/Gender";
+import { coursesListPrefix } from "@/helpers/prefixes";
 
 type CourseSectionProps = {
     className?: string;
@@ -103,7 +105,13 @@ export const CourseSection = ({
                         additionalInfo={lesson.additionalInfo}
                         children={
                             <>
-                                {lesson.progress && <ProgressBar progress={lesson.progress} />}
+                                {lesson.progress && (
+                                    <ProgressBar
+                                        progress={lesson.progress}
+                                        gender={Gender.Female}
+                                        prefix={coursesListPrefix}
+                                    />
+                                )}
                             </>
                         }
                         isViewed={false}

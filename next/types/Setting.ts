@@ -10,6 +10,7 @@ export enum SettingType {
     InputText = "INPUT_TEXT",
     TextArea = "TEXTAREA",
     InputNumber = "INPUT_NUMBER",
+    InputImage = "INPUT_IMAGE",
     InputPassword = "INPUT_PASSWORD",
     Radio = "RADIO",
     Code = "CODE",

@@ -10,6 +10,7 @@ export interface LessonPageSectionLessonItem {
     _id: string;
     title: string;
     imageUrl?: string;
+
     videoId?: string;
     surveyId?: string;
     hasSynopsis: boolean;

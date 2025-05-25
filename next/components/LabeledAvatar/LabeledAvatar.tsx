@@ -3,6 +3,7 @@ import styles from "./LabeledAvatar.module.css";
 import cn from "classnames";
 import { ValueLabel } from "@/types/ValueLabel";
 import { ReactNode } from "react";
+import { Image } from "../Image/Image";
 
 export type LabeledAvatarItem = {
     avatar: string;
@@ -20,7 +21,7 @@ export const LabeledAvatar = ({ item, size = ItemSize.Little, child }: LabeledAv
     return (
         <div className={cn(styles.container, styles[size])}>
             <div className={styles.titleContainer}>
-                <img src={item.avatar} alt={item.label} className={styles.avatar} />
+                <Image alt={item.label} src={item.avatar} />
                 <div className={styles.info}>
                     <div className={styles.name}>{item.label}</div>
                     {!!isSmall && child?.(size)}

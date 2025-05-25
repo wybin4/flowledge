@@ -28,6 +28,9 @@ import { ScrollTracker } from "@/components/ScrollTracker/ScrollTracker";
 import { SynopsisLessonTabs } from "@/courses/types/SynopsisLessonTabs";
 import { LessonSaveType } from "@/courses/types/LessonSaveType";
 import { useCourseSubscription } from "@/courses/hooks/useCourseSubscription";
+import ProgressBar from "@/components/ProgressBar/ProgressBar";
+import { Identifiable } from "@/types/Identifiable";
+import { Gender } from "@/types/Gender";
 
 type CourseListLessonPageProps = {
     lessonId: string;
@@ -90,6 +93,60 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
         });
     }, [lessonId]);
 
+    useEffect(() => {
+        if (currentLesson) {
+            const currentSectionProgress = subscription?.progress?.sections.find(s => s._id === currentLesson.sectionId);
+            const sectionProgress = currentSectionProgress?.progress;
+
+            setSection((prevState: SidebarItem | undefined) => {
+                if (!prevState || !currentSectionProgress) {
+                    return prevState;
+                }
+
+                const updatedLessons = prevState.lessons.map(lessonItem => {
+                    const lessonProgress = currentSectionProgress.lessons.find(l => l._id === lessonItem.lesson._id);
+
+                    if (lessonProgress) {
+                        const updatedMaterials = lessonItem.materials.map(material => {
+                            switch (material.type) {
+                                case LessonSaveType.Video:
+                                    return {
+                                        ...material,
+                                        progress: lessonProgress.videoProgress
+                                    };
+                                case LessonSaveType.Synopsis:
+                                    return {
+                                        ...material,
+                                        progress: lessonProgress.synopsisProgress
+                                    };
+                                case LessonSaveType.Survey:
+                                    return {
+                                        ...material,
+                                        progress: lessonProgress.isSurveyPassed ? 100 : 0
+                                    };
+                                default:
+                                    return material;
+                            }
+                        });
+
+                        return {
+                            ...lessonItem,
+                            materials: updatedMaterials
+                        };
+                    }
+
+                    return lessonItem;
+                });
+
+                return {
+                    ...prevState,
+                    progress: sectionProgress,
+                    lessons: updatedLessons
+                };
+            });
+        }
+    }, [JSON.stringify(subscription), JSON.stringify(currentLesson), JSON.stringify(section)]);
+
     if (!currentLesson || !section) {
         return <>{t('loading')}</>;
     }
@@ -114,11 +171,15 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
         material.onClick?.(router);
     };
 
+    const findCurrentLessonIndex = (lessons: { lesson: Identifiable }[], currentLessonId: string): number => {
+        return lessons.findIndex(lesson => lesson.lesson._id === currentLessonId);
+    };
+
     const getNextLessonId = (currentLessonId: string): string | undefined => {
         if (!section) return undefined;
 
         const lessons = section.lessons;
-        const currentIndex = lessons.findIndex(lesson => lesson.lesson._id === currentLessonId);
+        const currentIndex = findCurrentLessonIndex(lessons, currentLessonId);
 
         if (currentIndex === -1 || currentIndex === lessons.length - 1) {
             return undefined;
@@ -246,8 +307,20 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
         <RightSidebar
             content={({ headerClassName }) =>
                 <div className={styles.sidebarContainer}>
-                    <div className={styles.sectionDescription}>{t(`${coursesListPrefix}.section`)}</div>
-                    <h2 className={styles.sectionTitle}>{section.title}</h2>
+                    <div className={styles.sectionTitleContainer}>
+                        <div className={styles.sectionDescription}>{t(`${coursesListPrefix}.section`)}</div>
+                        <h2 className={styles.sectionTitle}>{section.title}</h2>
+                        {section.progress && (
+                            <ProgressBar
+                                progress={section.progress}
+                                gender={Gender.Male}
+                                prefix={coursesListPrefix}
+                                size={ItemSize.Big}
+                                className={styles.sectionBar}
+                                additionalText={`${findCurrentLessonIndex(section.lessons, currentLesson._id) + 1}/${section.lessons.length}`}
+                            />
+                        )}
+                    </div>
                     <div className={styles.lessonsContainer}>
                         {section.lessons.map(({ lesson, materials }, index) => (
                             <CourseListLessonSidebarItem
@@ -269,6 +342,8 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
                                         imageUrl={lesson.imageUrl}
                                         name={material.type.toLowerCase()}
                                         description={material.description}
+                                        progress={material.progress}
+                                        gender={material.gender}
                                     />
                                 ))}
                             </CourseListLessonSidebarItem>

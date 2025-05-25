@@ -6,6 +6,7 @@ import { EnhancedItemType } from "../types/EnhancedItemTypes";
 import { EnhancedItemChildren } from "../types/EnhancedItemChildren";
 import styles from "./EnhancedTablePageItem.module.css";
 import cn from "classnames";
+import { Image } from "@/components/Image/Image";
 
 interface EnhancedTablePageItemProps<T> {
     prefix: IconKey;
@@ -25,6 +26,15 @@ export const EnhancedTablePageItem = <T extends Identifiable>({
     const router = useRouter();
     const onClick = passedOnClick ? () => passedOnClick(item._id) : () => router.push(`/${prefix}/${item._id}?mode=${mode}`);
 
+    const getValueByKeys = (item: any, keys: string[]): string | undefined => {
+        for (const key of keys) {
+            if (item[key]) {
+                return item[key];
+            }
+        }
+        return undefined;
+    };
+
     return (
         <tr className={cn(styles.container, {
             [styles.pointer]: isItemClickable
@@ -33,7 +43,13 @@ export const EnhancedTablePageItem = <T extends Identifiable>({
                 <td key={key.name}>
                     {
                         key.type === EnhancedItemType.Image
-                            ? <img src={(item as any)[key.name]} alt={key.name} className={styles.image} />
+                            ? (
+                                <Image
+                                    src={(item as any)[key.name]}
+                                    alt={getValueByKeys(item, ['username', 'name', 'title']) || ''}
+                                    className={styles.image}
+                                />
+                            )
                             : (item as any)[key.name]
                     }
                 </td>

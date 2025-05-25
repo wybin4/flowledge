@@ -37,13 +37,15 @@ class CourseProgressService(
                 ).flatMap { (sectionProgress, latestVersion) ->
                     val updatedProgress = existingSubscription.progress?.let { progress ->
                         val updatedSections = progress.sections + sectionProgress
-                        val totalProgress = calculateTotalProgress(updatedSections)
+                        val totalSections = latestVersion.sections?.size ?: 0
+                        val totalProgress = calculateTotalProgress(listOf(sectionProgress), totalSections)
                         progress.copy(
                             sections = updatedSections,
                             progress = totalProgress
                         )
                     } ?: run {
-                        val totalProgress = calculateTotalProgress(listOf(sectionProgress))
+                        val totalSections = latestVersion.sections?.size ?: 0
+                        val totalProgress = calculateTotalProgress(listOf(sectionProgress), totalSections)
                         CourseProgressModel(
                             sections = listOf(sectionProgress),
                             progress = totalProgress
@@ -66,7 +68,8 @@ class CourseProgressService(
                     lessonId,
                     type
                 ).flatMap { (sectionProgress, latestVersion) ->
-                    val totalProgress = calculateTotalProgress(listOf(sectionProgress))
+                    val totalSections = latestVersion.sections?.size ?: 0
+                    val totalProgress = calculateTotalProgress(listOf(sectionProgress), totalSections)
                     CourseSubscriptionModel.create(
                         userId = userId,
                         courseId = courseId,
@@ -101,6 +104,11 @@ class CourseProgressService(
                         val updatedSections = progressModel.sections.map { section ->
                             val updatedLessons = section.lessons.map { lesson ->
                                 if (lesson._id == lessonId) {
+                                    val versionLesson = latestVersion.sections
+                                        ?.flatMap { it.lessons ?: emptyList() }
+                                        ?.find { it._id == lessonId }
+                                        ?: throw NoSuchElementException("Урок не найден в версии курса")
+
                                     val updatedLessonProgress = when (type) {
                                         CourseProgressTypeRequest.VIDEO -> lesson.copy(videoProgress = progress)
                                         CourseProgressTypeRequest.SYNOPSIS -> lesson.copy(synopsisProgress = progress)
@@ -108,27 +116,37 @@ class CourseProgressService(
                                         else -> lesson
                                     }
 
-                                    val totalProgress = calculateLessonTotalProgress(updatedLessonProgress)
+                                    val totalProgress =
+                                        calculateLessonTotalProgress(updatedLessonProgress, versionLesson)
                                     updatedLessonProgress.copy(progress = totalProgress)
                                 } else {
                                     lesson
                                 }
                             }
 
-                            val updatedSectionProgress = updatedLessons.map { it.progress }.average()
+                            val versionSection = latestVersion.sections
+                                ?.find { it._id == section._id }
+                                ?: throw NoSuchElementException("Секция не найдена в версии курса")
+
+                            val totalLessons =
+                                versionSection.lessons?.size ?: 0
+
+                            val updatedSectionProgress = updatedLessons.sumOf { it.progress } / totalLessons
                             section.copy(
                                 lessons = updatedLessons,
                                 progress = updatedSectionProgress
                             )
                         }
 
-                        val totalProgress = calculateTotalProgress(updatedSections)
+                        val totalSections = latestVersion.sections?.size ?: 0
+                        val totalProgress = calculateTotalProgress(updatedSections, totalSections)
                         progressModel.copy(
                             sections = updatedSections,
                             progress = totalProgress
                         )
                     } ?: run {
-                        val totalProgress = calculateTotalProgress(listOf(sectionProgress))
+                        val totalSections = latestVersion.sections?.size ?: 0
+                        val totalProgress = calculateTotalProgress(listOf(sectionProgress), totalSections)
                         CourseProgressModel(
                             sections = listOf(sectionProgress),
                             progress = totalProgress
@@ -219,13 +237,11 @@ class CourseProgressService(
         }
     }
 
-    private fun calculateLessonTotalProgress(lesson: CourseProgressLessonModel): Double {
-        val totalItems = listOfNotNull(
-            lesson.videoProgress,
-            lesson.synopsisProgress,
-            if (lesson.isSurveyPassed == true) 100.0 else null
-        ).size
-
+    private fun calculateLessonTotalProgress(
+        lesson: CourseProgressLessonModel,
+        versionLesson: CourseVersionLessonModel
+    ): Double {
+        val totalItems = calculateTotalItems(versionLesson)
         if (totalItems == 0) return 0.0
 
         val totalProgress = listOfNotNull(
@@ -258,8 +274,9 @@ class CourseProgressService(
         }
     }
 
-    private fun calculateTotalProgress(sections: List<CourseProgressSectionModel>): Double {
-        if (sections.isEmpty()) return 0.0
-        return sections.map { it.progress }.average()
+    private fun calculateTotalProgress(sections: List<CourseProgressSectionModel>, totalSections: Int): Double {
+        if (sections.isEmpty() || totalSections == 0) return 0.0
+        val totalProgress = sections.sumOf { it.progress } / totalSections
+        return totalProgress
     }
 }

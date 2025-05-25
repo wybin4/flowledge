@@ -3,6 +3,9 @@ import { useTranslation } from "react-i18next";
 import CollapsibleSectionChild from "@/components/CollapsibleSection/CollapsibleSectionChild";
 import { coursesListPrefix } from "@/helpers/prefixes";
 import { CourseListImage } from "../../CourseListImage/CourseListImage";
+import ProgressBar from "@/components/ProgressBar/ProgressBar";
+import cn from "classnames";
+import { Gender } from "@/types/Gender";
 
 type CourseListLessonSidebarItemChildProps = {
     imageUrl?: string;
@@ -10,11 +13,13 @@ type CourseListLessonSidebarItemChildProps = {
     name: string;
     description: string;
     onClick: () => void;
+    progress?: number;
+    gender: Gender;
 }
 
 export const CourseListLessonSidebarItemChild = ({
     title, imageUrl,
-    name, description,
+    name, description, progress, gender,
     onClick
 }: CourseListLessonSidebarItemChildProps) => {
     const { t } = useTranslation();
@@ -34,7 +39,20 @@ export const CourseListLessonSidebarItemChild = ({
             }
             childClassName={styles.lessonContentContainer}
             titleTextContainerClassName={styles.lessonTitleTextContainer}
-            descriptionClassName={styles.lessonDescription}
+            descriptionClassName={cn(styles.lessonDescription, {
+                [styles.lessonDescriptionWhenProgress]: progress
+            })}
+            children={
+                <>
+                    {!!progress && (
+                        <ProgressBar
+                            progress={progress}
+                            prefix={coursesListPrefix}
+                            gender={gender}
+                        />
+                    )}
+                </>
+            }
         />
     );
 };

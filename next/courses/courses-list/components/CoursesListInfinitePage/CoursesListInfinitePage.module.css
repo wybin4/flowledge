@@ -29,3 +29,34 @@
 
     width: 100%;
 }
+
+.filterSearch {
+    width: 17rem;
+    height: 2.5rem;
+
+    border-radius: 0.9rem;
+
+    font-size: 0.85rem;
+}
+
+.filterSearchIcon {
+    left: 14.9rem;
+}
+
+.filterSearchIcon svg {
+    width: 1.1rem;
+    height: 1.1rem;
+
+    margin-top: -9px !important;
+}
+
+.filterContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.filterItem {
+    font-weight: 400;
+    font-size: 0.95rem;
+}

@@ -4,9 +4,10 @@ import { apiIntegrationsPrefix } from "@/helpers/prefixes";
 
 export const createApiIntegrationTableHeader = (t: TFunction, onSort: (name: string, position?: TopBottomPosition) => void) => {
     const items = [
-        { name: 'name' },
+        { name: 'title' },
         { name: 'status' },
         { name: 'creator' },
+        { name: 'entity', hasNamePostfix: true },
         {
             name: 'createdAt', isSortable: true,
             onSort: (position?: TopBottomPosition) => {
@@ -14,5 +15,10 @@ export const createApiIntegrationTableHeader = (t: TFunction, onSort: (name: str
             }
         }
     ];
-    return items.map(item => ({ name: t(`${apiIntegrationsPrefix}.${item.name}`), isSortable: item.isSortable, onSort: item.onSort }));
+    return items.map(item => (
+        {
+            name: t(`${apiIntegrationsPrefix}.${item.name}${item.hasNamePostfix ? '.name' : ''}`),
+            isSortable: item.isSortable,
+            onSort: item.onSort
+        }));
 }

@@ -37,9 +37,11 @@ const LeftSidebarIcon = memo(({ isExpanded, name, isRedirectable = true, classNa
         i18nKey += `.${i18nAdditionalKey}`;
     }
 
+    const isActive = href && new RegExp(`^${href}(/.*)?$`).test(pathname);
+
     return (
         <div className={cn(styles.container, className, {
-            [styles.active]: href && pathname.includes(href),
+            [styles.active]: isActive,
             [styles.expanded]: isExpanded,
         })} onClick={handleClick}>
             <div>{icon}</div>

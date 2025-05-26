@@ -27,6 +27,7 @@ import { ChildrenPosition } from "@/types/ChildrenPosition";
 import { CreateLessonChildrenProps } from "../CreateLesson";
 import { LessonGetByIdResponse } from "@/courses/courses-hub/dto/LessonGetByIdResponse";
 import { LessonSaveType } from "@/courses/types/LessonSaveType";
+import { ApiIntegrationEntity } from "@/api-integrations/types/ApiIntegration";
 
 enum VideoActionType {
     Synopsis = 'generate-synopsis',
@@ -100,6 +101,9 @@ export const CreateLessonVideo = ({ lessonId, setLesson, videoId: initialVideoId
     const translationPrefix = coursesHubPrefix;
 
     const fileUploadMaxSize = usePrivateSetting<number>('file-upload.max-size') || 104857600;
+    const mappingFromEntitiesToIntegrationIds = usePrivateSetting<string>('api-integrations.map-types-to-integrations') || '';
+
+    const integrationId = getIntegrationIdFromMap(ApiIntegrationEntity.Survey, mappingFromEntitiesToIntegrationIds);
 
     const saveLesson = (body?: LessonToSaveOnDraftRequest) =>
         userApiClient.post<LessonToSaveOnDraftResponse>(
@@ -179,8 +183,8 @@ export const CreateLessonVideo = ({ lessonId, setLesson, videoId: initialVideoId
             let survey: string | undefined = undefined;
             if (createSurvey && createSurvey.value) {
                 setLoadingString(`${coursesHubLessonsPrefixTranslate}.survey-loading`);
-                const { survey: surveyResult } = await integrationApiClient.post<SurveyCreateResponse>('survey.create', {
-                    integration_id: "67e82f27f026b5eeb6f74713", // TODO
+                const { survey: surveyResult } = await integrationApiClient.post<SurveyCreateResponse>('/api/api-integrations.execute', {
+                    integration_id: integrationId,
                     context: {
                         text: synopsis,
                         num_questions: 5

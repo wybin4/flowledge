@@ -7,9 +7,10 @@ import { apiIntegrationsPrefix } from "@/helpers/prefixes"
 export const mapApiIntegrationToTable = (integration: ApiIntegration, locale: string, t: TFunction): ApiIntegrationTableItem => {
     return {
         _id: integration._id,
-        name: integration.name,
+        title: integration.name,
         user: integration.u.username,
         createdAt: getFormattedDateWithTime(integration.createdAt, locale),
+        entity: t(`${apiIntegrationsPrefix}.${integration.entity}`),
         status: integration.enabled ? t(`${apiIntegrationsPrefix}.enabled`) : t(`${apiIntegrationsPrefix}.disabled`),
     }
 }

@@ -244,7 +244,6 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                         isExpanded={true}
                     />
                     <div className={styles.body}>
-
                         <div className={styles.firstBodyChild}>
                             <CoursesHubDetailsHeader
                                 title={t(`${coursesHubEditorsPrefixTranslate}.name`)}

@@ -191,7 +191,8 @@
         "user": "user"
     },
     "api-integrations": {
-        "name": "name",
+        "name": "api integrations",
+        "title": "name",
         "secret": "secret",
         "script": "script",
         "enabled": "enabled",
@@ -203,7 +204,16 @@
         "save": "save api integration",
         "delete": "delete api integration",
         "create": "create api integration",
-        "edit": "edit api integration"
+        "edit": "edit api integration",
+        "survey": "surveys",
+        "entity": {
+            "name": "entity",
+            "description": "an object of the system to which integration can be applied"
+        },
+        "map-types-to-integrations": {
+            "name": "mapping entities to integrations",
+            "description": "mapping entities to specific integration ids that can be applied to them"
+        }
     },
     "courses-hub": {
         "name": "courses hub",

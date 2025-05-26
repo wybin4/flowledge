@@ -1,23 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { TablePageSearch } from "../TablePage/TablePage/TablePageSearch";
-import { useTranslation } from "react-i18next";
-import styles from "./InfiniteSearch.module.css";
-import cn from "classnames";
-import { useIcon } from "@/hooks/useIcon";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ExtendedSearch } from "../ExtendedSearch/ExtendedSearch";
+import styles from "./InfiniteSearch.module.css";
 
-type InfiniteSearchProps = {
-    type?: 'dark' | 'semiDark';
-};
-
-export const InfiniteSearch = ({ type = 'dark' }: InfiniteSearchProps) => {
+export const InfiniteSearch = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
-
-    const { t } = useTranslation();
-
-    const searchIcon = useIcon('input-search');
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -37,13 +26,10 @@ export const InfiniteSearch = ({ type = 'dark' }: InfiniteSearchProps) => {
     };
 
     return (
-        <TablePageSearch
+        <ExtendedSearch
             query={searchQuery}
-            onChange={handleSearchChange}
-            placeholder={t('search')}
-            icon={searchIcon}
+            setQuery={handleSearchChange}
             iconClassName={styles.icon}
-            className={cn(styles.input, styles[type])}
         />
     );
 };

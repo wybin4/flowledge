@@ -102,7 +102,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
                     <TablePageSearch
                         query={searchQuery}
                         onChange={handleSearchChange}
-                        placeholder={`${prefix}.placeholder`}
+                        placeholder={t(`${prefix}.placeholder`)}
                         className={className}
                     />
                     <TablePage

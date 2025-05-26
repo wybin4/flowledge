@@ -249,6 +249,16 @@ class SettingsRegistry {
                 )
             )
         }
+
+        this.addGroup("api-integrations") {
+            addSetting(
+                "map-types-to-integrations",
+                """{"surveys": "integration-id"}""",
+                SettingDetails(
+                    type = SettingType.CODE,
+                )
+            )
+        }
     }
 
     suspend fun saveAllSettings() {

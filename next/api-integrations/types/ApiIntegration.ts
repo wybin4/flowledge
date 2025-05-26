@@ -1,3 +1,7 @@
+export enum ApiIntegrationEntity {
+    Survey = 'survey'
+}
+
 export interface ApiIntegration {
     _id: string;
     name: string;
@@ -10,4 +14,5 @@ export interface ApiIntegration {
     createdAt: string;
     updatedAt: string;
     enabled: boolean;
+    entity: ApiIntegrationEntity;
 }

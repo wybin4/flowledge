@@ -62,6 +62,7 @@ async def get_api_integrations(page: int = 1, pageSize: int = 10, searchQuery: s
             "name": doc["name"],
             "createdAt": doc["createdAt"],
             "enabled": doc["enabled"],
+            "entity": doc["entity"],
             "u": doc["u"]
         }
         integrations.append(filtered_doc)
@@ -89,7 +90,7 @@ async def get_api_integration(integration_id: str):
 @app.post("/api/api-integrations.create", response_model=Any)
 async def create_api_integration(integration: Dict[str, Any]):
     try:
-        required_fields = ["name", "secret", "script", "u", "enabled"]
+        required_fields = ["name", "secret", "script", "u", "enabled", "entity"]
         for field in required_fields:
             if field not in integration:
                 raise HTTPException(status_code=400, detail=f"Отсутствует обязательное поле: {field}")
@@ -101,6 +102,7 @@ async def create_api_integration(integration: Dict[str, Any]):
             "script": integration["script"],
             "u": integration["u"],
             "enabled": integration["enabled"],
+            "entity": integration["entity"],
             "createdAt": datetime.utcnow().isoformat(),
             "updatedAt": datetime.utcnow().isoformat()
         }
@@ -117,6 +119,7 @@ async def update_api_integration(integration_id: str, integration: Dict[str, Any
             "secret": integration.get("secret"),
             "script": integration.get("script"),
             "u": integration.get("u"),
+            "entity": integration.get("entity"),
             "enabled": integration.get("enabled"),
             "updatedAt": datetime.utcnow().isoformat()
         }
@@ -187,7 +190,7 @@ class ExecuteScriptRequest(BaseModel):
     integration_id: str
     context: Dict[str, Any]
 
-@app.post("/api/survey.create")
+@app.post("/api/api-integrations.execute")
 async def execute_script_route(request: ExecuteScriptRequest):
     """
     Извлекает скрипт из базы данных по идентификатору интеграции и выполняет его.

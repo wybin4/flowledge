@@ -1,26 +1,3 @@
-.input {
-    max-width: 23.4375rem;
-    height: 2.9rem;
-
-    border-radius: 1.125rem;
-
-    margin: 0;
-    margin-bottom: 0.6rem;
-
-    padding-right: 1rem;
-}
-
-.dark {
-    background-color: var(--card);
-    border-color: var(--card-border);
-}
-
 .icon {
     left: 21rem;
-
-    color: var(--input-border);
-}
-
-.icon svg {
-    cursor: pointer !important;
 }

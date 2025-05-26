@@ -13,10 +13,8 @@ import { CourseWithSubscriptionItem } from "../../types/CourseItem";
 import styles from "./CoursesListInfinitePage.module.css";
 import defaultStyles from "@/courses/styles/Default.module.css";
 import cn from "classnames";
-import CollapsibleSection from "@/components/CollapsibleSection/CollapsibleSection";
-import { InfiniteSearch } from "@/components/InfiniteSearch/InfiniteSearch";
-import { Dropdown } from "@/components/Dropdown/Dropdown";
-import { InfiniteSelector } from "@/components/InfiniteSelector/InifiniteSelector";
+import { CoursesListInfiniteFilters } from "./CoursesListInfiniteFilters";
+import { NothingFound } from "@/components/NothingFound/NothingFound";
 
 export const CoursesListInfinitePage = () => {
     const [excludedIds, setExcludedIds] = useState<string[] | undefined>(undefined);
@@ -26,6 +24,8 @@ export const CoursesListInfinitePage = () => {
 
     const [visibleSubscriptions, setVisibleSubscriptions] = useState<CourseWithSubscriptionItem[] | undefined>(undefined);
     const [countSubscriptions, setCountSubscriptions] = useState<number | undefined>(undefined);
+
+    const [restCourses, setRestCourses] = useState<CourseWithSubscriptionItem[] | undefined>(undefined);
 
     const pageSize = usePrivateSetting<number>('preview-page-size') || 5;
 
@@ -65,6 +65,10 @@ export const CoursesListInfinitePage = () => {
 
     const { t } = useTranslation();
 
+    if (!visibleFavourites?.length && !visibleSubscriptions?.length && !restCourses?.length) {
+        return (<NothingFound />);
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.first}>
@@ -102,40 +106,16 @@ export const CoursesListInfinitePage = () => {
                 }
                 {excludedIds &&
                     <CoursesListInfinite
+                        courses={restCourses}
+                        setCourses={setRestCourses}
                         searchQuery={''}
                         excludedIds={excludedIds}
                     />
                 }
             </div>
             <div className={cn(defaultStyles.itemContainer, styles.second)}>
-                <CollapsibleSection
-                    expandedDeg={-180}
-                    collapsedDeg={0}
-                    title={t('tags')}
-                    expandedByDefault={true}
-                    iconPrefix='-little'
-                    contentExpandedClassName={styles.collapsed}
-                    headerClassName={styles.collapsedHeader}
-                >
-                    <InfiniteSelector placeholder='select' />
-                </CollapsibleSection>
-                <CollapsibleSection
-                    expandedDeg={-180}
-                    collapsedDeg={0}
-                    title={t('duration')}
-                    iconPrefix='-little'
-                    contentExpandedClassName={styles.collapsed}
-                    headerClassName={styles.collapsedHeader}
-                />
-                <CollapsibleSection
-                    expandedDeg={-180}
-                    collapsedDeg={0}
-                    title={t('type')}
-                    iconPrefix='-little'
-                    contentExpandedClassName={styles.collapsed}
-                    headerClassName={styles.collapsedHeader}
-                />
+                <CoursesListInfiniteFilters />
             </div>
-        </div >
+        </div>
     );
 };

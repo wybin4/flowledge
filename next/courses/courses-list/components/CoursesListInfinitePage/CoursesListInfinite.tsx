@@ -4,21 +4,22 @@ import { coursesListPrefixApi } from "@/helpers/prefixes";
 import { useEnhancedPagination } from "@/hooks/useEnhancedPagination";
 import { CourseItem, CourseWithSubscriptionItem } from "../../types/CourseItem";
 import { CoursesListItem } from "../CoursesListItem/CoursesListItem/CoursesListItem";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { CoursesListHeader } from "../CoursesListHeader/CoursesListHeader";
 import { useTranslation } from "react-i18next";
-import { CourseSubscriptionItem } from "../../types/CourseSubscriptionItem";
 
 type CoursesListInfiniteProps = {
     excludedIds: string[];
     searchQuery: string;
+    courses?: CourseWithSubscriptionItem[];
+    setCourses: (newCourses?: CourseWithSubscriptionItem[]) => void;
 };
 
 export const CoursesListInfinite = ({
+    courses, setCourses,
     excludedIds,
     searchQuery
 }: CoursesListInfiniteProps) => {
-    const [courses, setCourses] = useState<CourseWithSubscriptionItem[] | undefined>(undefined);
     const { t } = useTranslation();
 
     const { data } = useEnhancedPagination<CourseItem>({

@@ -1,6 +1,6 @@
 "use client";
 
-import { ApiIntegration } from "../types/ApiIntegration";
+import { ApiIntegration, ApiIntegrationEntity } from "../types/ApiIntegration";
 import { apiIntegrationsPrefix } from "@/helpers/prefixes";
 import { integrationApiClient, neuralApiClient } from "@/apiClient";
 import EnhancedItem from "@/components/TablePage/EnhancedTablePage/EnhancedItem/EnhancedItem";
@@ -9,6 +9,8 @@ import { TablePageMode } from "@/types/TablePageMode";
 import { ApiIntegrationToSave } from "../types/ApiIntegrationToSave";
 import { fakeUser } from "@/helpers/fakeUser";
 import { usePermission } from "@/hooks/usePermission";
+import { ChildrenPosition } from "@/types/ChildrenPosition";
+import { useTranslation } from "react-i18next";
 
 interface ApiIntegrationItemProps {
     mode: TablePageMode;
@@ -17,6 +19,7 @@ interface ApiIntegrationItemProps {
 
 export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
     const isPermitted = usePermission('manage-integrations');
+    const { t } = useTranslation();
 
     return (
         <EnhancedItem<ApiIntegration, ApiIntegrationToSave>
@@ -29,9 +32,20 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
             _id={_id}
             settingKeys={[
                 { name: 'enabled', types: [SettingType.Radio] },
-                { name: 'name', types: [SettingType.InputText] },
+                { name: 'title', types: [SettingType.InputText] },
                 { name: 'secret', types: [SettingType.InputPassword] },
-                { name: 'script', types: [SettingType.Code] }
+                { name: 'script', types: [SettingType.Code] },
+                {
+                    name: 'entity', hasDescription: true, types: [SettingType.SelectorInfinite],
+                    additionalProps: {
+                        options: [
+                            {
+                                label: t(`${apiIntegrationsPrefix}.survey`),
+                                value: ApiIntegrationEntity.Survey
+                            },
+                        ]
+                    }
+                }
             ]}
             apiClient={integrationApiClient}
             transformItemToSave={(item) => {
@@ -40,7 +54,8 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
                 return body;
             }}
             backButton={{
-                hasBackButtonIcon: true
+                hasBackButtonIcon: true,
+                type: ChildrenPosition.Left
             }}
             createEmptyItem={() => ({
                 _id: "",
@@ -53,8 +68,10 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
                 },
                 createdAt: "",
                 updatedAt: "",
-                enabled: false
+                enabled: false,
+                entity: ApiIntegrationEntity.Survey
             })}
+            hasDeleteDescription={false}
         />
     );
 };

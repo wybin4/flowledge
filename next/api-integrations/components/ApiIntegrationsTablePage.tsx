@@ -40,9 +40,10 @@ export const ApiIntegrationsTablePage = () => {
             getHeaderItems={getHeaderItems}
             transformData={mapApiIntegrationToTable}
             itemKeys={[
-                { name: 'name', type: EnhancedItemType.Text },
+                { name: 'title', type: EnhancedItemType.Text },
                 { name: 'status', type: EnhancedItemType.Text },
                 { name: 'user', type: EnhancedItemType.Text },
+                { name: 'entity', type: EnhancedItemType.Text },
                 { name: 'createdAt', type: EnhancedItemType.Text },
             ]}
         />

@@ -31,7 +31,7 @@ export type LessonsPageProps = {
     setLesson?: Dispatch<SetStateAction<LessonPageItem>>;
     flags?: LessonsPageFlags;
     classNames?: string;
-    onProgress: (percent: number) => void;
+    onProgress?: (percent: number) => void;
 };
 
 export const LessonPage = ({
@@ -74,7 +74,7 @@ export const LessonPage = ({
                     <h1 className={styles.title}>{title}</h1>
                 </div>
             }
-            {!flags?.hideVideo && lesson.videoUrl && (
+            {onProgress && !flags?.hideVideo && lesson.videoUrl && (
                 <VideoPlayer
                     src={lesson.videoUrl}
                     poster={lesson.imageUrl}

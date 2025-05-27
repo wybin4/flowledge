@@ -48,8 +48,8 @@
     margin-top: 0.4rem;
 }
 
-.expanded .logo {
-    margin-left: -1.2rem;
+.logoExpanded {
+    margin-left: -1.1rem;
 }
 
 .logo svg {

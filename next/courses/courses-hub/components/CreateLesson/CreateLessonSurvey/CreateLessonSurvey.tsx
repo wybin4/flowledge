@@ -30,7 +30,7 @@ interface CreateLessonSurveyProps extends CreateLessonChildrenProps {
     survey?: Survey;
 };
 
-export const CreateLessonSurvey = ({ lessonId, selectedQuestionId, survey, questions: initialQuestions }: CreateLessonSurveyProps) => {
+export const CreateLessonSurvey = ({ courseId, lessonId, selectedQuestionId, survey, questions: initialQuestions }: CreateLessonSurveyProps) => {
     const handleScrollToQuestion = useAddQuestionToUrl();
 
     const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
@@ -90,7 +90,8 @@ export const CreateLessonSurvey = ({ lessonId, selectedQuestionId, survey, quest
             `${coursesHubLessonsPrefixApi}.create`, {
             type: LessonSaveType.Survey,
             _id: lessonId,
-            questions
+            questions,
+            courseId
         }).then(_ => {
             router.push(removeLastSegment(currentPath));
         });

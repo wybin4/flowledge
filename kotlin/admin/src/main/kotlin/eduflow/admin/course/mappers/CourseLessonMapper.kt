@@ -13,6 +13,7 @@ interface CourseLessonMapper {
     fun toLessonGetHubResponse(
         lesson: CourseLessonModel,
         survey: CourseLessonSurveyModel?,
+        isVisible: Boolean? = null,
         isDraft: Boolean? = null,
         videoId: String? = null,
     ): LessonGetHubResponse

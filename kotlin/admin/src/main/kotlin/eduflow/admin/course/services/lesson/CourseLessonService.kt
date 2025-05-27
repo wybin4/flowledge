@@ -295,6 +295,7 @@ class CourseLessonService(
                                     lessonMapper.toLessonGetHubResponse(
                                         lesson,
                                         survey,
+                                        lessonInVersion.isVisible,
                                         lessonInVersion.isDraft,
                                         lessonInVersion.videoId
                                     )
@@ -304,6 +305,7 @@ class CourseLessonService(
                                 lessonMapper.toLessonGetHubResponse(
                                     lesson,
                                     null,
+                                    lessonInVersion.isVisible,
                                     lessonInVersion.isDraft,
                                     lessonInVersion.videoId
                                 )

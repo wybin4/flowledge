@@ -65,7 +65,7 @@ class CourseSectionService(
                         courseVersionService.updateCurrentVersion(
                             courseId = request.courseId,
                             sections = updatedSections,
-                            versionId = if (createNew) version._id else null,
+                            versionId = if (!createNew) version._id else null,
                             versionName = version.name,
                             isMajor = true
                         )
@@ -88,7 +88,7 @@ class CourseSectionService(
             courseVersionService.updateCurrentVersion(
                 courseId = courseId,
                 sections = updatedSections,
-                versionId = if (createNew) version._id else null,
+                versionId = if (!createNew) version._id else null,
                 versionName = version.name,
                 isMajor = true
             )

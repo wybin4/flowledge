@@ -45,7 +45,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
         const { hasDescription, additionalProps, types } = props;
         const isMulti = (types?.length || 0) > 1;
-
+       
         return {
             setting: {
                 _id: key,
@@ -104,7 +104,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
             return null;
         });
     };
-
+ 
     return (
         <>
             {hasTitle && <h2 className={styles.title}>{title}</h2>}

@@ -23,7 +23,7 @@ interface CreateLessonDetailsProps extends CreateLessonChildrenProps {
     imageUrl?: string;
 }
 
-export const CreateLessonDetails = ({ lessonId, title, time, imageUrl, hasVideo }: CreateLessonDetailsProps) => {
+export const CreateLessonDetails = ({ courseId, lessonId, title, time, imageUrl, hasVideo }: CreateLessonDetailsProps) => {
     const { t } = useTranslation();
     const translationPrefix = coursesHubLessonsPrefixTranslate;
 
@@ -111,7 +111,7 @@ export const CreateLessonDetails = ({ lessonId, title, time, imageUrl, hasVideo 
             ]}
             transformItemToSave={item => {
                 const { _id, title, time } = item;
-                return { _id, title, ...time, type: LessonSaveType.Details }
+                return { _id, title, courseId, ...time, type: LessonSaveType.Details }
             }}
             onActionCallback={() => router.push('?synopsis=true')}
             isBackWithRouter={false}

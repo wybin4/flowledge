@@ -68,7 +68,7 @@ class CourseLessonSurveyService(
                 val result = lessonVersionService.getLessonInVersion(version, request._id)
                 if (result != null) {
                     val (lessonInVersion, _) = result
-                    if (lessonInVersion?.surveyId != null) {
+                    if (lessonInVersion.surveyId != null) {
                         surveyRepository.findById(lessonInVersion.surveyId)
                             .flatMap { existingSurvey ->
                                 val updatedSurvey = existingSurvey.copy(

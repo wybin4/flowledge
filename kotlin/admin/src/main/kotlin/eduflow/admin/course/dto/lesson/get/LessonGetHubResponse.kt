@@ -11,6 +11,7 @@ data class LessonGetHubResponse(
     override val imageUrl: String?,
 
     val isDraft: Boolean?,
+    val isVisible: Boolean?,
 
     override val synopsisText: String?,
     override val surveyText: String?,

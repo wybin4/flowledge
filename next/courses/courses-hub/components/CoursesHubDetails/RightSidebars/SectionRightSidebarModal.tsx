@@ -58,7 +58,7 @@ export const SectionRightSidebarModal = ({
             ]}
             apiClient={userApiClient}
             transformItemToSave={(item) => {
-                const { title, courseId, isVisible } = item;
+                const { title, isVisible } = item;
                 if (!validateSectionTitle(title)) {
                     throw new Error('Invalid section title');
                 }

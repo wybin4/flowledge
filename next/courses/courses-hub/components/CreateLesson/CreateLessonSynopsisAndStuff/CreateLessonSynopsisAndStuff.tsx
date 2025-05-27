@@ -20,10 +20,10 @@ interface CreateLessonSynopsisAndStuffProps extends CreateLessonChildrenProps {
     stuffList?: LessonStuff[];
 }
 
-export const CreateLessonSynopsisAndStuff = ({ lessonId, synopsisText, stuffList }: CreateLessonSynopsisAndStuffProps) => {
+export const CreateLessonSynopsisAndStuff = ({ lessonId, synopsisText, stuffList, courseId }: CreateLessonSynopsisAndStuffProps) => {
     const saveItem = () => userApiClient.post(
         `${coursesHubLessonsPrefixApi}.create`, {
-        ...lesson, type: LessonSaveType.Synopsis
+        ...lesson, type: LessonSaveType.Synopsis, courseId
     });
 
     const initialLesson: LessonPageItem = {

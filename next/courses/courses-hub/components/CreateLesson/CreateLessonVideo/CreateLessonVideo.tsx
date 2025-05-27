@@ -28,6 +28,7 @@ import { CreateLessonChildrenProps } from "../CreateLesson";
 import { LessonGetByIdResponse } from "@/courses/courses-hub/dto/LessonGetByIdResponse";
 import { LessonSaveType } from "@/courses/types/LessonSaveType";
 import { ApiIntegrationEntity } from "@/api-integrations/types/ApiIntegration";
+import { getIntegrationIdFromMap } from "@/api-integrations/functions/getIntegrationId";
 
 enum VideoActionType {
     Synopsis = 'generate-synopsis',
@@ -57,7 +58,7 @@ interface CreateLessonVideoProps extends CreateLessonChildrenProps {
     videoId?: string;
 }
 
-export const CreateLessonVideo = ({ lessonId, setLesson, videoId: initialVideoId }: CreateLessonVideoProps) => {
+export const CreateLessonVideo = ({ courseId, lessonId, setLesson, videoId: initialVideoId }: CreateLessonVideoProps) => {
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -104,10 +105,10 @@ export const CreateLessonVideo = ({ lessonId, setLesson, videoId: initialVideoId
     const mappingFromEntitiesToIntegrationIds = usePrivateSetting<string>('api-integrations.map-types-to-integrations') || '';
 
     const integrationId = getIntegrationIdFromMap(ApiIntegrationEntity.Survey, mappingFromEntitiesToIntegrationIds);
-
+   
     const saveLesson = (body?: LessonToSaveOnDraftRequest) =>
         userApiClient.post<LessonToSaveOnDraftResponse>(
-            `${coursesHubLessonsPrefixApi}.create`, body
+            `${coursesHubLessonsPrefixApi}.create`, { ...body, courseId }
         );
 
     const checkIcon = useIcon('round-check');

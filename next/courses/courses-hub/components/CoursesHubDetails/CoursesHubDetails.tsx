@@ -294,7 +294,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                                     `${coursesHubLessonsPrefixApi}.create`,
                                                     {
                                                         type: LessonSaveType.Draft,
-                                                        sectionId: section.section._id, courseId: section.section.courseId
+                                                        sectionId: section.section._id, courseId: course._id
                                                     }
                                                 ).then(({ lessonId }) => {
                                                     router.push(`/${coursesHubPrefix}/${course._id}/${lessonId}?video=true`);

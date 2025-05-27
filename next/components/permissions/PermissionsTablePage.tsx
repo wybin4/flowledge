@@ -69,7 +69,7 @@ export const PermissionsTablePage = () => {
                     <TablePageSearch
                         query={searchQuery}
                         onChange={handleSearchChange}
-                        placeholder={`${permissionsPrefix}.placeholder`}
+                        placeholder={t(`${permissionsPrefix}.placeholder`)}
                     />
                     <TablePage
                         header={

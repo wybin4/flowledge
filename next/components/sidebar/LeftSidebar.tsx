@@ -9,6 +9,7 @@ import { clearTokensClient } from "@/auth/tokens";
 import { useRouter } from "next/navigation";
 import { usePermissions } from "@/hooks/usePermissions";
 import LeftSidebarIcon from "./LeftSidebarIcon/LeftSidebarIcon";
+import { useIcon } from "@/hooks/useIcon";
 
 const sidebarPermissions = [
     'view-private-settings',
@@ -19,7 +20,11 @@ const sidebarPermissions = [
     'view-integrations'
 ];
 
-export default function LeftSidebar({ children }: { children: (isExpanded: boolean) => ReactNode }) {
+type LeftSidebarProps = {
+    children: (isExpanded: boolean) => ReactNode;
+};
+
+export default function LeftSidebar({ children }: LeftSidebarProps) {
     const { isExpanded, hydrated, toggleSidebar } = useSidebar('left');
 
     const [
@@ -46,12 +51,12 @@ export default function LeftSidebar({ children }: { children: (isExpanded: boole
                 })}
             >
                 <div
-                    className={cn(styles.item, {
+                    className={cn(styles.item, 'leftSidebar', {
                         [styles.expanded]: isExpanded,
                         [styles.collapsed]: !isExpanded,
                     })}
                 >
-                    <h2>EF</h2>
+                    <LeftSidebarIcon name='logo' isRedirectable={false} isExpanded={isExpanded} />
 
                     <div className={styles.nav}>
                         <div>

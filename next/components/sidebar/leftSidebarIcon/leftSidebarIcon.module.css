@@ -38,3 +38,26 @@
     width: 1.625rem;
     height: 1.625rem;
 }
+
+.logo {
+    display: flex;
+    justify-content: center;
+}
+
+.logo {
+    margin-top: 0.4rem;
+}
+
+.expanded .logo {
+    margin-left: -1.2rem;
+}
+
+.logo svg {
+    width: 2.2rem;
+    height: 1.875rem;
+}
+
+.logo:hover {
+    filter: brightness(70%);
+    background-color: transparent;
+}

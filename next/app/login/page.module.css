@@ -1,0 +1,52 @@
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+    width: 50%;
+
+    margin: 0 auto;
+}
+
+.button {
+    width: 100%;
+
+    font-weight: 600;
+    font-size: 1rem;
+
+    border-radius: 0.7rem;
+
+    padding: .9rem 1rem .9rem 1.3rem !important;
+    margin-top: 1rem;
+}
+
+.icon svg {
+    width: 15rem;
+
+    stroke-width: 0.5px;
+}
+
+.description {
+    font-size: 0.9rem;
+    color: var(--description-text);
+
+    margin-top: -0.2rem;
+}
+
+.slogan {
+    font-weight: 600;
+    font-size: 1.6rem;
+
+    margin-top: -4rem;
+    margin-bottom: 2rem;
+}
+
+.field {
+    width: 100%;
+}
+
+.fieldTitle {
+    margin-bottom: 0.7rem;
+}

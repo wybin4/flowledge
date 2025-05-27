@@ -14,7 +14,15 @@
         "courses-list": "courses list",
         "course-tags": "tags",
         "users": "users",
-        "logout": "logout"
+        "logout": "logout",
+        "logo": "flowledge"
+    },
+    "login": {
+        "slogan": "the path to knowledge without stops",
+        "username": "username*",
+        "password": "password*",
+        "button": "log in",
+        "description": "if you don't have an account, contact the administrator to get one"
     },
     "name": "name",
     "user-default": {
@@ -30,7 +38,7 @@
             },
             "language": {
                 "name": "language",
-                "description": "any text that isn't translated will be displayed in english",
+                "description": "any text that isn't translated will be displayed in russian",
                 "placeholder": "preferred language",
                 "en": "english",
                 "ru": "russian"

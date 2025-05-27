@@ -65,6 +65,10 @@ body {
   font-family: "IBM Plex Mono", "Noto Sans Mono Variable", "Noto Sans Mono", monospace;
 }
 
+.hide-sidebar .leftSidebar {
+  display: none !important;
+}
+
 .no-scroll {
   overflow: hidden;
 }

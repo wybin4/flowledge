@@ -7,7 +7,7 @@ import { useUserSetting } from "@/user/hooks/useUserSetting";
 import { Language } from "@/user/types/Language";
 
 export function LanguageWrapper({ children }: { children: ReactNode }) {
-    const language = useUserSetting<Language>('language') || Language.EN;
+    const language = useUserSetting<Language>('language') || Language.RU;
 
     useEffect(() => {
         if (language) {

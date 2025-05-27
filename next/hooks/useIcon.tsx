@@ -72,6 +72,7 @@ import LogoutIcon from "../assets/logout.svg";
 import FlagIcon from "../assets/flag.svg";
 import SurveyIcon from "../assets/survey.svg";
 import InputSearchIcon from "../assets/input-search.svg";
+import LogoIcon from "../assets/logo.svg";
 
 const icons = {
     'permissions': <PermissionsIcon />,
@@ -163,7 +164,9 @@ const icons = {
     'flag': <FlagIcon />,
     'survey': <SurveyIcon />,
 
-    'input-search': <InputSearchIcon />
+    'input-search': <InputSearchIcon />,
+
+    'logo': <LogoIcon />
 } as const;
 
 export type IconKey = keyof typeof icons;

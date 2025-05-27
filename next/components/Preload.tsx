@@ -5,11 +5,12 @@ import { Permissions } from "@/collections/Permissions";
 import { PrivateSettings } from "@/collections/PrivateSettings";
 import { Roles } from "@/collections/Roles";
 import UserService from "@/user/UserService";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 
 const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [loading, setLoading] = useState<boolean>(true);
+    const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
@@ -23,6 +24,8 @@ const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
                 UserService.subscribeToUserChanges();
 
                 setLoading(false);
+                document.body.classList.remove('hide-sidebar');
+                router.push('');
             } catch (error) {
                 console.error("Error loading settings:", error);
             }
@@ -30,7 +33,15 @@ const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
         loadUserSettings();
     }, []);
 
+    useEffect(() => {
+        if (pathname == '/login') {
+            console.log('pl1', document.body.classList.contains('hide-sidebar'));
+            document.body.classList.add('hide-sidebar');
+        }
+    }, [pathname]);
+
     if (loading && pathname != '/login') {
+        router.push('/login');
         return <div>Loading...</div>;
     }
 

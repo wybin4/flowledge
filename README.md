@@ -18,21 +18,18 @@
 - Управление пользователями, права и роли, настройки, аутентификация (LDAP и парольный fallback), работа с медиа, работа с курсами и их контентом, версионирование и публикация курсов
 - Инструментарий: Kotlin, Spring Boot, MongoDB, MongoDB Reactive, Spring Security, Spring LDAP, Spring Boot WebSocket, JWT
 
-<img width="600px" src="https://github.com/wybin4/flowledge/blob/master/assets/user-sphere-backend.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/user-sphere-backend.png"/>
 
 ### 3. **Фронтенд**
 - Инструментарий: Next.js & TypeScript, CodeMirror, Dnd Kit, Redux & React Redux, StompJS, LokiJS, React Query, React Select, React Modal, i18next
 
-<img width="600px" src="https://github.com/wybin4/flowledge/blob/master/assets/frontend.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/frontend.png"/>
 
 ### 3. **Дизайн**
 - [Figma](https://www.figma.com/design/pbl6x7VHdzOTV24OEC1rdy/flowledge?node-id=704-34&t=B5dZqG2KaboCVLCc-1): Референсы, айдентика (сгенерировано), макеты, скриншоты
 - [Структурные карты](https://xmind.ai/ra1CxfB7)
 
-<video width="100%" controls>
-  <source src="https://github.com/wybin4/flowledge/blob/master/assets/video.mp4" type="video/mp4">
-  Ваш браузер не поддерживает видео.
-</video>
+[Видео](https://github.com/wybin4/flowledge/blob/master/assets/video.mp4)
 
 if error `MongoServerError[AlreadyInitialized]: already initialized` persists use
 ```

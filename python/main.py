@@ -14,7 +14,7 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, T5ForConditionalG
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import torch
-from motor.motor_asyncio import AsyncIOMotorClient  # Импортируем AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from typing import List, Any, Dict
 from bson import ObjectId
@@ -22,7 +22,6 @@ from datetime import datetime
 from gridfs import GridFSBucket
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 
-# Инициализация FastAPI
 app = FastAPI(
     title="Whisper Speech-to-Text API",
     description="API для распознавания речи с Faster Whisper и пунктуацией",
@@ -31,24 +30,21 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Разрешаем CORS-запросы
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Укажите адрес фронтенда
+    allow_origins=["http://localhost:3000"], 
     allow_credentials=True,
-    allow_methods=["*"],  # Разрешаем все методы (GET, POST и т. д.)
-    allow_headers=["*"],  # Разрешаем все заголовки
+    allow_methods=["*"], 
+    allow_headers=["*"], 
 )
 
-# Загружаем модели
-whisper_model = WhisperModel("medium", device="cpu", compute_type="int8")  # Оптимизация для CPU
+whisper_model = WhisperModel("medium", device="cpu", compute_type="int8")
 punctuation_model = PunctuationModel()
 
 FRAME_RATE = 16000
 CHANNELS = 1
-CHUNK_SIZE = 30 * 1000  # 30 секунд в миллисекундах
+CHUNK_SIZE = 30 * 1000 
 
-# Создание папки для загрузок
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -56,7 +52,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 MONGODB_URL = "mongodb://127.0.0.1:27017/flowledge?directConnection=true&serverSelectionTimeoutMS=2000"
 client = AsyncIOMotorClient(MONGODB_URL)
-db = client["flowledge"]  # Замените на имя вашей базы данных
+db = client["flowledge"] 
 files_collection = db["uploads"] 
 fs = AsyncIOMotorGridFSBucket(db)
 
@@ -85,15 +81,15 @@ def transcribe_audio_whisper(audio_path: str) -> str:
 
 def capitalize_sentences(text: str) -> str:
     """Делает первую букву после точки заглавной и добавляет перенос строки после каждого предложения"""
-    sentences = re.split(r'([.?!])\s*', text)  # Разбиваем текст, сохраняя знаки препинания
+    sentences = re.split(r'([.?!])\s*', text) 
     formatted_text = ""
 
     for i in range(0, len(sentences) - 1, 2):
-        sentence = sentences[i].strip().capitalize()  # Делаем заглавной первую букву
-        punctuation = sentences[i + 1]  # Берем знак препинания
-        formatted_text += f"{sentence}{punctuation}\n"  # Добавляем перенос строки после предложения
+        sentence = sentences[i].strip().capitalize() 
+        punctuation = sentences[i + 1] 
+        formatted_text += f"{sentence}{punctuation}\n" 
 
-    return formatted_text.strip()  # Убираем лишние пробелы/переносы в начале и конце
+    return formatted_text.strip() 
 
 def add_punctuation(text: str) -> str:
     """Добавляет пунктуацию и исправляет заглавные буквы"""
@@ -110,45 +106,37 @@ class CreateSynopsisRequest(BaseModel):
 @app.post("/api/synopsis.create")
 async def create_synopsis(request: CreateSynopsisRequest):
     """Получает файл из GridFS по fileId, извлекает аудио, разбивает на чанки, обрабатывает параллельно и объединяет результат"""
-    return {
-        "synopsis":  "Чтобы научиться ходить – надо ходить, чтобы научиться подтягиваться – надо подтягиваться, чтобы научиться решать задачи по физике – надо решать задачи по физике. Так говорил преподаватель физики в моём университете, и эта аналогия применима и к программированию. Можно сколько угодно упираться в сухую теорию, но без применения своих знаний на практике научиться программировать невозможно. В этой статье я подобрал несколько проектов для начинающих python-разработчиков. Эти проекты помогут закрепить теорию, применить полученные знания на практике и набить руку в написании кода. Некоторые из них даже можно добавить в будущее портфолио. Я объясню, чем хорош каждый проект, какие навыки и темы он позволяет проработать, а также сориентирую какие библиотеки и технологии можно использовать для его реализации. Цель данного 'топа' – это не создание самого оригинального портфолио и не перечисление уникальных проектов. Цель статьи разобраться в простых вещах, технологиях и темах, которые помогут развить практические навыки программирования. Поэтому не стоит ждать здесь сборку Оптимуса Прайма, программирование Звезды смерти и создание двигателя на китовом жире. Мы пройдёмся по простым, но в тоже время базовым вещам. Ведь как говорил один мой приятель: «Всё великое начинается с малого».",
-        "filename": "234"
-    }
-    # fileId = request.fileId
-    # try:
-    #     # Получаем файл из GridFS
-    #     file = await fs.open_download_stream(ObjectId(fileId))
-    #     if not file:
-    #         raise HTTPException(status_code=404, detail="Файл не найден")
-    #     print(file)
-    #     # Сохраняем файл временно для обработки
-    #     video_path = os.path.join(UPLOAD_DIR, file.filename)
-    #     with open(video_path, "wb") as buffer:
-    #         buffer.write(await file.read())
+    fileId = request.fileId
+    try:
+        file = await fs.open_download_stream(ObjectId(fileId))
+        if not file:
+            raise HTTPException(status_code=404, detail="Файл не найден")
+        print(file)
+        video_path = os.path.join(UPLOAD_DIR, file.filename)
+        with open(video_path, "wb") as buffer:
+            buffer.write(await file.read())
 
-    #     # Обработка файла
-    #     audio_path = video_path.rsplit(".", 1)[0] + ".wav"
-    #     extract_audio(video_path, audio_path)
-    #     chunk_paths = split_audio(audio_path)
+        audio_path = video_path.rsplit(".", 1)[0] + ".wav"
+        extract_audio(video_path, audio_path)
+        chunk_paths = split_audio(audio_path)
 
-    #     print(audio_path)
+        print(audio_path)
 
-    #     # Обработка чанков в несколько потоков
-    #     with ThreadPoolExecutor() as executor:
-    #         transcriptions = list(executor.map(transcribe_audio_whisper, chunk_paths))
-    #         punctuated_texts = list(executor.map(add_punctuation, transcriptions))
+        with ThreadPoolExecutor() as executor:
+            transcriptions = list(executor.map(transcribe_audio_whisper, chunk_paths))
+            punctuated_texts = list(executor.map(add_punctuation, transcriptions))
 
-    #     full_transcription = " ".join(punctuated_texts)
+        full_transcription = " ".join(punctuated_texts)
 
-    #     os.remove(video_path)
-    #     os.remove(audio_path) 
-    #     for chunk_path in chunk_paths:
-    #         os.remove(chunk_path)
+        os.remove(video_path)
+        os.remove(audio_path) 
+        for chunk_path in chunk_paths:
+            os.remove(chunk_path)
 
-    #     return {
-    #         "synopsis": full_transcription,
-    #         "filename": file.filename
-    #     }
+        return {
+            "synopsis": full_transcription,
+            "filename": file.filename
+        }
 
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

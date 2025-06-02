@@ -1,4 +1,4 @@
-package eduflow.admin.course.repositories.subscription
+package flowledge.admin.course.repositories.subscription
 
 import reactor.core.publisher.Mono
 

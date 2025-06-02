@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.course.section
+package flowledge.admin.course.dto.course.section
 
 data class CourseGetSectionResponse(
     val _id: String,

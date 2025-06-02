@@ -1,6 +1,6 @@
-package eduflow.admin.services
+package flowledge.admin.services
 
-import eduflow.admin.repositories.PrivateSettingRepository
+import flowledge.admin.repositories.PrivateSettingRepository
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass

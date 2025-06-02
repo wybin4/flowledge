@@ -1,4 +1,4 @@
-package eduflow.user
+package flowledge.user
 
 interface ResumeService {
     var jwtToken: String?

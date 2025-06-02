@@ -1,4 +1,4 @@
-package eduflow.course
+package flowledge.course
 
 import java.util.*
 

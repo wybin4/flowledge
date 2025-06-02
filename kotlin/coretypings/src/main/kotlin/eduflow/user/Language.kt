@@ -1,4 +1,4 @@
-package eduflow.user
+package flowledge.user
 
 enum class Language {
     EN, RU

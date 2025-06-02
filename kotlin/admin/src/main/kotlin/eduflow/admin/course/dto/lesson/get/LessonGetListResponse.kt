@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.lesson.get
+package flowledge.admin.course.dto.lesson.get
 
 data class LessonGetListResponse(
     val _id: String,

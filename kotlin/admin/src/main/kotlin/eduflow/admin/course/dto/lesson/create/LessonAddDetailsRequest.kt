@@ -1,6 +1,6 @@
-package eduflow.admin.course.dto.lesson.create
+package flowledge.admin.course.dto.lesson.create
 
-import eduflow.admin.course.types.TimeUnit
+import flowledge.admin.course.types.TimeUnit
 
 data class LessonAddDetailsRequest(
     override val _id: String,

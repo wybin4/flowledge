@@ -1,6 +1,6 @@
-package eduflow.admin.course.models.course.version
+package flowledge.admin.course.models.course.version
 
-import eduflow.course.course.version.CourseVersionLesson
+import flowledge.course.course.version.CourseVersionLesson
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document

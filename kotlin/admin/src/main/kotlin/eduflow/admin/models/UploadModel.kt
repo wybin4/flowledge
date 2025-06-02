@@ -1,6 +1,6 @@
-package eduflow.admin.models
+package flowledge.admin.models
 
-import eduflow.upload.Upload
+import flowledge.upload.Upload
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.Date

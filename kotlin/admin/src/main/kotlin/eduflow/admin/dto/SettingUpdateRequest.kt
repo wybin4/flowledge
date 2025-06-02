@@ -1,4 +1,4 @@
-package eduflow.admin.dto
+package flowledge.admin.dto
 
 data class SettingUpdateRequest(
     val id: String,

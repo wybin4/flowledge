@@ -1,6 +1,6 @@
-package eduflow.admin.services
+package flowledge.admin.services
 
-import eduflow.admin.user.models.UserModel
+import flowledge.admin.user.models.UserModel
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 

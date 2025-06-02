@@ -1,4 +1,4 @@
-package eduflow.common.logging
+package flowledge.common.logging
 
 import org.slf4j.LoggerFactory
 

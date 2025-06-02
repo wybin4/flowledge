@@ -1,8 +1,8 @@
-package eduflow.admin.course.models.lesson.survey
+package flowledge.admin.course.models.lesson.survey
 
-import eduflow.admin.course.dto.lesson.create.LessonAddSurveyChoiceRequest
-import eduflow.admin.utils.generateId
-import eduflow.course.lesson.survey.CourseLessonSurveyQuestion
+import flowledge.admin.course.dto.lesson.create.LessonAddSurveyChoiceRequest
+import flowledge.admin.utils.generateId
+import flowledge.course.lesson.survey.CourseLessonSurveyQuestion
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document

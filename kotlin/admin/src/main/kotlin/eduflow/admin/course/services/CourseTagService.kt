@@ -1,10 +1,10 @@
-package eduflow.admin.course.services
+package flowledge.admin.course.services
 
-import eduflow.admin.course.models.course.CourseModel
-import eduflow.admin.course.models.CourseTagModel
-import eduflow.admin.course.repositories.course.CourseRepository
-import eduflow.admin.course.repositories.tag.CourseTagRepository
-import eduflow.admin.services.PaginationAndSortingService
+import flowledge.admin.course.models.course.CourseModel
+import flowledge.admin.course.models.CourseTagModel
+import flowledge.admin.course.repositories.course.CourseRepository
+import flowledge.admin.course.repositories.tag.CourseTagRepository
+import flowledge.admin.services.PaginationAndSortingService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 

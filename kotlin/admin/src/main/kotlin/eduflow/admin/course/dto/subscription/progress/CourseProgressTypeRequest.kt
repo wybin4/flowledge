@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.subscription.progress
+package flowledge.admin.course.dto.subscription.progress
 
 enum class CourseProgressTypeRequest {
     VIDEO,

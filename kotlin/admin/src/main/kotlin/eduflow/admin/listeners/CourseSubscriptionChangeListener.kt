@@ -1,9 +1,9 @@
-package eduflow.admin.listeners
+package flowledge.admin.listeners
 
 import com.mongodb.client.model.changestream.OperationType
-import eduflow.admin.course.models.subscription.CourseSubscriptionModel
-import eduflow.admin.course.services.subscription.CourseSubscriptionService
-import eduflow.admin.services.WebSocketNotificationService
+import flowledge.admin.course.models.subscription.CourseSubscriptionModel
+import flowledge.admin.course.services.subscription.CourseSubscriptionService
+import flowledge.admin.services.WebSocketNotificationService
 import org.springframework.stereotype.Component
 
 @Component

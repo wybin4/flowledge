@@ -1,7 +1,7 @@
-package eduflow.admin.course.dto.lesson.get
+package flowledge.admin.course.dto.lesson.get
 
-import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyModel
-import eduflow.course.lesson.CourseLesson
+import flowledge.admin.course.models.lesson.survey.CourseLessonSurveyModel
+import flowledge.course.lesson.CourseLesson
 import java.util.*
 
 data class LessonGetHubResponse(

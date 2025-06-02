@@ -1,8 +1,8 @@
-package eduflow.admin.controllers
+package flowledge.admin.controllers
 
-import eduflow.admin.dto.SettingUpdateRequest
-import eduflow.admin.models.PrivateSettingModel
-import eduflow.admin.repositories.PrivateSettingRepository
+import flowledge.admin.dto.SettingUpdateRequest
+import flowledge.admin.models.PrivateSettingModel
+import flowledge.admin.repositories.PrivateSettingRepository
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono

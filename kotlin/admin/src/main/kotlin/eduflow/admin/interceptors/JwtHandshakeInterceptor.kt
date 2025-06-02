@@ -1,6 +1,6 @@
-package eduflow.admin.interceptors
+package flowledge.admin.interceptors
 
-import eduflow.admin.services.TokenService
+import flowledge.admin.services.TokenService
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.web.socket.WebSocketHandler

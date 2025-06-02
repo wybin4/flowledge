@@ -1,4 +1,4 @@
-package eduflow.admin.course.types
+package flowledge.admin.course.types
 
 data class CourseEditor(
     val _id: String,

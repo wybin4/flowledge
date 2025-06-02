@@ -1,7 +1,7 @@
-package eduflow.admin.models
+package flowledge.admin.models
 
-import eduflow.role.Role
-import eduflow.role.RoleScope
+import flowledge.role.Role
+import flowledge.role.RoleScope
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 

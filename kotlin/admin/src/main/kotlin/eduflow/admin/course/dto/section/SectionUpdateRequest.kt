@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.section
+package flowledge.admin.course.dto.section
 
 data class SectionUpdateRequest(
     val title: String? = null,

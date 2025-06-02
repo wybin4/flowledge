@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.lesson
+package flowledge.admin.course.dto.lesson
 
 data class LessonUpdateRequest(
     val title: String?,

@@ -1,10 +1,10 @@
-package eduflow.admin.services
+package flowledge.admin.services
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import eduflow.admin.user.models.ResumeServiceModel
-import eduflow.admin.user.models.UserModel
-import eduflow.admin.user.repositories.UserRepository
+import flowledge.admin.user.models.ResumeServiceModel
+import flowledge.admin.user.models.UserModel
+import flowledge.admin.user.repositories.UserRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.time.Instant

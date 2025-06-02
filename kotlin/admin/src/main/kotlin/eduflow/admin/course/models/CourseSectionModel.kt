@@ -1,7 +1,7 @@
-package eduflow.admin.course.models
+package flowledge.admin.course.models
 
-import eduflow.admin.utils.generateId
-import eduflow.course.CourseSection
+import flowledge.admin.utils.generateId
+import flowledge.course.CourseSection
 import java.util.*
 
 data class CourseSectionModel(

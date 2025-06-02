@@ -1,10 +1,10 @@
-package eduflow.admin.user.models
+package flowledge.admin.user.models
 
-import eduflow.admin.models.UserServicesModel
-import eduflow.admin.models.UserSettingModel
-import eduflow.user.Language
-import eduflow.user.User
-import eduflow.user.UserEmail
+import flowledge.admin.models.UserServicesModel
+import flowledge.admin.models.UserSettingModel
+import flowledge.user.Language
+import flowledge.user.User
+import flowledge.user.UserEmail
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 

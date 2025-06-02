@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.survey
+package flowledge.admin.course.dto.survey
 
 data class SurveyAttemptCreateRequest(
     val surveyId: String,

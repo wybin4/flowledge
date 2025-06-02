@@ -1,4 +1,4 @@
-package eduflow.admin.utils
+package flowledge.admin.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule

@@ -1,4 +1,4 @@
-package eduflow.admin.constants
+package flowledge.admin.constants
 
 class Uploads {
 }

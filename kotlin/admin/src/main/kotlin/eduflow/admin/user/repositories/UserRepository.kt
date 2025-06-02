@@ -1,6 +1,6 @@
-package eduflow.admin.user.repositories
+package flowledge.admin.user.repositories
 
-import eduflow.admin.user.models.UserModel
+import flowledge.admin.user.models.UserModel
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.stereotype.Repository

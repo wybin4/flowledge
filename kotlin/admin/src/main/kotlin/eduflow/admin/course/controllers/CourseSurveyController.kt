@@ -1,10 +1,10 @@
-package eduflow.admin.course.controllers
+package flowledge.admin.course.controllers
 
-import eduflow.admin.course.dto.survey.SurveyAttemptCreateRequest
-import eduflow.admin.course.dto.survey.SurveyGetByIdResponse
-import eduflow.admin.course.dto.survey.SurveyResultGetResponse
-import eduflow.admin.course.services.lesson.survey.CourseLessonSurveyAttemptService
-import eduflow.admin.course.services.lesson.survey.CourseLessonSurveyService
+import flowledge.admin.course.dto.survey.SurveyAttemptCreateRequest
+import flowledge.admin.course.dto.survey.SurveyGetByIdResponse
+import flowledge.admin.course.dto.survey.SurveyResultGetResponse
+import flowledge.admin.course.services.lesson.survey.CourseLessonSurveyAttemptService
+import flowledge.admin.course.services.lesson.survey.CourseLessonSurveyService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono

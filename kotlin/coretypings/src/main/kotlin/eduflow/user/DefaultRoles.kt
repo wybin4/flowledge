@@ -1,4 +1,4 @@
-package eduflow.user
+package flowledge.user
 
 enum class DefaultRoles {
     USER, EDITOR, ADMIN, OWNER, MODERATOR

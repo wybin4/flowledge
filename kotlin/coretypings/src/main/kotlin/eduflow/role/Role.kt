@@ -1,4 +1,4 @@
-package eduflow.role
+package flowledge.role
 
 interface Role {
     val _id: String

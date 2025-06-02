@@ -1,8 +1,8 @@
-package eduflow.admin.user.services
+package flowledge.admin.user.services
 
-import eduflow.admin.models.UserServicesModel
-import eduflow.admin.user.models.PasswordServiceModel
-import eduflow.admin.user.models.UserModel
+import flowledge.admin.models.UserServicesModel
+import flowledge.admin.user.models.PasswordServiceModel
+import flowledge.admin.user.models.UserModel
 import org.springframework.security.crypto.bcrypt.BCrypt
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono

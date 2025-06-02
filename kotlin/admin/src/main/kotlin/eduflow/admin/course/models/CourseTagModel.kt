@@ -1,6 +1,6 @@
-package eduflow.admin.course.models
+package flowledge.admin.course.models
 
-import eduflow.course.CourseTag
+import flowledge.course.CourseTag
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document

@@ -1,7 +1,7 @@
-package eduflow.admin.controllers
+package flowledge.admin.controllers
 
-import eduflow.admin.services.AuthenticationService
-import eduflow.admin.services.UploadService
+import flowledge.admin.services.AuthenticationService
+import flowledge.admin.services.UploadService
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

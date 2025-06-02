@@ -1,6 +1,6 @@
-package eduflow.course.subscription
+package flowledge.course.subscription
 
-import eduflow.course.subscription.progress.CourseProgress
+import flowledge.course.subscription.progress.CourseProgress
 import java.util.*
 
 interface CourseSubscription {

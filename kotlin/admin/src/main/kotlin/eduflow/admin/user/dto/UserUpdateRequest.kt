@@ -1,4 +1,4 @@
-package eduflow.admin.user.dto
+package flowledge.admin.user.dto
 
 data class UserUpdateRequest(
     val username: String? = null,

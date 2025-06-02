@@ -26,9 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MONGODB_URL = "mongodb://127.0.0.1:27017/eduflow?directConnection=true&serverSelectionTimeoutMS=2000"
+MONGODB_URL = "mongodb://127.0.0.1:27017/flowledge?directConnection=true&serverSelectionTimeoutMS=2000"
 client = AsyncIOMotorClient(MONGODB_URL)
-db = client["eduflow"]
+db = client["flowledge"]
 
 class ApiIntegration(BaseModel):
     _id: str

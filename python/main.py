@@ -54,9 +54,9 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-MONGODB_URL = "mongodb://127.0.0.1:27017/eduflow?directConnection=true&serverSelectionTimeoutMS=2000"
+MONGODB_URL = "mongodb://127.0.0.1:27017/flowledge?directConnection=true&serverSelectionTimeoutMS=2000"
 client = AsyncIOMotorClient(MONGODB_URL)
-db = client["eduflow"]  # Замените на имя вашей базы данных
+db = client["flowledge"]  # Замените на имя вашей базы данных
 files_collection = db["uploads"] 
 fs = AsyncIOMotorGridFSBucket(db)
 

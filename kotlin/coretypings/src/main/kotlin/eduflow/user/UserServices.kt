@@ -1,4 +1,4 @@
-package eduflow.user
+package flowledge.user
 
 interface UserServices {
     val resume: ResumeService?

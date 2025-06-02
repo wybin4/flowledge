@@ -1,4 +1,4 @@
-package eduflow.admin.user.dto.get
+package flowledge.admin.user.dto.get
 
 import org.springframework.web.bind.annotation.RequestParam
 

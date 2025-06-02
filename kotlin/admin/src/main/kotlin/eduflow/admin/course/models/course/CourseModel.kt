@@ -1,9 +1,9 @@
-package eduflow.admin.course.models.course
+package flowledge.admin.course.models.course
 
-import eduflow.admin.course.models.CourseCreatorModel
-import eduflow.admin.user.models.UserModel
-import eduflow.admin.utils.generateId
-import eduflow.course.course.Course
+import flowledge.admin.course.models.CourseCreatorModel
+import flowledge.admin.user.models.UserModel
+import flowledge.admin.utils.generateId
+import flowledge.course.course.Course
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 

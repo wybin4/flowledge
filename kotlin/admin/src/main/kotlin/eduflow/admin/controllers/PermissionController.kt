@@ -1,9 +1,9 @@
-package eduflow.admin.controllers
+package flowledge.admin.controllers
 
-import eduflow.admin.models.PermissionModel
-import eduflow.admin.models.RoleModel
-import eduflow.admin.repositories.PermissionRepository
-import eduflow.admin.repositories.RoleRepository
+import flowledge.admin.models.PermissionModel
+import flowledge.admin.models.RoleModel
+import flowledge.admin.repositories.PermissionRepository
+import flowledge.admin.repositories.RoleRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux

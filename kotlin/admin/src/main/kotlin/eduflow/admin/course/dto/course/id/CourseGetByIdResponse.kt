@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.course.id
+package flowledge.admin.course.dto.course.id
 
 interface CourseGetByIdResponse {
     val _id: String

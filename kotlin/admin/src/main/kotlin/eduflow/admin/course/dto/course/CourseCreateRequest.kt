@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.course
+package flowledge.admin.course.dto.course
 
 data class CourseCreateRequest(
     val title: String,

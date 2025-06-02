@@ -1,4 +1,4 @@
-package eduflow.course.lesson.survey
+package flowledge.course.lesson.survey
 
 interface CourseLessonSurveyAnswer {
     val userChoiceId: String

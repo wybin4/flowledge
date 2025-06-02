@@ -1,4 +1,4 @@
-package eduflow.admin.user.dto.get
+package flowledge.admin.user.dto.get
 
 data class UserGetBigResponse(
     override val _id: String,

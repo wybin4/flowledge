@@ -1,4 +1,4 @@
-package eduflow.user
+package flowledge.user
 
 data class UserEmail(
     val address: String,

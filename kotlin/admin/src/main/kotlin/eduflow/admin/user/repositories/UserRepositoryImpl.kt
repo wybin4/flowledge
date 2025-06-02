@@ -1,6 +1,6 @@
-package eduflow.admin.user.repositories
+package flowledge.admin.user.repositories
 
-import eduflow.admin.user.models.UserModel
+import flowledge.admin.user.models.UserModel
 import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria

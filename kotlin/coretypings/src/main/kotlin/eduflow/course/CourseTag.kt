@@ -1,4 +1,4 @@
-package eduflow.course
+package flowledge.course
 
 interface CourseTag {
     val _id: String

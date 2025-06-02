@@ -1,12 +1,12 @@
-package eduflow.admin.registries
+package flowledge.admin.registries
 
-import eduflow.admin.models.PermissionModel
-import eduflow.admin.models.RoleModel
-import eduflow.admin.repositories.PermissionRepository
-import eduflow.admin.repositories.RoleRepository
-import eduflow.role.RoleScope
-import eduflow.user.DefaultRoles
-import eduflow.user.toLowerCase
+import flowledge.admin.models.PermissionModel
+import flowledge.admin.models.RoleModel
+import flowledge.admin.repositories.PermissionRepository
+import flowledge.admin.repositories.RoleRepository
+import flowledge.role.RoleScope
+import flowledge.user.DefaultRoles
+import flowledge.user.toLowerCase
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono

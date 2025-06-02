@@ -1,4 +1,4 @@
-package eduflow.admin.ldap
+package flowledge.admin.ldap
 
 import org.springframework.security.ldap.userdetails.LdapUserDetails
 

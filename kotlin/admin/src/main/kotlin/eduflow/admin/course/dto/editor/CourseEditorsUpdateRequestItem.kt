@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.editor
+package flowledge.admin.course.dto.editor
 
 data class CourseEditorsUpdateRequestItem(
     val _id: String,

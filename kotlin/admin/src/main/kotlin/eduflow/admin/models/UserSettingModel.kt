@@ -1,8 +1,8 @@
-package eduflow.admin.models
+package flowledge.admin.models
 
-import eduflow.user.Language
-import eduflow.user.Theme
-import eduflow.user.UserSetting
+import flowledge.user.Language
+import flowledge.user.Theme
+import flowledge.user.UserSetting
 import org.springframework.data.mongodb.core.mapping.Field
 
 data class UserSettingModel(

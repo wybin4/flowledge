@@ -1,11 +1,11 @@
-package eduflow.admin.course.controllers
+package flowledge.admin.course.controllers
 
-import eduflow.admin.course.dto.tag.CourseTagSaveRequest
-import eduflow.admin.course.models.CourseTagModel
-import eduflow.admin.course.repositories.tag.CourseTagRepository
-import eduflow.admin.course.services.CourseTagService
-import eduflow.admin.dto.PaginationRequest
-import eduflow.admin.utils.generateId
+import flowledge.admin.course.dto.tag.CourseTagSaveRequest
+import flowledge.admin.course.models.CourseTagModel
+import flowledge.admin.course.repositories.tag.CourseTagRepository
+import flowledge.admin.course.services.CourseTagService
+import flowledge.admin.dto.PaginationRequest
+import flowledge.admin.utils.generateId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

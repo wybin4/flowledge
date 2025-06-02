@@ -1,7 +1,7 @@
-package eduflow.admin.ldap
+package flowledge.admin.ldap
 
-import eduflow.admin.services.SettingService
-import eduflow.admin.utils.StringParser
+import flowledge.admin.services.SettingService
+import flowledge.admin.utils.StringParser
 import org.springframework.stereotype.Service
 
 @Service

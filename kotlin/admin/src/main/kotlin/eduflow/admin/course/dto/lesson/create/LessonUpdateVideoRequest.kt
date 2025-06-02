@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.lesson.create
+package flowledge.admin.course.dto.lesson.create
 
 interface LessonUpdateVideoRequest : LessonCreateIdentifiableRequest {
     override val _id: String

@@ -1,4 +1,4 @@
-package eduflow.admin.repositories
+package flowledge.admin.repositories
 
 import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.query.Criteria

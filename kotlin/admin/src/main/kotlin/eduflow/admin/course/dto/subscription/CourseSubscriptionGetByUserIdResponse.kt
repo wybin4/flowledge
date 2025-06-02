@@ -1,7 +1,7 @@
-package eduflow.admin.course.dto.subscription
+package flowledge.admin.course.dto.subscription
 
-import eduflow.admin.course.models.CourseCreatorModel
-import eduflow.admin.course.models.subscription.progress.CourseProgressModel
+import flowledge.admin.course.models.CourseCreatorModel
+import flowledge.admin.course.models.subscription.progress.CourseProgressModel
 import java.util.*
 
 data class CourseSubscriptionGetByUserIdResponse(

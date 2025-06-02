@@ -1,4 +1,4 @@
-package eduflow.admin.ldap
+package flowledge.admin.ldap
 
 import org.springframework.ldap.core.DirContextOperations
 import org.springframework.security.core.GrantedAuthority

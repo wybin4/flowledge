@@ -1,4 +1,4 @@
-package eduflow.admin.controllers
+package flowledge.admin.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping

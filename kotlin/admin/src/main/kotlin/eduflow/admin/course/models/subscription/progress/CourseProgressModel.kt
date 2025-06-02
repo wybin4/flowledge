@@ -1,6 +1,6 @@
-package eduflow.admin.course.models.subscription.progress
+package flowledge.admin.course.models.subscription.progress
 
-import eduflow.course.subscription.progress.CourseProgress
+import flowledge.course.subscription.progress.CourseProgress
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document

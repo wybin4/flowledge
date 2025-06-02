@@ -1,8 +1,8 @@
-package eduflow.admin.course.mappers
+package flowledge.admin.course.mappers
 
-import eduflow.admin.course.dto.lesson.get.LessonGetHubResponse
-import eduflow.admin.course.models.lesson.CourseLessonModel
-import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyModel
+import flowledge.admin.course.dto.lesson.get.LessonGetHubResponse
+import flowledge.admin.course.models.lesson.CourseLessonModel
+import flowledge.admin.course.models.lesson.survey.CourseLessonSurveyModel
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 

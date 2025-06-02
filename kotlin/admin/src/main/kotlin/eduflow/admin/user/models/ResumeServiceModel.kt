@@ -1,6 +1,6 @@
-package eduflow.admin.user.models
+package flowledge.admin.user.models
 
-import eduflow.user.ResumeService
+import flowledge.user.ResumeService
 
 data class ResumeServiceModel(
     override var jwtToken: String? = null,

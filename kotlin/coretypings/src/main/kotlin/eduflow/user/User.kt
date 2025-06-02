@@ -1,6 +1,6 @@
-package eduflow.user
+package flowledge.user
 
-import eduflow.Record
+import flowledge.Record
 import java.util.*
 
 interface User : Record {

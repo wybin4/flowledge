@@ -1,9 +1,9 @@
-package eduflow.admin.config
+package flowledge.admin.config
 
-import eduflow.admin.filters.JwtTokenFilter
-import eduflow.admin.ldap.CustomLdapUserDetailsMapper
-import eduflow.admin.ldap.LDAPService
-import eduflow.admin.services.TokenService
+import flowledge.admin.filters.JwtTokenFilter
+import flowledge.admin.ldap.CustomLdapUserDetailsMapper
+import flowledge.admin.ldap.LDAPService
+import flowledge.admin.services.TokenService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean

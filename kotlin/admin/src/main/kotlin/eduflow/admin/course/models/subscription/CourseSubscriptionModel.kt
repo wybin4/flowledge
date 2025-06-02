@@ -1,8 +1,8 @@
-package eduflow.admin.course.models.subscription
+package flowledge.admin.course.models.subscription
 
-import eduflow.admin.course.models.subscription.progress.CourseProgressModel
-import eduflow.admin.utils.generateId
-import eduflow.course.subscription.CourseSubscription
+import flowledge.admin.course.models.subscription.progress.CourseProgressModel
+import flowledge.admin.utils.generateId
+import flowledge.course.subscription.CourseSubscription
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 

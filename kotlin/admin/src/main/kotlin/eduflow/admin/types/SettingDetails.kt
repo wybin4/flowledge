@@ -1,7 +1,7 @@
-package eduflow.admin.types
+package flowledge.admin.types
 
-import eduflow.privateSetting.SettingSelectOption
-import eduflow.privateSetting.SettingType
+import flowledge.privateSetting.SettingSelectOption
+import flowledge.privateSetting.SettingType
 
 data class SettingDetails(
     val id: String? = null,

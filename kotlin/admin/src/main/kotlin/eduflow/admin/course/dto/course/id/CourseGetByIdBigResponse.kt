@@ -1,6 +1,6 @@
-package eduflow.admin.course.dto.course.id
+package flowledge.admin.course.dto.course.id
 
-import eduflow.admin.course.dto.course.section.SectionWithLessonsResponse
+import flowledge.admin.course.dto.course.section.SectionWithLessonsResponse
 
 data class CourseGetByIdBigResponse(
     override val _id: String,

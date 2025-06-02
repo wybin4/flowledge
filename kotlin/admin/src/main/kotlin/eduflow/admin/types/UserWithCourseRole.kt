@@ -1,4 +1,4 @@
-package eduflow.admin.types
+package flowledge.admin.types
 
 data class UserWithCourseRole(
     val userId: String,

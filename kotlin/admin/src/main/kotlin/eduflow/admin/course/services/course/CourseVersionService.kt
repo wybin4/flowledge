@@ -1,10 +1,10 @@
-package eduflow.admin.course.services.course
+package flowledge.admin.course.services.course
 
-import eduflow.admin.course.models.course.CourseModel
-import eduflow.admin.course.models.course.version.CourseVersionModel
-import eduflow.admin.course.models.course.version.CourseVersionSectionModel
-import eduflow.admin.course.repositories.course.CourseRepository
-import eduflow.admin.course.repositories.course.version.CourseVersionRepository
+import flowledge.admin.course.models.course.CourseModel
+import flowledge.admin.course.models.course.version.CourseVersionModel
+import flowledge.admin.course.models.course.version.CourseVersionSectionModel
+import flowledge.admin.course.repositories.course.CourseRepository
+import flowledge.admin.course.repositories.course.version.CourseVersionRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 

@@ -1,6 +1,6 @@
-package eduflow.admin.course.dto.course.id
+package flowledge.admin.course.dto.course.id
 
-import eduflow.course.CourseCreator
+import flowledge.course.CourseCreator
 import java.util.*
 
 data class CourseGetByIdSmallResponse(

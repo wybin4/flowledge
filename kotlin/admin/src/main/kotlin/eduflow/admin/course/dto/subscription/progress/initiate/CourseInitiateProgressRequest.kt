@@ -1,6 +1,6 @@
-package eduflow.admin.course.dto.subscription.progress.initiate
+package flowledge.admin.course.dto.subscription.progress.initiate
 
-import eduflow.admin.course.dto.subscription.progress.CourseProgressTypeRequest
+import flowledge.admin.course.dto.subscription.progress.CourseProgressTypeRequest
 
 data class CourseInitiateProgressRequest(
     val courseId: String,

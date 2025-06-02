@@ -1,6 +1,6 @@
-package eduflow.admin.course.dto.course.section
+package flowledge.admin.course.dto.course.section
 
-import eduflow.course.course.version.CourseVersionLesson
+import flowledge.course.course.version.CourseVersionLesson
 
 data class CourseGetLessonResponse(
     override val _id: String,

@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
 }
 
-group = "eduflow"
+group = "flowledge"
 version = "1.0.0"
 
 repositories {

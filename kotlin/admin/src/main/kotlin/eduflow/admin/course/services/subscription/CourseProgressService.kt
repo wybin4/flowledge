@@ -1,16 +1,16 @@
-package eduflow.admin.course.services.subscription
+package flowledge.admin.course.services.subscription
 
-import eduflow.admin.course.dto.subscription.progress.CourseProgressTypeRequest
-import eduflow.admin.course.dto.subscription.progress.CourseSendProgressRequest
-import eduflow.admin.course.dto.subscription.progress.initiate.CourseInitiateProgressRequest
-import eduflow.admin.course.models.course.version.CourseVersionLessonModel
-import eduflow.admin.course.models.course.version.CourseVersionModel
-import eduflow.admin.course.models.subscription.CourseSubscriptionModel
-import eduflow.admin.course.models.subscription.progress.CourseProgressLessonModel
-import eduflow.admin.course.models.subscription.progress.CourseProgressModel
-import eduflow.admin.course.models.subscription.progress.CourseProgressSectionModel
-import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
-import eduflow.admin.course.services.course.CourseVersionService
+import flowledge.admin.course.dto.subscription.progress.CourseProgressTypeRequest
+import flowledge.admin.course.dto.subscription.progress.CourseSendProgressRequest
+import flowledge.admin.course.dto.subscription.progress.initiate.CourseInitiateProgressRequest
+import flowledge.admin.course.models.course.version.CourseVersionLessonModel
+import flowledge.admin.course.models.course.version.CourseVersionModel
+import flowledge.admin.course.models.subscription.CourseSubscriptionModel
+import flowledge.admin.course.models.subscription.progress.CourseProgressLessonModel
+import flowledge.admin.course.models.subscription.progress.CourseProgressModel
+import flowledge.admin.course.models.subscription.progress.CourseProgressSectionModel
+import flowledge.admin.course.repositories.subscription.CourseSubscriptionRepository
+import flowledge.admin.course.services.course.CourseVersionService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 

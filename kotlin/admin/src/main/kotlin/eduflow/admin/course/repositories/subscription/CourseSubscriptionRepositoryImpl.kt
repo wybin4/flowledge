@@ -1,6 +1,6 @@
-package eduflow.admin.course.repositories.subscription
+package flowledge.admin.course.repositories.subscription
 
-import eduflow.admin.course.models.subscription.CourseSubscriptionModel
+import flowledge.admin.course.models.subscription.CourseSubscriptionModel
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query

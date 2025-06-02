@@ -1,4 +1,4 @@
-package eduflow.user
+package flowledge.user
 
 interface PasswordService {
     var bcrypt: String?

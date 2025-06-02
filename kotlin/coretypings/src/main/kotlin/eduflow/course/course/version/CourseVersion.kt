@@ -1,4 +1,4 @@
-package eduflow.course.course.version
+package flowledge.course.course.version
 
 interface CourseVersion {
     val _id: String

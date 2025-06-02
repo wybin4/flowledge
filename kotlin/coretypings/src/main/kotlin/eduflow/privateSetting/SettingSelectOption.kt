@@ -1,4 +1,4 @@
-package eduflow.privateSetting
+package flowledge.privateSetting
 
 data class SettingSelectOption(
     val label: String,

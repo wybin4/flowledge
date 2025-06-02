@@ -1,7 +1,7 @@
-package eduflow.admin.config
+package flowledge.admin.config
 
-import eduflow.admin.interceptors.JwtHandshakeInterceptor
-import eduflow.admin.services.TokenService
+import flowledge.admin.interceptors.JwtHandshakeInterceptor
+import flowledge.admin.services.TokenService
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker

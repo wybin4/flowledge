@@ -1,6 +1,6 @@
-package eduflow.admin.models
+package flowledge.admin.models
 
-import eduflow.permission.Permission
+import flowledge.permission.Permission
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document

@@ -1,6 +1,6 @@
-package eduflow.privateSetting
+package flowledge.privateSetting
 
-import eduflow.Record
+import flowledge.Record
 import java.util.*
 
 typealias SettingValue = Any

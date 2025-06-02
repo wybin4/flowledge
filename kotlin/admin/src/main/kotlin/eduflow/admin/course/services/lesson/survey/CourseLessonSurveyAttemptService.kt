@@ -1,15 +1,15 @@
-package eduflow.admin.course.services.lesson.survey
+package flowledge.admin.course.services.lesson.survey
 
-import eduflow.admin.course.dto.survey.SurveyAttemptCreateRequest
-import eduflow.admin.course.dto.survey.SurveyResultGetResponse
-import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyAnswerModel
-import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyAttemptModel
-import eduflow.admin.course.models.lesson.survey.CourseLessonSurveyModel
-import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyAttemptRepository
-import eduflow.admin.course.repositories.lessons.survey.CourseLessonSurveyRepository
-import eduflow.admin.services.AuthenticationService
-import eduflow.admin.utils.generateId
-import eduflow.course.lesson.survey.CourseLessonSurveyAnswer
+import flowledge.admin.course.dto.survey.SurveyAttemptCreateRequest
+import flowledge.admin.course.dto.survey.SurveyResultGetResponse
+import flowledge.admin.course.models.lesson.survey.CourseLessonSurveyAnswerModel
+import flowledge.admin.course.models.lesson.survey.CourseLessonSurveyAttemptModel
+import flowledge.admin.course.models.lesson.survey.CourseLessonSurveyModel
+import flowledge.admin.course.repositories.lessons.survey.CourseLessonSurveyAttemptRepository
+import flowledge.admin.course.repositories.lessons.survey.CourseLessonSurveyRepository
+import flowledge.admin.services.AuthenticationService
+import flowledge.admin.utils.generateId
+import flowledge.course.lesson.survey.CourseLessonSurveyAnswer
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono

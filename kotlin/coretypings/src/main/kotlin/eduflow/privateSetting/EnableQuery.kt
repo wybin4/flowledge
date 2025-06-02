@@ -1,4 +1,4 @@
-package eduflow.privateSetting
+package flowledge.privateSetting
 
 data class EnableQuery(
     val query: String

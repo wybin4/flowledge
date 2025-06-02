@@ -1,14 +1,14 @@
-package eduflow.admin.course.services.subscription
+package flowledge.admin.course.services.subscription
 
-import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
-import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
-import eduflow.admin.course.mappers.CourseSubscriptionMapper
-import eduflow.admin.course.models.subscription.CourseSubscriptionModel
-import eduflow.admin.course.repositories.course.CourseRepository
-import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
-import eduflow.admin.course.services.CourseTagService
-import eduflow.admin.course.types.CourseEditor
-import eduflow.admin.user.repositories.UserRepository
+import flowledge.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
+import flowledge.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
+import flowledge.admin.course.mappers.CourseSubscriptionMapper
+import flowledge.admin.course.models.subscription.CourseSubscriptionModel
+import flowledge.admin.course.repositories.course.CourseRepository
+import flowledge.admin.course.repositories.subscription.CourseSubscriptionRepository
+import flowledge.admin.course.services.CourseTagService
+import flowledge.admin.course.types.CourseEditor
+import flowledge.admin.user.repositories.UserRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono

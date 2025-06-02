@@ -1,6 +1,6 @@
-package eduflow.admin.course.repositories.tag
+package flowledge.admin.course.repositories.tag
 
-import eduflow.admin.course.models.CourseTagModel
+import flowledge.admin.course.models.CourseTagModel
 import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria

@@ -1,12 +1,12 @@
-package eduflow.admin.controllers
+package flowledge.admin.controllers
 
-import eduflow.admin.ldap.CustomLdapUserDetails
-import eduflow.admin.ldap.LDAPService
-import eduflow.admin.models.UserServicesModel
-import eduflow.admin.services.TokenService
-import eduflow.admin.user.models.LDAPServiceModel
-import eduflow.admin.user.models.UserModel
-import eduflow.admin.user.services.UserService
+import flowledge.admin.ldap.CustomLdapUserDetails
+import flowledge.admin.ldap.LDAPService
+import flowledge.admin.models.UserServicesModel
+import flowledge.admin.services.TokenService
+import flowledge.admin.user.models.LDAPServiceModel
+import flowledge.admin.user.models.UserModel
+import flowledge.admin.user.services.UserService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider

@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.lesson.create
+package flowledge.admin.course.dto.lesson.create
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo

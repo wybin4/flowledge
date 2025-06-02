@@ -1,6 +1,6 @@
-package eduflow.admin.course.dto.course.hub.get
+package flowledge.admin.course.dto.course.hub.get
 
-import eduflow.admin.course.dto.course.CourseCreatorResponse
+import flowledge.admin.course.dto.course.CourseCreatorResponse
 import java.util.*
 
 data class CourseHubGetResponse(

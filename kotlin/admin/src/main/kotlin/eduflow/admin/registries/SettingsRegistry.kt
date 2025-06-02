@@ -1,11 +1,11 @@
-package eduflow.admin.registries
+package flowledge.admin.registries
 
-import eduflow.admin.models.PrivateSettingModel
-import eduflow.admin.repositories.PrivateSettingRepository
-import eduflow.admin.types.SettingDetails
-import eduflow.privateSetting.SettingSelectOption
-import eduflow.privateSetting.SettingType
-import eduflow.privateSetting.SettingValue
+import flowledge.admin.models.PrivateSettingModel
+import flowledge.admin.repositories.PrivateSettingRepository
+import flowledge.admin.types.SettingDetails
+import flowledge.privateSetting.SettingSelectOption
+import flowledge.privateSetting.SettingType
+import flowledge.privateSetting.SettingValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext

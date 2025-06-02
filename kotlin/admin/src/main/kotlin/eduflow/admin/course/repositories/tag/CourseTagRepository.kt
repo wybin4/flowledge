@@ -1,6 +1,6 @@
-package eduflow.admin.course.repositories.tag
+package flowledge.admin.course.repositories.tag
 
-import eduflow.admin.course.models.CourseTagModel
+import flowledge.admin.course.models.CourseTagModel
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.data.repository.reactive.ReactiveSortingRepository

@@ -1,4 +1,4 @@
-package eduflow.course.subscription.progress
+package flowledge.course.subscription.progress
 
 interface CourseProgressLesson : CourseProgressItem {
     val videoProgress: Double?

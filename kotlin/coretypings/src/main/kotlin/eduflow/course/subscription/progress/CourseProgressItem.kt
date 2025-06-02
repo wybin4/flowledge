@@ -1,4 +1,4 @@
-package eduflow.course.subscription.progress
+package flowledge.course.subscription.progress
 
 interface CourseProgressItem {
     val _id: String

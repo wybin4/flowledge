@@ -1,7 +1,7 @@
-package eduflow.admin.user.dto.get.id
+package flowledge.admin.user.dto.get.id
 
-import eduflow.admin.models.UserServicesModel
-import eduflow.admin.models.UserSettingModel
+import flowledge.admin.models.UserServicesModel
+import flowledge.admin.models.UserSettingModel
 
 data class UserGetByIdSmallResponse(
     override val _id: String,

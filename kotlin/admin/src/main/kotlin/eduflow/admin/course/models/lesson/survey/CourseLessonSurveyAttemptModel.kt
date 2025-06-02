@@ -1,7 +1,7 @@
-package eduflow.admin.course.models.lesson.survey
+package flowledge.admin.course.models.lesson.survey
 
-import eduflow.course.lesson.survey.CourseLessonSurveyAnswer
-import eduflow.course.lesson.survey.CourseLessonSurveyAttempt
+import flowledge.course.lesson.survey.CourseLessonSurveyAnswer
+import flowledge.course.lesson.survey.CourseLessonSurveyAttempt
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 

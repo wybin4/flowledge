@@ -1,10 +1,10 @@
-package eduflow.admin.course.controllers
+package flowledge.admin.course.controllers
 
-import eduflow.admin.course.dto.section.SectionCreateRequest
-import eduflow.admin.course.dto.section.SectionUpdateRequest
-import eduflow.admin.course.dto.section.lessons.SectionGetLessonsResponse
-import eduflow.admin.course.models.CourseSectionModel
-import eduflow.admin.course.services.CourseSectionService
+import flowledge.admin.course.dto.section.SectionCreateRequest
+import flowledge.admin.course.dto.section.SectionUpdateRequest
+import flowledge.admin.course.dto.section.lessons.SectionGetLessonsResponse
+import flowledge.admin.course.models.CourseSectionModel
+import flowledge.admin.course.services.CourseSectionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono

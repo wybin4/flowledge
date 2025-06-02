@@ -1,4 +1,4 @@
-package eduflow.admin.user.dto.get.id
+package flowledge.admin.user.dto.get.id
 
 interface UserGetByIdResponse {
     val _id: String

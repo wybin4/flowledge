@@ -1,7 +1,7 @@
-package eduflow.admin.listeners
+package flowledge.admin.listeners
 
 import com.mongodb.client.model.changestream.OperationType
-import eduflow.common.logging.MainLogger
+import flowledge.common.logging.MainLogger
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.ChangeStreamOptions

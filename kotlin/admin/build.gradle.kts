@@ -6,7 +6,7 @@ plugins {
     kotlin("kapt") version "1.9.10"
 }
 
-group = "eduflow"
+group = "flowledge"
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -51,8 +51,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.auth0:java-jwt:3.18.2")
 
-    implementation("eduflow:common:1.0.0")
-    implementation("eduflow:coretypings:1.0.0")
+    implementation("flowledge:common:1.0.0")
+    implementation("flowledge:coretypings:1.0.0")
 }
 
 kotlin {

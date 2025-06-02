@@ -1,6 +1,6 @@
-package eduflow.admin.services
+package flowledge.admin.services
 
-import eduflow.admin.repositories.PaginationAndSortingRepository
+import flowledge.admin.repositories.PaginationAndSortingRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.query.Criteria

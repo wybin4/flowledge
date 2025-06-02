@@ -1,6 +1,6 @@
-package eduflow.admin.models
+package flowledge.admin.models
 
-import eduflow.privateSetting.*
+import flowledge.privateSetting.*
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.util.*

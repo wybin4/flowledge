@@ -1,7 +1,7 @@
-package eduflow.admin.course.repositories.course
+package flowledge.admin.course.repositories.course
 
-import eduflow.admin.course.models.course.CourseModel
-import eduflow.admin.repositories.PaginationAndSortingRepository
+import flowledge.admin.course.models.course.CourseModel
+import flowledge.admin.repositories.PaginationAndSortingRepository
 import reactor.core.publisher.Flux
 
 interface CourseRepositoryTemplate : PaginationAndSortingRepository<CourseModel, String> {

@@ -1,13 +1,13 @@
-package eduflow.admin.course.controllers
+package flowledge.admin.course.controllers
 
-import eduflow.admin.course.dto.lesson.LessonUpdateRequest
-import eduflow.admin.course.dto.lesson.create.*
-import eduflow.admin.course.dto.lesson.get.LessonGetHubResponse
-import eduflow.admin.course.dto.lesson.get.LessonGetListResponse
-import eduflow.admin.course.models.lesson.CourseLessonModel
-import eduflow.admin.course.services.lesson.CourseLessonService
-import eduflow.admin.course.services.lesson.survey.CourseLessonSurveyService
-import eduflow.admin.services.AuthenticationService
+import flowledge.admin.course.dto.lesson.LessonUpdateRequest
+import flowledge.admin.course.dto.lesson.create.*
+import flowledge.admin.course.dto.lesson.get.LessonGetHubResponse
+import flowledge.admin.course.dto.lesson.get.LessonGetListResponse
+import flowledge.admin.course.models.lesson.CourseLessonModel
+import flowledge.admin.course.services.lesson.CourseLessonService
+import flowledge.admin.course.services.lesson.survey.CourseLessonSurveyService
+import flowledge.admin.services.AuthenticationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

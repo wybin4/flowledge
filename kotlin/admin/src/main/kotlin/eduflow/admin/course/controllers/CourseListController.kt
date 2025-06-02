@@ -1,15 +1,15 @@
-package eduflow.admin.course.controllers
+package flowledge.admin.course.controllers
 
-import eduflow.admin.course.dto.course.id.CourseGetByIdResponse
-import eduflow.admin.course.dto.course.id.CourseGetByIdSmallResponse
-import eduflow.admin.course.dto.course.list.ToggleFavouriteRequest
-import eduflow.admin.course.models.subscription.CourseSubscriptionModel
-import eduflow.admin.course.repositories.subscription.CourseSubscriptionRepository
-import eduflow.admin.course.services.CourseTagService
-import eduflow.admin.course.services.course.CourseService
-import eduflow.admin.dto.PaginationRequest
-import eduflow.admin.ldap.LDAPService
-import eduflow.admin.services.AuthenticationService
+import flowledge.admin.course.dto.course.id.CourseGetByIdResponse
+import flowledge.admin.course.dto.course.id.CourseGetByIdSmallResponse
+import flowledge.admin.course.dto.course.list.ToggleFavouriteRequest
+import flowledge.admin.course.models.subscription.CourseSubscriptionModel
+import flowledge.admin.course.repositories.subscription.CourseSubscriptionRepository
+import flowledge.admin.course.services.CourseTagService
+import flowledge.admin.course.services.course.CourseService
+import flowledge.admin.dto.PaginationRequest
+import flowledge.admin.ldap.LDAPService
+import flowledge.admin.services.AuthenticationService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono

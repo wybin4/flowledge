@@ -1,4 +1,4 @@
-package eduflow.privateSetting
+package flowledge.privateSetting
 
 enum class SettingType {
     RADIO, CODE,

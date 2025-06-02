@@ -1,7 +1,7 @@
-package eduflow.admin
+package flowledge.admin
 
-import eduflow.admin.registries.PermissionsRegistry
-import eduflow.admin.registries.SettingsRegistry
+import flowledge.admin.registries.PermissionsRegistry
+import flowledge.admin.registries.SettingsRegistry
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner

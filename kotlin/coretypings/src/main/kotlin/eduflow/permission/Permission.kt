@@ -1,4 +1,4 @@
-package eduflow.permission
+package flowledge.permission
 
 interface Permission {
     val _id: String

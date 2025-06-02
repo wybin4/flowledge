@@ -1,9 +1,9 @@
-package eduflow.admin.models
+package flowledge.admin.models
 
-import eduflow.admin.user.models.LDAPServiceModel
-import eduflow.admin.user.models.PasswordServiceModel
-import eduflow.admin.user.models.ResumeServiceModel
-import eduflow.user.UserServices
+import flowledge.admin.user.models.LDAPServiceModel
+import flowledge.admin.user.models.PasswordServiceModel
+import flowledge.admin.user.models.ResumeServiceModel
+import flowledge.user.UserServices
 
 data class UserServicesModel(
     override var resume: ResumeServiceModel? = null,

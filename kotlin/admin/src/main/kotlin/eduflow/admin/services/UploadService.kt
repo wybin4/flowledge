@@ -1,7 +1,7 @@
-package eduflow.admin.services
+package flowledge.admin.services
 
 import com.mongodb.client.gridfs.model.GridFSFile
-import eduflow.admin.models.UploadModel
+import flowledge.admin.models.UploadModel
 import org.bson.types.ObjectId
 import org.springframework.core.io.Resource
 import org.springframework.data.mongodb.core.MongoTemplate

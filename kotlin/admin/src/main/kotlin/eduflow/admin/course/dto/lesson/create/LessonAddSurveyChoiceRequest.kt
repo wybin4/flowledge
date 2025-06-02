@@ -1,4 +1,4 @@
-package eduflow.admin.course.dto.lesson.create
+package flowledge.admin.course.dto.lesson.create
 
 data class LessonAddSurveyChoiceRequest(
     val _id: String? = null,

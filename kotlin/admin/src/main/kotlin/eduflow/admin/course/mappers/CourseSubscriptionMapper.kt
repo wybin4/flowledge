@@ -1,11 +1,11 @@
-package eduflow.admin.course.mappers
+package flowledge.admin.course.mappers
 
-import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
-import eduflow.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
-import eduflow.admin.course.models.CourseCreatorModel
-import eduflow.admin.course.models.course.CourseModel
-import eduflow.admin.course.models.subscription.CourseSubscriptionModel
-import eduflow.admin.user.models.UserModel
+import flowledge.admin.course.dto.subscription.CourseSubscriptionGetByCourseIdResponse
+import flowledge.admin.course.dto.subscription.CourseSubscriptionGetByUserIdResponse
+import flowledge.admin.course.models.CourseCreatorModel
+import flowledge.admin.course.models.course.CourseModel
+import flowledge.admin.course.models.subscription.CourseSubscriptionModel
+import flowledge.admin.user.models.UserModel
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 

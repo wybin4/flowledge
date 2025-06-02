@@ -1,6 +1,6 @@
-package eduflow.course.course
+package flowledge.course.course
 
-import eduflow.course.CourseCreator
+import flowledge.course.CourseCreator
 import java.util.*
 
 interface Course {

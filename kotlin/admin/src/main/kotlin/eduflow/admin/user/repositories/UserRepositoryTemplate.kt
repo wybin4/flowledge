@@ -1,6 +1,6 @@
-package eduflow.admin.user.repositories
+package flowledge.admin.user.repositories
 
-import eduflow.admin.repositories.PaginationAndSortingRepository
-import eduflow.admin.user.models.UserModel
+import flowledge.admin.repositories.PaginationAndSortingRepository
+import flowledge.admin.user.models.UserModel
 
 interface UserRepositoryTemplate : PaginationAndSortingRepository<UserModel, String>

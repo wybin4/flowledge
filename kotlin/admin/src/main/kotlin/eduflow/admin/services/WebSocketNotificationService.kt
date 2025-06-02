@@ -1,4 +1,4 @@
-package eduflow.admin.services
+package flowledge.admin.services
 
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service

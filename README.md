@@ -32,15 +32,15 @@
 ### 5. **Материалы**
 - [Видео](https://github.com/wybin4/flowledge/blob/master/assets/video.mp4)
 - Скриншоты
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/admin-panel.png"/>
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/lda-mapping.png"/>
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/admin-panel-users.png"/>
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/courses-hub.png"/>
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/edit-course.png"/>
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/courses-list.png"/>
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/course-preview.png"/>
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/course-progress.png"/>
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/survey.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/admin-panel.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/lda-mapping.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/admin-panel-users.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/courses-hub.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/edit-course.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/courses-list.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/course-preview.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/course-progress.png"/>
+<img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/survey.png"/>
 
 if error `MongoServerError[AlreadyInitialized]: already initialized` persists use
 ```

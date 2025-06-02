@@ -25,11 +25,22 @@
 
 <img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/frontend.png"/>
 
-### 3. **Дизайн**
+### 4. **Дизайн**
 - [Figma](https://www.figma.com/design/pbl6x7VHdzOTV24OEC1rdy/flowledge?node-id=704-34&t=B5dZqG2KaboCVLCc-1): Референсы, айдентика (сгенерировано), макеты, скриншоты
 - [Структурные карты](https://xmind.ai/ra1CxfB7)
 
-[Видео](https://github.com/wybin4/flowledge/blob/master/assets/video.mp4)
+### 5. **Материалы**
+- [Видео](https://github.com/wybin4/flowledge/blob/master/assets/video.mp4)
+- Скриншоты
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/admin-panel.png"/>
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/lda-mapping.png"/>
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/admin-panel-users.png"/>
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/courses-hub.png"/>
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/edit-course.png"/>
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/courses-list.png"/>
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/course-preview.png"/>
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/course-progress.png"/>
+<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/survey.png"/>
 
 if error `MongoServerError[AlreadyInitialized]: already initialized` persists use
 ```

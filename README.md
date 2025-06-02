@@ -12,21 +12,22 @@
 - Создает конспекты по видео: принимает видеофайл, извлекает из него аудио и преобразует его в текст с помощью модели **Faster Whisper**. Добавляет пунктуацию и форматирует текст с использованием модели **DeepMultilingualPunctuation**. Разбивает аудио на чанки для параллельной обработки, что ускоряет процесс транскрибации. Возвращает готовый конспект в виде текста.
 - Инструментарий: FastAPI, GridFS и MongoDB, FFmpeg, Faster Whisper, DeepMultilingualPunctuation.
 
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/neural-backend.png"/>
+<img width="600px" src="https://github.com/wybin4/flowledge/blob/master/assets/neural-backend.png"/>
 
 ### 2. **Пользовательское API (User Sphere API)**
 - Управление пользователями, права и роли, настройки, аутентификация (LDAP и парольный fallback), работа с медиа, работа с курсами и их контентом, версионирование и публикация курсов
 - Инструментарий: Kotlin, Spring Boot, MongoDB, MongoDB Reactive, Spring Security, Spring LDAP, Spring Boot WebSocket, JWT
 
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/user-sphere-backend.png"/>
+<img width="600px" src="https://github.com/wybin4/flowledge/blob/master/assets/user-sphere-backend.png"/>
 
 ### 3. **Фронтенд**
 - Инструментарий: Next.js & TypeScript, CodeMirror, Dnd Kit, Redux & React Redux, StompJS, LokiJS, React Query, React Select, React Modal, i18next
 
-<img width="300px" src="https://github.com/wybin4/flowledge/blob/master/assets/frontend.png"/>
+<img width="600px" src="https://github.com/wybin4/flowledge/blob/master/assets/frontend.png"/>
 
 ### 3. **Дизайн**
-- Референсы, айдентика (сгенерировано), карты, макеты, скриншоты
+- [Figma](https://www.figma.com/design/pbl6x7VHdzOTV24OEC1rdy/flowledge?node-id=704-34&t=B5dZqG2KaboCVLCc-1): Референсы, айдентика (сгенерировано), макеты, скриншоты
+- [Структурные карты](https://xmind.ai/ra1CxfB7)
 
 <video width="100%" controls>
   <source src="https://github.com/wybin4/flowledge/blob/master/assets/video.mp4" type="video/mp4">

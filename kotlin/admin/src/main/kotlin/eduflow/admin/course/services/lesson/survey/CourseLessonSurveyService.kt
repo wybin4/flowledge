@@ -30,9 +30,10 @@ class CourseLessonSurveyService(
         return versionService.getTargetVersion(courseId)
             .flatMap { latestVersion ->
                 val surveyId = latestVersion.sections
-                    ?.flatMap { section -> section.lessons!! }
+                    ?.flatMap { section -> section.lessons ?: emptyList() }
                     ?.firstOrNull { lesson -> lesson._id == id }
                     ?.surveyId
+
 
                 if (surveyId != null) {
                     surveyRepository.findById(surveyId)

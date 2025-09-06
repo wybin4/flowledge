@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+
+actor "Админ" as Admin
+actor "Пользователь" as User
+actor "Базовый редактор" as BaseEditor
+actor "Редактор" as Editor
+actor "Владелец курса" as CourseOwner
+actor "Модератор курса" as CourseModerator
+
+' Унаследованные роли
+Editor --|> BaseEditor
+CourseOwner --|> BaseEditor
+CourseModerator --|> BaseEditor
+
+rectangle "Просмотр доступных курсов" {
+    usecase "Просматривать курсы по группам AD" as UC_ViewCoursesByGroups
+    usecase "Просматривать курсы по присоединению" as UC_ViewCoursesByJoin
+}
+
+rectangle "Просмотр всех курсов" {
+    usecase "Просматривать все курсы" as UC_ViewAllCourses
+    
+}
+
+' Админ может просматривать все курсы
+Admin --> UC_ViewAllCourses
+
+' Юзер может просматривать курсы по группам AD или по присоединению
+User --> UC_ViewCoursesByGroups
+User --> UC_ViewCoursesByJoin
+
+' Базовый редактор и его наследники (Редактор, Владелец, Модератор) могут просматривать курсы по присоединению
+BaseEditor --> UC_ViewCoursesByJoin
+@enduml

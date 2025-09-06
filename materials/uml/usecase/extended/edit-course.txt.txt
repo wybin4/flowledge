@@ -1,0 +1,58 @@
+@startuml
+left to right direction
+
+actor "Владелец курса" as CourseOwner
+actor "Модератор курса" as CourseModerator
+
+rectangle "Редактирование курсов, секций и лекций" {
+    usecase "Редактировать курс" as UC_EditCourse
+    usecase "Редактировать секцию" as UC_EditSection
+    usecase "Создавать секции курса" as UC_CreateSections
+    usecase "Удалять секции курса" as UC_DeleteSections
+    usecase "Редактировать лекции" as UC_EditLectures
+    usecase "Создавать лекции" as UC_CreateLectures
+    usecase "Удалять лекции" as UC_DeleteLectures
+
+    ' Расширения для редактирования секций
+    usecase "Редактировать имя секции" as UC_EditSectionName
+    usecase "Редактировать видимость секции" as UC_EditSectionVisibility
+    usecase "Редактировать порядок секции" as UC_EditSectionOrder
+
+    ' Расширения для редактирования лекций
+    usecase "Редактировать обложку лекции" as UC_EditLectureCover
+    usecase "Редактировать название лекции" as UC_EditLectureTitle
+    usecase "Редактировать время прохождения лекции" as UC_EditLectureDuration
+    usecase "Редактировать видимость лекции" as UC_EditLectureVisibility
+    usecase "Редактировать видео лекции" as UC_EditLectureVideo
+    usecase "Редактировать конспект лекции" as UC_EditLectureNotes
+    usecase "Редактировать тест лекции" as UC_EditLectureTest
+    usecase "Редактировать материалы лекции" as UC_EditLectureMaterials
+}
+
+' Владелец курса может создавать, редактировать и удалять секции и лекции
+CourseOwner --> UC_EditCourse
+CourseOwner --> UC_CreateSections
+CourseOwner --> UC_DeleteSections
+CourseOwner --> UC_EditSection
+CourseOwner --> UC_CreateLectures
+CourseOwner --> UC_DeleteLectures
+CourseOwner --> UC_EditLectures
+
+' Расширения для редактирования секции
+UC_EditSection <-- UC_EditSectionName : <<extends>>
+UC_EditSection <-- UC_EditSectionVisibility : <<extends>>
+UC_EditSection <-- UC_EditSectionOrder : <<extends>>
+
+' Расширения для редактирования лекции
+UC_EditLectures <-- UC_EditLectureCover : <<extends>>
+UC_EditLectures <-- UC_EditLectureTitle : <<extends>>
+UC_EditLectures <-- UC_EditLectureDuration : <<extends>>
+UC_EditLectures <-- UC_EditLectureVisibility : <<extends>>
+UC_EditLectures <-- UC_EditLectureVideo : <<extends>>
+UC_EditLectures <-- UC_EditLectureNotes : <<extends>>
+UC_EditLectures <-- UC_EditLectureTest : <<extends>>
+UC_EditLectures <-- UC_EditLectureMaterials : <<extends>>
+
+' Модератор курса может только редактировать лекции
+CourseModerator --> UC_EditLectures
+@enduml

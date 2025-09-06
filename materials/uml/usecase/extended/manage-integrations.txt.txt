@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+
+actor "Админ" as Admin
+
+rectangle "Управление интеграциями" {
+    usecase "Управление интеграциями" as UC_ManageIntegrations
+    usecase "Создать интеграцию" as UC_CreateIntegration
+    usecase "Изменить скрипт интеграции" as UC_EditScript
+    usecase "Изменить токен интеграции" as UC_EditToken
+    usecase "Изменить название интеграции" as UC_EditName
+    usecase "Удалить интеграцию" as UC_DeleteIntegration
+    usecase "Включить интеграцию" as UC_EnableIntegration
+    usecase "Выключить интеграцию" as UC_DisableIntegration
+}
+
+UC_ManageIntegrations <-- UC_CreateIntegration : <<extends>>
+UC_ManageIntegrations <-- UC_EditScript : <<extends>>
+UC_ManageIntegrations <-- UC_EditToken : <<extends>>
+UC_ManageIntegrations <-- UC_EditName : <<extends>>
+UC_ManageIntegrations <-- UC_DeleteIntegration : <<extends>>
+UC_ManageIntegrations <-- UC_EnableIntegration : <<extends>>
+UC_ManageIntegrations <-- UC_DisableIntegration : <<extends>>
+
+Admin --> UC_ManageIntegrations
+@enduml

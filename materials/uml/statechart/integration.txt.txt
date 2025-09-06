@@ -1,0 +1,27 @@
+@startuml
+skinparam state {
+  FontName Arial
+  FontSize 14
+}
+
+state "Создана" as Created
+state "Включена" as Active
+state "Выключена" as Disabled
+state "На редактировании" as Editing
+state "Удалена" as Deleted
+
+[*] --> Created
+Created --> Active
+Created --> Disabled
+Created --> Editing
+Created --> Deleted
+
+Active --> Disabled
+
+Disabled --> Editing
+Disabled --> Deleted
+
+Editing --> Active
+
+Deleted --> [*]
+@enduml

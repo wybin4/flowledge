@@ -1,0 +1,18 @@
+@startuml
+skinparam state {
+  FontName Arial
+  FontSize 14
+}
+
+state "Не начат" as NotStarted
+state "В процессе" as InProgress
+state "Завершён" as Completed
+
+[*] --> NotStarted
+NotStarted --> InProgress
+NotStarted --> Completed
+
+InProgress --> Completed
+
+Completed --> [*]
+@enduml

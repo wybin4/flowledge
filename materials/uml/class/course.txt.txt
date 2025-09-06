@@ -1,0 +1,151 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "course.course" {
+    interface Course {
+        +_id: String
+        +title: String
+        +description: String
+        +imageUrl: String?
+        +u: CourseCreator
+        +createdAt: Date
+        +updatedAt: Date
+        +tags: List<String>?
+        +isPublished: Boolean?
+        +versions: List<String>
+    }
+}
+
+package "course.course.version" {
+    interface CourseVersion {
+        +_id: String
+        +name: String
+        +sections: List<CourseVersionSection>?
+    }
+    interface CourseVersionItem {
+        +isVisible: Boolean?
+    }
+    interface CourseVersionLesson extends CourseVersionItem {
+        +_id: String
+        +isDraft: Boolean?
+        +videoId: String?
+        +surveyId: String?
+        +hasSynopsis: Boolean?
+    }
+    interface CourseVersionSection extends CourseVersionItem {
+        +_id: String
+        +lessons: List<CourseVersionLesson>?
+    }
+}
+
+package "course" {
+    interface CourseTag {
+        +_id: String
+        +name: String
+    }
+    interface CourseCreator {
+        +_id: String
+        +username: String
+        +name: String
+    }
+    interface CourseSection {
+        +_id: String
+        +title: String
+        +createdAt: Date
+        +updatedAt: Date
+    }
+}
+
+package "course.subscription" {
+    interface CourseSubscription {
+        +_id: String
+        +userId: String
+        +courseId: String
+        +isFavourite: Boolean?
+        +isSubscribed: Boolean?
+        +roles: List<String>?
+        +createdAt: Date
+        +updatedAt: Date
+        +courseVersion: String?
+        +progress: CourseProgress?
+    }
+}
+
+package "course.subscription.progress" {
+    interface CourseProgress {
+        +sections: List<CourseProgressSection>
+        +progress: Double?
+    }
+    interface CourseProgressItem {
+        +_id: String
+        +progress: Double
+    }
+    interface CourseProgressLesson extends CourseProgressItem {
+        +videoProgress: Double?
+        +synopsisProgress: Double?
+        +isSurveyPassed: Boolean?
+    }
+    interface CourseProgressSection extends CourseProgressItem {
+        +lessons: List<CourseProgressLesson>
+    }
+}
+
+package "course.lesson" {
+    interface CourseLesson {
+        +_id: String
+        +title: String
+        +time: String?
+        +imageUrl: String?
+        +synopsisText: String?
+        +surveyText: String?
+        +createdAt: Date
+        +updatedAt: Date
+    }
+}
+
+package "course.lesson.survey" {
+    interface CourseLessonSurvey {
+        +_id: String
+        +questions: List<CourseLessonSurveyQuestion>
+        +passThreshold: Int
+        +maxAttempts: Int
+    }
+    interface CourseLessonSurveyQuestion {
+        +_id: String
+        +title: String
+        +choices: List<CourseLessonSurveyChoice>
+    }
+    interface CourseLessonSurveyChoice {
+        +_id: String
+        +title: String
+        +isCorrect: Boolean?
+    }
+    interface CourseLessonSurveyAnswer {
+        +userChoiceId: String
+        +correctChoiceId: String
+    }
+    interface CourseLessonSurveyAttempt {
+        +_id: String
+        +surveyId: String
+        +userId: String
+        +completedAt: Date
+        +score: Int
+        +answers: List<CourseLessonSurveyAnswer>
+    }
+}
+
+' Ассоциации между интерфейсами
+Course --> CourseCreator : u
+Course --> CourseTag : tags (List<String>)
+CourseVersion --> CourseVersionSection : sections
+CourseVersionSection --> CourseVersionLesson : lessons
+CourseSubscription --> CourseProgress : progress
+CourseProgress --> CourseProgressSection : sections
+CourseProgressSection --> CourseProgressLesson : lessons
+
+CourseVersionLesson --> CourseLessonSurvey : surveyId
+CourseLessonSurvey --> CourseLessonSurveyQuestion : questions
+CourseLessonSurveyQuestion --> CourseLessonSurveyChoice : choices
+CourseLessonSurveyAttempt --> CourseLessonSurveyAnswer : answers
+
+@enduml

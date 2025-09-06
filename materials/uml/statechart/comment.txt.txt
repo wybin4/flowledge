@@ -1,0 +1,23 @@
+@startuml
+skinparam state {
+  FontName Arial
+  FontSize 14
+}
+
+
+state "Создан" as Created
+state "Отредактирован" as Edited
+state "Скрыт базовым редактором" as HiddenByModerator
+state "Удалён" as Deleted
+
+[*] --> Created
+Created --> Edited
+Created --> HiddenByModerator
+Created --> Deleted
+
+Edited --> HiddenByModerator
+Edited --> Deleted
+
+HiddenByModerator --> [*]
+Deleted --> [*]
+@enduml

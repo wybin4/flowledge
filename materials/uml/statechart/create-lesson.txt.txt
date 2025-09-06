@@ -1,0 +1,41 @@
+@startuml
+skinparam state {
+  FontName Arial
+  FontSize 14
+}
+
+[*] --> StartCreation : Начать создание лекции
+
+state "Начало создания" as StartCreation
+state "Загрузка видео" as UploadVideo
+state "Генерация конспекта по видео" as GeneratingTranscript
+state "Генерация теста по конспекту" as GeneratingQuiz
+state "Добавить детали\n(название, время прохождения, видимость)" as AddingDetails
+state "Лекция" as LectureCreated
+state "Черновик" as Draft
+
+StartCreation --> ChoiceUploadVideo
+
+state ChoiceUploadVideo <<choice>>
+ChoiceUploadVideo --> UploadVideo : [Загрузить видео]
+ChoiceUploadVideo --> Draft : [Не загружать видео]
+
+UploadVideo --> ChoiceTranscript
+
+state ChoiceTranscript <<choice>>
+ChoiceTranscript --> GeneratingTranscript : [Создать конспект]
+ChoiceTranscript --> Draft : [Не создавать конспект]
+
+GeneratingTranscript --> ChoiceQuiz
+
+state ChoiceQuiz <<choice>>
+ChoiceQuiz --> GeneratingQuiz : [Создать тест]
+ChoiceQuiz --> Draft : [Не создавать тест]
+
+GeneratingQuiz --> Draft
+
+Draft --> AddingDetails : Добавление деталей
+AddingDetails --> LectureCreated : Лекция создана
+
+LectureCreated --> [*]
+@enduml

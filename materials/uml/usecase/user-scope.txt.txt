@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+
+actor "Базовый актор" as BaseUser
+actor "Пользователь" as User
+actor "Редактор" as Editor
+actor "Админ" as Admin
+
+User --|> BaseUser
+Editor --|> BaseUser
+Admin --|> BaseUser
+
+rectangle "Скоуп пользователей" {
+    usecase "Входить в систему" as UC_Login
+    usecase "Редактировать профиль" as UC_EditProfile
+
+    usecase "Управлять ролями и правами доступа" as UC_ManageRoles
+
+    usecase "Управлять интеграциями" as UC_ManageIntegrations
+
+    usecase "Изменять настройки" as UC_ModifySettings
+    usecase "Управлять всеми акторами" as UC_ManageAllActors
+}
+
+BaseUser --> UC_Login
+BaseUser --> UC_EditProfile
+
+
+Admin --> UC_ManageRoles
+Admin --> UC_ManageIntegrations
+Admin --> UC_ModifySettings
+Admin --> UC_ManageAllActors
+
+UC_Login <-- UC_ManageAllActors : <<include>>
+@enduml

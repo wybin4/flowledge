@@ -30,7 +30,7 @@
 - [Структурные карты](https://xmind.ai/ra1CxfB7)
 
 ### 5. **Материалы**
-- [Видео](https://github.com/wybin4/flowledge/blob/master/assets/video.mp4)
+- [Видео](https://rutube.ru/video/9b6772469c10244cf12cd8aa1e278f10)
 - Скриншоты
 <img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/admin-panel.png"/>
 <img width="800px" src="https://github.com/wybin4/flowledge/blob/master/assets/lda-mapping.png"/>

@@ -1,0 +1,61 @@
+@startuml
+actor "Базовый редактор" as Editor
+entity "Фронтенд" as Frontend
+entity "UserSphere" as UserSphere
+entity "MongoDB" as MongoDB
+entity "SynopsisForge" as SynopsisForge
+entity "IntegrationsRunner" as IntegrationsRunner
+entity "Mistral AI" as MistralAI
+
+== Шаг 1: Начало создания лекции ==
+Editor -> Frontend: Начать создание лекции с видео
+
+== Шаг 2: Загрузка видео ==
+Frontend -> UserSphere: Загрузить видео
+UserSphere -> MongoDB: Сохранить видео в GridFS
+MongoDB -> UserSphere: Ответ
+UserSphere -> Frontend: Ответ (успех/ошибка)
+
+alt Ошибка загрузки
+  Frontend -> Editor: Процесс создания лекции завершён с ошибкой
+else Успех загрузки
+  Frontend -> Editor: Видео успешно загружено
+
+  == Шаг 3: Генерация конспекта ==
+  alt Генерация конспекта
+    Editor -> Frontend: Выбрать генерацию конспекта
+    Frontend -> SynopsisForge: Запрос на создание конспекта
+    SynopsisForge -> SynopsisForge: Извлечь аудио с помощью FFmpeg
+    SynopsisForge -> SynopsisForge: Разбить аудио на чанки по CHUNK_SIZE
+    SynopsisForge -> SynopsisForge: Распознать речь с помощью Faster Whisper
+    SynopsisForge -> SynopsisForge: Добавить пунктуацию и исправить заглавные буквы
+    SynopsisForge -> Frontend: Отдать результат конспекта
+    Frontend -> Editor: Конспект сгенерирован
+
+    == Шаг 4: Генерация теста ==
+    alt Генерация теста
+      Editor -> Frontend: Выбрать генерацию теста
+      Frontend -> IntegrationsRunner: Запрос на создание теста
+      IntegrationsRunner -> MistralAI: Запрос на создание теста
+      MistralAI -> IntegrationsRunner: Ответ с тестом
+      IntegrationsRunner -> Frontend: Отдать результат теста
+      Frontend -> Editor: Тест сгенерирован
+    else Нет генерации теста
+      Frontend -> Editor: Тест не генерируется
+    end
+
+  else Нет генерации конспекта
+    Frontend -> Editor: Конспект не генерируется
+    Frontend -> Editor: Тест также не генерируется
+  end
+end
+
+== Шаг 5: Сохранение черновика ==
+Editor -> Frontend: Сохранить черновик
+Frontend -> UserSphere: Запрос на сохранение
+UserSphere -> MongoDB: Сохранить конспект и тест
+MongoDB -> UserSphere: Ответ
+UserSphere -> Frontend: Ответ
+Frontend -> Editor: Черновик сохранён
+
+@enduml

@@ -1,0 +1,176 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+
+' === USER ===
+package user {
+    interface User {
+        +_id: String
+        +createdAt: Date
+        +roles: List<String>
+        +active: Boolean
+        +username: String
+        +name: String
+        +email: UserEmail
+        +settings: UserSetting
+        +services: UserServices
+    }
+
+    class UserEmail {
+        +address: String
+        +verified: Boolean
+    }
+
+    interface UserSetting {
+        +theme: Theme
+        +language: Language
+    }
+
+    enum Theme {
+        LIGHT
+        DARK
+        AUTO
+    }
+
+    enum Language {
+        EN
+        RU
+    }
+
+    interface UserServices {
+        +resume: ResumeService
+        +ldap: LDAPService
+        +password: PasswordService
+    }
+
+    interface ResumeService {
+        +jwtToken: String
+        +refreshToken: String
+    }
+
+    interface LDAPService {
+        +memberOf: List<String>
+    }
+
+    interface PasswordService {
+        +bcrypt: String
+    }
+}
+
+' === ROLE ===
+package role {
+    interface Role {
+        +_id: String
+        +name: String
+        +description: String
+        +scopes: List<RoleScope>
+    }
+
+    enum RoleScope {
+        USERS
+        COURSES
+    }
+}
+
+' === PERMISSION ===
+package permission {
+    interface Permission {
+        +_id: String
+        +roles: List<String>
+    }
+}
+
+' === PRIVATE SETTING ===
+package privateSetting {
+    interface PrivateSetting {
+        +_id: String
+        +type: SettingType
+        +public: Boolean
+        +i18nLabel: String
+        +value: SettingValue
+        +packageValue: SettingValue
+        +enableQuery: EnableQuery
+        +displayQuery: EnableQuery
+        +i18nDescription: String
+        +ts: Date
+        +createdAt: Date
+        +options: List<SettingSelectOption>
+        +placeholder: String
+    }
+
+    enum SettingType {
+        RADIO
+        CODE
+        INPUT_NUMBER
+        INPUT_PASSWORD
+        INPUT_TEXT
+        SELECTOR_FINITE
+        SELECTOR_INFINITE
+    }
+
+    class SettingSelectOption {
+        +label: String
+        +value: SettingValue
+    }
+
+    class SettingValue {
+        <<typealias>>
+        Any
+    }
+
+    class EnableQuery <<interface>> {
+        +query: String
+    }
+}
+
+' === UPLOAD ===
+package upload {
+    interface Upload {
+        +_id: String
+        +typeGroup: String
+        +type: String
+        +name: String
+        +extension: String
+        +userId: String
+        +size: Long
+        +path: String
+        +uploadedAt: Date
+        +modifiedAt: Date
+        +url: String
+    }
+}
+
+' === INTEGRATIONS ===
+package integration {
+    class ApiIntegration {
+        +_id: String
+        +name: String
+        +secret: String
+        +script: String
+        +u: Map<String, Any>
+        +createdAt: String
+        +updatedAt: String
+        +enabled: Boolean
+    }
+}
+
+' === ASSOCIATIONS ===
+user.User --> user.UserEmail
+user.User --> user.UserSetting
+user.User --> user.UserServices
+
+user.UserServices --> user.ResumeService
+user.UserServices --> user.LDAPService
+user.UserServices --> user.PasswordService
+
+user.UserSetting --> user.Theme
+user.UserSetting --> user.Language
+
+privateSetting.PrivateSetting --> privateSetting.SettingType
+privateSetting.PrivateSetting --> privateSetting.SettingValue
+privateSetting.PrivateSetting --> privateSetting.EnableQuery
+privateSetting.PrivateSetting --> privateSetting.SettingSelectOption
+
+role.Role --> role.RoleScope
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+skinparam componentStyle rectangle
+
+package "Фронтенд" {
+  [Frontend]
+}
+
+package "Сервисы" {
+  [SynopsisForge]
+  [IntegrationsRunner]
+  [UserSphere]
+}
+
+package "База данных" {
+  [MongoDB]
+}
+
+package "Аутентификация" {
+  [LDAP Server]
+}
+
+package "Внешние сервисы" {
+  [Mistral AI]
+}
+
+Frontend --> [SynopsisForge]: requires
+Frontend --> [IntegrationsRunner]: requires
+Frontend --> [UserSphere]: requires
+
+[SynopsisForge] --> [MongoDB]: requires
+[IntegrationsRunner] --> [MongoDB]: requires
+[UserSphere] --> [MongoDB]: requires
+[IntegrationsRunner] --> [Mistral AI]: requires
+
+[UserSphere] --> [LDAP Server]: authenticates
+
+@enduml

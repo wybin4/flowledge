@@ -1,0 +1,22 @@
+@startuml
+left to right direction
+
+actor "Админ" as Admin
+
+rectangle "Управление пользователями" {
+    usecase "Управление пользователями" as UC_ManageUsers
+    usecase "Создавать пользователя" as UC_CreateUser
+    usecase "Удалять пользователя" as UC_DeleteUser
+    usecase "Деактивировать пользователя" as UC_DeactivateUser
+    usecase "Активировать пользователя" as UC_ActivateUser
+    usecase "Редактировать пользователя" as UC_EditUser
+}
+
+UC_ManageUsers <-- UC_CreateUser : <<extends>>
+UC_ManageUsers <-- UC_DeleteUser : <<extends>>
+UC_ManageUsers <-- UC_DeactivateUser : <<extends>>
+UC_ManageUsers <-- UC_ActivateUser : <<extends>>
+UC_ManageUsers <-- UC_EditUser : <<extends>>
+
+Admin --> UC_ManageUsers
+@enduml

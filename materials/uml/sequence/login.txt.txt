@@ -1,0 +1,44 @@
+@startuml
+actor "Базовый пользователь" as User
+participant "Фронтенд" as Frontend
+participant "UserSphere" as UserSphere
+participant "LDAP (AD)" as LDAP
+database "MongoDB" as MongoDB
+
+== Авторизация через LDAP ==
+
+User -> Frontend: Ввод логина и пароля
+Frontend -> UserSphere: Отправка логина и пароля
+
+UserSphere -> LDAP: Подключение под сервисной учёткой
+UserSphere -> LDAP: Проверка логина и пароля пользователя
+
+alt Успешная авторизация через LDAP
+  UserSphere -> LDAP: Получение информации о пользователе (ФИО, группы, активность)
+  LDAP --> UserSphere: Информация о пользователе
+
+  alt Пользователь деактивирован в LDAP
+    UserSphere -> MongoDB: Обновить статус пользователя как "неактивный"
+    UserSphere -> Frontend: Ошибка входа (учётка отключена)
+  else Пользователь активен
+    UserSphere -> MongoDB: Синхронизация информации (ФИО, группы и пр.)
+    opt loginFallback включён
+      UserSphere -> MongoDB: Сохранение пароля (хэш) для fallback
+    end
+    UserSphere -> Frontend: Успешный вход
+  end
+
+else Ошибка авторизации через LDAP
+  opt loginFallback включён
+    UserSphere -> MongoDB: Попытка локальной авторизации
+    alt Успешный локальный вход
+      UserSphere -> Frontend: Успешный вход
+    else Локальная авторизация не удалась
+      UserSphere -> Frontend: Ошибка входа
+    end
+  else
+    UserSphere -> Frontend: Ошибка входа
+  end
+end
+
+@enduml

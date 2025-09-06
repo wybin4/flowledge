@@ -1,0 +1,62 @@
+@startuml
+left to right direction
+
+actor "Базовый редактор" as BaseEditor
+actor "Пользователь" as User
+actor "Админ" as Admin
+actor "Редактор" as Editor
+actor "Владелец курса" as CourseOwner
+actor "Модератор курса" as CourseModerator
+actor "Базовый актор" as BaseUser
+
+Editor --|> BaseUser
+User--|> BaseUser
+Editor --|> BaseEditor
+Admin --|> Editor 
+CourseOwner --|> BaseEditor
+CourseModerator --|> BaseEditor
+
+rectangle "Скоуп курсов" {
+    usecase "Редактировать курс" as UC_EditCourse
+    usecase "Модерировать комментарии" as UC_ModerateComments
+
+    usecase "Создавать курс" as UC_CreateCourse
+    usecase "Удалять курс" as UC_DeleteCourse
+    usecase "Назначать владельцев" as UC_AssignOwners
+    usecase "Назначать модераторов" as UC_AssignModerators
+
+
+    usecase "Смотреть доступные курсы" as UC_ViewCourses
+usecase "Смотреть все курсы" as UC_ViewAllCourses
+    usecase "Писать комментарии" as UC_Comment
+
+
+    usecase "Сохранять понравившиеся курсы" as UC_SaveCourses
+    usecase "Отслеживать прогресс" as UC_TrackProgress
+}
+
+BaseEditor --> UC_EditCourse
+BaseEditor --> UC_ModerateComments
+
+Editor --> UC_CreateCourse
+Editor --> UC_DeleteCourse
+Editor --> UC_AssignOwners
+Editor --> UC_AssignModerators
+Admin--> UC_ViewAllCourses
+
+CourseOwner --> UC_DeleteCourse
+
+CourseOwner --> UC_AssignModerators
+
+UC_SaveCourses <-- UC_ViewCourses: <<include>>
+
+
+
+BaseUser --> UC_ViewCourses
+BaseUser --> UC_Comment
+
+
+
+BaseUser --> UC_SaveCourses
+BaseUser --> UC_TrackProgress
+@enduml

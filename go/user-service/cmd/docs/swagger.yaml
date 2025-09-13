@@ -1,0 +1,249 @@
+definitions:
+  user.UpdateUserInput:
+    properties:
+      active:
+        type: boolean
+      name:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
+    type: object
+  user.UserModel:
+    properties:
+      active:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      username:
+        type: string
+    type: object
+  user.createUserInput:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+info:
+  contact: {}
+paths:
+  /users.create:
+    post:
+      consumes:
+      - application/json
+      description: Create a user with username, password, name, and optional roles
+      parameters:
+      - description: User input
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.createUserInput'
+      - description: 'Example: {\'
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.createUserInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'Example: {\"id\": \"123\", \"username\": \"jdoe\", \"name\":
+            \"John Doe\"}'
+          schema:
+            $ref: '#/definitions/user.UserModel'
+        "400":
+          description: 'Example: {\"error\": \"username cannot be empty\"}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - users
+  /users.delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: 'Example: {\"error\":\"user not found\"}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user
+      tags:
+      - users
+  /users.get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a user by their ID
+      parameters:
+      - description: User ID or 'me'
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Example: {\"id\": \"123\", \"username\": \"jdoe\", \"name\":
+            \"John Doe\"}'
+          schema:
+            $ref: '#/definitions/user.UserModel'
+        "404":
+          description: 'Example: {\"error\": \"user not found\"}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user by ID
+      tags:
+      - users
+  /users.update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update a user's username, name, roles, active status or password
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserInput'
+      - description: 'Example: {\'
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Example: {\"_id\":\"123\",\"username\":\"jdoe\",\"name\":\"John
+            Doe\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update user details
+      tags:
+      - users
+  /users/{id}/settings:
+    put:
+      consumes:
+      - application/json
+      description: Update user settings like theme or language
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Settings map
+        in: body
+        name: settings
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: 'Example: {\'
+        in: body
+        name: settings
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Example: {\"status\": \"ok\"}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update user settings
+      tags:
+      - users
+swagger: "2.0"

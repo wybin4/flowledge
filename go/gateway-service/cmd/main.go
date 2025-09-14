@@ -126,6 +126,9 @@ func main() {
 	r.HandleFunc("/users.create", handler.handleCreateUser).Methods("POST")
 	r.HandleFunc("/settings.set", handler.handleSetSettings).Methods("POST")
 
+	r.HandleFunc("/login", handler.handleLogin).Methods("POST")
+	r.HandleFunc("/refresh", handler.handleRefresh).Methods("POST")
+
 	log.Println("Gateway running on :8084")
 	if err := http.ListenAndServe(":8084", r); err != nil {
 		log.Fatal(err)
@@ -170,6 +173,44 @@ func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Reques
 	h.forwardRequest(w, r, "setting-service", "settings.set", input)
 }
 
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type RefreshRequest struct {
+	RefreshToken string `json:"refreshToken"`
+}
+
+func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	payload := map[string]interface{}{
+		"username": req.Username,
+		"password": req.Password,
+	}
+	
+	h.forwardRequest(w, r, "auth-service", "login", payload)
+}
+
+func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
+	var req RefreshRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	payload := map[string]interface{}{
+		"refreshToken": req.RefreshToken,
+	}
+
+	h.forwardRequest(w, r, "auth-service", "refresh", payload)
+}
+
 func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, service, endpoint string, payload interface{}) {
 	correlationID := watermill.NewUUID()
 	responseChan := make(chan *message.Message, 1)
@@ -205,6 +246,8 @@ func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, 
 		topic = "user.requests"
 	case "setting-service":
 		topic = "setting.requests"
+	case "auth-service":
+		topic = "auth.requests"
 	default:
 		http.Error(w, fmt.Sprintf("unknown service: %s", service), http.StatusBadRequest)
 		return

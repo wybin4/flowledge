@@ -6,4 +6,5 @@ use (
 	./websocket-service
 	./setting-service
 	./gateway-service
+	./auth-service
 )

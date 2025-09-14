@@ -18,14 +18,14 @@ func NewRepository(client *mongo.Client, dbName string) *Repository {
 }
 
 // FindAll возвращает все настройки
-func (r *Repository) FindAll(ctx context.Context) ([]SettingModel, error) {
+func (r *Repository) FindAll(ctx context.Context) ([]Setting, error) {
 	cur, err := r.collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
 	defer cur.Close(ctx)
 
-	var settings []SettingModel
+	var settings []Setting
 	if err := cur.All(ctx, &settings); err != nil {
 		return nil, err
 	}
@@ -33,8 +33,8 @@ func (r *Repository) FindAll(ctx context.Context) ([]SettingModel, error) {
 }
 
 // FindByID ищет настройку по _id
-func (r *Repository) FindByID(ctx context.Context, id string) (*SettingModel, error) {
-	var setting SettingModel
+func (r *Repository) FindByID(ctx context.Context, id string) (*Setting, error) {
+	var setting Setting
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&setting)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (r *Repository) FindByID(ctx context.Context, id string) (*SettingModel, er
 }
 
 // UpdateValue обновляет значение
-func (r *Repository) UpdateValue(ctx context.Context, id string, value interface{}) (*SettingModel, error) {
+func (r *Repository) UpdateValue(ctx context.Context, id string, value interface{}) (*Setting, error) {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"value": value}}
 

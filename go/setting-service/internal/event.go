@@ -1,25 +1,35 @@
 package setting
 
-import "github.com/wybin4/flowledge/go/pkg/kafka/producer"
+import (
+	"encoding/json"
+	"time"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/google/uuid"
+)
 
 type SettingEventService struct {
-	eventService *producer.EventService
+	publisher message.Publisher // ✅ БЕЗ указателя!
+	topic     string
 }
 
-func NewSettingEventService(eventService *producer.EventService) *SettingEventService {
-	return &SettingEventService{eventService: eventService}
+func NewSettingEventService(publisher message.Publisher) *SettingEventService {
+	return &SettingEventService{
+		publisher: publisher,
+		topic:     "setting-events",
+	}
 }
 
-// SendSettingEvent отправляет событие о настройке в Kafka
-func (s *SettingEventService) SendSettingEvent(action string, setting *SettingModel) {
-	if setting == nil {
+// SendSettingEvent отправляет событие о пользователе через Watermill
+func (s *SettingEventService) SendSettingEvent(action string, setting *Setting) {
+	if s.publisher == nil || setting == nil {
 		return
 	}
 
-	payload := map[string]interface{}{
+	event := map[string]interface{}{
 		"action": action,
 		"setting": map[string]interface{}{
-			"id":              setting.ID,
+			"id":       setting.ID,
 			"type":            setting.Type,
 			"public":          setting.Public,
 			"i18nLabel":       setting.I18nLabel,
@@ -33,7 +43,14 @@ func (s *SettingEventService) SendSettingEvent(action string, setting *SettingMo
 			"createdAt":       setting.CreatedAt,
 			"updatedAt":       setting.UpdatedAt,
 		},
+		"timestamp": time.Now(),
 	}
 
-	s.eventService.SendAsync(setting.ID, payload)
+	eventBytes, err := json.Marshal(event)
+	if err != nil {
+		return
+	}
+
+	msg := message.NewMessage(uuid.NewString(), eventBytes)
+	s.publisher.Publish(s.topic, msg) // ✅ Теперь будет работать
 }

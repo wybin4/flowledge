@@ -5,97 +5,85 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
+	"github.com/ThreeDotsLabs/watermill/message"
 	"go.uber.org/fx"
 
-	kafkaPkg "github.com/wybin4/flowledge/go/pkg/kafka"
 	ws "github.com/wybin4/flowledge/go/websocket-service/internal"
 )
+
+type Subscribers struct {
+	fx.In
+
+	UserSubscriber    message.Subscriber `name:"userSubscriber"`
+	SettingSubscriber message.Subscriber `name:"settingSubscriber"`
+}
 
 func main() {
 	app := fx.New(
 		fx.Provide(
 			func() *ws.Hub { return ws.NewHub() },
+			func() watermill.LoggerAdapter { return watermill.NewStdLogger(true, true) },
 
-			// Consumer для user-changed
+			// Kafka Subscriber для user-events
 			fx.Annotate(
-				func() *kafkaPkg.Consumer {
-					return kafkaPkg.NewConsumer("localhost:9092", "user-changed", "ws-service-group")
+				func(logger watermill.LoggerAdapter) (message.Subscriber, error) {
+					return kafka.NewSubscriber(
+						kafka.SubscriberConfig{
+							Brokers:       []string{"localhost:9092"},
+							ConsumerGroup: "websocket-user-group",
+							Unmarshaler:   kafka.DefaultMarshaler{},
+						},
+						logger,
+					)
 				},
-				fx.ResultTags(`name:"userConsumer"`),
+				fx.ResultTags(`name:"userSubscriber"`),
 			),
 
-			// Consumer для setting-changed
+			// Kafka Subscriber для setting-events
 			fx.Annotate(
-				func() *kafkaPkg.Consumer {
-					return kafkaPkg.NewConsumer("localhost:9092", "setting-changed", "ws-service-group")
+				func(logger watermill.LoggerAdapter) (message.Subscriber, error) {
+					return kafka.NewSubscriber(
+						kafka.SubscriberConfig{
+							Brokers:       []string{"localhost:9092"},
+							ConsumerGroup: "websocket-setting-group",
+							Unmarshaler:   kafka.DefaultMarshaler{},
+						},
+						logger,
+					)
 				},
-				fx.ResultTags(`name:"settingConsumer"`),
+				fx.ResultTags(`name:"settingSubscriber"`),
 			),
+
+			// WatermillSubscriber
+			func(hub *ws.Hub, subs Subscribers, logger watermill.LoggerAdapter) *ws.WatermillSubscriber {
+				return ws.NewWatermillSubscriber(hub, subs.UserSubscriber, subs.SettingSubscriber, logger)
+			},
 		),
 
-		fx.Invoke(fx.Annotate(
-			func(
-				lc fx.Lifecycle,
-				hub *ws.Hub,
-				userConsumer *kafkaPkg.Consumer,
-				settingConsumer *kafkaPkg.Consumer,
-			) {
-				lc.Append(fx.Hook{
-					OnStart: func(ctx context.Context) error {
-						log.Println("Starting WebSocket service components...")
-
-						// WebSocket endpoint
-						http.HandleFunc("/ws", ws.ServeWS(hub))
-
-						// HTTP сервер
-						go func() {
-							log.Println("WebSocket server running on :8082")
-							if err := http.ListenAndServe(":8082", nil); err != nil {
-								log.Fatal("HTTP server error:", err)
-							}
-						}()
-
-						// Consumer для user-changed
-						go func() {
-							log.Println("Starting Kafka consumer: user-changed")
-							err := userConsumer.Consume(context.Background(), func(key string, payload map[string]interface{}) {
-								log.Printf("Received user event: key=%s, payload=%v", key, payload)
-								hub.Broadcast(payload)
-							})
-							if err != nil {
-								log.Printf("Kafka consumer stopped with error (user-changed): %v", err)
-							}
-						}()
-
-						// Consumer для setting-changed
-						go func() {
-							log.Println("Starting Kafka consumer: setting-changed")
-							err := settingConsumer.Consume(context.Background(), func(key string, payload map[string]interface{}) {
-								log.Printf("Received setting event: key=%s, payload=%v", key, payload)
-								hub.Broadcast(payload)
-							})
-							if err != nil {
-								log.Printf("Kafka consumer stopped with error (setting-changed): %v", err)
-							}
-						}()
-
-						return nil
-					},
-					OnStop: func(ctx context.Context) error {
-						log.Println("Stopping WebSocket service...")
-						userConsumer.Close()
-						settingConsumer.Close()
-						return nil
-					},
-				})
-			},
-			fx.ParamTags(
-				"",
-				"",
-				`name:"userConsumer"`,
-				`name:"settingConsumer"`,
-			),
-		)),
+		fx.Invoke(func(lc fx.Lifecycle, hub *ws.Hub, subscriber *ws.WatermillSubscriber) {
+			lc.Append(fx.Hook{
+				OnStart: func(ctx context.Context) error {
+					http.HandleFunc("/ws", ws.ServeWS(hub))
+					go func() {
+						log.Println("WebSocket server running on :8082")
+						if err := http.ListenAndServe(":8082", nil); err != nil {
+							log.Fatal(err)
+						}
+					}()
+					go func() {
+						if err := subscriber.Start(ctx); err != nil {
+							log.Fatalf("Watermill subscriber failed: %v", err)
+						}
+					}()
+					return nil
+				},
+				OnStop: func(ctx context.Context) error {
+					return subscriber.Close()
+				},
+			})
+		}),
 	)
 
 	app.Run()

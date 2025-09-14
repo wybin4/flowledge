@@ -57,7 +57,7 @@ type EnableQuery struct {
 }
 
 // SettingModel — документ в MongoDB
-type SettingModel struct {
+type Setting struct {
 	ID              string                `bson:"_id" json:"_id"`
 	Type            SettingType           `bson:"type" json:"type"`
 	Public          bool                  `bson:"public" json:"public"`

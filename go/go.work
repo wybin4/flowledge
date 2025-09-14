@@ -5,4 +5,5 @@ use (
 	./user-service
 	./websocket-service
 	./setting-service
+	./gateway-service
 )

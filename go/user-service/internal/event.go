@@ -1,21 +1,32 @@
 package user
 
-import "github.com/wybin4/flowledge/go/pkg/kafka/producer"
+import (
+	"encoding/json"
+	"time"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/google/uuid"
+)
 
 type UserEventService struct {
-	eventService *producer.EventService
+	publisher message.Publisher // ✅ БЕЗ указателя!
+	topic     string
 }
 
-func NewUserEventService(eventService *producer.EventService) *UserEventService {
-	return &UserEventService{eventService: eventService}
+func NewUserEventService(publisher message.Publisher) *UserEventService {
+	return &UserEventService{
+		publisher: publisher,
+		topic:     "user-events",
+	}
 }
 
+// SendUserEvent отправляет событие о пользователе через Watermill
 func (s *UserEventService) SendUserEvent(action string, user *UserModel) {
-	if user == nil {
+	if s.publisher == nil || user == nil {
 		return
 	}
 
-	producer := map[string]interface{}{
+	event := map[string]interface{}{
 		"action": action,
 		"user": map[string]interface{}{
 			"id":       user.ID,
@@ -24,7 +35,14 @@ func (s *UserEventService) SendUserEvent(action string, user *UserModel) {
 			"roles":    user.Roles,
 			"active":   user.Active,
 		},
+		"timestamp": time.Now(),
 	}
 
-	s.eventService.SendAsync(user.ID, producer)
+	eventBytes, err := json.Marshal(event)
+	if err != nil {
+		return
+	}
+
+	msg := message.NewMessage(uuid.NewString(), eventBytes)
+	s.publisher.Publish(s.topic, msg) // ✅ Теперь будет работать
 }

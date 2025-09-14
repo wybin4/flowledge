@@ -74,12 +74,12 @@ func (s *Service) CreateUser(ctx context.Context, username, name, plainPassword 
 	}
 
 	// потом шлём ивент
-	go s.eventSvc.SendAsync("create", user)
+	go s.eventSvc.SendUserEvent("create", user)
 
 	return user, nil
 }
 
-func (s *Service) UpdateUser(ctx context.Context, id string, input UpdateUserInput) (*UserModel, error) {
+func (s *Service) UpdateUser(ctx context.Context, id string, input UpdateUserRequest) (*UserModel, error) {
 	user, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func (s *Service) UpdateUser(ctx context.Context, id string, input UpdateUserInp
 		return nil, err
 	}
 
-	go s.eventSvc.SendAsync("update", user)
+	go s.eventSvc.SendUserEvent("update", user)
 
 	return user, nil
 }
@@ -163,7 +163,7 @@ func (s *Service) DeleteUser(ctx context.Context, id string) error {
 		return err
 	}
 
-	go s.eventSvc.SendAsync("delete", user)
+	go s.eventSvc.SendUserEvent("delete", user)
 
 	return nil
 }

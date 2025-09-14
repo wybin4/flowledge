@@ -36,27 +36,19 @@ func (h *Handler) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// createUserInput ...
-type createUserInput struct {
-	Username string   `json:"username" binding:"required"`
-	Name     string   `json:"name"`
-	Password string   `json:"password" binding:"required"`
-	Roles    []string `json:"roles"`
-}
-
 // CreateUser godoc
 // @Summary Create a new user
 // @Description Create a user with username, password, name, and optional roles
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param user body createUserInput true "User input"
+// @Param user body CreateUserRequest true "User input"
 // @Success 201 {object} UserModel
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /users.create [post]
 func (h *Handler) CreateUser(c *gin.Context) {
-	var input createUserInput
+	var input CreateUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -77,15 +69,6 @@ func (h *Handler) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, user)
 }
 
-// UpdateUserInput ...
-type UpdateUserInput struct {
-	Username *string  `json:"username,omitempty"`
-	Name     *string  `json:"name,omitempty"`
-	Roles    []string `json:"roles,omitempty"`
-	Active   *bool    `json:"active,omitempty"`
-	Password *string  `json:"password,omitempty"`
-}
-
 // UpdateUser godoc
 // @Summary Update user details
 // @Description Update a user's username, name, roles, active status or password
@@ -93,7 +76,7 @@ type UpdateUserInput struct {
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
-// @Param user body UpdateUserInput true "Updated user data"
+// @Param user body UpdateUserRequest true "Updated user data"
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
@@ -103,7 +86,7 @@ type UpdateUserInput struct {
 func (h *Handler) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 
-	var input UpdateUserInput
+	var input UpdateUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

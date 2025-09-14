@@ -1,4 +1,4 @@
-package kafka
+package producer
 
 import (
 	"context"
@@ -73,7 +73,7 @@ func isTopicAlreadyExists(err error) bool {
 // Send отправляет любое сообщение в топик
 func (p *Producer) Send(ctx context.Context, key string, payload interface{}) error {
 	log.Printf("Sending message to Kafka: topic=%s, key=%s", p.topic, key)
-	
+
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Printf("Kafka marshal error: %v", err)

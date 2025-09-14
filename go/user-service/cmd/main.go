@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/fx"
 
-	"github.com/wybin4/flowledge/go/pkg/kafka"
+	"github.com/wybin4/flowledge/go/pkg/kafka/producer"
 	user "github.com/wybin4/flowledge/go/user-service/internal"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -56,20 +56,21 @@ func main() {
 			// Password сервис
 			user.NewUserPasswordService,
 			// Kafka продьюсер
-			func() (*kafka.Producer, error) {
-				p, err := kafka.NewProducer("localhost:9092", "user-changed", 3) // 3 партиции
+			func() (*producer.Producer, error) {
+				p, err := producer.NewProducer("localhost:9092", "user-changed", 3)
 				if err != nil {
 					return nil, fmt.Errorf("failed to create Kafka producer: %w", err)
 				}
 				return p, nil
 			},
-			// UserEventService
-			func(p *kafka.Producer) *user.UserEventService {
-				return user.NewUserEventService(p, "user-changed")
+			// UserEventService (через универсальный EventService)
+			func(p *producer.Producer) *user.UserEventService {
+				es := producer.NewEventService(p, "user-changed")
+				return user.NewUserEventService(es)
 			},
 			// Сервис пользователя
 			func(repo *user.Repository, ps *user.UserPasswordService, es *user.UserEventService) *user.Service {
-				return user.NewService(repo, ps, es) // <-- передаем eventSvc
+				return user.NewService(repo, ps, es)
 			},
 			// Handler
 			func(svc *user.Service) *user.Handler {

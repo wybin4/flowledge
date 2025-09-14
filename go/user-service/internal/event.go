@@ -1,35 +1,21 @@
 package user
 
-import (
-	"context"
-	"log"
+import "github.com/wybin4/flowledge/go/pkg/kafka/producer"
 
-	"github.com/wybin4/flowledge/go/pkg/kafka"
-)
-
-// UserEventService отвечает за отправку событий о пользователях
 type UserEventService struct {
-	producer *kafka.Producer
-	topic    string
+	eventService *producer.EventService
 }
 
-// NewUserEventService создает сервис с указанным Kafka топиком
-func NewUserEventService(producer *kafka.Producer, topic string) *UserEventService {
-	return &UserEventService{
-		producer: producer,
-		topic:    topic,
-	}
+func NewUserEventService(eventService *producer.EventService) *UserEventService {
+	return &UserEventService{eventService: eventService}
 }
 
-// SendAsync безопасно отправляет событие о пользователе в Kafka асинхронно
-// SendAsync безопасно отправляет событие о пользователе в Kafka асинхронно
-func (s *UserEventService) SendAsync(action string, user *UserModel) {
-	if s.producer == nil || user == nil {
+func (s *UserEventService) SendUserEvent(action string, user *UserModel) {
+	if user == nil {
 		return
 	}
 
-	// Создаем event синхронно (это быстро)
-	event := map[string]interface{}{
+	producer := map[string]interface{}{
 		"action": action,
 		"user": map[string]interface{}{
 			"id":       user.ID,
@@ -40,14 +26,5 @@ func (s *UserEventService) SendAsync(action string, user *UserModel) {
 		},
 	}
 
-	// Только ОДНА горутина на отправку
-	go s.sendEvent(user.ID, event)
-}
-
-// sendEvent приватный метод для отправки
-func (s *UserEventService) sendEvent(key string, event map[string]interface{}) {
-	ctx := context.Background()
-	if err := s.producer.Send(ctx, key, event); err != nil {
-		log.Println("Failed to send user event:", err)
-	}
+	s.eventService.SendAsync(user.ID, producer)
 }

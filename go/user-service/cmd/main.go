@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/ThreeDotsLabs/watermill"
@@ -30,7 +31,7 @@ func main() {
 			func(logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
 				return kafka.NewSubscriber(
 					kafka.SubscriberConfig{
-						Brokers:       []string{"localhost:9092"},
+						Brokers:       []string{"localhost:29092"},
 						ConsumerGroup: "user-service-group",
 						Unmarshaler:   kafka.DefaultMarshaler{},
 					},
@@ -40,7 +41,7 @@ func main() {
 			func(logger watermill.LoggerAdapter) (*kafka.Publisher, error) {
 				return kafka.NewPublisher(
 					kafka.PublisherConfig{
-						Brokers:   []string{"localhost:9092"},
+						Brokers:   []string{"localhost:29092"},
 						Marshaler: kafka.DefaultMarshaler{},
 					},
 					logger,
@@ -63,16 +64,34 @@ func main() {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					go transport.StartServiceRouter(transport.RouterConfig{
-						ServiceName: "user-service",
-						Topic:       "user.requests",
-						Subscriber:  subscriber,
-						Publisher:   publisher,
-						Logger:      logger,
+						ServiceName:   "user-service",
+						Topic:         "user.requests",
+						ResponseTopic: "user.responses",
+						Subscriber:    subscriber,
+						Publisher:     publisher,
+						Logger:        logger,
 						Handler: func(ctx context.Context, req transport.Request) (interface{}, error) {
 							switch req.Endpoint {
 							case "users.get":
-								id := req.Payload["id"].(string)
-								return service.GetUser(ctx, id)
+								var userIdentifier string
+
+								if rawID, ok := req.Payload["id"]; ok {
+									if idStr, ok := rawID.(string); ok && idStr != "" {
+										userIdentifier = idStr
+									}
+								}
+
+								if rawUsername, ok := req.Payload["username"]; ok {
+									if usernameStr, ok := rawUsername.(string); ok && usernameStr != "" {
+										userIdentifier = usernameStr
+									}
+								}
+
+								if userIdentifier == "" {
+									return nil, fmt.Errorf("either id or username must be provided")
+								}
+
+								return service.GetUser(ctx, userIdentifier)
 							case "users.create":
 								return service.CreateUserFromMap(req.Payload)
 							default:
@@ -87,5 +106,6 @@ func main() {
 		}),
 	)
 
+	log.Println("\033[31mUser service starting...\033[0m")
 	app.Run()
 }

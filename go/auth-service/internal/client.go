@@ -8,120 +8,61 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/wybin4/flowledge/go/pkg/transport"
 )
 
+// UserServiceClient обёртка над универсальным Pub/Sub клиентом
 type UserServiceClient struct {
-	Publisher  *kafka.Publisher
-	Subscriber message.Subscriber
-	Timeout    time.Duration
+	client *transport.Client
 }
 
+// NewUserServiceClient создаёт нового клиента
 func NewUserServiceClient(pub *kafka.Publisher, sub message.Subscriber) *UserServiceClient {
+	c := transport.NewClient(pub, sub, "user.responses", 5*time.Second)
 	return &UserServiceClient{
-		Publisher:  pub,
-		Subscriber: sub,
-		Timeout:    5 * time.Second,
+		client: c,
 	}
 }
 
+// GetUserByUsername получает пользователя по username
 func (c *UserServiceClient) GetUserByUsername(ctx context.Context, username string) (*User, error) {
-	correlationID := "getuser-" + username + "-" + fmt.Sprint(time.Now().UnixNano())
-	respChan := make(chan *message.Message, 1)
+	payload := map[string]string{
+		"username": username,
+	}
 
-	ch, err := c.Subscriber.Subscribe(ctx, "user.responses")
+	raw, err := c.client.Request(ctx, "user-service", "users.get", payload, "getuser")
+
 	if err != nil {
 		return nil, err
 	}
-	go func() {
-		for msg := range ch {
-			var r struct {
-				CorrelationID string          `json:"correlation_id"`
-				Payload       json.RawMessage `json:"payload"`
-			}
-			if err := json.Unmarshal(msg.Payload, &r); err != nil {
-				continue
-			}
-			if r.CorrelationID == correlationID {
-				respChan <- msg
-				break
-			}
-		}
-	}()
 
-	req := map[string]interface{}{
-		"correlation_id": correlationID,
-		"service":        "user-service",
-		"endpoint":       "users.get",
-		"payload": map[string]string{
-			"username": username,
-		},
+	var user User
+	if err := json.Unmarshal(raw, &user); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal user: %w", err)
 	}
-	data, _ := json.Marshal(req)
-
-	// Отправляем в Kafka через Publisher из watermill-kafka
-	if err := c.Publisher.Publish("user.requests", message.NewMessage(correlationID, data)); err != nil {
-		return nil, err
-	}
-
-	select {
-	case msg := <-respChan:
-		var user User
-		if err := json.Unmarshal(msg.Payload, &user); err != nil {
-			return nil, err
-		}
-		return &user, nil
-	case <-time.After(c.Timeout):
-		return nil, fmt.Errorf("timeout waiting for user-service")
-	}
+	return &user, nil
 }
 
-func (c *UserServiceClient) CreateUser(ctx context.Context, username string, groups []string) (*User, error) {
-	correlationID := "createuser-" + username + "-" + fmt.Sprint(time.Now().UnixNano())
-	respChan := make(chan *message.Message, 1)
+// CreateUser создаёт пользователя (username + password)
+func (c *UserServiceClient) CreateUser(ctx context.Context, username, password string) (*User, error) {
+	payload := map[string]string{
+		"username": username,
+		"password": password,
+	}
 
-	ch, err := c.Subscriber.Subscribe(ctx, "user.responses")
+	raw, err := c.client.Request(ctx, "user-service", "users.create", payload, "createuser")
 	if err != nil {
 		return nil, err
 	}
-	go func() {
-		for msg := range ch {
-			var r struct {
-				CorrelationID string          `json:"correlation_id"`
-				Payload       json.RawMessage `json:"payload"`
-			}
-			if err := json.Unmarshal(msg.Payload, &r); err != nil {
-				continue
-			}
-			if r.CorrelationID == correlationID {
-				respChan <- msg
-				break
-			}
-		}
-	}()
 
-	req := map[string]interface{}{
-		"correlation_id": correlationID,
-		"service":        "user-service",
-		"endpoint":       "users.create",
-		"payload": map[string]interface{}{
-			"username": username,
-			"groups":   groups,
-		},
+	var user User
+	if err := json.Unmarshal(raw, &user); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal created user: %w", err)
 	}
-	data, _ := json.Marshal(req)
+	return &user, nil
+}
 
-	if err := c.Publisher.Publish("user.requests", message.NewMessage(correlationID, data)); err != nil {
-		return nil, err
-	}
-
-	select {
-	case msg := <-respChan:
-		var user User
-		if err := json.Unmarshal(msg.Payload, &user); err != nil {
-			return nil, err
-		}
-		return &user, nil
-	case <-time.After(c.Timeout):
-		return nil, fmt.Errorf("timeout waiting for user-service")
-	}
+// Close закрывает клиент
+func (c *UserServiceClient) Close() {
+	c.client.Close()
 }

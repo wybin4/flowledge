@@ -25,3 +25,14 @@ func (m *MemoryStore[T]) Set(key string, value T) {
 	defer m.mu.Unlock()
 	m.data[key] = value
 }
+
+func (m *MemoryStore[T]) All() map[string]T {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	result := make(map[string]T)
+	for k, v := range m.data {
+		result[k] = v
+	}
+	return result
+}

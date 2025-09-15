@@ -24,7 +24,7 @@ func main() {
 
 			func(logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
 				return kafka.NewSubscriber(kafka.SubscriberConfig{
-					Brokers:       []string{"localhost:9092"},
+					Brokers:       []string{"localhost:29092"},
 					ConsumerGroup: "auth-service-group",
 					Unmarshaler:   kafka.DefaultMarshaler{},
 				}, logger)
@@ -32,7 +32,7 @@ func main() {
 
 			func(logger watermill.LoggerAdapter) (*kafka.Publisher, error) {
 				return kafka.NewPublisher(kafka.PublisherConfig{
-					Brokers:   []string{"localhost:9092"},
+					Brokers:   []string{"localhost:29092"},
 					Marshaler: kafka.DefaultMarshaler{},
 				}, logger)
 			},
@@ -48,14 +48,13 @@ func main() {
 			},
 
 			// Клиент сервиса настроек
-			func(pub *kafka.Publisher, sub *kafka.Subscriber, logger watermill.LoggerAdapter) *transport.SettingsServiceClient {
-				return transport.NewSettingsServiceClient(pub, sub, logger)
+			func(pub *kafka.Publisher, sub *kafka.Subscriber) *transport.SettingsServiceClient {
+				return transport.NewSettingsServiceClient(pub, sub)
 			},
 
 			// LDAPServiceSettings (только настройки + кеш)
 			func(client *transport.SettingsServiceClient, manager *transport.SettingsManager, sub *kafka.Subscriber) *auth.LDAPServiceSettings {
-				ldapSvc := auth.NewLDAPServiceSettings(client, manager)
-				ldapSvc.SubscribeUpdates(sub)
+				ldapSvc := auth.NewLDAPServiceSettings(client, manager, sub)
 				return ldapSvc
 			},
 
@@ -86,11 +85,12 @@ func main() {
 				OnStart: func(ctx context.Context) error {
 					// Router для auth.requests
 					go transport.StartServiceRouter(transport.RouterConfig{
-						ServiceName: "auth-service",
-						Topic:       "auth.requests",
-						Subscriber:  sub,
-						Publisher:   pub,
-						Logger:      logger,
+						ServiceName:   "auth-service",
+						Topic:         "auth.requests",
+						ResponseTopic: "auth.responses",
+						Subscriber:    sub,
+						Publisher:     pub,
+						Logger:        logger,
 						Handler: func(ctx context.Context, req transport.Request) (interface{}, error) {
 							switch req.Endpoint {
 							case "login":
@@ -114,6 +114,6 @@ func main() {
 		}),
 	)
 
-	log.Println("Auth service starting...")
+	log.Println("\033[31mAuth service starting...\033[0m")
 	app.Run()
 }

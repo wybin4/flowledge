@@ -8,12 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
 	"github.com/ThreeDotsLabs/watermill/message"
+
 	store "github.com/wybin4/flowledge/go/pkg/db"
 )
 
+// ================= Settings =================
 type SettingEvent struct {
 	Action  string         `json:"action"`
 	Setting SettingPayload `json:"setting"`
@@ -24,9 +25,7 @@ type SettingPayload struct {
 	Value interface{} `json:"value"`
 }
 
-// SettingsRepository уже есть — in-memory
-// добавим методы для безопасного чтения/обновления локальной конфигурации
-
+// SettingsManager — менеджер настроек с безопасным доступом
 type SettingsManager struct {
 	repo *store.MemoryStore[any] // id -> value
 	mu   sync.RWMutex
@@ -36,95 +35,91 @@ func NewSettingsManager(repo *store.MemoryStore[any]) *SettingsManager {
 	return &SettingsManager{repo: repo}
 }
 
+// Get возвращает значение настройки
 func (s *SettingsManager) Get(key string) (interface{}, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.repo.Get(key)
 }
 
+func (s *SettingsManager) PrintAll() {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	all := s.repo.All() // если есть метод All, возвращающий map[string]interface{}
+	for k, v := range all {
+		log.Printf("key=%s, value=%v\n", k, v)
+	}
+}
+
+// Set сохраняет значение настройки
 func (s *SettingsManager) Set(key string, value interface{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.repo.Set(key, value)
 }
 
-// UpdateFromEvent проверяет и обновляет значение
+// UpdateFromEvent обновляет значение при событии
 func (s *SettingsManager) UpdateFromEvent(evt SettingEvent) {
 	if evt.Action != "update" {
 		return
 	}
 
 	current, ok := s.Get(evt.Setting.ID)
-	if ok && current != evt.Setting.Value {
+	if !ok || current != evt.Setting.Value {
 		log.Printf("🔄 Updating setting %s: %v -> %v", evt.Setting.ID, current, evt.Setting.Value)
 		s.Set(evt.Setting.ID, evt.Setting.Value)
 	}
 }
 
+// ================= SettingsServiceClient =================
 type SettingsServiceClient struct {
-	Publisher  *kafka.Publisher
-	Subscriber message.Subscriber
-	Timeout    time.Duration
-	Logger     watermill.LoggerAdapter
+	client *Client
 }
 
-func NewSettingsServiceClient(pub *kafka.Publisher, sub message.Subscriber, logger watermill.LoggerAdapter) *SettingsServiceClient {
-	return &SettingsServiceClient{
-		Publisher:  pub,
-		Subscriber: sub,
-		Timeout:    5 * time.Second,
-		Logger:     logger,
-	}
+func NewSettingsServiceClient(pub *kafka.Publisher, sub message.Subscriber) *SettingsServiceClient {
+	c := NewClient(pub, sub, "setting.responses", 5*time.Second)
+	return &SettingsServiceClient{client: c}
 }
 
-func (c *SettingsServiceClient) GetSetting(ctx context.Context, key string) (interface{}, error) {
-	correlationID := "getsetting-" + key + "-" + fmt.Sprint(time.Now().UnixNano())
-	respChan := make(chan *message.Message, 1)
-
-	ch, err := c.Subscriber.Subscribe(ctx, "setting.responses")
+// GetSettingsByPattern получает все настройки по паттерну через setting.requests → setting.responses
+func (c *SettingsServiceClient) GetSettingsByPattern(ctx context.Context, pattern string) (map[string]interface{}, error) {
+	raw, err := c.client.Request(ctx, "setting-service", "settings.get", map[string]string{
+		"pattern": pattern,
+	}, "getsettings")
 	if err != nil {
 		return nil, err
 	}
+
+	var wrapper struct {
+		Payload map[string]interface{} `json:"payload"`
+	}
+	if err := json.Unmarshal(raw, &wrapper); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal settings: %w", err)
+	}
+	return wrapper.Payload, nil
+}
+
+// SubscribeEvents подписывается на события обновления
+func (c *SettingsServiceClient) SubscribeEvents(sub message.Subscriber, manager *SettingsManager) {
+	ch, err := sub.Subscribe(context.Background(), "setting-events")
+	if err != nil {
+		log.Fatalf("failed to subscribe to setting-events: %v", err)
+	}
+
 	go func() {
 		for msg := range ch {
-			var r struct {
-				CorrelationID string          `json:"correlation_id"`
-				Payload       json.RawMessage `json:"payload"`
-			}
-			if err := json.Unmarshal(msg.Payload, &r); err != nil {
+			var evt SettingEvent
+			if err := json.Unmarshal(msg.Payload, &evt); err != nil {
 				continue
 			}
-			if r.CorrelationID == correlationID {
-				respChan <- msg
-				break
-			}
+			manager.UpdateFromEvent(evt)
+			msg.Ack()
 		}
 	}()
+}
 
-	req := map[string]interface{}{
-		"correlation_id": correlationID,
-		"service":        "setting-service",
-		"endpoint":       "settings.get",
-		"payload": map[string]string{
-			"key": key,
-		},
-	}
-	data, _ := json.Marshal(req)
-	if err := c.Publisher.Publish("setting.requests", message.NewMessage(correlationID, data)); err != nil {
-		return nil, err
-	}
-
-	select {
-	case msg := <-respChan:
-		var resp struct {
-			Key   string      `json:"key"`
-			Value interface{} `json:"value"`
-		}
-		if err := json.Unmarshal(msg.Payload, &resp); err != nil {
-			return nil, err
-		}
-		return resp.Value, nil
-	case <-time.After(c.Timeout):
-		return nil, fmt.Errorf("timeout waiting for setting-service")
-	}
+// Close закрывает клиент
+func (c *SettingsServiceClient) Close() {
+	c.client.Close()
 }

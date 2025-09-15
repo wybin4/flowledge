@@ -16,25 +16,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// CustomMarshaler для JSON сообщений
-type JSONMarshaler struct{}
-
-func (JSONMarshaler) Marshal(topic string, msg *message.Message) ([]byte, error) {
-	return msg.Payload, nil
-}
-
-func (JSONMarshaler) Unmarshal(topic string, payload []byte) (*message.Message, error) {
-	return message.NewMessage(watermill.NewUUID(), payload), nil
-}
-
 func main() {
 	logger := watermill.NewStdLogger(true, true)
 
 	// Kafka publisher для отправки запросов
 	publisher, err := kafka.NewPublisher(
 		kafka.PublisherConfig{
-			Brokers:   []string{"localhost:9092"},
-			Marshaler: kafka.DefaultMarshaler{}, // ✅ Используем кастомный маршаллер
+			Brokers:   []string{"localhost:29092"},
+			Marshaler: kafka.DefaultMarshaler{},
 		},
 		logger,
 	)
@@ -45,9 +34,9 @@ func main() {
 	// Kafka subscriber для получения ответов
 	subscriber, err := kafka.NewSubscriber(
 		kafka.SubscriberConfig{
-			Brokers:       []string{"localhost:9092"},
+			Brokers:       []string{"localhost:29092"},
 			ConsumerGroup: "gateway-group",
-			Unmarshaler:   kafka.DefaultMarshaler{}, // ✅ И здесь тоже
+			Unmarshaler:   kafka.DefaultMarshaler{},
 		},
 		logger,
 	)
@@ -55,55 +44,58 @@ func main() {
 		panic(err)
 	}
 
-	// Создаем router для обработки ответов
+	// Router для обработки всех сервисных топиков
 	router, err := message.NewRouter(message.RouterConfig{}, logger)
 	if err != nil {
 		panic(err)
 	}
 
-	// Middleware
 	router.AddMiddleware(middleware.Retry{MaxRetries: 3}.Middleware)
 	router.AddMiddleware(middleware.Recoverer)
 
-	// Мапа для хранения ожидающих ответов
+	// Мапа каналов для отслеживания ответов
 	responseChannels := make(map[string]chan *message.Message)
 	mutex := &sync.RWMutex{}
 
-	// Обработчик ответов от сервисов
-	router.AddHandler(
-		"gateway_response_handler",
-		"gateway.responses",
-		subscriber,
-		"", // не публикуем дальше
-		nil,
-		func(msg *message.Message) ([]*message.Message, error) {
-			var response struct {
-				CorrelationID string      `json:"correlation_id"`
-				Payload       interface{} `json:"payload"`
-				Error         string      `json:"error"`
-			}
+	// Список сервисных топиков, от которых ожидаем ответы
+	serviceTopics := []string{
+		"setting.responses",
+		"user.responses",
+		"auth.responses",
+	}
 
-			if err := json.Unmarshal(msg.Payload, &response); err != nil {
-				log.Printf("Failed to unmarshal response: %v", err)
+	for _, topic := range serviceTopics {
+		router.AddHandler(
+			topic+"_handler",
+			topic,
+			subscriber,
+			"", // не публикуем дальше
+			nil,
+			func(msg *message.Message) ([]*message.Message, error) {
+				var response struct {
+					CorrelationID string      `json:"correlation_id"`
+					Payload       interface{} `json:"payload"`
+					Error         string      `json:"error"`
+				}
+
+				if err := json.Unmarshal(msg.Payload, &response); err != nil {
+					log.Printf("Failed to unmarshal response: %v", err)
+					return nil, nil
+				}
+
+				mutex.RLock()
+				ch, exists := responseChannels[response.CorrelationID]
+				mutex.RUnlock()
+
+				if exists {
+					ch <- msg
+				}
+
 				return nil, nil
-			}
+			},
+		)
+	}
 
-			mutex.RLock()
-			ch, exists := responseChannels[response.CorrelationID]
-			mutex.RUnlock()
-
-			if exists {
-				ch <- msg
-				mutex.Lock()
-				delete(responseChannels, response.CorrelationID)
-				mutex.Unlock()
-			}
-
-			return nil, nil
-		},
-	)
-
-	// Запускаем router в горутине
 	go func() {
 		log.Println("Gateway router starting...")
 		if err := router.Run(context.Background()); err != nil {
@@ -125,16 +117,16 @@ func main() {
 	r.HandleFunc("/users.get/{id}", handler.handleGetUser).Methods("GET")
 	r.HandleFunc("/users.create", handler.handleCreateUser).Methods("POST")
 	r.HandleFunc("/settings.set", handler.handleSetSettings).Methods("POST")
-
 	r.HandleFunc("/login", handler.handleLogin).Methods("POST")
 	r.HandleFunc("/refresh", handler.handleRefresh).Methods("POST")
 
-	log.Println("Gateway running on :8084")
+	log.Println("\033[31mGateway running on :8084\033[0m")
 	if err := http.ListenAndServe(":8084", r); err != nil {
 		log.Fatal(err)
 	}
 }
 
+// GatewayHandler хранит publisher и responseChannels
 type GatewayHandler struct {
 	publisher        *kafka.Publisher
 	responseChannels map[string]chan *message.Message
@@ -142,15 +134,12 @@ type GatewayHandler struct {
 	responseTimeout  time.Duration
 }
 
+// HTTP handlers
 func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-
-	payload := map[string]interface{}{
-		"id": id,
-	}
-
-	h.forwardRequest(w, r, "user-service", "users.get", payload)
+	payload := map[string]interface{}{"id": id}
+	h.forwardRequest(w, r, "user", "users.get", payload)
 }
 
 func (h *GatewayHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
@@ -159,8 +148,7 @@ func (h *GatewayHandler) handleCreateUser(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	h.forwardRequest(w, r, "user-service", "users.create", input)
+	h.forwardRequest(w, r, "user", "users.create", input)
 }
 
 func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Request) {
@@ -169,48 +157,38 @@ func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Reques
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	h.forwardRequest(w, r, "setting-service", "settings.set", input)
-}
-
-type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type RefreshRequest struct {
-	RefreshToken string `json:"refreshToken"`
+	h.forwardRequest(w, r, "setting", "settings.set", input)
 }
 
 func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	var req LoginRequest
+	var req struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	payload := map[string]interface{}{
 		"username": req.Username,
 		"password": req.Password,
 	}
-	
-	h.forwardRequest(w, r, "auth-service", "login", payload)
+	h.forwardRequest(w, r, "auth", "login", payload)
 }
 
 func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
-	var req RefreshRequest
+	var req struct {
+		RefreshToken string `json:"refreshToken"`
+	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	payload := map[string]interface{}{
-		"refreshToken": req.RefreshToken,
-	}
-
-	h.forwardRequest(w, r, "auth-service", "refresh", payload)
+	payload := map[string]interface{}{"refreshToken": req.RefreshToken}
+	h.forwardRequest(w, r, "auth", "refresh", payload)
 }
 
+// forwardRequest отправляет запрос в Kafka и ждет ответа на соответствующем топике
 func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, service, endpoint string, payload interface{}) {
 	correlationID := watermill.NewUUID()
 	responseChan := make(chan *message.Message, 1)
@@ -218,17 +196,15 @@ func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, 
 	h.mutex.Lock()
 	h.responseChannels[correlationID] = responseChan
 	h.mutex.Unlock()
-
 	defer func() {
 		h.mutex.Lock()
 		delete(h.responseChannels, correlationID)
 		h.mutex.Unlock()
 	}()
 
-	// Формируем запрос
 	request := map[string]interface{}{
 		"correlation_id": correlationID,
-		"service":        service,
+		"service":        fmt.Sprintf("%s-service", service),
 		"endpoint":       endpoint,
 		"payload":        payload,
 	}
@@ -240,20 +216,8 @@ func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, 
 	}
 
 	// Выбираем топик по сервису
-	var topic string
-	switch service {
-	case "user-service":
-		topic = "user.requests"
-	case "setting-service":
-		topic = "setting.requests"
-	case "auth-service":
-		topic = "auth.requests"
-	default:
-		http.Error(w, fmt.Sprintf("unknown service: %s", service), http.StatusBadRequest)
-		return
-	}
+	topic := fmt.Sprintf("%s.requests", service)
 
-	// Отправляем в Kafka
 	msg := message.NewMessage(correlationID, requestBytes)
 	if err := h.publisher.Publish(topic, msg); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -263,24 +227,20 @@ func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, 
 	// Ждем ответа
 	select {
 	case responseMsg := <-responseChan:
-		var response struct {
+		var resp struct {
 			Payload interface{} `json:"payload"`
 			Error   string      `json:"error"`
 		}
-
-		if err := json.Unmarshal(responseMsg.Payload, &response); err != nil {
+		if err := json.Unmarshal(responseMsg.Payload, &resp); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		if response.Error != "" {
-			http.Error(w, response.Error, http.StatusInternalServerError)
+		if resp.Error != "" {
+			http.Error(w, resp.Error, http.StatusInternalServerError)
 			return
 		}
-
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response.Payload)
-
+		json.NewEncoder(w).Encode(resp.Payload)
 	case <-time.After(h.responseTimeout):
 		http.Error(w, "Request timeout", http.StatusGatewayTimeout)
 	}

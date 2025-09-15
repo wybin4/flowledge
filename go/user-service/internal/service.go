@@ -23,8 +23,20 @@ func NewService(repo *Repository, ps *UserPasswordService, es *UserEventService)
 	}
 }
 
-func (s *Service) GetUser(ctx context.Context, id string) (*UserModel, error) {
-	return s.repo.FindByID(ctx, id)
+func (s *Service) GetUser(ctx context.Context, idOrUsername string) (*UserModel, error) {
+    // Попробуем сначала найти по ID
+    user, err := s.repo.FindByID(ctx, idOrUsername)
+    if err == nil && user != nil {
+        return user, nil
+    }
+
+    // Если не нашли по ID, попробуем найти по username
+    user, err = s.repo.FindByUsername(ctx, idOrUsername)
+    if err != nil {
+        return nil, err
+    }
+
+    return user, nil
 }
 
 // CreateUser создает пользователя с дефолтными значениями и bcrypt-паролем

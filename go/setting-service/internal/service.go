@@ -2,6 +2,7 @@ package setting
 
 import (
 	"context"
+	"regexp"
 	"time"
 )
 
@@ -15,6 +16,30 @@ func NewSettingService(repo *Repository, es *SettingEventService) *SettingServic
 		repo:     repo,
 		eventSvc: es,
 	}
+}
+
+func (s *SettingService) GetSettingsByPattern(ctx context.Context, pattern string) (map[string]interface{}, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	settings, err := s.repo.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]interface{})
+	for _, st := range settings {
+		if re.MatchString(st.ID) {
+			result[st.ID] = st.Value
+		}
+	}
+
+	return result, nil
 }
 
 // Получение всех приватных настроек

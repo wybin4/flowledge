@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"regexp"
 	"strings"
+	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/go-ldap/ldap/v3"
@@ -20,61 +20,49 @@ type LDAPServiceSettings struct {
 	client          *transport.SettingsServiceClient
 }
 
-func NewLDAPServiceSettings(client *transport.SettingsServiceClient, manager *transport.SettingsManager) *LDAPServiceSettings {
+func NewLDAPServiceSettings(client *transport.SettingsServiceClient, manager *transport.SettingsManager, sub message.Subscriber) *LDAPServiceSettings {
 	s := &LDAPServiceSettings{
 		client:          client,
 		settingsManager: manager,
 	}
 
+	// Асинхронная загрузка настроек
 	go s.loadInitialSettings()
+
+	// Подписка на события обновления
+	s.client.SubscribeEvents(sub, manager)
+
 	return s
 }
 
 func (s *LDAPServiceSettings) loadInitialSettings() {
-	keys := []string{
-		"ldap.enabled",
-		"ldap.connection.host",
-		"ldap.connection.port",
-		"ldap.auth.dn",
-		"ldap.auth.password",
-		"ldap.user.base-dn",
-		"ldap.user.search-filter",
-		"ldap.group.base-dn",
-		"ldap.map-groups-to-courses",
-	}
+	var values map[string]interface{}
+	var err error
 
-	for _, key := range keys {
-		val, err := s.client.GetSetting(context.Background(), key)
-		if err != nil {
-			log.Printf("Failed to get setting %s: %v", key, err)
-			continue
+	for i := 0; i < 3; i++ {
+		values, err = s.client.GetSettingsByPattern(context.Background(), `^ldap\.`)
+		if err == nil {
+			break
 		}
-		s.settingsManager.Set(key, val)
+		log.Printf("Failed to load LDAP settings (attempt %d): %v", i+1, err)
+		time.Sleep(2 * time.Second)
 	}
-}
 
-func (s *LDAPServiceSettings) SubscribeUpdates(sub message.Subscriber) {
-	ch, err := sub.Subscribe(context.Background(), "setting-events")
 	if err != nil {
-		log.Fatalf("Failed to subscribe: %v", err)
+		log.Printf("Warning: Failed to load initial LDAP settings: %v", err)
+		return
 	}
-	go func() {
-		for msg := range ch {
-			var evt transport.SettingEvent
-			if err := json.Unmarshal(msg.Payload, &evt); err != nil {
-				continue
-			}
-			matched, _ := regexp.MatchString("^ldap\\.", evt.Setting.ID)
-			if matched {
-				s.settingsManager.UpdateFromEvent(evt)
-			}
-			msg.Ack()
-		}
-	}()
+
+	for k, v := range values {
+		s.settingsManager.Set(k, v)
+	}
+
+	log.Println("LDAP settings loaded successfully", values)
 }
 
 func (s *LDAPServiceSettings) Get(key string) interface{} {
 	val, _ := s.settingsManager.Get(key)
+	s.settingsManager.PrintAll()
 	return val
 }
 

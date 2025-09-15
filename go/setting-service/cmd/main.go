@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
@@ -33,7 +34,7 @@ func main() {
 			func(logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
 				return kafka.NewSubscriber(
 					kafka.SubscriberConfig{
-						Brokers:       []string{"localhost:9092"},
+						Brokers:       []string{"localhost:29092"},
 						ConsumerGroup: "setting-service-group",
 						Unmarshaler:   kafka.DefaultMarshaler{},
 					},
@@ -44,7 +45,7 @@ func main() {
 			func(logger watermill.LoggerAdapter) (*kafka.Publisher, error) {
 				return kafka.NewPublisher(
 					kafka.PublisherConfig{
-						Brokers:   []string{"localhost:9092"},
+						Brokers:   []string{"localhost:29092"},
 						Marshaler: kafka.DefaultMarshaler{},
 					},
 					logger,
@@ -68,12 +69,14 @@ func main() {
 		) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
+					// публичные (через gateway)
 					go transport.StartServiceRouter(transport.RouterConfig{
-						ServiceName: "setting-service",
-						Topic:       "setting.requests",
-						Subscriber:  subscriber,
-						Publisher:   publisher,
-						Logger:      logger,
+						ServiceName:   "setting-service",
+						Topic:         "setting.requests",
+						ResponseTopic: "setting.responses", // каждый сервис отвечает в свой топик
+						Subscriber:    subscriber,
+						Publisher:     publisher,
+						Logger:        logger,
 						Handler: func(ctx context.Context, req transport.Request) (interface{}, error) {
 							switch req.Endpoint {
 							case "settings.get-private":
@@ -81,25 +84,24 @@ func main() {
 							case "settings.get-public":
 								return service.GetPublicSettings(ctx)
 							case "settings.set":
-								idVal, ok := req.Payload["id"].(string)
-								if !ok {
-									return nil, fmt.Errorf("missing or invalid id in payload")
-								}
-								value, ok := req.Payload["value"]
-								if !ok {
-									return nil, fmt.Errorf("missing value in payload")
-								}
+								idVal, _ := req.Payload["id"].(string)
+								value := req.Payload["value"]
 								return service.SetSettings(ctx, idVal, value)
+							case "settings.get":
+								pattern, _ := req.Payload["pattern"].(string)
+								return service.GetSettingsByPattern(ctx, pattern)
 							default:
 								return nil, fmt.Errorf("unknown endpoint: %s", req.Endpoint)
 							}
 						},
 					})
+
 					return nil
 				},
 			})
 		}),
 	)
 
+	log.Println("\033[31mSetting service starting...\033[0m")
 	app.Run()
 }

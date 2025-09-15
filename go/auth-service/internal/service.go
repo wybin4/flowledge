@@ -31,7 +31,7 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (*Us
 	}
 
 	var groups []string
-
+	log.Println("pl1", s.LDAPAuthenticator.IsEnabled())
 	// Проверяем LDAP
 	if s.LDAPAuthenticator.IsEnabled() {
 		userDN, ldapGroups, err := s.LDAPAuthenticator.Authenticate(username, password)
@@ -45,9 +45,10 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (*Us
 
 	// Получаем пользователя из user-service
 	user, err := s.UserClient.GetUserByUsername(ctx, username)
+
 	if err != nil || user == nil {
 		// Если нет — создаем нового
-		user, err = s.UserClient.CreateUser(ctx, username, groups)
+		user, err = s.UserClient.CreateUser(ctx, username, password)
 		if err != nil {
 			log.Printf("Failed to create user in user-service: %v", err)
 			return nil, err

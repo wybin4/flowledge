@@ -26,12 +26,13 @@ type EndpointHandler func(ctx context.Context, req Request) (interface{}, error)
 
 // Конфиг для старта роутера
 type RouterConfig struct {
-	ServiceName string
-	Topic       string
-	Subscriber  message.Subscriber
-	Publisher   message.Publisher
-	Logger      watermill.LoggerAdapter
-	Handler     EndpointHandler
+	ServiceName   string
+	Topic         string
+	ResponseTopic string // <- сюда явно укажем, куда слать ответы
+	Subscriber    message.Subscriber
+	Publisher     message.Publisher
+	Logger        watermill.LoggerAdapter
+	Handler       EndpointHandler
 }
 
 // Универсальный запуск роутера
@@ -48,7 +49,7 @@ func StartServiceRouter(cfg RouterConfig) {
 		cfg.ServiceName+"_handler",
 		cfg.Topic,
 		cfg.Subscriber,
-		"gateway.responses",
+		cfg.ResponseTopic, // <- теперь это управляется извне
 		cfg.Publisher,
 		func(msg *message.Message) ([]*message.Message, error) {
 			var request Request

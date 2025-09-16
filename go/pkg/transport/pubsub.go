@@ -17,7 +17,7 @@ type pendingRequest struct {
 	timer    *time.Timer
 }
 
-// Client — универсальный Pub/Sub клиент
+// Client — универсальный Pub/Sub клиент с request/response топиками
 type Client struct {
 	Publisher       *kafka.Publisher
 	Subscriber      message.Subscriber
@@ -25,18 +25,20 @@ type Client struct {
 	responses       chan *message.Message
 	pendingRequests sync.Map
 	stopChan        chan struct{}
-	topic           string
+	requestTopic    string
+	responseTopic   string
 }
 
-// NewClient создаёт новый Pub/Sub клиент и стартует единого consumer
-func NewClient(pub *kafka.Publisher, sub message.Subscriber, topic string, timeout time.Duration) *Client {
+// NewClient создаёт новый Pub/Sub клиент и запускает обработку ответов
+func NewClient(pub *kafka.Publisher, sub message.Subscriber, requestTopic, responseTopic string, timeout time.Duration) *Client {
 	c := &Client{
-		Publisher:  pub,
-		Subscriber: sub,
-		Timeout:    timeout,
-		responses:  make(chan *message.Message, 100),
-		stopChan:   make(chan struct{}),
-		topic:      topic,
+		Publisher:     pub,
+		Subscriber:    sub,
+		Timeout:       timeout,
+		responses:     make(chan *message.Message, 100),
+		stopChan:      make(chan struct{}),
+		requestTopic:  requestTopic,
+		responseTopic: responseTopic,
 	}
 
 	go c.consumeResponses()
@@ -45,12 +47,12 @@ func NewClient(pub *kafka.Publisher, sub message.Subscriber, topic string, timeo
 	return c
 }
 
-// consumeResponses — единственный consumer для всех ответов
+// consumeResponses — подписка на топик с ответами
 func (c *Client) consumeResponses() {
 	ctx := context.Background()
-	ch, err := c.Subscriber.Subscribe(ctx, c.topic)
+	ch, err := c.Subscriber.Subscribe(ctx, c.responseTopic)
 	if err != nil {
-		panic(fmt.Sprintf("failed to subscribe to %s: %v", c.topic, err))
+		panic(fmt.Sprintf("failed to subscribe to %s: %v", c.responseTopic, err))
 	}
 
 	for {
@@ -63,7 +65,7 @@ func (c *Client) consumeResponses() {
 	}
 }
 
-// processResponses — обработка всех входящих сообщений
+// processResponses — обработка входящих сообщений-ответов
 func (c *Client) processResponses() {
 	for msg := range c.responses {
 		var r struct {
@@ -90,7 +92,7 @@ func (c *Client) Close() {
 	close(c.stopChan)
 }
 
-// Request отправляет запрос и ждёт ответа
+// Request отправляет запрос в requestTopic и ждёт ответа в responseTopic
 func (c *Client) Request(ctx context.Context, service string, endpoint string, payload interface{}, prefix string) (json.RawMessage, error) {
 	correlationID := prefix + "-" + fmt.Sprint(time.Now().UnixNano())
 	respChan := make(chan *message.Message, 1)
@@ -109,8 +111,8 @@ func (c *Client) Request(ctx context.Context, service string, endpoint string, p
 	}
 	data, _ := json.Marshal(req)
 
-	// Используем topic из Client
-	if err := c.Publisher.Publish(c.topic, message.NewMessage(correlationID, data)); err != nil {
+	// Публикуем запрос в requestTopic
+	if err := c.Publisher.Publish(c.requestTopic, message.NewMessage(correlationID, data)); err != nil {
 		c.pendingRequests.Delete(correlationID)
 		return nil, err
 	}

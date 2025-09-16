@@ -24,38 +24,60 @@ func NewAuthService(token TokenService, userClient *UserServiceClient, ldapSvc *
 	}
 }
 
+func isUserEmpty(u *User) bool {
+	return u == nil || u.Username == "" // или Username == ""
+}
+
 // Login проверяет пользователя через LDAP, затем user-service
 func (s *AuthService) Login(ctx context.Context, username, password string) (*UserTokens, error) {
 	if username == "" || password == "" {
 		return nil, errors.New("empty username or password")
 	}
 
-	var groups []string
-	log.Println("pl1", s.LDAPAuthenticator.IsEnabled())
-	// Проверяем LDAP
+	var (
+		groups []string
+		userDN string
+		ldapOK bool
+		user   *User
+		err    error
+	)
+
+	// --- 1. Пробуем LDAP ---
 	if s.LDAPAuthenticator.IsEnabled() {
-		userDN, ldapGroups, err := s.LDAPAuthenticator.Authenticate(username, password)
-		if err != nil {
+		userDN, groups, err = s.LDAPAuthenticator.Authenticate(username, password)
+		if err == nil && userDN != "" {
+			ldapOK = true
+			log.Printf("LDAP user %s authenticated, DN=%s, groups=%v", username, userDN, groups)
+		} else {
 			log.Printf("LDAP authentication failed for %s: %v", username, err)
-			return nil, err
 		}
-		groups = ldapGroups
-		log.Printf("LDAP user %s authenticated, DN=%s, groups=%v", username, userDN, groups)
 	}
 
-	// Получаем пользователя из user-service
-	user, err := s.UserClient.GetUserByUsername(ctx, username)
+	// --- 2. Проверяем в базе ---
+	user, err = s.UserClient.GetUserByUsername(ctx, username)
+	if err != nil {
+		log.Printf("Error querying user-service: %v", err)
+	}
 
-	if err != nil || user == nil {
-		// Если нет — создаем нового
+	switch {
+	// Если пользователь найден в LDAP и его нет в базе → создаём
+	case ldapOK && isUserEmpty(user):
 		user, err = s.UserClient.CreateUser(ctx, username, password)
 		if err != nil {
 			log.Printf("Failed to create user in user-service: %v", err)
 			return nil, err
 		}
+
+	// Если пользователь НЕ найден в LDAP, но есть в базе → пропускаем
+	case !ldapOK && !isUserEmpty(user):
+		log.Printf("User %s not found in LDAP, but exists in DB – skipping LDAP", username)
+
+	// Если нет ни в LDAP, ни в базе → отказ
+	case !ldapOK && isUserEmpty(user):
+		return nil, errors.New("user not found in LDAP and database")
 	}
 
-	// Генерируем токены
+	// --- 3. Генерация токенов ---
 	jwt, refresh, err := s.TokenService.GenerateTokens(user)
 	if err != nil {
 		return nil, err

@@ -42,16 +42,6 @@ func (s *SettingsManager) Get(key string) (interface{}, bool) {
 	return s.repo.Get(key)
 }
 
-func (s *SettingsManager) PrintAll() {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	all := s.repo.All() // если есть метод All, возвращающий map[string]interface{}
-	for k, v := range all {
-		log.Printf("key=%s, value=%v\n", k, v)
-	}
-}
-
 // Set сохраняет значение настройки
 func (s *SettingsManager) Set(key string, value interface{}) {
 	s.mu.Lock()
@@ -78,11 +68,10 @@ type SettingsServiceClient struct {
 }
 
 func NewSettingsServiceClient(pub *kafka.Publisher, sub message.Subscriber) *SettingsServiceClient {
-	c := NewClient(pub, sub, "setting.responses", 5*time.Second)
+	c := NewClient(pub, sub, "setting.requests", "setting.responses", 5*time.Second)
 	return &SettingsServiceClient{client: c}
 }
 
-// GetSettingsByPattern получает все настройки по паттерну через setting.requests → setting.responses
 func (c *SettingsServiceClient) GetSettingsByPattern(ctx context.Context, pattern string) (map[string]interface{}, error) {
 	raw, err := c.client.Request(ctx, "setting-service", "settings.get", map[string]string{
 		"pattern": pattern,

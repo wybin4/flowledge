@@ -18,7 +18,7 @@ type UserServiceClient struct {
 
 // NewUserServiceClient создаёт нового клиента
 func NewUserServiceClient(pub *kafka.Publisher, sub message.Subscriber) *UserServiceClient {
-	c := transport.NewClient(pub, sub, "user.responses", 5*time.Second)
+	c := transport.NewClient(pub, sub, "user.requests", "user.responses", 5*time.Second)
 	return &UserServiceClient{
 		client: c,
 	}

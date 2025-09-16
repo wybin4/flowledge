@@ -69,11 +69,10 @@ func main() {
 		) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					// публичные (через gateway)
 					go transport.StartServiceRouter(transport.RouterConfig{
 						ServiceName:   "setting-service",
 						Topic:         "setting.requests",
-						ResponseTopic: "setting.responses", // каждый сервис отвечает в свой топик
+						ResponseTopic: "setting.responses",
 						Subscriber:    subscriber,
 						Publisher:     publisher,
 						Logger:        logger,

@@ -12,6 +12,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/go-ldap/ldap/v3"
 	"github.com/wybin4/flowledge/go/pkg/transport"
+	"github.com/wybin4/flowledge/go/pkg/utils"
 )
 
 // ==================== LDAPServiceSettings ====================
@@ -57,12 +58,11 @@ func (s *LDAPServiceSettings) loadInitialSettings() {
 		s.settingsManager.Set(k, v)
 	}
 
-	log.Println("LDAP settings loaded successfully", values)
+	log.Println("LDAP settings loaded successfully")
 }
 
 func (s *LDAPServiceSettings) Get(key string) interface{} {
 	val, _ := s.settingsManager.Get(key)
-	s.settingsManager.PrintAll()
 	return val
 }
 
@@ -77,8 +77,20 @@ func NewLDAPAuthenticator(settings *LDAPServiceSettings) *LDAPAuthenticator {
 
 // LdapAuthenticate проверяет пользователя через LDAP
 func LdapAuthenticate(cfg LdapConfig, username, password string) (string, []string, error) {
-	address := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
-	l, err := ldap.DialTLS("tcp", address, &tls.Config{InsecureSkipVerify: true})
+	protocol := "ldap"
+	if cfg.Port == 636 {
+		protocol = "ldaps"
+	}
+
+	// Dial по tcp с TLS, если ldaps
+	var l *ldap.Conn
+	var err error
+	if protocol == "ldaps" {
+		l, err = ldap.DialTLS("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), &tls.Config{InsecureSkipVerify: true})
+	} else {
+		l, err = ldap.Dial("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.Port))
+	}
+
 	if err != nil {
 		return "", nil, err
 	}
@@ -89,11 +101,13 @@ func LdapAuthenticate(cfg LdapConfig, username, password string) (string, []stri
 		return "", nil, err
 	}
 
-	// Поиск пользователя
+	filterTemplate := strings.ReplaceAll(cfg.UserSearchFilter, "{0}", "%s")
+	filter := fmt.Sprintf(filterTemplate, username)
+
 	searchRequest := ldap.NewSearchRequest(
 		cfg.UserBaseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf(cfg.UserSearchFilter, username),
+		filter,
 		[]string{"dn", "memberOf"},
 		nil,
 	)
@@ -122,16 +136,17 @@ func extractGroupName(dn, baseDN string) string {
 }
 
 func (a *LDAPAuthenticator) IsEnabled() bool {
-	val := a.settings.Get("ldap.enabled")
-	if b, ok := val.(bool); ok {
-		return b
-	}
-	return false
+	return utils.ToBool(a.settings.Get("ldap.enabled"))
 }
 
 func (a *LDAPAuthenticator) Authenticate(username, password string) (string, []string, error) {
 	host := a.settings.Get("ldap.connection.host").(string)
-	port := a.settings.Get("ldap.connection.port").(int)
+	port, err := utils.ToInt(a.settings.Get("ldap.connection.port"))
+
+	if err != nil {
+		return "", nil, fmt.Errorf("invalid type for ldap.connection.host")
+	}
+
 	adminDN := a.settings.Get("ldap.auth.dn").(string)
 	adminPassword := a.settings.Get("ldap.auth.password").(string)
 	userBaseDN := a.settings.Get("ldap.user.base-dn").(string)

@@ -35,7 +35,6 @@ const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     useEffect(() => {
         if (pathname == '/login') {
-            console.log('pl1', document.body.classList.contains('hide-sidebar'));
             document.body.classList.add('hide-sidebar');
         }
     }, [pathname]);

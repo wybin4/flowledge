@@ -1,4 +1,4 @@
-package auth
+package auth_provider
 
 import (
 	"context"
@@ -9,14 +9,13 @@ import (
 	"github.com/wybin4/flowledge/go/pkg/transport"
 )
 
-// ==================== LDAPServiceSettings ====================
-type LDAPServiceSettings struct {
+type LDAPSettingProvider struct {
 	settingsManager *transport.SettingsManager
 	client          *transport.SettingsServiceClient
 }
 
-func NewLDAPServiceSettings(client *transport.SettingsServiceClient, manager *transport.SettingsManager, sub message.Subscriber) *LDAPServiceSettings {
-	s := &LDAPServiceSettings{
+func NewLDAPSettingProvider(client *transport.SettingsServiceClient, manager *transport.SettingsManager, sub message.Subscriber) *LDAPSettingProvider {
+	s := &LDAPSettingProvider{
 		client:          client,
 		settingsManager: manager,
 	}
@@ -30,7 +29,7 @@ func NewLDAPServiceSettings(client *transport.SettingsServiceClient, manager *tr
 	return s
 }
 
-func (s *LDAPServiceSettings) loadInitialSettings() {
+func (s *LDAPSettingProvider) loadInitialSettings() {
 	var values map[string]interface{}
 	var err error
 
@@ -55,7 +54,7 @@ func (s *LDAPServiceSettings) loadInitialSettings() {
 	log.Println("LDAP settings loaded successfully")
 }
 
-func (s *LDAPServiceSettings) Get(key string) interface{} {
+func (s *LDAPSettingProvider) Get(key string) interface{} {
 	val, _ := s.settingsManager.Get(key)
 	return val
 }

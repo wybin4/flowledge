@@ -1,4 +1,4 @@
-package user
+package user_model
 
 import "time"
 
@@ -7,7 +7,7 @@ type UserSettings struct {
 	Language string `bson:"language" json:"language"`
 }
 
-type UserModel struct {
+type User struct {
 	ID        string       `bson:"_id" json:"id"`
 	Username  string       `bson:"username" json:"username"`
 	Name      string       `bson:"name" json:"name"`

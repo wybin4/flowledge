@@ -1,4 +1,4 @@
-package auth
+package auth_service
 
 import (
 	"crypto/tls"
@@ -8,19 +8,21 @@ import (
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
+	auth_provider "github.com/wybin4/flowledge/go/account-service/internal/auth/provider"
+	auth_type "github.com/wybin4/flowledge/go/account-service/internal/auth/type"
 	"github.com/wybin4/flowledge/go/pkg/utils"
 )
 
-type LDAPAuthenticator struct {
-	settings *LDAPServiceSettings
+type LDAPService struct {
+	settings *auth_provider.LDAPSettingProvider
 }
 
-func NewLDAPAuthenticator(settings *LDAPServiceSettings) *LDAPAuthenticator {
-	return &LDAPAuthenticator{settings: settings}
+func NewLDAPService(settings *auth_provider.LDAPSettingProvider) *LDAPService {
+	return &LDAPService{settings: settings}
 }
 
 // LdapAuthenticate проверяет пользователя через LDAP
-func LdapAuthenticate(cfg LdapConfig, username, password string) (string, []string, error) {
+func LdapAuthenticate(cfg auth_type.LdapConfig, username, password string) (string, []string, error) {
 	protocol := "ldap"
 	if cfg.Port == 636 {
 		protocol = "ldaps"
@@ -79,11 +81,11 @@ func extractGroupName(dn, baseDN string) string {
 	return dn[len("cn=") : len(dn)-len(","+baseDN)]
 }
 
-func (a *LDAPAuthenticator) IsEnabled() bool {
+func (a *LDAPService) IsEnabled() bool {
 	return utils.ToBool(a.settings.Get("ldap.enabled"))
 }
 
-func (a *LDAPAuthenticator) Authenticate(username, password string) (string, []string, error) {
+func (a *LDAPService) Authenticate(username, password string) (string, []string, error) {
 	host := a.settings.Get("ldap.connection.host").(string)
 	port, err := utils.ToInt(a.settings.Get("ldap.connection.port"))
 
@@ -97,7 +99,7 @@ func (a *LDAPAuthenticator) Authenticate(username, password string) (string, []s
 	userFilter := a.settings.Get("ldap.user.search-filter").(string)
 	groupBaseDN := a.settings.Get("ldap.group.base-dn").(string)
 
-	cfg := LdapConfig{
+	cfg := auth_type.LdapConfig{
 		Host:             host,
 		Port:             port,
 		AdminDN:          adminDN,
@@ -111,12 +113,12 @@ func (a *LDAPAuthenticator) Authenticate(username, password string) (string, []s
 }
 
 // Вспомогательная функция для извлечения имени группы
-func (a *LDAPAuthenticator) ExtractGroupName(dn string) string {
+func (a *LDAPService) ExtractGroupName(dn string) string {
 	base := a.settings.Get("ldap.group.base-dn").(string)
 	return strings.TrimPrefix(strings.ReplaceAll(dn, ","+base, ""), "cn=")
 }
 
-func (a *LDAPAuthenticator) MapGroupsToCoursesAndTags(groups []string) []string {
+func (a *LDAPService) MapGroupsToCoursesAndTags(groups []string) []string {
 	val := a.settings.Get("ldap.map-groups-to-courses")
 	if val == nil {
 		return nil

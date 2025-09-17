@@ -1,4 +1,4 @@
-package user
+package user_service
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
+	user_model "github.com/wybin4/flowledge/go/account-service/internal/user/model"
 )
 
 type UserEventService struct {
@@ -20,7 +21,7 @@ func NewUserEventService(publisher message.Publisher) *UserEventService {
 	}
 }
 
-func (s *UserEventService) SendUserEvent(action string, user *UserModel) {
+func (s *UserEventService) SendUserEvent(action string, user *user_model.User) {
 	if s.publisher == nil || user == nil {
 		return
 	}

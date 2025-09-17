@@ -1,4 +1,4 @@
-package auth
+package auth_service
 
 import (
 	"context"
@@ -6,34 +6,33 @@ import (
 	"fmt"
 	"log"
 
+	auth_dto "github.com/wybin4/flowledge/go/account-service/internal/auth/dto"
+	auth_type "github.com/wybin4/flowledge/go/account-service/internal/auth/type"
 	"github.com/wybin4/flowledge/go/account-service/internal/user"
+	user_model "github.com/wybin4/flowledge/go/account-service/internal/user/model"
+	user_service "github.com/wybin4/flowledge/go/account-service/internal/user/service"
 	"github.com/wybin4/flowledge/go/account-service/internal/utils"
 )
 
-// AuthService отвечает за аутентификацию и токены
 type AuthService struct {
-	LDAPService       *LDAPServiceSettings
-	LDAPAuthenticator *LDAPAuthenticator
-	TokenService      TokenService
-	PasswordService   *UserPasswordService
-	UserRepository    *user.UserRepository
-	UserService       *user.UserService
+	LDAPService     *LDAPService
+	TokenService    TokenService
+	PasswordService *PasswordService
+	UserRepository  *user.UserRepository
+	UserService     *user_service.UserService
 }
 
-// NewAuthService создаёт AuthService с зависимостями
-func NewAuthService(repo *user.UserRepository, token TokenService, userSvc *user.UserService, ldapSvc *LDAPServiceSettings, ldapAuth *LDAPAuthenticator, pSvc *UserPasswordService) *AuthService {
+func NewAuthService(repo *user.UserRepository, token TokenService, userSvc *user_service.UserService, ldapAuth *LDAPService, pSvc *PasswordService) *AuthService {
 	return &AuthService{
-		UserRepository:    repo,
-		LDAPService:       ldapSvc,
-		LDAPAuthenticator: ldapAuth,
-		TokenService:      token,
-		UserService:       userSvc,
-		PasswordService:   pSvc,
+		UserRepository:  repo,
+		LDAPService:     ldapAuth,
+		TokenService:    token,
+		UserService:     userSvc,
+		PasswordService: pSvc,
 	}
 }
 
-// --- Login с LDAP + fallback ---
-func (s *AuthService) Login(ctx context.Context, username, password string) (*UserTokens, error) {
+func (s *AuthService) Login(ctx context.Context, username, password string) (*auth_type.UserTokens, error) {
 	if username == "" || password == "" {
 		return nil, utils.ErrEmptyCredentials
 	}
@@ -41,14 +40,14 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (*Us
 	var (
 		userDN string
 		groups []string
-		user   *user.UserModel
+		user   *user_model.User
 		ldapOK bool
 		err    error
 	)
 
 	// --- 1. Пробуем LDAP ---
-	if s.LDAPAuthenticator.IsEnabled() {
-		userDN, groups, err = s.LDAPAuthenticator.Authenticate(username, password)
+	if s.LDAPService.IsEnabled() {
+		userDN, groups, err = s.LDAPService.Authenticate(username, password)
 		if err != nil {
 			switch utils.MapLdapError(err) {
 			case utils.ErrInvalidCredentials:
@@ -101,13 +100,13 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (*Us
 		return nil, err
 	}
 
-	return &UserTokens{
+	return &auth_type.UserTokens{
 		JwtToken:     jwt,
 		RefreshToken: refresh,
 	}, nil
 }
 
-func (s *AuthService) Register(ctx context.Context, p RegisterRequest) (*user.UserModel, error) {
+func (s *AuthService) Register(ctx context.Context, p auth_dto.RegisterRequest) (*user_model.User, error) {
 	if p.Username == "" {
 		return nil, fmt.Errorf("username must be provided")
 	}
@@ -128,11 +127,11 @@ func (s *AuthService) Register(ctx context.Context, p RegisterRequest) (*user.Us
 		return nil, fmt.Errorf("hash password: %w", err)
 	}
 
-	return s.UserService.CreateUser(ctx, p.Username, p.Name, &user.Password{Bcrypt: hash}, p.Roles)
+	return s.UserService.CreateUser(ctx, p.Username, p.Name, &user_model.Password{Bcrypt: hash}, p.Roles)
 }
 
 // Refresh обновляет токены по refreshToken
-func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*UserTokens, error) {
+func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*auth_type.UserTokens, error) {
 	if refreshToken == "" {
 		return nil, fmt.Errorf("refresh token must be provided")
 	}
@@ -158,7 +157,7 @@ func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*UserTo
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
-	return &UserTokens{
+	return &auth_type.UserTokens{
 		JwtToken:     jwt,
 		RefreshToken: refresh,
 	}, nil

@@ -155,16 +155,16 @@ package integration {
 }
 
 ' === ASSOCIATIONS ===
-user.User --> user.UserEmail
-user.User --> user.UserSetting
-user.User --> user.UserServices
+user_model.User --> user_model.UserEmail
+user_model.User --> user_model.UserSetting
+user_model.User --> user_model.UserServices
 
-user.UserServices --> user.ResumeService
-user.UserServices --> user.LDAPService
-user.UserServices --> user.PasswordService
+user_model.UserServices --> user.ResumeService
+user_model.UserServices --> user.LDAPService
+user_model.UserServices --> user.PasswordService
 
-user.UserSetting --> user.Theme
-user.UserSetting --> user.Language
+user_model.UserSetting --> user.Theme
+user_model.UserSetting --> user.Language
 
 privateSetting.PrivateSetting --> privateSetting.SettingType
 privateSetting.PrivateSetting --> privateSetting.SettingValue

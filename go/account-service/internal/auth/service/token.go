@@ -1,10 +1,10 @@
-package auth
+package auth_service
 
 import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	user "github.com/wybin4/flowledge/go/account-service/internal/user"
+	user_model "github.com/wybin4/flowledge/go/account-service/internal/user/model"
 )
 
 type Claims struct {
@@ -14,7 +14,7 @@ type Claims struct {
 }
 
 type TokenService interface {
-	GenerateTokens(user *user.UserModel) (string, string, error)
+	GenerateTokens(user *user_model.User) (string, string, error)
 	ValidateToken(token string) (*Claims, error)
 }
 
@@ -32,7 +32,7 @@ func NewJwtTokenService(secret string, accessTTL, refreshTTL time.Duration) *Jwt
 	}
 }
 
-func (j *JwtTokenService) GenerateTokens(user *user.UserModel) (string, string, error) {
+func (j *JwtTokenService) GenerateTokens(user *user_model.User) (string, string, error) {
 	now := time.Now()
 
 	claims := Claims{

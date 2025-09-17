@@ -3,8 +3,8 @@ package flowledge.admin.user.models
 import flowledge.admin.models.UserServicesModel
 import flowledge.admin.models.UserSettingModel
 import flowledge.user.Language
-import flowledge.user.User
-import flowledge.user.UserEmail
+import flowledge.user_model.User
+import flowledge.user_model.UserEmail
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 

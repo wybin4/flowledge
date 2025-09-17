@@ -3,7 +3,7 @@ package flowledge.admin.models
 import flowledge.admin.user.models.LDAPServiceModel
 import flowledge.admin.user.models.PasswordServiceModel
 import flowledge.admin.user.models.ResumeServiceModel
-import flowledge.user.UserServices
+import flowledge.user_model.UserServices
 
 data class UserServicesModel(
     override var resume: ResumeServiceModel? = null,

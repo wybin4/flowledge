@@ -1,4 +1,4 @@
-package user
+package user_service
 
 import (
 	"context"
@@ -8,22 +8,25 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/wybin4/flowledge/go/account-service/internal/user"
+	user_dto "github.com/wybin4/flowledge/go/account-service/internal/user/dto"
+	user_model "github.com/wybin4/flowledge/go/account-service/internal/user/model"
 	"github.com/wybin4/flowledge/go/account-service/internal/utils"
 )
 
 type UserService struct {
-	repo     *UserRepository
+	repo     *user.UserRepository
 	eventSvc *UserEventService
 }
 
-func NewUserService(repo *UserRepository, es *UserEventService) *UserService {
+func NewUserService(repo *user.UserRepository, es *UserEventService) *UserService {
 	return &UserService{
 		repo:     repo,
 		eventSvc: es,
 	}
 }
 
-func (s *UserService) GetUser(ctx context.Context, id string) (*UserModel, error) {
+func (s *UserService) GetUser(ctx context.Context, id string) (*user_model.User, error) {
 	user, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by id %s: %w", id, err)
@@ -36,7 +39,7 @@ func (s *UserService) GetUser(ctx context.Context, id string) (*UserModel, error
 	return user, nil
 }
 
-func (s *UserService) CreateUser(ctx context.Context, username, name string, password *Password, roles []string) (*UserModel, error) {
+func (s *UserService) CreateUser(ctx context.Context, username, name string, password *user_model.Password, roles []string) (*user_model.User, error) {
 	username = strings.TrimSpace(username)
 	if username == "" {
 		return nil, errors.New("username cannot be empty")
@@ -49,7 +52,7 @@ func (s *UserService) CreateUser(ctx context.Context, username, name string, pas
 	}
 
 	now := time.Now()
-	user := &UserModel{
+	user := &user_model.User{
 		ID:        uuid.New().String(),
 		CreatedAt: now,
 		UpdatedAt: now,
@@ -57,12 +60,12 @@ func (s *UserService) CreateUser(ctx context.Context, username, name string, pas
 		Name:      name,
 		Roles:     roles,
 		Active:    true,
-		Settings: UserSettings{
+		Settings: user_model.UserSettings{
 			Theme:    "AUTO",
 			Language: "EN",
 		},
-		Services: UserServices{
-			Password: password, // теперь может быть nil
+		Services: user_model.UserServices{
+			Password: password,
 		},
 	}
 
@@ -75,7 +78,7 @@ func (s *UserService) CreateUser(ctx context.Context, username, name string, pas
 	return user, nil
 }
 
-func (s *UserService) UpdateUser(ctx context.Context, id string, input UpdateUserRequest) (*UserModel, error) {
+func (s *UserService) UpdateUser(ctx context.Context, id string, input user_dto.UpdateUserRequest) (*user_model.User, error) {
 	user, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -116,7 +119,7 @@ func (s *UserService) UpdateUser(ctx context.Context, id string, input UpdateUse
 	return user, nil
 }
 
-func (s *UserService) GetByUsername(ctx context.Context, username string) (*UserModel, error) {
+func (s *UserService) GetByUsername(ctx context.Context, username string) (*user_model.User, error) {
 	user, err := s.repo.FindByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, utils.ErrUserNotFoundDB) {

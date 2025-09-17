@@ -1,10 +1,4 @@
-package user
-
-type CreateUserRequest struct {
-	Username string   `json:"username" binding:"required"`
-	Name     string   `json:"name"`
-	Roles    []string `json:"roles"`
-}
+package user_dto
 
 type UpdateUserRequest struct {
 	Username *string  `json:"username,omitempty"`

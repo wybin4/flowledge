@@ -13,8 +13,11 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/wybin4/flowledge/go/account-service/internal/auth"
+	auth_dto "github.com/wybin4/flowledge/go/account-service/internal/auth/dto"
+	auth_provider "github.com/wybin4/flowledge/go/account-service/internal/auth/provider"
+	auth_service "github.com/wybin4/flowledge/go/account-service/internal/auth/service"
 	"github.com/wybin4/flowledge/go/account-service/internal/user"
+	user_service "github.com/wybin4/flowledge/go/account-service/internal/user/service"
 	store "github.com/wybin4/flowledge/go/pkg/db"
 	"github.com/wybin4/flowledge/go/pkg/transport"
 )
@@ -50,11 +53,11 @@ func main() {
 					logger,
 				)
 			},
-			func(publisher *kafka.Publisher) *user.UserEventService {
-				return user.NewUserEventService(publisher)
+			func(publisher *kafka.Publisher) *user_service.UserEventService {
+				return user_service.NewUserEventService(publisher)
 			},
-			func(repo *user.UserRepository, es *user.UserEventService) *user.UserService {
-				return user.NewUserService(repo, es)
+			func(repo *user.UserRepository, es *user_service.UserEventService) *user_service.UserService {
+				return user_service.NewUserService(repo, es)
 			},
 
 			// In-memory store для локальных настроек
@@ -72,31 +75,31 @@ func main() {
 				return transport.NewSettingsServiceClient(pub, sub)
 			},
 
-			// LDAPServiceSettings (только настройки + кеш)
-			func(client *transport.SettingsServiceClient, manager *transport.SettingsManager, sub *kafka.Subscriber) *auth.LDAPServiceSettings {
-				ldapSvc := auth.NewLDAPServiceSettings(client, manager, sub)
+			// LDAPSettingProvider (только настройки + кеш)
+			func(client *transport.SettingsServiceClient, manager *transport.SettingsManager, sub *kafka.Subscriber) *auth_provider.LDAPSettingProvider {
+				ldapSvc := auth_provider.NewLDAPSettingProvider(client, manager, sub)
 				return ldapSvc
 			},
 
-			// LDAPAuthenticator
-			func(ldapSvc *auth.LDAPServiceSettings) *auth.LDAPAuthenticator {
-				return auth.NewLDAPAuthenticator(ldapSvc)
+			// LDAPService
+			func(ldapSvc *auth_provider.LDAPSettingProvider) *auth_service.LDAPService {
+				return auth_service.NewLDAPService(ldapSvc)
 			},
 
 			// JWT токены
-			func(settings *transport.SettingsManager) auth.TokenService {
-				return auth.NewJwtTokenService("supersecret", 15*time.Minute, 7*24*time.Hour)
+			func(settings *transport.SettingsManager) auth_service.TokenService {
+				return auth_service.NewJwtTokenService("supersecret", 15*time.Minute, 7*24*time.Hour)
 			},
-			auth.NewUserPasswordService,
+			auth_service.NewPasswordService,
 			// AuthService
-			func(repo *user.UserRepository, token auth.TokenService, userSvc *user.UserService, ldapSvc *auth.LDAPServiceSettings, ldapAuth *auth.LDAPAuthenticator, pwd *auth.UserPasswordService) *auth.AuthService {
-				return auth.NewAuthService(repo, token, userSvc, ldapSvc, ldapAuth, pwd)
+			func(repo *user.UserRepository, token auth_service.TokenService, userSvc *user_service.UserService, ldapAuth *auth_service.LDAPService, pwd *auth_service.PasswordService) *auth_service.AuthService {
+				return auth_service.NewAuthService(repo, token, userSvc, ldapAuth, pwd)
 			},
 		),
 		fx.Invoke(func(
 			lc fx.Lifecycle,
-			userService *user.UserService,
-			authService *auth.AuthService,
+			userService *user_service.UserService,
+			authService *auth_service.AuthService,
 			subscriber *kafka.Subscriber,
 			publisher *kafka.Publisher,
 			logger watermill.LoggerAdapter,
@@ -131,7 +134,7 @@ func main() {
 								return authService.Login(ctx, username, password)
 
 							case "register":
-								var payload auth.RegisterRequest
+								var payload auth_dto.RegisterRequest
 								if err := mapstructure.Decode(req.Payload, &payload); err != nil {
 									return nil, fmt.Errorf("invalid register payload: %w", err)
 								}

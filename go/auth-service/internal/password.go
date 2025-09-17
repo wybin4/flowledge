@@ -1,4 +1,4 @@
-package user
+package auth
 
 import "golang.org/x/crypto/bcrypt"
 
@@ -16,6 +16,7 @@ func (s *UserPasswordService) Hash(plain string) (string, error) {
 	return string(bytes), nil
 }
 
-func (s *UserPasswordService) Verify(hash, plain string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(plain)) == nil
+func (s *UserPasswordService) Compare(hash string, plain string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(plain))
+	return err == nil
 }

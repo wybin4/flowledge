@@ -31,3 +31,8 @@ type UserServices struct {
 type PasswordService struct {
 	Bcrypt string `bson:"bcrypt" json:"bcrypt"`
 }
+
+type CreateUserResponse struct {
+	UserModel     *UserModel `json:"user_model"`
+	AlreadyExists bool       `json:"already_exists"`
+}

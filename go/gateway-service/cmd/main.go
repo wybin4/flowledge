@@ -115,7 +115,7 @@ func main() {
 
 	// Регистрируем endpoints
 	r.HandleFunc("/users.get/{id}", handler.handleGetUser).Methods("GET")
-	r.HandleFunc("/users.create", handler.handleCreateUser).Methods("POST")
+	r.HandleFunc("/register", handler.handleRegister).Methods("POST")
 	r.HandleFunc("/settings.set", handler.handleSetSettings).Methods("POST")
 	r.HandleFunc("/login", handler.handleLogin).Methods("POST")
 	r.HandleFunc("/refresh", handler.handleRefresh).Methods("POST")
@@ -142,13 +142,13 @@ func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	h.forwardRequest(w, r, "user", "users.get", payload)
 }
 
-func (h *GatewayHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
+func (h *GatewayHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	var input map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	h.forwardRequest(w, r, "user", "users.create", input)
+	h.forwardRequest(w, r, "auth", "register", input)
 }
 
 func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Request) {

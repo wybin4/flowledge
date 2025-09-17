@@ -58,7 +58,6 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		c.Request.Context(),
 		input.Username,
 		input.Name,
-		input.Password,
 		input.Roles,
 	)
 	if err != nil {

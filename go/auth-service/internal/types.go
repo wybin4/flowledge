@@ -1,6 +1,7 @@
 package auth
 
 type User struct {
+	ID       string   `bson:"_id" json:"id"`
 	Username string   `json:"username"`
 	Groups   []string `json:"groups"`
 }

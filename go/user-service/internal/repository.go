@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	model "github.com/wybin4/flowledge/go/pkg/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -18,8 +19,8 @@ func NewRepository(client *mongo.Client, dbName string) *Repository {
 	}
 }
 
-func (r *Repository) FindByID(ctx context.Context, id string) (*UserModel, error) {
-	var user UserModel
+func (r *Repository) FindByID(ctx context.Context, id string) (*model.UserModel, error) {
+	var user model.UserModel
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
 	if err == mongo.ErrNoDocuments {
 		return nil, nil
@@ -27,8 +28,8 @@ func (r *Repository) FindByID(ctx context.Context, id string) (*UserModel, error
 	return &user, err
 }
 
-func (r *Repository) FindByUsername(ctx context.Context, username string) (*UserModel, error) {
-	var user UserModel
+func (r *Repository) FindByUsername(ctx context.Context, username string) (*model.UserModel, error) {
+	var user model.UserModel
 	err := r.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
 	if err == mongo.ErrNoDocuments {
 		return nil, nil
@@ -36,12 +37,12 @@ func (r *Repository) FindByUsername(ctx context.Context, username string) (*User
 	return &user, err
 }
 
-func (r *Repository) Create(ctx context.Context, user *UserModel) error {
+func (r *Repository) Create(ctx context.Context, user *model.UserModel) error {
 	_, err := r.collection.InsertOne(ctx, user)
 	return err
 }
 
-func (r *Repository) Update(ctx context.Context, user *UserModel) error {
+func (r *Repository) Update(ctx context.Context, user *model.UserModel) error {
 	user.UpdatedAt = time.Now()
 	_, err := r.collection.ReplaceOne(ctx, bson.M{"_id": user.ID}, user)
 	return err

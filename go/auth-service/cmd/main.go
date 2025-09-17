@@ -11,6 +11,8 @@ import (
 	auth "github.com/wybin4/flowledge/go/auth-service/internal"
 	store "github.com/wybin4/flowledge/go/pkg/db"
 	"github.com/wybin4/flowledge/go/pkg/transport"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/fx"
 )
 
@@ -18,6 +20,13 @@ func main() {
 	app := fx.New(
 		// === PROVIDERS ===
 		fx.Provide(
+			func() (*mongo.Client, error) {
+				return mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
+			},
+			func(client *mongo.Client) *auth.Repository {
+				return auth.NewRepository(client, "flowledge")
+			},
+
 			func() watermill.LoggerAdapter {
 				return watermill.NewStdLogger(true, true)
 			},
@@ -72,10 +81,10 @@ func main() {
 			func(pub *kafka.Publisher, sub *kafka.Subscriber) *auth.UserServiceClient {
 				return auth.NewUserServiceClient(pub, sub)
 			},
-
+			auth.NewUserPasswordService,
 			// AuthService
-			func(token auth.TokenService, userClient *auth.UserServiceClient, ldapSvc *auth.LDAPServiceSettings, ldapAuth *auth.LDAPAuthenticator) *auth.AuthService {
-				return auth.NewAuthService(token, userClient, ldapSvc, ldapAuth)
+			func(repo *auth.Repository, token auth.TokenService, userClient *auth.UserServiceClient, ldapSvc *auth.LDAPServiceSettings, ldapAuth *auth.LDAPAuthenticator, pwd *auth.UserPasswordService) *auth.AuthService {
+				return auth.NewAuthService(repo, token, userClient, ldapSvc, ldapAuth, pwd)
 			},
 		),
 
@@ -97,6 +106,20 @@ func main() {
 								username, _ := req.Payload["username"].(string)
 								password, _ := req.Payload["password"].(string)
 								return svc.Login(ctx, username, password)
+
+							case "register":
+								username, _ := req.Payload["username"].(string)
+								password, _ := req.Payload["password"].(string)
+
+								// Собираем payload с дополнительными полями
+								payload := make(map[string]interface{})
+								for k, v := range req.Payload {
+									if k != "username" && k != "password" {
+										payload[k] = v
+									}
+								}
+
+								return svc.Register(ctx, username, password, payload)
 
 							case "refresh":
 								refreshToken, _ := req.Payload["refreshToken"].(string)

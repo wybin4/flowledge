@@ -3,12 +3,13 @@ package user
 import (
 	"context"
 	"errors"
+
+	model "github.com/wybin4/flowledge/go/pkg/types"
 )
 
 // Создание пользователя из payload
-func (s *Service) CreateUserFromMap(payload map[string]interface{}) (*UserModel, error) {
+func (s *Service) CreateUserFromMap(payload map[string]interface{}) (*model.CreateUserResponse, error) {
 	username, _ := payload["username"].(string)
-	password, _ := payload["password"].(string)
 	name, _ := payload["name"].(string)
 	rolesIface, _ := payload["roles"].([]interface{})
 	roles := make([]string, 0, len(rolesIface))
@@ -18,15 +19,15 @@ func (s *Service) CreateUserFromMap(payload map[string]interface{}) (*UserModel,
 		}
 	}
 
-	if username == "" || password == "" {
-		return nil, errors.New("username and password required")
+	if username == "" {
+		return nil, errors.New("username required")
 	}
 
-	return s.CreateUser(context.Background(), username, name, password, roles)
+	return s.CreateUser(context.Background(), username, name, roles)
 }
 
 // Обновление пользователя из payload
-func (s *Service) UpdateUserFromMap(id string, payload map[string]interface{}) (*UserModel, error) {
+func (s *Service) UpdateUserFromMap(id string, payload map[string]interface{}) (*model.UserModel, error) {
 	update := UpdateUserRequest{}
 
 	if v, ok := payload["username"].(string); ok {

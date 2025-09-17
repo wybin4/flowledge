@@ -24,7 +24,6 @@ func main() {
 			func(client *mongo.Client) *user.Repository {
 				return user.NewRepository(client, "flowledge")
 			},
-			user.NewUserPasswordService,
 			func() watermill.LoggerAdapter {
 				return watermill.NewStdLogger(true, true)
 			},
@@ -50,8 +49,8 @@ func main() {
 			func(publisher *kafka.Publisher) *user.UserEventService {
 				return user.NewUserEventService(publisher)
 			},
-			func(repo *user.Repository, ps *user.UserPasswordService, es *user.UserEventService) *user.Service {
-				return user.NewService(repo, ps, es)
+			func(repo *user.Repository, es *user.UserEventService) *user.Service {
+				return user.NewService(repo, es)
 			},
 		),
 		fx.Invoke(func(
@@ -73,25 +72,18 @@ func main() {
 						Handler: func(ctx context.Context, req transport.Request) (interface{}, error) {
 							switch req.Endpoint {
 							case "users.get":
-								var userIdentifier string
-
+								var userID string
 								if rawID, ok := req.Payload["id"]; ok {
 									if idStr, ok := rawID.(string); ok && idStr != "" {
-										userIdentifier = idStr
+										userID = idStr
 									}
 								}
 
-								if rawUsername, ok := req.Payload["username"]; ok {
-									if usernameStr, ok := rawUsername.(string); ok && usernameStr != "" {
-										userIdentifier = usernameStr
-									}
+								if userID == "" {
+									return nil, fmt.Errorf("id must be provided")
 								}
 
-								if userIdentifier == "" {
-									return nil, fmt.Errorf("either id or username must be provided")
-								}
-
-								return service.GetUser(ctx, userIdentifier)
+								return service.GetUser(ctx, userID)
 							case "users.create":
 								return service.CreateUserFromMap(req.Payload)
 							default:

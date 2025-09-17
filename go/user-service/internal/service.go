@@ -3,44 +3,40 @@ package user
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	model "github.com/wybin4/flowledge/go/pkg/types"
 )
 
 type Service struct {
-	repo            *Repository
-	passwordService *UserPasswordService
-	eventSvc        *UserEventService
+	repo     *Repository
+	eventSvc *UserEventService
 }
 
-func NewService(repo *Repository, ps *UserPasswordService, es *UserEventService) *Service {
+func NewService(repo *Repository, es *UserEventService) *Service {
 	return &Service{
-		repo:            repo,
-		passwordService: ps,
-		eventSvc:        es,
+		repo:     repo,
+		eventSvc: es,
 	}
 }
 
-func (s *Service) GetUser(ctx context.Context, idOrUsername string) (*UserModel, error) {
-    // Попробуем сначала найти по ID
-    user, err := s.repo.FindByID(ctx, idOrUsername)
-    if err == nil && user != nil {
-        return user, nil
-    }
+func (s *Service) GetUser(ctx context.Context, id string) (*model.UserModel, error) {
+	user, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user by id %s: %w", id, err)
+	}
 
-    // Если не нашли по ID, попробуем найти по username
-    user, err = s.repo.FindByUsername(ctx, idOrUsername)
-    if err != nil {
-        return nil, err
-    }
+	if user == nil {
+		return nil, fmt.Errorf("user with id %s not found", id)
+	}
 
-    return user, nil
+	return user, nil
 }
 
-// CreateUser создает пользователя с дефолтными значениями и bcrypt-паролем
-func (s *Service) CreateUser(ctx context.Context, username, name, plainPassword string, roles []string) (*UserModel, error) {
+func (s *Service) CreateUser(ctx context.Context, username, name string, roles []string) (*model.CreateUserResponse, error) {
 	username = strings.TrimSpace(username)
 	if username == "" {
 		return nil, errors.New("username cannot be empty")
@@ -48,23 +44,25 @@ func (s *Service) CreateUser(ctx context.Context, username, name, plainPassword 
 	if name == "" {
 		name = username
 	}
+
 	if len(roles) == 0 {
 		roles = []string{"user"}
 	}
 
-	var passwordService *PasswordService
-	if plainPassword != "" {
-		hash, err := s.passwordService.Hash(plainPassword)
-		if err != nil {
-			return nil, err
-		}
-		passwordService = &PasswordService{
-			Bcrypt: hash,
-		}
+	// Проверяем, существует ли пользователь
+	existingUser, err := s.repo.FindByUsername(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	if existingUser != nil {
+		return &model.CreateUserResponse{
+			UserModel:     existingUser,
+			AlreadyExists: true,
+		}, nil
 	}
 
 	now := time.Now()
-	user := &UserModel{
+	user := &model.UserModel{
 		ID:        uuid.New().String(),
 		CreatedAt: now,
 		UpdatedAt: now,
@@ -72,12 +70,9 @@ func (s *Service) CreateUser(ctx context.Context, username, name, plainPassword 
 		Name:      name,
 		Roles:     roles,
 		Active:    true,
-		Settings: UserSettings{
+		Settings: model.UserSettings{
 			Theme:    "AUTO",
 			Language: "EN",
-		},
-		Services: UserServices{
-			Password: passwordService,
 		},
 	}
 
@@ -85,13 +80,16 @@ func (s *Service) CreateUser(ctx context.Context, username, name, plainPassword 
 		return nil, err
 	}
 
-	// потом шлём ивент
+	// шлём событие только для новых пользователей
 	go s.eventSvc.SendUserEvent("create", user)
 
-	return user, nil
+	return &model.CreateUserResponse{
+		UserModel:     user,
+		AlreadyExists: false,
+	}, nil
 }
 
-func (s *Service) UpdateUser(ctx context.Context, id string, input UpdateUserRequest) (*UserModel, error) {
+func (s *Service) UpdateUser(ctx context.Context, id string, input UpdateUserRequest) (*model.UserModel, error) {
 	user, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -119,17 +117,6 @@ func (s *Service) UpdateUser(ctx context.Context, id string, input UpdateUserReq
 	}
 	if input.Active != nil {
 		user.Active = *input.Active
-	}
-
-	if input.Password != nil && *input.Password != "" {
-		hash, err := s.passwordService.Hash(*input.Password)
-		if err != nil {
-			return nil, err
-		}
-		if user.Services.Password == nil {
-			user.Services.Password = &PasswordService{}
-		}
-		user.Services.Password.Bcrypt = hash
 	}
 
 	user.UpdatedAt = time.Now()

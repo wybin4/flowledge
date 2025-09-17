@@ -6,6 +6,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
+	model "github.com/wybin4/flowledge/go/pkg/types"
 )
 
 type UserEventService struct {
@@ -21,7 +22,7 @@ func NewUserEventService(publisher message.Publisher) *UserEventService {
 }
 
 // SendUserEvent отправляет событие о пользователе через Watermill
-func (s *UserEventService) SendUserEvent(action string, user *UserModel) {
+func (s *UserEventService) SendUserEvent(action string, user *model.UserModel) {
 	if s.publisher == nil || user == nil {
 		return
 	}

@@ -2,9 +2,8 @@ go 1.25.1
 
 use (
 	./pkg
-	./user-service
+	./account-service
 	./websocket-service
 	./setting-service
 	./gateway-service
-	./auth-service
 )

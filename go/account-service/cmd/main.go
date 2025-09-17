@@ -8,42 +8,53 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
-	auth "github.com/wybin4/flowledge/go/auth-service/internal"
-	store "github.com/wybin4/flowledge/go/pkg/db"
-	"github.com/wybin4/flowledge/go/pkg/transport"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/fx"
+
+	"github.com/mitchellh/mapstructure"
+	"github.com/wybin4/flowledge/go/account-service/internal/auth"
+	"github.com/wybin4/flowledge/go/account-service/internal/user"
+	store "github.com/wybin4/flowledge/go/pkg/db"
+	"github.com/wybin4/flowledge/go/pkg/transport"
 )
 
 func main() {
 	app := fx.New(
-		// === PROVIDERS ===
 		fx.Provide(
 			func() (*mongo.Client, error) {
 				return mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
 			},
-			func(client *mongo.Client) *auth.Repository {
-				return auth.NewRepository(client, "flowledge")
+			func(client *mongo.Client) *user.UserRepository {
+				return user.NewUserRepository(client, "flowledge")
 			},
-
 			func() watermill.LoggerAdapter {
 				return watermill.NewStdLogger(true, true)
 			},
-
 			func(logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
-				return kafka.NewSubscriber(kafka.SubscriberConfig{
-					Brokers:       []string{"localhost:29092"},
-					ConsumerGroup: "auth-service-group",
-					Unmarshaler:   kafka.DefaultMarshaler{},
-				}, logger)
+				return kafka.NewSubscriber(
+					kafka.SubscriberConfig{
+						Brokers:       []string{"localhost:29092"},
+						ConsumerGroup: "account-service-group",
+						Unmarshaler:   kafka.DefaultMarshaler{},
+					},
+					logger,
+				)
 			},
-
 			func(logger watermill.LoggerAdapter) (*kafka.Publisher, error) {
-				return kafka.NewPublisher(kafka.PublisherConfig{
-					Brokers:   []string{"localhost:29092"},
-					Marshaler: kafka.DefaultMarshaler{},
-				}, logger)
+				return kafka.NewPublisher(
+					kafka.PublisherConfig{
+						Brokers:   []string{"localhost:29092"},
+						Marshaler: kafka.DefaultMarshaler{},
+					},
+					logger,
+				)
+			},
+			func(publisher *kafka.Publisher) *user.UserEventService {
+				return user.NewUserEventService(publisher)
+			},
+			func(repo *user.UserRepository, es *user.UserEventService) *user.UserService {
+				return user.NewUserService(repo, es)
 			},
 
 			// In-memory store для локальных настроек
@@ -76,67 +87,72 @@ func main() {
 			func(settings *transport.SettingsManager) auth.TokenService {
 				return auth.NewJwtTokenService("supersecret", 15*time.Minute, 7*24*time.Hour)
 			},
-
-			// UserServiceClient
-			func(pub *kafka.Publisher, sub *kafka.Subscriber) *auth.UserServiceClient {
-				return auth.NewUserServiceClient(pub, sub)
-			},
 			auth.NewUserPasswordService,
 			// AuthService
-			func(repo *auth.Repository, token auth.TokenService, userClient *auth.UserServiceClient, ldapSvc *auth.LDAPServiceSettings, ldapAuth *auth.LDAPAuthenticator, pwd *auth.UserPasswordService) *auth.AuthService {
-				return auth.NewAuthService(repo, token, userClient, ldapSvc, ldapAuth, pwd)
+			func(repo *user.UserRepository, token auth.TokenService, userSvc *user.UserService, ldapSvc *auth.LDAPServiceSettings, ldapAuth *auth.LDAPAuthenticator, pwd *auth.UserPasswordService) *auth.AuthService {
+				return auth.NewAuthService(repo, token, userSvc, ldapSvc, ldapAuth, pwd)
 			},
 		),
-
-		// === INVOKES ===
-		fx.Invoke(func(lc fx.Lifecycle, svc *auth.AuthService, sub *kafka.Subscriber, pub *kafka.Publisher, logger watermill.LoggerAdapter) {
+		fx.Invoke(func(
+			lc fx.Lifecycle,
+			userService *user.UserService,
+			authService *auth.AuthService,
+			subscriber *kafka.Subscriber,
+			publisher *kafka.Publisher,
+			logger watermill.LoggerAdapter,
+		) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					// Router для auth.requests
 					go transport.StartServiceRouter(transport.RouterConfig{
-						ServiceName:   "auth-service",
-						Topic:         "auth.requests",
-						ResponseTopic: "auth.responses",
-						Subscriber:    sub,
-						Publisher:     pub,
+						ServiceName:   "account-service",
+						Topic:         "account.requests",
+						ResponseTopic: "account.responses",
+						Subscriber:    subscriber,
+						Publisher:     publisher,
 						Logger:        logger,
 						Handler: func(ctx context.Context, req transport.Request) (interface{}, error) {
 							switch req.Endpoint {
-							case "login":
-								username, _ := req.Payload["username"].(string)
-								password, _ := req.Payload["password"].(string)
-								return svc.Login(ctx, username, password)
-
-							case "register":
-								username, _ := req.Payload["username"].(string)
-								password, _ := req.Payload["password"].(string)
-
-								// Собираем payload с дополнительными полями
-								payload := make(map[string]interface{})
-								for k, v := range req.Payload {
-									if k != "username" && k != "password" {
-										payload[k] = v
+							case "users.get":
+								var userID string
+								if rawID, ok := req.Payload["id"]; ok {
+									if idStr, ok := rawID.(string); ok && idStr != "" {
+										userID = idStr
 									}
 								}
 
-								return svc.Register(ctx, username, password, payload)
+								if userID == "" {
+									return nil, fmt.Errorf("id must be provided")
+								}
+
+								return userService.GetUser(ctx, userID)
+							case "login":
+								username, _ := req.Payload["username"].(string)
+								password, _ := req.Payload["password"].(string)
+								return authService.Login(ctx, username, password)
+
+							case "register":
+								var payload auth.RegisterRequest
+								if err := mapstructure.Decode(req.Payload, &payload); err != nil {
+									return nil, fmt.Errorf("invalid register payload: %w", err)
+								}
+
+								return authService.Register(ctx, payload)
 
 							case "refresh":
 								refreshToken, _ := req.Payload["refreshToken"].(string)
-								return svc.Refresh(ctx, refreshToken)
-
+								return authService.Refresh(ctx, refreshToken)
 							default:
-								return nil, fmt.Errorf("unknown endpoint: %s", req.Endpoint)
+								log.Printf("⚠️ unknown endpoint: %s", req.Endpoint)
+								return nil, nil
 							}
 						},
 					})
-
 					return nil
 				},
 			})
 		}),
 	)
 
-	log.Println("\033[31mAuth service starting...\033[0m")
+	log.Println("\033[31mUser service starting...\033[0m")
 	app.Run()
 }

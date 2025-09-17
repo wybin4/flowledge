@@ -8,22 +8,22 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	model "github.com/wybin4/flowledge/go/pkg/types"
+	"github.com/wybin4/flowledge/go/account-service/internal/utils"
 )
 
-type Service struct {
-	repo     *Repository
+type UserService struct {
+	repo     *UserRepository
 	eventSvc *UserEventService
 }
 
-func NewService(repo *Repository, es *UserEventService) *Service {
-	return &Service{
+func NewUserService(repo *UserRepository, es *UserEventService) *UserService {
+	return &UserService{
 		repo:     repo,
 		eventSvc: es,
 	}
 }
 
-func (s *Service) GetUser(ctx context.Context, id string) (*model.UserModel, error) {
+func (s *UserService) GetUser(ctx context.Context, id string) (*UserModel, error) {
 	user, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by id %s: %w", id, err)
@@ -36,7 +36,7 @@ func (s *Service) GetUser(ctx context.Context, id string) (*model.UserModel, err
 	return user, nil
 }
 
-func (s *Service) CreateUser(ctx context.Context, username, name string, roles []string) (*model.CreateUserResponse, error) {
+func (s *UserService) CreateUser(ctx context.Context, username, name string, password *Password, roles []string) (*UserModel, error) {
 	username = strings.TrimSpace(username)
 	if username == "" {
 		return nil, errors.New("username cannot be empty")
@@ -44,25 +44,12 @@ func (s *Service) CreateUser(ctx context.Context, username, name string, roles [
 	if name == "" {
 		name = username
 	}
-
 	if len(roles) == 0 {
 		roles = []string{"user"}
 	}
 
-	// Проверяем, существует ли пользователь
-	existingUser, err := s.repo.FindByUsername(ctx, username)
-	if err != nil {
-		return nil, err
-	}
-	if existingUser != nil {
-		return &model.CreateUserResponse{
-			UserModel:     existingUser,
-			AlreadyExists: true,
-		}, nil
-	}
-
 	now := time.Now()
-	user := &model.UserModel{
+	user := &UserModel{
 		ID:        uuid.New().String(),
 		CreatedAt: now,
 		UpdatedAt: now,
@@ -70,9 +57,12 @@ func (s *Service) CreateUser(ctx context.Context, username, name string, roles [
 		Name:      name,
 		Roles:     roles,
 		Active:    true,
-		Settings: model.UserSettings{
+		Settings: UserSettings{
 			Theme:    "AUTO",
 			Language: "EN",
+		},
+		Services: UserServices{
+			Password: password, // теперь может быть nil
 		},
 	}
 
@@ -80,16 +70,12 @@ func (s *Service) CreateUser(ctx context.Context, username, name string, roles [
 		return nil, err
 	}
 
-	// шлём событие только для новых пользователей
 	go s.eventSvc.SendUserEvent("create", user)
 
-	return &model.CreateUserResponse{
-		UserModel:     user,
-		AlreadyExists: false,
-	}, nil
+	return user, nil
 }
 
-func (s *Service) UpdateUser(ctx context.Context, id string, input UpdateUserRequest) (*model.UserModel, error) {
+func (s *UserService) UpdateUser(ctx context.Context, id string, input UpdateUserRequest) (*UserModel, error) {
 	user, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -130,7 +116,18 @@ func (s *Service) UpdateUser(ctx context.Context, id string, input UpdateUserReq
 	return user, nil
 }
 
-func (s *Service) UpdateSettings(ctx context.Context, id string, settings map[string]interface{}) error {
+func (s *UserService) GetByUsername(ctx context.Context, username string) (*UserModel, error) {
+	user, err := s.repo.FindByUsername(ctx, username)
+	if err != nil {
+		if errors.Is(err, utils.ErrUserNotFoundDB) {
+			return nil, fmt.Errorf("user %q not found", username)
+		}
+		return nil, err
+	}
+	return user, nil
+}
+
+func (s *UserService) UpdateSettings(ctx context.Context, id string, settings map[string]interface{}) error {
 	user, err := s.repo.FindByID(ctx, id)
 	if err != nil || user == nil {
 		return errors.New("user not found")
@@ -152,7 +149,7 @@ func (s *Service) UpdateSettings(ctx context.Context, id string, settings map[st
 	return s.repo.Update(ctx, user)
 }
 
-func (s *Service) DeleteUser(ctx context.Context, id string) error {
+func (s *UserService) DeleteUser(ctx context.Context, id string) error {
 	user, err := s.repo.FindByID(ctx, id)
 	if err != nil || user == nil {
 		return errors.New("user not found")

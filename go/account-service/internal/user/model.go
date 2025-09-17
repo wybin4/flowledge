@@ -1,15 +1,12 @@
 package user
 
-import (
-	"time"
-)
+import "time"
 
 type UserSettings struct {
 	Theme    string `bson:"theme" json:"theme"`
 	Language string `bson:"language" json:"language"`
 }
 
-// UserModel — основная модель пользователя
 type UserModel struct {
 	ID        string       `bson:"_id" json:"id"`
 	Username  string       `bson:"username" json:"username"`
@@ -23,16 +20,11 @@ type UserModel struct {
 }
 
 type UserServices struct {
-	// Resume   *ResumeService   `bson:"resume,omitempty" json:"resume,omitempty"`
-	// LDAP     *LDAPService     `bson:"ldap,omitempty" json:"ldap,omitempty"`
-	Password *PasswordService `bson:"password,omitempty" json:"password,omitempty"`
+	// Resume   *Resume   `bson:"resume,omitempty" json:"resume,omitempty"`
+	// LDAP     *LDAP     `bson:"ldap,omitempty" json:"ldap,omitempty"`
+	Password *Password `bson:"password,omitempty" json:"password,omitempty"`
 }
 
-type PasswordService struct {
+type Password struct {
 	Bcrypt string `bson:"bcrypt" json:"bcrypt"`
-}
-
-type CreateUserResponse struct {
-	UserModel     *UserModel `json:"user_model"`
-	AlreadyExists bool       `json:"already_exists"`
 }

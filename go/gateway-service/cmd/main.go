@@ -60,8 +60,7 @@ func main() {
 	// Список сервисных топиков, от которых ожидаем ответы
 	serviceTopics := []string{
 		"setting.responses",
-		"user.responses",
-		"auth.responses",
+		"account.responses",
 	}
 
 	for _, topic := range serviceTopics {
@@ -115,10 +114,11 @@ func main() {
 
 	// Регистрируем endpoints
 	r.HandleFunc("/users.get/{id}", handler.handleGetUser).Methods("GET")
-	r.HandleFunc("/register", handler.handleRegister).Methods("POST")
 	r.HandleFunc("/settings.set", handler.handleSetSettings).Methods("POST")
+
 	r.HandleFunc("/login", handler.handleLogin).Methods("POST")
 	r.HandleFunc("/refresh", handler.handleRefresh).Methods("POST")
+	r.HandleFunc("/register", handler.handleRegister).Methods("POST")
 
 	log.Println("\033[31mGateway running on :8084\033[0m")
 	if err := http.ListenAndServe(":8084", r); err != nil {
@@ -139,7 +139,7 @@ func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	payload := map[string]interface{}{"id": id}
-	h.forwardRequest(w, r, "user", "users.get", payload)
+	h.forwardRequest(w, r, "account", "users.get", payload)
 }
 
 func (h *GatewayHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
@@ -148,7 +148,7 @@ func (h *GatewayHandler) handleRegister(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	h.forwardRequest(w, r, "auth", "register", input)
+	h.forwardRequest(w, r, "account", "register", input)
 }
 
 func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Request) {
@@ -173,7 +173,7 @@ func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		"username": req.Username,
 		"password": req.Password,
 	}
-	h.forwardRequest(w, r, "auth", "login", payload)
+	h.forwardRequest(w, r, "account", "login", payload)
 }
 
 func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
@@ -185,7 +185,7 @@ func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	payload := map[string]interface{}{"refreshToken": req.RefreshToken}
-	h.forwardRequest(w, r, "auth", "refresh", payload)
+	h.forwardRequest(w, r, "account", "refresh", payload)
 }
 
 // forwardRequest отправляет запрос в Kafka и ждет ответа на соответствующем топике

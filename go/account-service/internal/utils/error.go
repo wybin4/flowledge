@@ -1,4 +1,4 @@
-package auth
+package utils
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ var (
 	ErrUserServiceUnavailable = errors.New("user-service unavailable")
 )
 
-func mapLdapError(err error) error {
+func MapLdapError(err error) error {
 	var ldapErr *ldap.Error
 	if errors.As(err, &ldapErr) {
 		switch ldapErr.ResultCode {

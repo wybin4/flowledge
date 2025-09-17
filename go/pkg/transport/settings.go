@@ -68,12 +68,12 @@ type SettingsServiceClient struct {
 }
 
 func NewSettingsServiceClient(pub *kafka.Publisher, sub message.Subscriber) *SettingsServiceClient {
-	c := NewClient(pub, sub, "setting.requests", "setting.responses", 5*time.Second)
+	c := NewClient(pub, sub, "policy.requests", "policy.responses", 5*time.Second)
 	return &SettingsServiceClient{client: c}
 }
 
 func (c *SettingsServiceClient) GetSettingsByPattern(ctx context.Context, pattern string) (map[string]interface{}, error) {
-	raw, err := c.client.Request(ctx, "setting-service", "settings.get", map[string]string{
+	raw, err := c.client.Request(ctx, "policy-service", "settings.get", map[string]string{
 		"pattern": pattern,
 	}, "getsettings")
 	if err != nil {

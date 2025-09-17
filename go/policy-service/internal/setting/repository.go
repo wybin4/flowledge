@@ -3,7 +3,7 @@ package setting
 import (
 	"context"
 
-	setting_model "github.com/wybin4/flowledge/go/setting-service/internal/model"
+	setting_model "github.com/wybin4/flowledge/go/policy-service/internal/setting/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -12,7 +12,7 @@ type SettingRepository struct {
 	collection *mongo.Collection
 }
 
-func NewRepository(client *mongo.Client, dbName string) *SettingRepository {
+func NewSettingRepository(client *mongo.Client, dbName string) *SettingRepository {
 	return &SettingRepository{
 		collection: client.Database(dbName).Collection("settings"),
 	}

@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"time"
 
-	setting "github.com/wybin4/flowledge/go/setting-service/internal"
-	setting_model "github.com/wybin4/flowledge/go/setting-service/internal/model"
+	setting "github.com/wybin4/flowledge/go/policy-service/internal/setting"
+	setting_model "github.com/wybin4/flowledge/go/policy-service/internal/setting/model"
 )
 
 type SettingService struct {

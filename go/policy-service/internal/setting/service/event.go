@@ -6,7 +6,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
-	setting_model "github.com/wybin4/flowledge/go/setting-service/internal/model"
+	setting_model "github.com/wybin4/flowledge/go/policy-service/internal/setting/model"
 )
 
 type SettingEventService struct {

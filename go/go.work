@@ -4,6 +4,6 @@ use (
 	./pkg
 	./account-service
 	./websocket-service
-	./setting-service
+	./policy-service
 	./gateway-service
 )

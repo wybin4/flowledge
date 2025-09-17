@@ -1,4 +1,4 @@
-module github.com/wybin4/flowledge/go/setting-service
+module github.com/wybin4/flowledge/go/policy-service
 
 go 1.25.1
 

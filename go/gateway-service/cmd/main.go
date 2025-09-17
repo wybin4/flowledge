@@ -59,7 +59,7 @@ func main() {
 
 	// Список сервисных топиков, от которых ожидаем ответы
 	serviceTopics := []string{
-		"setting.responses",
+		"policy.responses",
 		"account.responses",
 	}
 
@@ -114,11 +114,21 @@ func main() {
 
 	// Регистрируем endpoints
 	r.HandleFunc("/users.get/{id}", handler.handleGetUser).Methods("GET")
-	r.HandleFunc("/settings.set", handler.handleSetSettings).Methods("POST")
 
 	r.HandleFunc("/login", handler.handleLogin).Methods("POST")
 	r.HandleFunc("/refresh", handler.handleRefresh).Methods("POST")
 	r.HandleFunc("/register", handler.handleRegister).Methods("POST")
+
+	r.HandleFunc("/settings.set", handler.handleSetSettings).Methods("POST")
+	r.HandleFunc("/settings.get", handler.handleGetSettings).Methods("GET")
+
+	r.HandleFunc("/permissions.get", handler.handleGetPermissions).Methods("GET")
+	r.HandleFunc("/permissions.toggle-role", handler.handleToggleRole).Methods("POST")
+
+	r.HandleFunc("/roles.get", handler.handleGetRoles).Methods("GET")
+	r.HandleFunc("/roles.create", handler.handleCreateRole).Methods("POST")
+	r.HandleFunc("/roles.update", handler.handleUpdateRole).Methods("PATCH")
+	r.HandleFunc("/roles.delete", handler.handleDeleteRole).Methods("DELETE")
 
 	log.Println("\033[31mGateway running on :8084\033[0m")
 	if err := http.ListenAndServe(":8084", r); err != nil {
@@ -157,7 +167,39 @@ func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Reques
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	h.forwardRequest(w, r, "setting", "settings.set", input)
+	h.forwardRequest(w, r, "policy", "settings.set", input)
+}
+
+func (h *GatewayHandler) handleGetSettings(w http.ResponseWriter, r *http.Request) {
+	h.forwardRequest(w, r, "policy", "settings.get", nil)
+}
+
+func (h *GatewayHandler) handleGetPermissions(w http.ResponseWriter, r *http.Request) {
+	h.forwardRequest(w, r, "policy", "permissions.get", nil)
+}
+
+func (h *GatewayHandler) handleToggleRole(w http.ResponseWriter, r *http.Request) {
+	var input map[string]interface{}
+	if r.Method != http.MethodGet {
+		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
+	h.forwardRequest(w, r, "policy", r.URL.Path[1:], input)
+}
+
+func (h *GatewayHandler) handleGetRoles(w http.ResponseWriter, r *http.Request) {
+	h.forwardRequest(w, r, "policy", "roles.get", nil)
+}
+func (h *GatewayHandler) handleCreateRole(w http.ResponseWriter, r *http.Request) {
+	h.handleToggleRole(w, r)
+}
+func (h *GatewayHandler) handleUpdateRole(w http.ResponseWriter, r *http.Request) {
+	h.handleToggleRole(w, r)
+}
+func (h *GatewayHandler) handleDeleteRole(w http.ResponseWriter, r *http.Request) {
+	h.handleToggleRole(w, r)
 }
 
 func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {

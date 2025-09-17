@@ -1,17 +1,20 @@
-package setting
+package setting_service
 
 import (
 	"context"
 	"regexp"
 	"time"
+
+	setting "github.com/wybin4/flowledge/go/setting-service/internal"
+	setting_model "github.com/wybin4/flowledge/go/setting-service/internal/model"
 )
 
 type SettingService struct {
-	repo     *Repository
+	repo     *setting.SettingRepository
 	eventSvc *SettingEventService
 }
 
-func NewSettingService(repo *Repository, es *SettingEventService) *SettingService {
+func NewSettingService(repo *setting.SettingRepository, es *SettingEventService) *SettingService {
 	return &SettingService{
 		repo:     repo,
 		eventSvc: es,
@@ -43,7 +46,7 @@ func (s *SettingService) GetSettingsByPattern(ctx context.Context, pattern strin
 }
 
 // Получение всех приватных настроек
-func (s *SettingService) GetPrivateSettings(ctx context.Context) ([]*Setting, error) {
+func (s *SettingService) GetPrivateSettings(ctx context.Context) ([]*setting_model.Setting, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -52,8 +55,8 @@ func (s *SettingService) GetPrivateSettings(ctx context.Context) ([]*Setting, er
 		return nil, err
 	}
 
-	// Преобразуем []Setting -> []*Setting
-	result := make([]*Setting, len(settings))
+	// Преобразуем []setting_model.Setting -> []*setting_model.Setting
+	result := make([]*setting_model.Setting, len(settings))
 	for i := range settings {
 		result[i] = &settings[i]
 	}
@@ -62,13 +65,13 @@ func (s *SettingService) GetPrivateSettings(ctx context.Context) ([]*Setting, er
 }
 
 // Получение всех публичных настроек
-func (s *SettingService) GetPublicSettings(ctx context.Context) ([]*Setting, error) {
+func (s *SettingService) GetPublicSettings(ctx context.Context) ([]*setting_model.Setting, error) {
 	all, err := s.GetPrivateSettings(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	public := make([]*Setting, 0, len(all))
+	public := make([]*setting_model.Setting, 0, len(all))
 	for _, s := range all {
 		if s.Public {
 			public = append(public, s)
@@ -78,7 +81,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) ([]*Setting, err
 }
 
 // Создание или обновление настройки
-func (s *SettingService) SetSettings(ctx context.Context, id string, value interface{}) (*Setting, error) {
+func (s *SettingService) SetSettings(ctx context.Context, id string, value interface{}) (*setting_model.Setting, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 

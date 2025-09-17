@@ -3,29 +3,30 @@ package setting
 import (
 	"context"
 
+	setting_model "github.com/wybin4/flowledge/go/setting-service/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Repository struct {
+type SettingRepository struct {
 	collection *mongo.Collection
 }
 
-func NewRepository(client *mongo.Client, dbName string) *Repository {
-	return &Repository{
+func NewRepository(client *mongo.Client, dbName string) *SettingRepository {
+	return &SettingRepository{
 		collection: client.Database(dbName).Collection("settings"),
 	}
 }
 
 // FindAll возвращает все настройки
-func (r *Repository) FindAll(ctx context.Context) ([]Setting, error) {
+func (r *SettingRepository) FindAll(ctx context.Context) ([]setting_model.Setting, error) {
 	cur, err := r.collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
 	defer cur.Close(ctx)
 
-	var settings []Setting
+	var settings []setting_model.Setting
 	if err := cur.All(ctx, &settings); err != nil {
 		return nil, err
 	}
@@ -33,8 +34,8 @@ func (r *Repository) FindAll(ctx context.Context) ([]Setting, error) {
 }
 
 // FindByID ищет настройку по _id
-func (r *Repository) FindByID(ctx context.Context, id string) (*Setting, error) {
-	var setting Setting
+func (r *SettingRepository) FindByID(ctx context.Context, id string) (*setting_model.Setting, error) {
+	var setting setting_model.Setting
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&setting)
 	if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (r *Repository) FindByID(ctx context.Context, id string) (*Setting, error) 
 }
 
 // UpdateValue обновляет значение
-func (r *Repository) UpdateValue(ctx context.Context, id string, value interface{}) (*Setting, error) {
+func (r *SettingRepository) UpdateValue(ctx context.Context, id string, value interface{}) (*setting_model.Setting, error) {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"value": value}}
 

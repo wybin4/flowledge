@@ -1,4 +1,4 @@
-package setting
+package setting_service
 
 import (
 	"encoding/json"
@@ -6,10 +6,11 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
+	setting_model "github.com/wybin4/flowledge/go/setting-service/internal/model"
 )
 
 type SettingEventService struct {
-	publisher message.Publisher // ✅ БЕЗ указателя!
+	publisher message.Publisher
 	topic     string
 }
 
@@ -20,8 +21,7 @@ func NewSettingEventService(publisher message.Publisher) *SettingEventService {
 	}
 }
 
-// SendSettingEvent отправляет событие о пользователе через Watermill
-func (s *SettingEventService) SendSettingEvent(action string, setting *Setting) {
+func (s *SettingEventService) SendSettingEvent(action string, setting *setting_model.Setting) {
 	if s.publisher == nil || setting == nil {
 		return
 	}
@@ -29,7 +29,7 @@ func (s *SettingEventService) SendSettingEvent(action string, setting *Setting) 
 	event := map[string]interface{}{
 		"action": action,
 		"setting": map[string]interface{}{
-			"id":       setting.ID,
+			"id":              setting.ID,
 			"type":            setting.Type,
 			"public":          setting.Public,
 			"i18nLabel":       setting.I18nLabel,
@@ -52,5 +52,5 @@ func (s *SettingEventService) SendSettingEvent(action string, setting *Setting) 
 	}
 
 	msg := message.NewMessage(uuid.NewString(), eventBytes)
-	s.publisher.Publish(s.topic, msg) // ✅ Теперь будет работать
+	s.publisher.Publish(s.topic, msg)
 }

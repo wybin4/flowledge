@@ -13,6 +13,7 @@ import (
 
 	"github.com/wybin4/flowledge/go/pkg/transport"
 	setting "github.com/wybin4/flowledge/go/setting-service/internal"
+	setting_service "github.com/wybin4/flowledge/go/setting-service/internal/service"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 				return mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
 			},
 			// Репозиторий
-			func(client *mongo.Client) *setting.Repository {
+			func(client *mongo.Client) *setting.SettingRepository {
 				return setting.NewRepository(client, "flowledge")
 			},
 			// Watermill logger
@@ -52,17 +53,17 @@ func main() {
 				)
 			},
 			// Event service
-			func(publisher *kafka.Publisher) *setting.SettingEventService {
-				return setting.NewSettingEventService(publisher)
+			func(publisher *kafka.Publisher) *setting_service.SettingEventService {
+				return setting_service.NewSettingEventService(publisher)
 			},
 			// Setting service
-			func(repo *setting.Repository, es *setting.SettingEventService) *setting.SettingService {
-				return setting.NewSettingService(repo, es)
+			func(repo *setting.SettingRepository, es *setting_service.SettingEventService) *setting_service.SettingService {
+				return setting_service.NewSettingService(repo, es)
 			},
 		),
 		fx.Invoke(func(
 			lc fx.Lifecycle,
-			service *setting.SettingService,
+			service *setting_service.SettingService,
 			subscriber *kafka.Subscriber,
 			publisher *kafka.Publisher,
 			logger watermill.LoggerAdapter,

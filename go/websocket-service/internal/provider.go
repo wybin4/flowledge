@@ -1,9 +1,11 @@
-package transport
+package websocket
 
 import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"go.uber.org/fx"
+
+	"github.com/wybin4/flowledge/go/pkg/transport"
 )
 
 type Subscribers struct {
@@ -19,7 +21,7 @@ func ProvideSubscribers(brokers []string) fx.Option {
 		fx.Provide(
 			fx.Annotate(
 				func(logger watermill.LoggerAdapter) (message.Subscriber, error) {
-					return NewKafkaSubscriber(brokers, "websocket-user-group", logger)
+					return transport.NewKafkaSubscriber(brokers, "websocket-user-group", logger)
 				},
 				fx.ResultTags(`name:"userSubscriber"`),
 			),
@@ -28,7 +30,7 @@ func ProvideSubscribers(brokers []string) fx.Option {
 		fx.Provide(
 			fx.Annotate(
 				func(logger watermill.LoggerAdapter) (message.Subscriber, error) {
-					return NewKafkaSubscriber(brokers, "websocket-setting-group", logger)
+					return transport.NewKafkaSubscriber(brokers, "websocket-setting-group", logger)
 				},
 				fx.ResultTags(`name:"settingSubscriber"`),
 			),

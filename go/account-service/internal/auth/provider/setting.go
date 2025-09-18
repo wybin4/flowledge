@@ -2,6 +2,7 @@ package auth_provider
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"time"
 
@@ -9,52 +10,76 @@ import (
 	"github.com/wybin4/flowledge/go/pkg/transport"
 )
 
-type LDAPSettingProvider struct {
-	settingsManager *transport.SettingsManager
-	client          *transport.SettingsServiceClient
+type GetSettingResponse struct {
+	ID    string      `json:"id"`
+	Value interface{} `json:"value"`
 }
 
-func NewLDAPSettingProvider(client *transport.SettingsServiceClient, manager *transport.SettingsManager, sub message.Subscriber) *LDAPSettingProvider {
-	s := &LDAPSettingProvider{
-		client:          client,
-		settingsManager: manager,
+type LDAPSettingProvider struct {
+	manager *transport.ResourceManager[GetSettingResponse]
+	client  *transport.ServiceClient[GetSettingResponse]
+}
+
+func NewLDAPSettingProvider(
+	client *transport.ServiceClient[GetSettingResponse],
+	manager *transport.ResourceManager[GetSettingResponse],
+	sub message.Subscriber,
+) *LDAPSettingProvider {
+
+	p := &LDAPSettingProvider{
+		client:  client,
+		manager: manager,
 	}
 
-	// Асинхронная загрузка настроек
-	go s.loadInitialSettings()
+	// Асинхронная загрузка начальных настроек
+	go p.loadInitialSettings()
 
 	// Подписка на события обновления
-	s.client.SubscribeEvents(sub, manager)
+	p.client.SubscribeEvents(sub, manager, func(s GetSettingResponse) string { return s.ID }, "setting-events")
 
-	return s
+	return p
 }
 
-func (s *LDAPSettingProvider) loadInitialSettings() {
-	var values map[string]interface{}
-	var err error
+func (p *LDAPSettingProvider) loadInitialSettings() {
+	ctx := context.Background()
+	var raw map[string]interface{}
 
 	for i := 0; i < 3; i++ {
-		values, err = s.client.GetSettingsByPattern(context.Background(), `^ldap\.`)
-		if err == nil {
-			break
+		data, err := p.client.Request(ctx, "policy-service", "settings.get", map[string]string{"pattern": "^ldap\\."})
+		if err != nil {
+			log.Printf("Failed to load LDAP settings (attempt %d): %v", i+1, err)
+			time.Sleep(2 * time.Second)
+			continue
 		}
-		log.Printf("Failed to load LDAP settings (attempt %d): %v", i+1, err)
-		time.Sleep(2 * time.Second)
+
+		if err := json.Unmarshal(data, &raw); err != nil {
+			log.Printf("Failed to unmarshal LDAP settings: %v", err)
+			time.Sleep(2 * time.Second)
+			continue
+		}
+
+		break
 	}
 
-	if err != nil {
-		log.Printf("Warning: Failed to load initial LDAP settings: %v", err)
+	payload, ok := raw["payload"].(map[string]interface{})
+	if !ok {
+		log.Println("LDAP settings payload missing or wrong type")
 		return
 	}
 
-	for k, v := range values {
-		s.settingsManager.Set(k, v)
+	for k, v := range payload {
+		p.manager.Set(k, GetSettingResponse{
+			ID:    k,
+			Value: v,
+		})
 	}
 
 	log.Println("LDAP settings loaded successfully")
 }
 
-func (s *LDAPSettingProvider) Get(key string) interface{} {
-	val, _ := s.settingsManager.Get(key)
-	return val
+func (p *LDAPSettingProvider) Get(key string) interface{} {
+	if val, ok := p.manager.Get(key); ok {
+		return val.Value
+	}
+	return nil
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 )
 
-// NewKafkaSubscriber фабрика для Kafka Subscriber с нужным consumer group
 func NewKafkaSubscriber(brokers []string, group string, logger watermill.LoggerAdapter) (message.Subscriber, error) {
 	return kafka.NewSubscriber(
 		kafka.SubscriberConfig{

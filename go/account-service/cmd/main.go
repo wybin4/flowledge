@@ -56,29 +56,33 @@ func main() {
 			func(publisher *kafka.Publisher) *user_service.UserEventService {
 				return user_service.NewUserEventService(publisher)
 			},
+			
 			func(repo *user.UserRepository, es *user_service.UserEventService) *user_service.UserService {
 				return user_service.NewUserService(repo, es)
 			},
 
-			// In-memory store для локальных настроек
-			func() *store.MemoryStore[any] {
-				return store.NewMemoryStore[any]()
+			// --- MemoryStore для LDAPSettingProvider ---
+			func() *store.MemoryStore[auth_provider.GetSettingResponse] {
+				return store.NewMemoryStore[auth_provider.GetSettingResponse]()
 			},
 
-			// Менеджер настроек с безопасным доступом
-			func(repo *store.MemoryStore[any]) *transport.SettingsManager {
-				return transport.NewSettingsManager(repo)
+			// --- ResourceManager ---
+			func(repo *store.MemoryStore[auth_provider.GetSettingResponse]) *transport.ResourceManager[auth_provider.GetSettingResponse] {
+				return transport.NewResourceManager(repo)
 			},
 
-			// Клиент сервиса настроек
-			func(pub *kafka.Publisher, sub *kafka.Subscriber) *transport.SettingsServiceClient {
-				return transport.NewSettingsServiceClient(pub, sub)
+			// --- ServiceClient ---
+			func(pub *kafka.Publisher, sub *kafka.Subscriber) *transport.ServiceClient[auth_provider.GetSettingResponse] {
+				return transport.NewServiceClient[auth_provider.GetSettingResponse](pub, sub, "policy.requests", "policy.responses")
 			},
 
-			// LDAPSettingProvider (только настройки + кеш)
-			func(client *transport.SettingsServiceClient, manager *transport.SettingsManager, sub *kafka.Subscriber) *auth_provider.LDAPSettingProvider {
-				ldapSvc := auth_provider.NewLDAPSettingProvider(client, manager, sub)
-				return ldapSvc
+			// --- LDAPSettingProvider ---
+			func(
+				client *transport.ServiceClient[auth_provider.GetSettingResponse],
+				manager *transport.ResourceManager[auth_provider.GetSettingResponse],
+				sub *kafka.Subscriber,
+			) *auth_provider.LDAPSettingProvider {
+				return auth_provider.NewLDAPSettingProvider(client, manager, sub)
 			},
 
 			// LDAPService
@@ -87,7 +91,7 @@ func main() {
 			},
 
 			// JWT токены
-			func(settings *transport.SettingsManager) auth_service.TokenService {
+			func() auth_service.TokenService {
 				return auth_service.NewJwtTokenService("supersecret", 15*time.Minute, 7*24*time.Hour)
 			},
 			auth_service.NewPasswordService,

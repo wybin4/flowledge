@@ -8,7 +8,6 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"go.uber.org/fx"
 
-	"github.com/wybin4/flowledge/go/pkg/transport"
 	ws "github.com/wybin4/flowledge/go/websocket-service/internal"
 )
 
@@ -20,10 +19,10 @@ func main() {
 		),
 
 		// Подключаем сразу пачку сабскрайберов
-		transport.ProvideSubscribers([]string{"localhost:29092"}),
+		ws.ProvideSubscribers([]string{"localhost:29092"}),
 
 		// WatermillSubscriber
-		fx.Provide(func(hub *ws.Hub, subs transport.Subscribers, logger watermill.LoggerAdapter) *ws.WatermillSubscriber {
+		fx.Provide(func(hub *ws.Hub, subs ws.Subscribers, logger watermill.LoggerAdapter) *ws.WatermillSubscriber {
 			return ws.NewWatermillSubscriber(hub, subs.UserSubscriber, subs.SettingSubscriber, logger)
 		}),
 

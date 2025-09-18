@@ -54,7 +54,7 @@ func StartServiceRouter(cfg RouterConfig) {
 		func(msg *message.Message) ([]*message.Message, error) {
 			var request Request
 			if err := json.Unmarshal(msg.Payload, &request); err != nil {
-				log.Printf("❌ Failed to unmarshal request: %v", err)
+				log.Printf("Failed to unmarshal request: %v", err)
 				return nil, nil
 			}
 
@@ -82,7 +82,7 @@ func StartServiceRouter(cfg RouterConfig) {
 		},
 	)
 
-	log.Printf("🚀 %s Watermill router starting...", cfg.ServiceName)
+	log.Printf("%s Watermill router starting...", cfg.ServiceName)
 	if err := router.Run(context.Background()); err != nil {
 		panic(err)
 	}

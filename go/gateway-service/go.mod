@@ -43,4 +43,5 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.5.1
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
+	golang.org/x/time v0.13.0
 )

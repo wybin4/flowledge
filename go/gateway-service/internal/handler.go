@@ -2,191 +2,221 @@ package gateway
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"sync"
 	"time"
 
-	"github.com/ThreeDotsLabs/watermill"
-	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
-	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/gorilla/mux"
+	gateway_limit "github.com/wybin4/flowledge/go/gateway-service/internal/limit"
+	"github.com/wybin4/flowledge/go/pkg/transport"
 )
 
-// GatewayHandler хранит publisher и responseChannels
+// GatewayHandler хранит клиентов для разных сервисов
 type GatewayHandler struct {
-	Publisher        *kafka.Publisher
-	ResponseChannels map[string]chan *message.Message
-	Mutex            *sync.RWMutex
-	ResponseTimeout  time.Duration
+	AccountClient *transport.Client
+	PolicyClient  *transport.Client
+	RateLimiter   *gateway_limit.RateLimiter
+	LoginLimiter  *gateway_limit.LoginLimiter
 }
 
 // NewGatewayHandler конструктор
-func NewGatewayHandler(pub *kafka.Publisher) *GatewayHandler {
+func NewGatewayHandler(accountClient, policyClient *transport.Client) *GatewayHandler {
 	return &GatewayHandler{
-		Publisher:        pub,
-		ResponseChannels: make(map[string]chan *message.Message),
-		Mutex:            &sync.RWMutex{},
-		ResponseTimeout:  10 * time.Second,
+		AccountClient: accountClient,
+		PolicyClient:  policyClient,
+		RateLimiter:   gateway_limit.NewRateLimiter(5, 10, 5*time.Minute),
+		LoginLimiter:  gateway_limit.NewLoginLimiter(2, 5*time.Minute, 30*time.Minute),
 	}
+}
+
+func (h *GatewayHandler) Middleware(next http.Handler) http.Handler {
+	return h.RateLimiter.Middleware(next)
 }
 
 // Регистрация маршрутов
 func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
-	r.HandleFunc("/users.get/{id}", h.handleGetUser).Methods("GET")
-	r.HandleFunc("/login", h.handleLogin).Methods("POST")
-	r.HandleFunc("/refresh", h.handleRefresh).Methods("POST")
-	r.HandleFunc("/register", h.handleRegister).Methods("POST")
+	sr := r.PathPrefix("/").Subrouter()
+	sr.Use(h.Middleware)
 
-	r.HandleFunc("/settings.set", h.handleSetSettings).Methods("POST")
-	r.HandleFunc("/settings.get", h.handleGetSettings).Methods("GET")
+	// --- все маршруты через subrouter ---
+	sr.HandleFunc("/users.get/{id}", h.handleGetUser).Methods("GET")
 
-	r.HandleFunc("/permissions.get", h.handleGetPermissions).Methods("GET")
-	r.HandleFunc("/permissions.toggle-role", h.handleToggleRole).Methods("POST")
+	sr.HandleFunc("/login", h.handleLogin).Methods("POST")
+	sr.HandleFunc("/refresh", h.handleRefresh).Methods("POST")
+	sr.HandleFunc("/register", h.handleRegister).Methods("POST")
 
-	r.HandleFunc("/roles.get", h.handleGetRoles).Methods("GET")
-	r.HandleFunc("/roles.create", h.handleCreateRole).Methods("POST")
-	r.HandleFunc("/roles.update", h.handleUpdateRole).Methods("PATCH")
-	r.HandleFunc("/roles.delete", h.handleDeleteRole).Methods("DELETE")
+	sr.HandleFunc("/settings.set", h.handleSetSettings).Methods("POST")
+	sr.HandleFunc("/settings.get", h.handleGetSettings).Methods("GET")
+
+	sr.HandleFunc("/permissions.get", h.handleGetPermissions).Methods("GET")
+	sr.HandleFunc("/permissions.toggle-role", h.handleToggleRole).Methods("POST")
+
+	sr.HandleFunc("/roles.get", h.handleGetRoles).Methods("GET")
+	sr.HandleFunc("/roles.create", h.handleCreateRole).Methods("POST")
+	sr.HandleFunc("/roles.update", h.handleUpdateRole).Methods("PATCH")
+	sr.HandleFunc("/roles.delete", h.handleDeleteRole).Methods("DELETE")
 }
 
 // --- HTTP handlers ---
 func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	payload := map[string]interface{}{"id": id}
-	h.forwardRequest(w, r, "account", "users.get", payload)
+	id := mux.Vars(r)["id"]
+	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.get", map[string]interface{}{"id": id})
 }
 
 func (h *GatewayHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	var input map[string]interface{}
+	json.NewDecoder(r.Body).Decode(&input)
+	h.forwardRequest(w, r, h.AccountClient, "account-service", "register", input)
+}
+
+func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "invalid request"})
 		return
 	}
-	h.forwardRequest(w, r, "account", "register", input)
+
+	// Проверяем лимит по логину
+	if blocked := h.LoginLimiter.IsBlocked(input.Username, r.RemoteAddr); blocked {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusTooManyRequests)
+		json.NewEncoder(w).Encode(map[string]string{"error": "too many login attempts, wait"})
+		return
+	}
+
+	// Форвардим запрос в account-service
+	resp, err := h.AccountClient.Request(r.Context(), "account-service", "login", input, "gw")
+	w.Header().Set("Content-Type", "application/json")
+
+	if err != nil {
+		// Любая системная ошибка
+		h.LoginLimiter.IncrementFailed(input.Username, r.RemoteAddr)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
+
+	var wrapper struct {
+		CorrelationID string          `json:"correlation_id"`
+		Error         string          `json:"error,omitempty"`
+		Payload       json.RawMessage `json:"payload"`
+	}
+
+	if err := json.Unmarshal(resp, &wrapper); err != nil {
+		h.LoginLimiter.IncrementFailed(input.Username, r.RemoteAddr)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "invalid response from service"})
+		return
+	}
+
+	// Если сервис вернул ошибку авторизации
+	if wrapper.Error != "" {
+		h.LoginLimiter.IncrementFailed(input.Username, r.RemoteAddr)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": wrapper.Error})
+		return
+	}
+
+	// Успешный вход — сбросить счётчики
+	h.LoginLimiter.Reset(input.Username, r.RemoteAddr)
+
+	// Отдаём payload
+	if len(wrapper.Payload) > 0 && string(wrapper.Payload) != "null" {
+		w.Write(wrapper.Payload)
+		return
+	}
+
+	// Пустой payload
+	w.Write([]byte("{}"))
+}
+
+func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
+	var input map[string]interface{}
+	json.NewDecoder(r.Body).Decode(&input)
+	h.forwardRequest(w, r, h.AccountClient, "account-service", "refresh", input)
 }
 
 func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Request) {
 	var input map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	h.forwardRequest(w, r, "policy", "settings.set", input)
+	json.NewDecoder(r.Body).Decode(&input)
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "settings.set", input)
 }
 
 func (h *GatewayHandler) handleGetSettings(w http.ResponseWriter, r *http.Request) {
-	h.forwardRequest(w, r, "policy", "settings.get", nil)
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "settings.get", nil)
 }
 
 func (h *GatewayHandler) handleGetPermissions(w http.ResponseWriter, r *http.Request) {
-	h.forwardRequest(w, r, "policy", "permissions.get", nil)
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "permissions.get", nil)
 }
 
 func (h *GatewayHandler) handleToggleRole(w http.ResponseWriter, r *http.Request) {
 	var input map[string]interface{}
-	if r.Method != http.MethodGet {
-		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-	}
-	h.forwardRequest(w, r, "policy", r.URL.Path[1:], input)
+	json.NewDecoder(r.Body).Decode(&input)
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "permissions.toggle-role", input)
 }
 
 func (h *GatewayHandler) handleGetRoles(w http.ResponseWriter, r *http.Request) {
-	h.forwardRequest(w, r, "policy", "roles.get", nil)
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "roles.get", nil)
 }
 func (h *GatewayHandler) handleCreateRole(w http.ResponseWriter, r *http.Request) {
-	h.handleToggleRole(w, r)
+	var input map[string]interface{}
+	json.NewDecoder(r.Body).Decode(&input)
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "roles.create", input)
 }
 func (h *GatewayHandler) handleUpdateRole(w http.ResponseWriter, r *http.Request) {
-	h.handleToggleRole(w, r)
+	var input map[string]interface{}
+	json.NewDecoder(r.Body).Decode(&input)
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "roles.update", input)
 }
 func (h *GatewayHandler) handleDeleteRole(w http.ResponseWriter, r *http.Request) {
-	h.handleToggleRole(w, r)
+	var input map[string]interface{}
+	json.NewDecoder(r.Body).Decode(&input)
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "roles.delete", input)
 }
 
-func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	payload := map[string]interface{}{
-		"username": req.Username,
-		"password": req.Password,
-	}
-	h.forwardRequest(w, r, "account", "login", payload)
-}
+func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, client *transport.Client, service, endpoint string, payload interface{}) {
+	resp, err := client.Request(r.Context(), service, endpoint, payload, "gw")
+	w.Header().Set("Content-Type", "application/json")
 
-func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		RefreshToken string `json:"refreshToken"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	payload := map[string]interface{}{"refreshToken": req.RefreshToken}
-	h.forwardRequest(w, r, "account", "refresh", payload)
-}
-
-// --- Forward request ---
-func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, service, endpoint string, payload interface{}) {
-	correlationID := watermill.NewUUID()
-	responseChan := make(chan *message.Message, 1)
-
-	h.Mutex.Lock()
-	h.ResponseChannels[correlationID] = responseChan
-	h.Mutex.Unlock()
-	defer func() {
-		h.Mutex.Lock()
-		delete(h.ResponseChannels, correlationID)
-		h.Mutex.Unlock()
-	}()
-
-	request := map[string]interface{}{
-		"correlation_id": correlationID,
-		"service":        fmt.Sprintf("%s-service", service),
-		"endpoint":       endpoint,
-		"payload":        payload,
-	}
-
-	requestBytes, err := json.Marshal(request)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
 		return
 	}
 
-	topic := fmt.Sprintf("%s.requests", service)
-	msg := message.NewMessage(correlationID, requestBytes)
-	if err := h.Publisher.Publish(topic, msg); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	var wrapper struct {
+		CorrelationID string          `json:"correlation_id"`
+		Error         string          `json:"error,omitempty"`
+		Payload       json.RawMessage `json:"payload"`
+	}
+
+	if err := json.Unmarshal(resp, &wrapper); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "invalid response from service",
+		})
 		return
 	}
 
-	select {
-	case responseMsg := <-responseChan:
-		var resp struct {
-			Payload interface{} `json:"payload"`
-			Error   string      `json:"error"`
-		}
-		if err := json.Unmarshal(responseMsg.Payload, &resp); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if resp.Error != "" {
-			http.Error(w, resp.Error, http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp.Payload)
-	case <-time.After(h.ResponseTimeout):
-		http.Error(w, "Request timeout", http.StatusGatewayTimeout)
+	if wrapper.Error != "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": wrapper.Error,
+		})
+		return
 	}
+
+	if len(wrapper.Payload) > 0 && string(wrapper.Payload) != "null" {
+		w.Write(wrapper.Payload)
+		return
+	}
+
+	w.Write([]byte("{}"))
 }

@@ -9,7 +9,6 @@ const (
 
 type Role struct {
 	ID          string      `bson:"_id" json:"id"`
-	Name        string      `bson:"name" json:"name"`
-	Description string      `bson:"description" json:"description"`
+	Description string      `bson:"description,omitempty" json:"description,omitempty"`
 	Scopes      []RoleScope `bson:"scopes" json:"scopes"`
 }

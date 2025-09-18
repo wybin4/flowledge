@@ -59,7 +59,7 @@ type ServiceClient[T any] struct {
 	client *Client
 }
 
-func NewServiceClient[T comparable](pub *kafka.Publisher, sub message.Subscriber, requestTopic, responseTopic string) *ServiceClient[T] {
+func NewServiceClient[T any](pub *kafka.Publisher, sub message.Subscriber, requestTopic, responseTopic string) *ServiceClient[T] {
 	c := NewClient(pub, sub, requestTopic, responseTopic, 5*time.Second)
 	return &ServiceClient[T]{client: c}
 }

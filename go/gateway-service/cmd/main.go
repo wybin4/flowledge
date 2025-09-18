@@ -3,287 +3,145 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"sync"
-	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
 	"github.com/gorilla/mux"
+
+	gateway "github.com/wybin4/flowledge/go/gateway-service/internal"
+	gateway_provider "github.com/wybin4/flowledge/go/gateway-service/internal/provider"
+	store "github.com/wybin4/flowledge/go/pkg/db"
+	"github.com/wybin4/flowledge/go/pkg/transport"
+	"go.uber.org/fx"
 )
 
 func main() {
-	logger := watermill.NewStdLogger(true, true)
-
-	// Kafka publisher для отправки запросов
-	publisher, err := kafka.NewPublisher(
-		kafka.PublisherConfig{
-			Brokers:   []string{"localhost:29092"},
-			Marshaler: kafka.DefaultMarshaler{},
-		},
-		logger,
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	// Kafka subscriber для получения ответов
-	subscriber, err := kafka.NewSubscriber(
-		kafka.SubscriberConfig{
-			Brokers:       []string{"localhost:29092"},
-			ConsumerGroup: "gateway-group",
-			Unmarshaler:   kafka.DefaultMarshaler{},
-		},
-		logger,
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	// Router для обработки всех сервисных топиков
-	router, err := message.NewRouter(message.RouterConfig{}, logger)
-	if err != nil {
-		panic(err)
-	}
-
-	router.AddMiddleware(middleware.Retry{MaxRetries: 3}.Middleware)
-	router.AddMiddleware(middleware.Recoverer)
-
-	// Мапа каналов для отслеживания ответов
-	responseChannels := make(map[string]chan *message.Message)
-	mutex := &sync.RWMutex{}
-
-	// Список сервисных топиков, от которых ожидаем ответы
-	serviceTopics := []string{
-		"policy.responses",
-		"account.responses",
-	}
-
-	for _, topic := range serviceTopics {
-		router.AddHandler(
-			topic+"_handler",
-			topic,
-			subscriber,
-			"", // не публикуем дальше
-			nil,
-			func(msg *message.Message) ([]*message.Message, error) {
-				var response struct {
-					CorrelationID string      `json:"correlation_id"`
-					Payload       interface{} `json:"payload"`
-					Error         string      `json:"error"`
-				}
-
-				if err := json.Unmarshal(msg.Payload, &response); err != nil {
-					log.Printf("Failed to unmarshal response: %v", err)
-					return nil, nil
-				}
-
-				mutex.RLock()
-				ch, exists := responseChannels[response.CorrelationID]
-				mutex.RUnlock()
-
-				if exists {
-					ch <- msg
-				}
-
-				return nil, nil
+	app := fx.New(
+		// --- Providers ---
+		fx.Provide(
+			// Logger
+			func() watermill.LoggerAdapter {
+				return watermill.NewStdLogger(true, true)
 			},
-		)
-	}
 
-	go func() {
-		log.Println("Gateway router starting...")
-		if err := router.Run(context.Background()); err != nil {
-			panic(err)
-		}
-	}()
+			// Kafka Publisher
+			func(logger watermill.LoggerAdapter) (*kafka.Publisher, error) {
+				return kafka.NewPublisher(
+					kafka.PublisherConfig{
+						Brokers:   []string{"localhost:29092"},
+						Marshaler: kafka.DefaultMarshaler{},
+					},
+					logger,
+				)
+			},
 
-	// HTTP handler
-	handler := &GatewayHandler{
-		publisher:        publisher,
-		responseChannels: responseChannels,
-		mutex:            mutex,
-		responseTimeout:  10 * time.Second,
-	}
+			// Kafka Subscriber
+			func(logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
+				return kafka.NewSubscriber(
+					kafka.SubscriberConfig{
+						Brokers:       []string{"localhost:29092"},
+						ConsumerGroup: "gateway-group",
+						Unmarshaler:   kafka.DefaultMarshaler{},
+					},
+					logger,
+				)
+			},
 
-	r := mux.NewRouter()
+			// Memory store для пермишнов
+			func() *store.MemoryStore[gateway_provider.GetPermissionResponse] {
+				return store.NewMemoryStore[gateway_provider.GetPermissionResponse]()
+			},
 
-	// Регистрируем endpoints
-	r.HandleFunc("/users.get/{id}", handler.handleGetUser).Methods("GET")
+			// PermissionsProvider без запуска loadPermissions
+			func(pub *kafka.Publisher, sub *kafka.Subscriber, store *store.MemoryStore[gateway_provider.GetPermissionResponse]) *gateway_provider.PermissionsProvider {
+				manager := transport.NewResourceManager(store)
+				client := transport.NewServiceClient[gateway_provider.GetPermissionResponse](pub, sub, "policy.requests", "policy.responses")
+				return gateway_provider.NewPermissionsProvider(client, manager)
+			},
 
-	r.HandleFunc("/login", handler.handleLogin).Methods("POST")
-	r.HandleFunc("/refresh", handler.handleRefresh).Methods("POST")
-	r.HandleFunc("/register", handler.handleRegister).Methods("POST")
+			// HTTP Gateway handler
+			func(pub *kafka.Publisher) *gateway.GatewayHandler {
+				return gateway.NewGatewayHandler(pub)
+			},
 
-	r.HandleFunc("/settings.set", handler.handleSetSettings).Methods("POST")
-	r.HandleFunc("/settings.get", handler.handleGetSettings).Methods("GET")
+			// Router
+			func() *mux.Router {
+				return mux.NewRouter()
+			},
+		),
 
-	r.HandleFunc("/permissions.get", handler.handleGetPermissions).Methods("GET")
-	r.HandleFunc("/permissions.toggle-role", handler.handleToggleRole).Methods("POST")
+		// --- Register HTTP routes ---
+		fx.Invoke(func(handler *gateway.GatewayHandler, router *mux.Router) {
+			handler.RegisterRoutes(router)
+		}),
 
-	r.HandleFunc("/roles.get", handler.handleGetRoles).Methods("GET")
-	r.HandleFunc("/roles.create", handler.handleCreateRole).Methods("POST")
-	r.HandleFunc("/roles.update", handler.handleUpdateRole).Methods("PATCH")
-	r.HandleFunc("/roles.delete", handler.handleDeleteRole).Methods("DELETE")
+		// --- Subscribe to Kafka topics ---
+		fx.Invoke(func(lc fx.Lifecycle, sub *kafka.Subscriber, h *gateway.GatewayHandler, logger watermill.LoggerAdapter) {
+			lc.Append(fx.Hook{
+				OnStart: func(ctx context.Context) error {
+					go func() {
+						topics := []string{"account.responses", "policy.responses"}
+						for _, topic := range topics {
+							messages, err := sub.Subscribe(ctx, topic)
+							if err != nil {
+								logger.Error("Failed to subscribe to topic "+topic, err, nil)
+								continue
+							}
 
-	log.Println("\033[31mGateway running on :8084\033[0m")
-	if err := http.ListenAndServe(":8084", r); err != nil {
-		log.Fatal(err)
-	}
-}
+							go func(msgs <-chan *message.Message) {
+								for msg := range msgs {
+									var resp struct {
+										CorrelationID string      `json:"correlation_id"`
+										Payload       interface{} `json:"payload"`
+										Error         string      `json:"error"`
+									}
+									if err := json.Unmarshal(msg.Payload, &resp); err != nil {
+										logger.Error("Failed to unmarshal response", err, nil)
+										continue
+									}
 
-// GatewayHandler хранит publisher и responseChannels
-type GatewayHandler struct {
-	publisher        *kafka.Publisher
-	responseChannels map[string]chan *message.Message
-	mutex            *sync.RWMutex
-	responseTimeout  time.Duration
-}
+									h.Mutex.RLock()
+									ch, ok := h.ResponseChannels[resp.CorrelationID]
+									h.Mutex.RUnlock()
+									if ok {
+										ch <- msg
+									}
+								}
+							}(messages)
+						}
+					}()
+					return nil
+				},
+			})
+		}),
 
-// HTTP handlers
-func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	payload := map[string]interface{}{"id": id}
-	h.forwardRequest(w, r, "account", "users.get", payload)
-}
+		// --- Start HTTP server ---
+		fx.Invoke(func(lc fx.Lifecycle, router *mux.Router) {
+			lc.Append(fx.Hook{
+				OnStart: func(ctx context.Context) error {
+					go func() {
+						log.Println("Gateway running on :8084")
+						if err := http.ListenAndServe(":8084", router); err != nil {
+							log.Fatal(err)
+						}
+					}()
+					return nil
+				},
+			})
+		}),
 
-func (h *GatewayHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
-	var input map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	h.forwardRequest(w, r, "account", "register", input)
-}
+		fx.Invoke(func(lc fx.Lifecycle, permProvider *gateway_provider.PermissionsProvider) {
+			lc.Append(fx.Hook{
+				OnStart: func(ctx context.Context) error {
+					go permProvider.LoadPermissions()
+					return nil
+				},
+			})
+		}),
+	)
 
-func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Request) {
-	var input map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	h.forwardRequest(w, r, "policy", "settings.set", input)
-}
-
-func (h *GatewayHandler) handleGetSettings(w http.ResponseWriter, r *http.Request) {
-	h.forwardRequest(w, r, "policy", "settings.get", nil)
-}
-
-func (h *GatewayHandler) handleGetPermissions(w http.ResponseWriter, r *http.Request) {
-	h.forwardRequest(w, r, "policy", "permissions.get", nil)
-}
-
-func (h *GatewayHandler) handleToggleRole(w http.ResponseWriter, r *http.Request) {
-	var input map[string]interface{}
-	if r.Method != http.MethodGet {
-		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-	}
-	h.forwardRequest(w, r, "policy", r.URL.Path[1:], input)
-}
-
-func (h *GatewayHandler) handleGetRoles(w http.ResponseWriter, r *http.Request) {
-	h.forwardRequest(w, r, "policy", "roles.get", nil)
-}
-func (h *GatewayHandler) handleCreateRole(w http.ResponseWriter, r *http.Request) {
-	h.handleToggleRole(w, r)
-}
-func (h *GatewayHandler) handleUpdateRole(w http.ResponseWriter, r *http.Request) {
-	h.handleToggleRole(w, r)
-}
-func (h *GatewayHandler) handleDeleteRole(w http.ResponseWriter, r *http.Request) {
-	h.handleToggleRole(w, r)
-}
-
-func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	payload := map[string]interface{}{
-		"username": req.Username,
-		"password": req.Password,
-	}
-	h.forwardRequest(w, r, "account", "login", payload)
-}
-
-func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		RefreshToken string `json:"refreshToken"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	payload := map[string]interface{}{"refreshToken": req.RefreshToken}
-	h.forwardRequest(w, r, "account", "refresh", payload)
-}
-
-// forwardRequest отправляет запрос в Kafka и ждет ответа на соответствующем топике
-func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, service, endpoint string, payload interface{}) {
-	correlationID := watermill.NewUUID()
-	responseChan := make(chan *message.Message, 1)
-
-	h.mutex.Lock()
-	h.responseChannels[correlationID] = responseChan
-	h.mutex.Unlock()
-	defer func() {
-		h.mutex.Lock()
-		delete(h.responseChannels, correlationID)
-		h.mutex.Unlock()
-	}()
-
-	request := map[string]interface{}{
-		"correlation_id": correlationID,
-		"service":        fmt.Sprintf("%s-service", service),
-		"endpoint":       endpoint,
-		"payload":        payload,
-	}
-
-	requestBytes, err := json.Marshal(request)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Выбираем топик по сервису
-	topic := fmt.Sprintf("%s.requests", service)
-
-	msg := message.NewMessage(correlationID, requestBytes)
-	if err := h.publisher.Publish(topic, msg); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Ждем ответа
-	select {
-	case responseMsg := <-responseChan:
-		var resp struct {
-			Payload interface{} `json:"payload"`
-			Error   string      `json:"error"`
-		}
-		if err := json.Unmarshal(responseMsg.Payload, &resp); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if resp.Error != "" {
-			http.Error(w, resp.Error, http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp.Payload)
-	case <-time.After(h.responseTimeout):
-		http.Error(w, "Request timeout", http.StatusGatewayTimeout)
-	}
+	app.Run()
 }

@@ -65,3 +65,17 @@ func (r *PermissionRepository) Delete(ctx context.Context, id string) error {
 	}
 	return nil
 }
+
+func (r *PermissionRepository) SaveAll(ctx context.Context, perms []Permission) error {
+	if len(perms) == 0 {
+		return nil
+	}
+
+	var docs []interface{}
+	for _, perm := range perms {
+		docs = append(docs, perm)
+	}
+
+	_, err := r.collection.InsertMany(ctx, docs)
+	return err
+}

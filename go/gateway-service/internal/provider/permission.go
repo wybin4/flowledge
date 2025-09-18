@@ -25,12 +25,10 @@ func NewPermissionsProvider(client *transport.ServiceClient[GetPermissionRespons
 		manager: manager,
 	}
 
-	go p.loadPermissions()
-
 	return p
 }
 
-func (p *PermissionsProvider) loadPermissions() {
+func (p *PermissionsProvider) LoadPermissions() {
 	ctx := context.Background()
 	var raw map[string]interface{}
 
@@ -79,7 +77,7 @@ func (p *PermissionsProvider) loadPermissions() {
 func (p *PermissionsProvider) CheckPermission(permID string, userRoles []string) bool {
 	perm, ok := p.manager.Get(permID)
 	if !ok {
-		return false // пермишон не найден
+		return false
 	}
 
 	userRoleSet := make(map[string]struct{}, len(userRoles))

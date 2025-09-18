@@ -12,6 +12,7 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/wybin4/flowledge/go/pkg/transport"
+	policy "github.com/wybin4/flowledge/go/policy-service/internal"
 	"github.com/wybin4/flowledge/go/policy-service/internal/permission"
 	"github.com/wybin4/flowledge/go/policy-service/internal/role"
 	setting "github.com/wybin4/flowledge/go/policy-service/internal/setting"
@@ -115,7 +116,6 @@ func main() {
 								if permissionID == "" || roleID == "" {
 									return nil, transport.ErrInvalidPayload
 								}
-								// TogglePermissionRole возвращает только ошибку, поэтому возвращаем nil для данных
 								if err := permSvc.TogglePermissionRole(ctx, permissionID, roleID); err != nil {
 									return nil, err
 								}
@@ -132,7 +132,6 @@ func main() {
 
 								description, _ := req.Payload["description"].(string)
 
-								// Получаем scopes из payload
 								rawScopes, ok := req.Payload["scopes"].([]interface{})
 								if !ok {
 									rawScopes = []interface{}{}
@@ -159,7 +158,6 @@ func main() {
 
 								newDescription, _ := req.Payload["description"].(string)
 
-								// Получаем scopes из payload
 								rawScopes, ok := req.Payload["scopes"].([]interface{})
 								if !ok {
 									rawScopes = []interface{}{}
@@ -175,7 +173,7 @@ func main() {
 									}
 								}
 
-								return roleSvc.UpdateRole(ctx, roleID, newName, newDescription, newScopes)
+								return roleSvc.UpdateRole(ctx, roleID, newDescription, newScopes)
 
 							case "roles.delete":
 								roleID, _ := req.Payload["id"].(string)
@@ -190,6 +188,23 @@ func main() {
 						},
 					})
 
+					return nil
+				},
+			})
+		}),
+
+		fx.Invoke(func(lc fx.Lifecycle, roleRepo *role.RoleRepository, permRepo *permission.PermissionRepository) {
+			lc.Append(fx.Hook{
+				OnStart: func(ctx context.Context) error {
+					roleRegistry := role.NewRoleRegistry(roleRepo)
+					permRegistry := permission.NewPermissionRegistry(permRepo)
+
+					if err := policy.InitializeDefaultRolesAndPermissions(ctx, permRegistry, roleRegistry); err != nil {
+						log.Fatalf("Failed to initialize default roles and permissions: %v", err)
+						return err
+					}
+
+					log.Println("Default roles and permissions initialized successfully")
 					return nil
 				},
 			})

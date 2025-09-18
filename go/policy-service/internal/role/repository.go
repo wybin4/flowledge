@@ -72,3 +72,17 @@ func (r *RoleRepository) Delete(ctx context.Context, id string) error {
 	}
 	return nil
 }
+
+func (r *RoleRepository) SaveAll(ctx context.Context, roles []Role) error {
+	if len(roles) == 0 {
+		return nil
+	}
+
+	docs := make([]interface{}, len(roles))
+	for i, role := range roles {
+		docs[i] = role
+	}
+
+	_, err := r.collection.InsertMany(ctx, docs)
+	return err
+}

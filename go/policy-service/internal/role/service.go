@@ -2,8 +2,6 @@ package role
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 type RoleService struct {
@@ -18,11 +16,9 @@ func (s *RoleService) GetRoles(ctx context.Context) ([]Role, error) {
 	return s.repo.FindAll(ctx)
 }
 
-// CreateRole создаёт роль с набором скоупов
-func (s *RoleService) CreateRole(ctx context.Context, name, description string, scopes []RoleScope) (*Role, error) {
+func (s *RoleService) CreateRole(ctx context.Context, id, description string, scopes []RoleScope) (*Role, error) {
 	role := &Role{
-		ID:          uuid.New().String(),
-		Name:        name,
+		ID:          id,
 		Description: description,
 		Scopes:      scopes,
 	}
@@ -32,16 +28,16 @@ func (s *RoleService) CreateRole(ctx context.Context, name, description string, 
 	return role, nil
 }
 
-// UpdateRole обновляет имя, описание и скоупы роли
-func (s *RoleService) UpdateRole(ctx context.Context, id, newName, newDescription string, newScopes []RoleScope) (*Role, error) {
+func (s *RoleService) UpdateRole(ctx context.Context, id, description string, scopes []RoleScope) (*Role, error) {
 	role, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	role.Name = newName
-	role.Description = newDescription
-	role.Scopes = newScopes
+	if description != "" {
+		role.Description = description
+	}
+	role.Scopes = scopes
 
 	if err := s.repo.Update(ctx, role); err != nil {
 		return nil, err

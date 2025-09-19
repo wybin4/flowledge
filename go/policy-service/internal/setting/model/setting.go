@@ -64,7 +64,6 @@ type Setting struct {
 	I18nLabel       string                `bson:"i18nLabel" json:"i18nLabel"`
 	Value           SettingValue          `bson:"value" json:"value"`
 	PackageValue    SettingValue          `bson:"packageValue" json:"packageValue"`
-	TS              time.Time             `bson:"ts" json:"ts"`
 	CreatedAt       time.Time             `bson:"createdAt" json:"createdAt"`
 	Options         []SettingSelectOption `bson:"options,omitempty" json:"options,omitempty"`
 	I18nDescription *string               `bson:"i18nDescription,omitempty" json:"i18nDescription,omitempty"`

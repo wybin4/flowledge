@@ -193,18 +193,24 @@ func main() {
 			})
 		}),
 
-		fx.Invoke(func(lc fx.Lifecycle, roleRepo *role.RoleRepository, permRepo *permission.PermissionRepository) {
+		fx.Invoke(func(
+			lc fx.Lifecycle,
+			roleRepo *role.RoleRepository,
+			permRepo *permission.PermissionRepository,
+			settingRepo *setting.SettingRepository,
+		) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					roleRegistry := role.NewRoleRegistry(roleRepo)
 					permRegistry := permission.NewPermissionRegistry(permRepo)
+					settingRegistry := setting.NewSettingRegistry(settingRepo)
 
-					if err := policy.InitializeDefaultRolesAndPermissions(ctx, permRegistry, roleRegistry); err != nil {
-						log.Fatalf("Failed to initialize default roles and permissions: %v", err)
+					if err := policy.InitializeDefaults(ctx, permRegistry, roleRegistry, settingRegistry); err != nil {
+						log.Fatalf("Failed to initialize defaults: %v", err)
 						return err
 					}
 
-					log.Println("Default roles and permissions initialized successfully")
+					log.Println("Defaults initialized successfully")
 					return nil
 				},
 			})

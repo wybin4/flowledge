@@ -55,3 +55,11 @@ func (r *SettingRepository) UpdateValue(ctx context.Context, id string, value in
 
 	return r.FindByID(ctx, id)
 }
+
+func (r *SettingRepository) Collection() *mongo.Collection {
+	return r.collection
+}
+
+func (r *SettingRepository) ExtractID(s setting_model.Setting) string {
+	return s.ID
+}

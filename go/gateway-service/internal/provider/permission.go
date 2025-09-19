@@ -16,10 +16,10 @@ type GetPermissionResponse struct {
 
 type PermissionsProvider struct {
 	manager *transport.ResourceManager[GetPermissionResponse]
-	client  *transport.ServiceClient[GetPermissionResponse]
+	client  *transport.Client
 }
 
-func NewPermissionsProvider(client *transport.ServiceClient[GetPermissionResponse], manager *transport.ResourceManager[GetPermissionResponse]) *PermissionsProvider {
+func NewPermissionsProvider(client *transport.Client, manager *transport.ResourceManager[GetPermissionResponse]) *PermissionsProvider {
 	p := &PermissionsProvider{
 		client:  client,
 		manager: manager,
@@ -30,48 +30,41 @@ func NewPermissionsProvider(client *transport.ServiceClient[GetPermissionRespons
 
 func (p *PermissionsProvider) LoadPermissions() {
 	ctx := context.Background()
-	var raw map[string]interface{}
 
 	for i := 0; i < 3; i++ {
-		data, err := p.client.Request(ctx, "policy-service", "permissions.get", nil)
+		data, err := p.client.Request(ctx, "policy-service", "permissions.get", nil, "perms")
 		if err != nil {
 			log.Printf("Failed to load permissions (attempt %d): %v", i+1, err)
 			time.Sleep(2 * time.Second)
 			continue
 		}
 
-		if err := json.Unmarshal(data, &raw); err != nil {
-			log.Printf("Failed to unmarshal permissions: %v", err)
+		var response struct {
+			Payload []GetPermissionResponse `json:"payload"`
+			Error   string                  `json:"error"`
+		}
+
+		if err := json.Unmarshal(data, &response); err != nil {
+			log.Printf("Failed to unmarshal permissions response: %v", err)
 			time.Sleep(2 * time.Second)
 			continue
 		}
 
-		break
-	}
+		if response.Error != "" {
+			log.Printf("Service error loading permissions: %s", response.Error)
+			time.Sleep(2 * time.Second)
+			continue
+		}
 
-	payload, ok := raw["payload"].([]interface{})
-	if !ok {
-		log.Println("Permissions payload missing or wrong type")
+		for _, perm := range response.Payload {
+			p.manager.Set(perm.ID, perm)
+		}
+
+		log.Println("Permissions loaded successfully")
 		return
 	}
 
-	for _, item := range payload {
-		objBytes, err := json.Marshal(item)
-		if err != nil {
-			log.Printf("Failed to marshal permission item: %v", err)
-			continue
-		}
-
-		var perm GetPermissionResponse
-		if err := json.Unmarshal(objBytes, &perm); err != nil {
-			log.Printf("Failed to unmarshal permission item: %v", err)
-			continue
-		}
-
-		p.manager.Set(perm.ID, perm)
-	}
-
-	log.Println("Permissions loaded successfully")
+	log.Println("Failed to load permissions after 3 attempts")
 }
 
 func (p *PermissionsProvider) CheckPermission(permID string, userRoles []string) bool {

@@ -55,7 +55,7 @@ func main() {
 				fx.ResultTags(`name:"accountClient"`),
 			),
 
-			// PolicyClient для GatewayHandler
+			// PolicyClient с аннотацией
 			fx.Annotate(
 				func(pub *kafka.Publisher, sub *kafka.Subscriber) *transport.Client {
 					return transport.NewClient(pub, sub, "policy.requests", "policy.responses", 10*time.Second)
@@ -63,14 +63,16 @@ func main() {
 				fx.ResultTags(`name:"policyClient"`),
 			),
 
-			// ServiceClient для PermissionsProvider
-			func(pub *kafka.Publisher, sub *kafka.Subscriber, store *store.MemoryStore[gateway_provider.GetPermissionResponse]) *gateway_provider.PermissionsProvider {
-				serviceClient := transport.NewServiceClient[gateway_provider.GetPermissionResponse](pub, sub, "policy.requests", "policy.responses")
-				manager := transport.NewResourceManager(store)
-				return gateway_provider.NewPermissionsProvider(serviceClient, manager)
-			},
+			// PermissionsProvider с правильными тегами параметров
+			fx.Annotate(
+				func(policyClient *transport.Client, store *store.MemoryStore[gateway_provider.GetPermissionResponse]) *gateway_provider.PermissionsProvider {
+					manager := transport.NewResourceManager(store)
+					return gateway_provider.NewPermissionsProvider(policyClient, manager)
+				},
+				fx.ParamTags(`name:"policyClient"`, ``), // policyClient с тегом, store без
+			),
 
-			// GatewayHandler
+			// GatewayHandler с правильными тегами параметров
 			fx.Annotate(
 				func(accountClient *transport.Client, policyClient *transport.Client) *gateway.GatewayHandler {
 					return gateway.NewGatewayHandler(accountClient, policyClient)

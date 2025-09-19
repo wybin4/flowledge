@@ -8,9 +8,9 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/fx"
 
+	store "github.com/wybin4/flowledge/go/pkg/db"
 	"github.com/wybin4/flowledge/go/pkg/transport"
 	policy "github.com/wybin4/flowledge/go/policy-service/internal"
 	"github.com/wybin4/flowledge/go/policy-service/internal/permission"
@@ -22,56 +22,41 @@ import (
 func main() {
 	app := fx.New(
 		fx.Provide(
-			// Mongo
-			func() (*mongo.Client, error) {
-				return mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
-			},
-			// Репозиторий
+			store.NewMongoClient,
+
 			func(client *mongo.Client) *setting.SettingRepository {
 				return setting.NewSettingRepository(client, "flowledge")
 			},
+
 			func(client *mongo.Client) *role.RoleRepository {
 				return role.NewRoleRepository(client, "flowledge")
 			},
+
 			func(client *mongo.Client) *permission.PermissionRepository {
 				return permission.NewPermissionRepository(client, "flowledge")
 			},
-			// Watermill logger
+
 			func() watermill.LoggerAdapter {
 				return watermill.NewStdLogger(true, true)
 			},
-			// Kafka Subscriber
+
+			transport.NewKafkaPublisher,
 			func(logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
-				return kafka.NewSubscriber(
-					kafka.SubscriberConfig{
-						Brokers:       []string{"localhost:29092"},
-						ConsumerGroup: "policy-service-group",
-						Unmarshaler:   kafka.DefaultMarshaler{},
-					},
-					logger,
-				)
+				return transport.NewKafkaSubscriber("policy-service-group", logger)
 			},
-			// Kafka Publisher
-			func(logger watermill.LoggerAdapter) (*kafka.Publisher, error) {
-				return kafka.NewPublisher(
-					kafka.PublisherConfig{
-						Brokers:   []string{"localhost:29092"},
-						Marshaler: kafka.DefaultMarshaler{},
-					},
-					logger,
-				)
-			},
-			// Event service
+
 			func(publisher *kafka.Publisher) *setting_service.SettingEventService {
 				return setting_service.NewSettingEventService(publisher)
 			},
-			// Setting service
+
 			func(repo *setting.SettingRepository, es *setting_service.SettingEventService) *setting_service.SettingService {
 				return setting_service.NewSettingService(repo, es)
 			},
+
 			func(repo *role.RoleRepository) *role.RoleService {
 				return role.NewRoleService(repo)
 			},
+
 			func(permissionRepo *permission.PermissionRepository, roleRepo *role.RoleRepository) *permission.PermissionService {
 				return permission.NewPermissionService(permissionRepo, roleRepo)
 			},
@@ -201,16 +186,18 @@ func main() {
 		) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					roleRegistry := role.NewRoleRegistry(roleRepo)
-					permRegistry := permission.NewPermissionRegistry(permRepo)
-					settingRegistry := setting.NewSettingRegistry(settingRepo)
+					go func() {
+						roleRegistry := role.NewRoleRegistry(roleRepo)
+						permRegistry := permission.NewPermissionRegistry(permRepo)
+						settingRegistry := setting.NewSettingRegistry(settingRepo)
 
-					if err := policy.InitializeDefaults(ctx, permRegistry, roleRegistry, settingRegistry); err != nil {
-						log.Fatalf("Failed to initialize defaults: %v", err)
-						return err
-					}
+						if err := policy.InitializeDefaults(ctx, permRegistry, roleRegistry, settingRegistry); err != nil {
+							log.Printf("Failed to initialize defaults: %v", err)
+							return
+						}
 
-					log.Println("Defaults initialized successfully")
+						log.Println("Defaults initialized successfully")
+					}()
 					return nil
 				},
 			})

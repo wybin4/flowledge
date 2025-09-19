@@ -9,7 +9,6 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/fx"
 
 	"github.com/mitchellh/mapstructure"
@@ -25,38 +24,22 @@ import (
 func main() {
 	app := fx.New(
 		fx.Provide(
-			func() (*mongo.Client, error) {
-				return mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
-			},
+			store.NewMongoClient,
 			func(client *mongo.Client) *user.UserRepository {
 				return user.NewUserRepository(client, "flowledge")
 			},
 			func() watermill.LoggerAdapter {
 				return watermill.NewStdLogger(true, true)
 			},
+			transport.NewKafkaPublisher,
 			func(logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
-				return kafka.NewSubscriber(
-					kafka.SubscriberConfig{
-						Brokers:       []string{"localhost:29092"},
-						ConsumerGroup: "account-service-group",
-						Unmarshaler:   kafka.DefaultMarshaler{},
-					},
-					logger,
-				)
+				return transport.NewKafkaSubscriber("account-service-group", logger)
 			},
-			func(logger watermill.LoggerAdapter) (*kafka.Publisher, error) {
-				return kafka.NewPublisher(
-					kafka.PublisherConfig{
-						Brokers:   []string{"localhost:29092"},
-						Marshaler: kafka.DefaultMarshaler{},
-					},
-					logger,
-				)
-			},
+
 			func(publisher *kafka.Publisher) *user_service.UserEventService {
 				return user_service.NewUserEventService(publisher)
 			},
-			
+
 			func(repo *user.UserRepository, es *user_service.UserEventService) *user_service.UserService {
 				return user_service.NewUserService(repo, es)
 			},

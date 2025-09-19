@@ -15,13 +15,13 @@ type Subscribers struct {
 	SettingSubscriber message.Subscriber `name:"settingSubscriber"`
 }
 
-func ProvideSubscribers(brokers []string) fx.Option {
+func ProvideSubscribers() fx.Option {
 	return fx.Options(
 		// UserSubscriber
 		fx.Provide(
 			fx.Annotate(
 				func(logger watermill.LoggerAdapter) (message.Subscriber, error) {
-					return transport.NewKafkaSubscriber(brokers, "websocket-user-group", logger)
+					return transport.NewKafkaSubscriber("websocket-user-group", logger)
 				},
 				fx.ResultTags(`name:"userSubscriber"`),
 			),
@@ -30,7 +30,7 @@ func ProvideSubscribers(brokers []string) fx.Option {
 		fx.Provide(
 			fx.Annotate(
 				func(logger watermill.LoggerAdapter) (message.Subscriber, error) {
-					return transport.NewKafkaSubscriber(brokers, "websocket-setting-group", logger)
+					return transport.NewKafkaSubscriber("websocket-setting-group", logger)
 				},
 				fx.ResultTags(`name:"settingSubscriber"`),
 			),

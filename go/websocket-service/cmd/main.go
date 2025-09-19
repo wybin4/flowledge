@@ -19,7 +19,7 @@ func main() {
 		),
 
 		// Подключаем сразу пачку сабскрайберов
-		ws.ProvideSubscribers([]string{"localhost:29092"}),
+		ws.ProvideSubscribers(),
 
 		// WatermillSubscriber
 		fx.Provide(func(hub *ws.Hub, subs ws.Subscribers, logger watermill.LoggerAdapter) *ws.WatermillSubscriber {

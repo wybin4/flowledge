@@ -1,0 +1,14 @@
+storageClass: "ssd"
+
+mongo:
+  storage: 10Gi
+
+zookeeper:
+  storage: 5Gi
+
+kafka:
+  storage: 20Gi
+
+ldap:
+  dataStorage: 5Gi
+  configStorage: 2Gi

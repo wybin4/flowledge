@@ -38,7 +38,7 @@ spec:
       name: ldap-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "ssd"
+      storageClassName: "standard"
       resources:
         requests:
           storage: 5Gi
@@ -46,7 +46,7 @@ spec:
       name: ldap-config
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "ssd"
+      storageClassName: "standard"
       resources:
         requests:
           storage: 2Gi

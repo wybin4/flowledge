@@ -74,8 +74,8 @@ func main() {
 			},
 
 			// JWT токены
-			func() auth_service.TokenService {
-				return auth_service.NewJwtTokenService("supersecret", 15*time.Minute, 7*24*time.Hour)
+			func(repo *user.UserRepository) auth_service.TokenService {
+				return auth_service.NewJwtTokenService("supersecret", 15*time.Minute, 7*24*time.Hour, repo)
 			},
 			auth_service.NewPasswordService,
 			// AuthService

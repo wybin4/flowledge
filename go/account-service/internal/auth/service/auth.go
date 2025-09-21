@@ -95,7 +95,7 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (*au
 	}
 
 	// --- 3. Генерация токенов ---
-	jwt, refresh, err := s.TokenService.GenerateTokens(user)
+	jwt, refresh, err := s.TokenService.GenerateTokens(ctx, user, "")
 	if err != nil {
 		return nil, err
 	}
@@ -130,29 +130,22 @@ func (s *AuthService) Register(ctx context.Context, p auth_dto.RegisterRequest) 
 	return s.UserService.CreateUser(ctx, p.Username, p.Name, &user_model.Password{Bcrypt: hash}, p.Roles)
 }
 
-// Refresh обновляет токены по refreshToken
 func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*auth_type.UserTokens, error) {
 	if refreshToken == "" {
 		return nil, fmt.Errorf("refresh token must be provided")
 	}
 
-	// 1. Валидируем refresh token
-	claims, err := s.TokenService.ValidateToken(refreshToken)
+	claims, err := s.TokenService.ValidateToken(ctx, refreshToken)
 	if err != nil {
 		return nil, fmt.Errorf("invalid refresh token: %w", err)
 	}
 
-	// 2. Получаем пользователя из базы
 	user, err := s.UserRepository.FindByUsername(ctx, claims.Username)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query user in DB: %w", err)
-	}
-	if user == nil {
-		return nil, fmt.Errorf("user %s not found", claims.Username)
+		return nil, fmt.Errorf("failed to query user: %w", err)
 	}
 
-	// 3. Генерация новых токенов
-	jwt, refresh, err := s.TokenService.GenerateTokens(user)
+	jwt, refresh, err := s.TokenService.GenerateTokens(ctx, user, refreshToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}

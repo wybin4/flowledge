@@ -20,9 +20,15 @@ type User struct {
 }
 
 type UserServices struct {
-	// Resume   *Resume   `bson:"resume,omitempty" json:"resume,omitempty"`
+	Resume []*Resume `bson:"resume,omitempty" json:"resume,omitempty"`
 	// LDAP     *LDAP     `bson:"ldap,omitempty" json:"ldap,omitempty"`
 	Password *Password `bson:"password,omitempty" json:"password,omitempty"`
+}
+
+type Resume struct {
+	AccessToken  string    `bson:"access_token" json:"access_token"`
+	RefreshToken string    `bson:"refresh_token" json:"refresh_token"`
+	ExpiresAt    time.Time `bson:"expires_at" json:"expires_at"`
 }
 
 type Password struct {

@@ -1,7 +1,9 @@
 package gateway
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -28,20 +30,60 @@ func NewGatewayHandler(accountClient, policyClient *transport.Client) *GatewayHa
 	}
 }
 
-func (h *GatewayHandler) Middleware(next http.Handler) http.Handler {
+func (h *GatewayHandler) RateLimitMiddleware(next http.Handler) http.Handler {
 	return h.RateLimiter.Middleware(next)
 }
 
-// Регистрация маршрутов
+func (h *GatewayHandler) AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/login" || r.URL.Path == "/refresh" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "missing Authorization header", http.StatusUnauthorized)
+			return
+		}
+
+		var token string
+		fmt.Sscanf(authHeader, "Bearer %s", &token)
+		if token == "" {
+			http.Error(w, "invalid Authorization header", http.StatusUnauthorized)
+			return
+		}
+
+		input := map[string]interface{}{"token": token}
+		respBytes, err := h.AccountClient.Request(r.Context(), "account-service", "validate", input)
+		if err != nil {
+			http.Error(w, "token validation failed", http.StatusUnauthorized)
+			return
+		}
+
+		if len(respBytes) == 0 || string(respBytes) == "null" {
+			http.Error(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		var claims map[string]interface{}
+		if err := json.Unmarshal(respBytes, &claims); err != nil {
+			http.Error(w, "invalid token response", http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "userClaims", claims)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 	sr := r.PathPrefix("/").Subrouter()
-	sr.Use(h.Middleware)
 
-	// --- все маршруты через subrouter ---
+	sr.Use(h.RateLimitMiddleware)
+	sr.Use(h.AuthMiddleware)
+
 	sr.HandleFunc("/users.get/{id}", h.handleGetUser).Methods("GET")
-
-	sr.HandleFunc("/login", h.handleLogin).Methods("POST")
-	sr.HandleFunc("/refresh", h.handleRefresh).Methods("POST")
 	sr.HandleFunc("/register", h.handleRegister).Methods("POST")
 
 	sr.HandleFunc("/settings.set", h.handleSetSettings).Methods("POST")
@@ -54,6 +96,9 @@ func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 	sr.HandleFunc("/roles.create", h.handleCreateRole).Methods("POST")
 	sr.HandleFunc("/roles.update", h.handleUpdateRole).Methods("PATCH")
 	sr.HandleFunc("/roles.delete", h.handleDeleteRole).Methods("DELETE")
+
+	r.HandleFunc("/login", h.handleLogin).Methods("POST")
+	r.HandleFunc("/refresh", h.handleRefresh).Methods("POST")
 }
 
 // --- HTTP handlers ---

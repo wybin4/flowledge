@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	auth_dto "github.com/wybin4/flowledge/go/account-service/internal/auth/dto"
 	auth_type "github.com/wybin4/flowledge/go/account-service/internal/auth/type"
@@ -135,7 +136,7 @@ func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*auth_t
 		return nil, fmt.Errorf("refresh token must be provided")
 	}
 
-	claims, err := s.TokenService.ValidateToken(ctx, refreshToken)
+	claims, err := s.TokenService.ValidateToken(ctx, refreshToken, "refresh")
 	if err != nil {
 		return nil, fmt.Errorf("invalid refresh token: %w", err)
 	}
@@ -154,4 +155,18 @@ func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*auth_t
 		JwtToken:     jwt,
 		RefreshToken: refresh,
 	}, nil
+}
+
+func (s *AuthService) Validate(ctx context.Context, token string) (*Claims, error) {
+	token = strings.TrimSpace(token)
+	if token == "" {
+		return nil, fmt.Errorf("token is empty")
+	}
+
+	claims, err := s.TokenService.ValidateToken(ctx, token, "access")
+	if err != nil {
+		return nil, fmt.Errorf("invalid token: %w", err)
+	}
+
+	return claims, nil
 }

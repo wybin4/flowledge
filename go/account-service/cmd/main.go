@@ -131,6 +131,10 @@ func main() {
 							case "refresh":
 								refreshToken, _ := req.Payload["refreshToken"].(string)
 								return authService.Refresh(ctx, refreshToken)
+
+							case "validate":
+								token, _ := req.Payload["token"].(string)
+								return authService.Validate(ctx, token)
 							default:
 								log.Printf("⚠️ unknown endpoint: %s", req.Endpoint)
 								return nil, nil

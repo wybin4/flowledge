@@ -18,7 +18,7 @@ type Claims struct {
 
 type TokenService interface {
 	GenerateTokens(ctx context.Context, user *user_model.User, oldRefreshToken string) (string, string, error)
-	ValidateToken(ctx context.Context, token string) (*Claims, error)
+	ValidateToken(ctx context.Context, tokenStr, tokenType string) (*Claims, error)
 }
 
 type JwtTokenService struct {
@@ -92,7 +92,7 @@ func (j *JwtTokenService) GenerateTokens(ctx context.Context, user *user_model.U
 	return accessToken, refreshToken, nil
 }
 
-func (j *JwtTokenService) ValidateToken(ctx context.Context, tokenStr string) (*Claims, error) {
+func (j *JwtTokenService) ValidateToken(ctx context.Context, tokenStr, tokenType string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(t *jwt.Token) (interface{}, error) {
 		return j.secretKey, nil
 	})
@@ -115,8 +115,19 @@ func (j *JwtTokenService) ValidateToken(ctx context.Context, tokenStr string) (*
 
 	found := false
 	for _, r := range user.Services.Resume {
-		if r.RefreshToken == tokenStr {
-			found = true
+		switch tokenType {
+		case "access":
+			if r.AccessToken == tokenStr {
+				found = true
+			}
+		case "refresh":
+			if r.RefreshToken == tokenStr {
+				found = true
+			}
+		default:
+			return nil, fmt.Errorf("unknown token type")
+		}
+		if found {
 			break
 		}
 	}

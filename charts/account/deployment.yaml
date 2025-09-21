@@ -21,3 +21,7 @@ spec:
           value: "kafka:9092"
         - name: MONGO_URI
           value: "mongodb://mongo:27017"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name

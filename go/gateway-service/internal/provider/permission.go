@@ -32,31 +32,21 @@ func (p *PermissionsProvider) LoadPermissions() {
 	ctx := context.Background()
 
 	for i := 0; i < 3; i++ {
-		data, err := p.client.Request(ctx, "policy-service", "permissions.get", nil, "perms")
+		data, err := p.client.Request(ctx, "policy-service", "permissions.get", nil)
 		if err != nil {
 			log.Printf("Failed to load permissions (attempt %d): %v", i+1, err)
 			time.Sleep(2 * time.Second)
 			continue
 		}
 
-		var response struct {
-			Payload []GetPermissionResponse `json:"payload"`
-			Error   string                  `json:"error"`
-		}
-
-		if err := json.Unmarshal(data, &response); err != nil {
+		var permissions []GetPermissionResponse
+		if err := json.Unmarshal(data, &permissions); err != nil {
 			log.Printf("Failed to unmarshal permissions response: %v", err)
 			time.Sleep(2 * time.Second)
 			continue
 		}
 
-		if response.Error != "" {
-			log.Printf("Service error loading permissions: %s", response.Error)
-			time.Sleep(2 * time.Second)
-			continue
-		}
-
-		for _, perm := range response.Payload {
+		for _, perm := range permissions {
 			p.manager.Set(perm.ID, perm)
 		}
 

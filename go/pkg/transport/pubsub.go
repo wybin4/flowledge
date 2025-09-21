@@ -11,13 +11,11 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 )
 
-// pendingRequest хранит канал для конкретного correlationID
 type pendingRequest struct {
 	respChan chan *message.Message
 	timer    *time.Timer
 }
 
-// Client — универсальный Pub/Sub клиент с request/response топиками
 type Client struct {
 	Publisher       *kafka.Publisher
 	Subscriber      message.Subscriber
@@ -29,7 +27,6 @@ type Client struct {
 	responseTopic   string
 }
 
-// NewClient создаёт новый Pub/Sub клиент и запускает обработку ответов
 func NewClient(pub *kafka.Publisher, sub message.Subscriber, requestTopic, responseTopic string, timeout time.Duration) *Client {
 	c := &Client{
 		Publisher:     pub,
@@ -47,7 +44,6 @@ func NewClient(pub *kafka.Publisher, sub message.Subscriber, requestTopic, respo
 	return c
 }
 
-// consumeResponses — подписка на топик с ответами
 func (c *Client) consumeResponses() {
 	ctx := context.Background()
 	ch, err := c.Subscriber.Subscribe(ctx, c.responseTopic)
@@ -65,7 +61,6 @@ func (c *Client) consumeResponses() {
 	}
 }
 
-// processResponses — обработка входящих сообщений-ответов
 func (c *Client) processResponses() {
 	for msg := range c.responses {
 		var r struct {
@@ -92,16 +87,19 @@ func (c *Client) Close() {
 	close(c.stopChan)
 }
 
-// Request отправляет запрос в requestTopic и ждёт ответа в responseTopic
-func (c *Client) Request(ctx context.Context, service string, endpoint string, payload interface{}, prefix string) (json.RawMessage, error) {
-	correlationID := prefix + "-" + fmt.Sprint(time.Now().UnixNano())
+func (c *Client) Request(ctx context.Context, service, endpoint string, payload interface{}) (json.RawMessage, error) {
+	correlationID := fmt.Sprintf("%s-%d", GetPodID(), time.Now().UnixNano())
 	respChan := make(chan *message.Message, 1)
 
 	timer := time.NewTimer(c.Timeout)
+	defer timer.Stop()
+
 	c.pendingRequests.Store(correlationID, &pendingRequest{
 		respChan: respChan,
 		timer:    timer,
 	})
+
+	defer c.pendingRequests.Delete(correlationID)
 
 	req := map[string]interface{}{
 		"correlation_id": correlationID,
@@ -109,22 +107,36 @@ func (c *Client) Request(ctx context.Context, service string, endpoint string, p
 		"endpoint":       endpoint,
 		"payload":        payload,
 	}
-	data, _ := json.Marshal(req)
 
-	// Публикуем запрос в requestTopic
-	if err := c.Publisher.Publish(c.requestTopic, message.NewMessage(correlationID, data)); err != nil {
-		c.pendingRequests.Delete(correlationID)
-		return nil, err
+	data, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	msg := message.NewMessage(correlationID, data)
+	if err := c.Publisher.Publish(c.requestTopic, msg); err != nil {
+		return nil, fmt.Errorf("failed to publish message: %w", err)
 	}
 
 	select {
-	case msg := <-respChan:
-		return json.RawMessage(msg.Payload), nil
+	case responseMsg := <-respChan:
+		var response struct {
+			Payload json.RawMessage `json:"payload"`
+			Error   string          `json:"error"`
+		}
+
+		if err := json.Unmarshal(responseMsg.Payload, &response); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+		}
+		if response.Error != "" {
+			return nil, fmt.Errorf(response.Error)
+		}
+		return response.Payload, nil
+
 	case <-timer.C:
-		c.pendingRequests.Delete(correlationID)
 		return nil, fmt.Errorf("timeout waiting for %s", endpoint)
+
 	case <-ctx.Done():
-		c.pendingRequests.Delete(correlationID)
 		return nil, ctx.Err()
 	}
 }

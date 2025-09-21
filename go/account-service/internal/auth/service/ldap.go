@@ -59,6 +59,7 @@ func LdapAuthenticate(cfg auth_type.LdapConfig, username, password string) (stri
 	)
 
 	result, err := l.Search(searchRequest)
+
 	if err != nil || len(result.Entries) == 0 {
 		return "", nil, fmt.Errorf("user not found")
 	}

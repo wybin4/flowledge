@@ -64,9 +64,8 @@ func NewServiceClient[T any](pub *kafka.Publisher, sub message.Subscriber, reque
 	return &ServiceClient[T]{client: c}
 }
 
-// Generic request — просто отсылает payload и возвращает сырые байты
 func (c *ServiceClient[T]) Request(ctx context.Context, service, method string, payload interface{}) ([]byte, error) {
-	return c.client.Request(ctx, service, method, payload, "generic")
+	return c.client.Request(ctx, service, method, payload)
 }
 
 func (c *ServiceClient[T]) SubscribeEvents(sub message.Subscriber, manager *ResourceManager[T], idFn func(T) string, topic string) {

@@ -9,7 +9,7 @@ go mod init github.com/wybin4/flowledge/go/new-service
 
 ```bash
 & minikube -p minikube docker-env | Invoke-Expression
-docker build -f account-service/Dockerfile -t account .
+docker build -f gateway-service/Dockerfile -t gateway .
 ```
 
 ## Поднять

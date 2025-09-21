@@ -1,7 +1,9 @@
 package transport
 
 import (
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
@@ -15,6 +17,14 @@ func GetKafkaBroker() string {
 	return broker
 }
 
+func GetPodID() string {
+	podID := os.Getenv("POD_ID")
+	if podID == "" {
+		podID = fmt.Sprintf("local-%d", time.Now().UnixNano())
+	}
+	return podID
+}
+
 func NewKafkaPublisher(logger watermill.LoggerAdapter) (*kafka.Publisher, error) {
 	broker := GetKafkaBroker()
 	return kafka.NewPublisher(kafka.PublisherConfig{
@@ -23,11 +33,13 @@ func NewKafkaPublisher(logger watermill.LoggerAdapter) (*kafka.Publisher, error)
 	}, logger)
 }
 
-func NewKafkaSubscriber(group string, logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
+func NewKafkaSubscriber(prefix string, logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
 	broker := GetKafkaBroker()
+	podID := GetPodID()
+
 	return kafka.NewSubscriber(kafka.SubscriberConfig{
 		Brokers:       []string{broker},
-		ConsumerGroup: group,
+		ConsumerGroup: fmt.Sprintf("%s-%s", prefix, podID),
 		Unmarshaler:   kafka.DefaultMarshaler{},
 	}, logger)
 }

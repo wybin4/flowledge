@@ -89,7 +89,7 @@ func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Форвардим запрос в account-service
-	resp, err := h.AccountClient.Request(r.Context(), "account-service", "login", input, "gw")
+	resp, err := h.AccountClient.Request(r.Context(), "account-service", "login", input)
 	w.Header().Set("Content-Type", "application/json")
 
 	if err != nil {
@@ -100,38 +100,15 @@ func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var wrapper struct {
-		CorrelationID string          `json:"correlation_id"`
-		Error         string          `json:"error,omitempty"`
-		Payload       json.RawMessage `json:"payload"`
-	}
-
-	if err := json.Unmarshal(resp, &wrapper); err != nil {
-		h.LoginLimiter.IncrementFailed(input.Username, r.RemoteAddr)
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "invalid response from service"})
-		return
-	}
-
-	// Если сервис вернул ошибку авторизации
-	if wrapper.Error != "" {
-		h.LoginLimiter.IncrementFailed(input.Username, r.RemoteAddr)
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": wrapper.Error})
+	if len(resp) == 0 || string(resp) == "null" {
+		w.Write([]byte("{}"))
 		return
 	}
 
 	// Успешный вход — сбросить счётчики
 	h.LoginLimiter.Reset(input.Username, r.RemoteAddr)
 
-	// Отдаём payload
-	if len(wrapper.Payload) > 0 && string(wrapper.Payload) != "null" {
-		w.Write(wrapper.Payload)
-		return
-	}
-
-	// Пустой payload
-	w.Write([]byte("{}"))
+	w.Write(resp)
 }
 
 func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
@@ -180,43 +157,19 @@ func (h *GatewayHandler) handleDeleteRole(w http.ResponseWriter, r *http.Request
 }
 
 func (h *GatewayHandler) forwardRequest(w http.ResponseWriter, r *http.Request, client *transport.Client, service, endpoint string, payload interface{}) {
-	resp, err := client.Request(r.Context(), service, endpoint, payload, "gw")
+	resp, err := client.Request(r.Context(), service, endpoint, payload)
 	w.Header().Set("Content-Type", "application/json")
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error": err.Error(),
-		})
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 	}
 
-	var wrapper struct {
-		CorrelationID string          `json:"correlation_id"`
-		Error         string          `json:"error,omitempty"`
-		Payload       json.RawMessage `json:"payload"`
-	}
-
-	if err := json.Unmarshal(resp, &wrapper); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error": "invalid response from service",
-		})
+	if len(resp) == 0 || string(resp) == "null" {
+		w.Write([]byte("{}"))
 		return
 	}
 
-	if wrapper.Error != "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error": wrapper.Error,
-		})
-		return
-	}
-
-	if len(wrapper.Payload) > 0 && string(wrapper.Payload) != "null" {
-		w.Write(wrapper.Payload)
-		return
-	}
-
-	w.Write([]byte("{}"))
+	w.Write(resp)
 }

@@ -27,7 +27,7 @@ func main() {
 
 			transport.NewKafkaPublisher,
 			func(logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
-				return transport.NewKafkaSubscriber("gateway-group", logger)
+				return transport.NewKafkaSubscriber("gateway-service-group", logger)
 			},
 
 			func() *store.MemoryStore[gateway_provider.GetPermissionResponse] {

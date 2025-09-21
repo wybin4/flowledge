@@ -31,10 +31,8 @@ func NewLDAPSettingProvider(
 		manager: manager,
 	}
 
-	// Асинхронная загрузка начальных настроек
 	go p.loadInitialSettings()
 
-	// Подписка на события обновления
 	p.client.SubscribeEvents(sub, manager, func(s GetSettingResponse) string { return s.ID }, "setting-events")
 
 	return p
@@ -42,7 +40,6 @@ func NewLDAPSettingProvider(
 
 func (p *LDAPSettingProvider) loadInitialSettings() {
 	ctx := context.Background()
-	var raw map[string]interface{}
 
 	for i := 0; i < 3; i++ {
 		data, err := p.client.Request(ctx, "policy-service", "settings.get", map[string]string{"pattern": "^ldap\\."})
@@ -52,29 +49,25 @@ func (p *LDAPSettingProvider) loadInitialSettings() {
 			continue
 		}
 
-		if err := json.Unmarshal(data, &raw); err != nil {
+		var payload map[string]interface{}
+		if err := json.Unmarshal(data, &payload); err != nil {
 			log.Printf("Failed to unmarshal LDAP settings: %v", err)
 			time.Sleep(2 * time.Second)
 			continue
 		}
 
-		break
-	}
+		for id, value := range payload {
+			p.manager.Set(id, GetSettingResponse{
+				ID:    id,
+				Value: value,
+			})
+		}
 
-	payload, ok := raw["payload"].(map[string]interface{})
-	if !ok {
-		log.Println("LDAP settings payload missing or wrong type")
+		log.Println("LDAP settings loaded successfully:")
 		return
 	}
 
-	for k, v := range payload {
-		p.manager.Set(k, GetSettingResponse{
-			ID:    k,
-			Value: v,
-		})
-	}
-
-	log.Println("LDAP settings loaded successfully")
+	log.Println("Failed to load LDAP settings after 3 attempts")
 }
 
 func (p *LDAPSettingProvider) Get(key string) interface{} {

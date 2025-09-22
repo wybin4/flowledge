@@ -3,6 +3,8 @@ package gateway_limit
 import (
 	"sync"
 	"time"
+
+	gateway_metric "github.com/wybin4/flowledge/go/gateway-service/internal/metric"
 )
 
 type loginLimiterEntry struct {
@@ -57,6 +59,7 @@ func (ll *LoginLimiter) IncrementFailed(username, ip string) {
 	if !ok {
 		entry = &loginLimiterEntry{attempts: 1, last: now}
 		ll.users[key] = entry
+		gateway_metric.FailedLoginAttempts.Inc()
 		return
 	}
 	if now.Sub(entry.last) > ll.window {
@@ -65,9 +68,11 @@ func (ll *LoginLimiter) IncrementFailed(username, ip string) {
 		entry.attempts++
 	}
 	entry.last = now
+	gateway_metric.FailedLoginAttempts.Inc()
 	if entry.attempts > ll.maxTries {
 		entry.blocked = true
 		entry.unblock = now.Add(ll.block)
+		gateway_metric.AccountLockouts.Inc()
 	}
 }
 

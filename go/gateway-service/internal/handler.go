@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
 	gateway_limit "github.com/wybin4/flowledge/go/gateway-service/internal/limit"
+	gateway_metric "github.com/wybin4/flowledge/go/gateway-service/internal/metric"
 	gateway_provider "github.com/wybin4/flowledge/go/gateway-service/internal/provider"
 	"github.com/wybin4/flowledge/go/pkg/transport"
 	pkg_type "github.com/wybin4/flowledge/go/pkg/type"
@@ -83,6 +85,46 @@ func (h *GatewayHandler) AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (r *statusRecorder) WriteHeader(code int) {
+	r.status = code
+	r.ResponseWriter.WriteHeader(code)
+}
+
+func (h *GatewayHandler) MetricsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/metrics") {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		route := mux.CurrentRoute(r)
+		routePath, err := route.GetPathTemplate()
+		if err != nil {
+			routePath = r.URL.Path
+		}
+
+		start := time.Now()
+		gateway_metric.HttpConcurrentRequests.WithLabelValues(routePath, r.Method).Inc()
+		defer gateway_metric.HttpConcurrentRequests.WithLabelValues(routePath, r.Method).Dec()
+
+		rw := &statusRecorder{ResponseWriter: w, status: 200}
+		next.ServeHTTP(rw, r)
+
+		duration := time.Since(start).Seconds()
+		gateway_metric.HttpRequestDuration.WithLabelValues(routePath, r.Method).Observe(duration)
+		gateway_metric.HttpRequestsTotal.WithLabelValues(routePath, r.Method, http.StatusText(rw.status)).Inc()
+
+		if rw.status >= 400 {
+			gateway_metric.HttpRequestsFailed.WithLabelValues(routePath, r.Method).Inc()
+		}
+	})
+}
+
 func RequirePermission(h *GatewayHandler, permID string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaimsResponse)
@@ -105,6 +147,8 @@ func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 
 	sr.Use(h.RateLimitMiddleware)
 	sr.Use(h.AuthMiddleware)
+	r.Use(h.MetricsMiddleware)
+	sr.Use(h.MetricsMiddleware)
 
 	sr.HandleFunc("/users.get/{id}", h.handleGetUser).Methods("GET")
 	sr.Handle("/users.create", RequirePermission(h, "manage-users", http.HandlerFunc(h.handleCreateUser))).Methods("POST")

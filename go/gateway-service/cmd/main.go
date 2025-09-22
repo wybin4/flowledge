@@ -10,6 +10,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/fx"
 
 	gateway "github.com/wybin4/flowledge/go/gateway-service/internal"
@@ -69,6 +70,7 @@ func main() {
 		),
 
 		fx.Invoke(func(handler *gateway.GatewayHandler, router *mux.Router) {
+			router.Handle("/metrics", promhttp.Handler())
 			handler.RegisterRoutes(router)
 		}),
 

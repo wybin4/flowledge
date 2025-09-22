@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	gateway_metric "github.com/wybin4/flowledge/go/gateway-service/internal/metric"
 	"golang.org/x/time/rate"
 )
 
@@ -72,6 +73,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 
 		limiter := rl.getLimiter(ip)
 		if !limiter.Allow() {
+			gateway_metric.RateLimitHits.Inc()
 			http.Error(w, "too many requests", http.StatusTooManyRequests)
 			return
 		}

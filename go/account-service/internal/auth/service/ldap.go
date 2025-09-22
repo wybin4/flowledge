@@ -21,14 +21,12 @@ func NewLDAPService(settings *auth_provider.LDAPSettingProvider) *LDAPService {
 	return &LDAPService{settings: settings}
 }
 
-// LdapAuthenticate проверяет пользователя через LDAP
 func LdapAuthenticate(cfg auth_type.LdapConfig, username, password string) (string, []string, error) {
 	protocol := "ldap"
 	if cfg.Port == 636 {
 		protocol = "ldaps"
 	}
 
-	// Dial по tcp с TLS, если ldaps
 	var l *ldap.Conn
 	var err error
 	if protocol == "ldaps" {
@@ -70,7 +68,6 @@ func LdapAuthenticate(cfg auth_type.LdapConfig, username, password string) (stri
 		memberOf = append(memberOf, extractGroupName(group, cfg.GroupBaseDN))
 	}
 
-	// Пробуем bind пользователя с его паролем
 	if err := l.Bind(userDN, password); err != nil {
 		return "", nil, err
 	}
@@ -113,7 +110,6 @@ func (a *LDAPService) Authenticate(username, password string) (string, []string,
 	return LdapAuthenticate(cfg, username, password)
 }
 
-// Вспомогательная функция для извлечения имени группы
 func (a *LDAPService) ExtractGroupName(dn string) string {
 	base := a.settings.Get("ldap.group.base-dn").(string)
 	return strings.TrimPrefix(strings.ReplaceAll(dn, ","+base, ""), "cn=")

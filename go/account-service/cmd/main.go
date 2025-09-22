@@ -12,10 +12,10 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/mitchellh/mapstructure"
-	auth_dto "github.com/wybin4/flowledge/go/account-service/internal/auth/dto"
 	auth_provider "github.com/wybin4/flowledge/go/account-service/internal/auth/provider"
 	auth_service "github.com/wybin4/flowledge/go/account-service/internal/auth/service"
 	"github.com/wybin4/flowledge/go/account-service/internal/user"
+	user_dto "github.com/wybin4/flowledge/go/account-service/internal/user/dto"
 	user_service "github.com/wybin4/flowledge/go/account-service/internal/user/service"
 	store "github.com/wybin4/flowledge/go/pkg/db"
 	"github.com/wybin4/flowledge/go/pkg/transport"
@@ -115,18 +115,19 @@ func main() {
 								}
 
 								return userService.GetUser(ctx, userID)
+
+							case "users.create":
+								var payload user_dto.CreateUserRequest
+								if err := mapstructure.Decode(req.Payload, &payload); err != nil {
+									return nil, fmt.Errorf("invalid user payload: %w", err)
+								}
+
+								return authService.CreateUser(ctx, payload)
+
 							case "login":
 								username, _ := req.Payload["username"].(string)
 								password, _ := req.Payload["password"].(string)
 								return authService.Login(ctx, username, password)
-
-							case "register":
-								var payload auth_dto.RegisterRequest
-								if err := mapstructure.Decode(req.Payload, &payload); err != nil {
-									return nil, fmt.Errorf("invalid register payload: %w", err)
-								}
-
-								return authService.Register(ctx, payload)
 
 							case "refresh":
 								refreshToken, _ := req.Payload["refreshToken"].(string)

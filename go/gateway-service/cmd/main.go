@@ -57,8 +57,8 @@ func main() {
 			),
 
 			fx.Annotate(
-				func(accountClient *transport.Client, policyClient *transport.Client) *gateway.GatewayHandler {
-					return gateway.NewGatewayHandler(accountClient, policyClient)
+				func(accountClient *transport.Client, policyClient *transport.Client, permProvider *gateway_provider.PermissionsProvider) *gateway.GatewayHandler {
+					return gateway.NewGatewayHandler(accountClient, policyClient, permProvider)
 				},
 				fx.ParamTags(`name:"accountClient"`, `name:"policyClient"`),
 			),

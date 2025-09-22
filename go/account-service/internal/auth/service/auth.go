@@ -7,12 +7,13 @@ import (
 	"log"
 	"strings"
 
-	auth_dto "github.com/wybin4/flowledge/go/account-service/internal/auth/dto"
 	auth_type "github.com/wybin4/flowledge/go/account-service/internal/auth/type"
 	"github.com/wybin4/flowledge/go/account-service/internal/user"
+	user_dto "github.com/wybin4/flowledge/go/account-service/internal/user/dto"
 	user_model "github.com/wybin4/flowledge/go/account-service/internal/user/model"
 	user_service "github.com/wybin4/flowledge/go/account-service/internal/user/service"
 	"github.com/wybin4/flowledge/go/account-service/internal/utils"
+	pkg_type "github.com/wybin4/flowledge/go/pkg/type"
 )
 
 type AuthService struct {
@@ -107,7 +108,7 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (*au
 	}, nil
 }
 
-func (s *AuthService) Register(ctx context.Context, p auth_dto.RegisterRequest) (*user_model.User, error) {
+func (s *AuthService) CreateUser(ctx context.Context, p user_dto.CreateUserRequest) (*user_model.User, error) {
 	if p.Username == "" {
 		return nil, fmt.Errorf("username must be provided")
 	}
@@ -157,7 +158,7 @@ func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*auth_t
 	}, nil
 }
 
-func (s *AuthService) Validate(ctx context.Context, token string) (*Claims, error) {
+func (s *AuthService) Validate(ctx context.Context, token string) (*pkg_type.UserClaimsResponse, error) {
 	token = strings.TrimSpace(token)
 	if token == "" {
 		return nil, fmt.Errorf("token is empty")

@@ -9,30 +9,36 @@ import (
 
 	"github.com/gorilla/mux"
 	gateway_limit "github.com/wybin4/flowledge/go/gateway-service/internal/limit"
+	gateway_provider "github.com/wybin4/flowledge/go/gateway-service/internal/provider"
 	"github.com/wybin4/flowledge/go/pkg/transport"
+	pkg_type "github.com/wybin4/flowledge/go/pkg/type"
 )
 
-// GatewayHandler хранит клиентов для разных сервисов
 type GatewayHandler struct {
-	AccountClient *transport.Client
-	PolicyClient  *transport.Client
-	RateLimiter   *gateway_limit.RateLimiter
-	LoginLimiter  *gateway_limit.LoginLimiter
+	AccountClient      *transport.Client
+	PolicyClient       *transport.Client
+	RateLimiter        *gateway_limit.RateLimiter
+	LoginLimiter       *gateway_limit.LoginLimiter
+	PermissionProvider *gateway_provider.PermissionsProvider
 }
 
-// NewGatewayHandler конструктор
-func NewGatewayHandler(accountClient, policyClient *transport.Client) *GatewayHandler {
+func NewGatewayHandler(accountClient, policyClient *transport.Client, permProvider *gateway_provider.PermissionsProvider) *GatewayHandler {
 	return &GatewayHandler{
-		AccountClient: accountClient,
-		PolicyClient:  policyClient,
-		RateLimiter:   gateway_limit.NewRateLimiter(5, 10, 5*time.Minute),
-		LoginLimiter:  gateway_limit.NewLoginLimiter(2, 5*time.Minute, 30*time.Minute),
+		AccountClient:      accountClient,
+		PolicyClient:       policyClient,
+		RateLimiter:        gateway_limit.NewRateLimiter(5, 10, 5*time.Minute),
+		LoginLimiter:       gateway_limit.NewLoginLimiter(2, 5*time.Minute, 30*time.Minute),
+		PermissionProvider: permProvider,
 	}
 }
 
 func (h *GatewayHandler) RateLimitMiddleware(next http.Handler) http.Handler {
 	return h.RateLimiter.Middleware(next)
 }
+
+type ctxKey string
+
+const userClaimsKey ctxKey = "userClaims"
 
 func (h *GatewayHandler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -66,14 +72,31 @@ func (h *GatewayHandler) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		var claims map[string]interface{}
+		var claims pkg_type.UserClaimsResponse
 		if err := json.Unmarshal(respBytes, &claims); err != nil {
 			http.Error(w, "invalid token response", http.StatusUnauthorized)
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "userClaims", claims)
+		ctx := context.WithValue(r.Context(), userClaimsKey, &claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func RequirePermission(h *GatewayHandler, permID string, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaimsResponse)
+		if !ok || claims == nil {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		if !h.PermissionProvider.CheckPermission(permID, claims.Roles) {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }
 
@@ -84,18 +107,18 @@ func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 	sr.Use(h.AuthMiddleware)
 
 	sr.HandleFunc("/users.get/{id}", h.handleGetUser).Methods("GET")
-	sr.HandleFunc("/register", h.handleRegister).Methods("POST")
+	sr.Handle("/users.create", RequirePermission(h, "manage-users", http.HandlerFunc(h.handleCreateUser))).Methods("POST")
 
-	sr.HandleFunc("/settings.set", h.handleSetSettings).Methods("POST")
 	sr.HandleFunc("/settings.get", h.handleGetSettings).Methods("GET")
+	sr.Handle("/settings.set", RequirePermission(h, "edit-private-settings", http.HandlerFunc(h.handleSetSettings))).Methods("POST")
 
 	sr.HandleFunc("/permissions.get", h.handleGetPermissions).Methods("GET")
-	sr.HandleFunc("/permissions.toggle-role", h.handleToggleRole).Methods("POST")
+	sr.Handle("/permissions.toggle-role", RequirePermission(h, "manage-permissions", http.HandlerFunc(h.handleToggleRole))).Methods("POST")
 
 	sr.HandleFunc("/roles.get", h.handleGetRoles).Methods("GET")
-	sr.HandleFunc("/roles.create", h.handleCreateRole).Methods("POST")
-	sr.HandleFunc("/roles.update", h.handleUpdateRole).Methods("PATCH")
-	sr.HandleFunc("/roles.delete", h.handleDeleteRole).Methods("DELETE")
+	sr.Handle("/roles.create", RequirePermission(h, "manage-roles", http.HandlerFunc(h.handleCreateRole))).Methods("POST")
+	sr.Handle("/roles.update", RequirePermission(h, "manage-roles", http.HandlerFunc(h.handleUpdateRole))).Methods("PATCH")
+	sr.Handle("/roles.delete", RequirePermission(h, "manage-roles", http.HandlerFunc(h.handleDeleteRole))).Methods("DELETE")
 
 	r.HandleFunc("/login", h.handleLogin).Methods("POST")
 	r.HandleFunc("/refresh", h.handleRefresh).Methods("POST")
@@ -107,10 +130,10 @@ func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.get", map[string]interface{}{"id": id})
 }
 
-func (h *GatewayHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
+func (h *GatewayHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	var input map[string]interface{}
 	json.NewDecoder(r.Body).Decode(&input)
-	h.forwardRequest(w, r, h.AccountClient, "account-service", "register", input)
+	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.create", input)
 }
 
 func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {

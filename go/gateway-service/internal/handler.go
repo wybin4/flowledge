@@ -97,7 +97,7 @@ func (r *statusRecorder) WriteHeader(code int) {
 
 func (h *GatewayHandler) MetricsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, "/metrics") {
+		if strings.HasPrefix(r.URL.Path, "/metrics") || r.Method == "OPTIONS" {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -142,12 +142,39 @@ func RequirePermission(h *GatewayHandler, permID string, next http.Handler) http
 	})
 }
 
-func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
-	sr := r.PathPrefix("/").Subrouter()
+func CORSMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range")
+		w.Header().Set("Access-Control-Expose-Headers", "Content-Length, Content-Range")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Max-Age", "86400")
 
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (h *GatewayHandler) handleOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
+	r.Use(CORSMiddleware)
+	r.Use(h.MetricsMiddleware)
+
+	r.HandleFunc("/api/{rest:.*}", h.handleOptions).Methods("OPTIONS")
+
+	sr := r.PathPrefix("/api/").Subrouter()
+
+	sr.Use(h.MetricsMiddleware)
 	sr.Use(h.RateLimitMiddleware)
 	sr.Use(h.AuthMiddleware)
-	r.Use(h.MetricsMiddleware)
 	sr.Use(h.MetricsMiddleware)
 
 	sr.HandleFunc("/users.get/{id}", h.handleGetUser).Methods("GET")
@@ -164,8 +191,8 @@ func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 	sr.Handle("/roles.update", RequirePermission(h, "manage-roles", http.HandlerFunc(h.handleUpdateRole))).Methods("PATCH")
 	sr.Handle("/roles.delete", RequirePermission(h, "manage-roles", http.HandlerFunc(h.handleDeleteRole))).Methods("DELETE")
 
-	r.HandleFunc("/login", h.handleLogin).Methods("POST")
-	r.HandleFunc("/refresh", h.handleRefresh).Methods("POST")
+	r.HandleFunc("/api/auth/login", h.handleLogin).Methods("POST")
+	r.HandleFunc("/api/auth/refresh", h.handleRefresh).Methods("POST")
 }
 
 // --- HTTP handlers ---

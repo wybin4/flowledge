@@ -19,7 +19,7 @@ pip install fastapi uvicorn motor pydantic pydub faster-whisper deepmultilingual
 
 ## Запускаем сервер
 
-Выполни команду: `uvicorn main:app --reload`
+Выполни команду: `uvicorn api-whisper:app --reload`
 Если все настроено правильно, сервер запустится на http://127.0.0.1:8000
 
 ## Тестируем API

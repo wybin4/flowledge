@@ -5,6 +5,12 @@ scrape_configs:
   - job_name: 'gateway'
     static_configs:
       - targets: ['host.docker.internal:8080']
+  - job_name: 'pad'
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_protocols: [OpenMetricsText0.0.1, PrometheusText0.0.4]
+    static_configs:
+      - targets: ['pad-proxy:8080']
 
   # - job_name: 'account'
   #   static_configs:

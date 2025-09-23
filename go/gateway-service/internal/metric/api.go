@@ -10,7 +10,7 @@ var (
 			Name: "http_requests_total",
 			Help: "Total number of HTTP requests",
 		},
-		[]string{"route", "method", "status"},
+		[]string{"route"},
 	)
 
 	HttpRequestDuration = prometheus.NewHistogramVec(
@@ -19,7 +19,7 @@ var (
 			Help:    "HTTP request duration in seconds",
 			Buckets: prometheus.DefBuckets,
 		},
-		[]string{"route", "method"},
+		[]string{"route"},
 	)
 
 	HttpRequestsFailed = prometheus.NewCounterVec(
@@ -27,7 +27,7 @@ var (
 			Name: "http_requests_failed_total",
 			Help: "Total number of failed HTTP requests (status >= 400)",
 		},
-		[]string{"route", "method"},
+		[]string{"route"},
 	)
 
 	HttpConcurrentRequests = prometheus.NewGaugeVec(
@@ -35,7 +35,7 @@ var (
 			Name: "http_concurrent_requests",
 			Help: "Number of concurrent HTTP requests",
 		},
-		[]string{"route", "method"},
+		[]string{"route"},
 	)
 )
 

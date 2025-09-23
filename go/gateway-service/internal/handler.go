@@ -109,18 +109,18 @@ func (h *GatewayHandler) MetricsMiddleware(next http.Handler) http.Handler {
 		}
 
 		start := time.Now()
-		gateway_metric.HttpConcurrentRequests.WithLabelValues(routePath, r.Method).Inc()
-		defer gateway_metric.HttpConcurrentRequests.WithLabelValues(routePath, r.Method).Dec()
+		gateway_metric.HttpConcurrentRequests.WithLabelValues(routePath).Inc()
+		defer gateway_metric.HttpConcurrentRequests.WithLabelValues(routePath).Dec()
 
 		rw := &statusRecorder{ResponseWriter: w, status: 200}
 		next.ServeHTTP(rw, r)
 
 		duration := time.Since(start).Seconds()
-		gateway_metric.HttpRequestDuration.WithLabelValues(routePath, r.Method).Observe(duration)
-		gateway_metric.HttpRequestsTotal.WithLabelValues(routePath, r.Method, http.StatusText(rw.status)).Inc()
+		gateway_metric.HttpRequestDuration.WithLabelValues(routePath).Observe(duration)
 
+		gateway_metric.HttpRequestsTotal.WithLabelValues(routePath).Inc()
 		if rw.status >= 400 {
-			gateway_metric.HttpRequestsFailed.WithLabelValues(routePath, r.Method).Inc()
+			gateway_metric.HttpRequestsFailed.WithLabelValues(routePath).Inc()
 		}
 	})
 }

@@ -12,6 +12,8 @@ import (
 	user_dto "github.com/wybin4/flowledge/go/account-service/internal/user/dto"
 	user_model "github.com/wybin4/flowledge/go/account-service/internal/user/model"
 	"github.com/wybin4/flowledge/go/account-service/internal/utils"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserService struct {
@@ -24,6 +26,106 @@ func NewUserService(repo *user.UserRepository, es *UserEventService) *UserServic
 		repo:     repo,
 		eventSvc: es,
 	}
+}
+
+func (s *UserService) CountByUsername(ctx context.Context, searchQuery string) (int64, error) {
+	return s.repo.CountByUsernameContainingIgnoreCase(ctx, searchQuery)
+}
+
+func (s *UserService) GetPaginatedAndSorted(ctx context.Context, payload map[string]interface{}) ([]user_model.User, error) {
+	page, _ := payload["page"].(int)
+	if page == 0 {
+		page = 1
+	}
+
+	pageSize, _ := payload["pageSize"].(int)
+	if pageSize == 0 {
+		pageSize = 10
+	}
+
+	searchQuery, _ := payload["searchQuery"].(string)
+	sortQuery, _ := payload["sortQuery"].(string)
+	excludedIDs, _ := payload["excludedIds"].([]string)
+
+	sortField := "createdAt"
+	sortOrder := -1 // DESC
+	if sortQuery != "" {
+		parts := strings.Split(sortQuery, ":")
+		sortField = parts[0]
+		if len(parts) > 1 && parts[1] == "top" {
+			sortOrder = 1
+		}
+	}
+
+	filter := bson.M{}
+	if searchQuery != "" {
+		filter["username"] = bson.M{"$regex": searchQuery, "$options": "i"}
+	}
+	if len(excludedIDs) > 0 {
+		filter["_id"] = bson.M{"$nin": excludedIDs}
+	}
+
+	opts := options.Find()
+	opts.SetSkip(int64((page - 1) * pageSize))
+	opts.SetLimit(int64(pageSize))
+	opts.SetSort(bson.M{sortField: sortOrder})
+
+	var users []user_model.User
+	cursor, err := s.repo.Collection().Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	if err := cursor.All(ctx, &users); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (s *UserService) GetUsers(ctx context.Context, req user_dto.UserGetRequest) ([]interface{}, error) {
+	if req.IsSmall {
+		users, err := s.repo.FindAllExcludingIDs(ctx, req.ExcludedIDs, req.SearchQuery, req.PageSize)
+		if err != nil {
+			return nil, err
+		}
+
+		res := make([]interface{}, len(users))
+		for i, u := range users {
+			res[i] = user_dto.UserGetSmallResponse{
+				ID:       u.ID,
+				Name:     u.Name,
+				Username: u.Username,
+				Avatar:   "", // TODO: добавить аватар
+			}
+		}
+		return res, nil
+	}
+
+	options := map[string]interface{}{
+		"page":        req.Page,
+		"pageSize":    req.PageSize,
+		"searchQuery": req.SearchQuery,
+		"sortQuery":   req.SortQuery,
+		"excludedIds": req.ExcludedIDs,
+	}
+
+	users, err := s.GetPaginatedAndSorted(ctx, options)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]interface{}, len(users))
+	for i, u := range users {
+		res[i] = user_dto.UserGetBigResponse{
+			ID:       u.ID,
+			Name:     u.Name,
+			Username: u.Username,
+			Avatar:   "",
+			Roles:    u.Roles,
+			Active:   u.Active,
+		}
+	}
+	return res, nil
 }
 
 func (s *UserService) GetUser(ctx context.Context, id string) (*user_model.User, error) {

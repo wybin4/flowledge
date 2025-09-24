@@ -14,6 +14,7 @@ import (
 	"github.com/wybin4/flowledge/go/pkg/transport"
 	policy "github.com/wybin4/flowledge/go/policy-service/internal"
 	"github.com/wybin4/flowledge/go/policy-service/internal/permission"
+	permission_service "github.com/wybin4/flowledge/go/policy-service/internal/permission/service"
 	"github.com/wybin4/flowledge/go/policy-service/internal/role"
 	setting "github.com/wybin4/flowledge/go/policy-service/internal/setting"
 	setting_service "github.com/wybin4/flowledge/go/policy-service/internal/setting/service"
@@ -49,6 +50,10 @@ func main() {
 				return setting_service.NewSettingEventService(publisher)
 			},
 
+			func(publisher *kafka.Publisher) *permission_service.PermissionEventService {
+				return permission_service.NewPermissionEventService(publisher)
+			},
+
 			func(repo *setting.SettingRepository, es *setting_service.SettingEventService) *setting_service.SettingService {
 				return setting_service.NewSettingService(repo, es)
 			},
@@ -57,15 +62,15 @@ func main() {
 				return role.NewRoleService(repo)
 			},
 
-			func(permissionRepo *permission.PermissionRepository, roleRepo *role.RoleRepository) *permission.PermissionService {
-				return permission.NewPermissionService(permissionRepo, roleRepo)
+			func(permissionRepo *permission.PermissionRepository, roleRepo *role.RoleRepository, es *permission_service.PermissionEventService) *permission_service.PermissionService {
+				return permission_service.NewPermissionService(permissionRepo, roleRepo, es)
 			},
 		),
 		fx.Invoke(func(
 			lc fx.Lifecycle,
 			settingSvc *setting_service.SettingService,
 			roleSvc *role.RoleService,
-			permSvc *permission.PermissionService,
+			permSvc *permission_service.PermissionService,
 			subscriber *kafka.Subscriber,
 			publisher *kafka.Publisher,
 			logger watermill.LoggerAdapter,
@@ -96,14 +101,24 @@ func main() {
 								return permSvc.GetPermissions(ctx)
 
 							case "permissions.toggle-role":
-								permissionID, _ := req.Payload["permissionId"].(string)
-								roleID, _ := req.Payload["roleId"].(string)
+								permissionID := ""
+								roleID := ""
+
+								if p, ok := req.Payload["permissionId"].(string); ok {
+									permissionID = p
+								}
+								if r, ok := req.Payload["roleId"].(string); ok {
+									roleID = r
+								}
+
 								if permissionID == "" || roleID == "" {
 									return nil, transport.ErrInvalidPayload
 								}
+
 								if err := permSvc.TogglePermissionRole(ctx, permissionID, roleID); err != nil {
 									return nil, err
 								}
+
 								return nil, nil
 
 							case "roles.get":

@@ -22,11 +22,12 @@ func (l *Listener) Start() {
 
 	log.Println("Starting Kafka listeners with persistent context...")
 
-	go l.consumeTopic(ctx, l.UserSubscriber, "user-events", "/topic/user-changed")
-	go l.consumeTopic(ctx, l.SettingSubscriber, "setting-events", "/topic/private-settings-changed")
+	go l.consumeTopic(ctx, l.UserSubscriber, "user-events", "", true)
+	go l.consumeTopic(ctx, l.SettingSubscriber, "setting-events", "/topic/private-settings-changed", false)
+	go l.consumeTopic(ctx, l.SettingSubscriber, "permission-events", "/topic/permissions-changed", false)
 }
 
-func (l *Listener) consumeTopic(ctx context.Context, sub message.Subscriber, topic, wsTopic string) {
+func (l *Listener) consumeTopic(ctx context.Context, sub message.Subscriber, topic string, wsTopic string, perUser bool) {
 	log.Printf("[%s] Starting listener...", topic)
 
 	for {
@@ -62,9 +63,27 @@ func (l *Listener) consumeTopic(ctx context.Context, sub message.Subscriber, top
 				}
 
 				log.Printf("[%s] Received message: %s", topic, string(msg.Payload))
-				var rawMessage interface{}
-				json.Unmarshal(msg.Payload, &rawMessage)
-				l.Hub.Broadcast(wsTopic, rawMessage)
+				var rawMessage map[string]interface{}
+				if err := json.Unmarshal(msg.Payload, &rawMessage); err != nil {
+					log.Printf("[%s] Invalid JSON: %v", topic, err)
+					continue
+				}
+
+				if perUser {
+					record, ok := rawMessage["record"].(map[string]interface{})
+					if !ok {
+						continue
+					}
+					userID, ok := record["id"].(string)
+					if !ok {
+						continue
+					}
+					userTopic := "/topic/" + userID + "/user-changed"
+					l.Hub.Broadcast(userTopic, rawMessage)
+				} else {
+					l.Hub.Broadcast(wsTopic, rawMessage)
+				}
+
 				msg.Ack()
 			}
 		}

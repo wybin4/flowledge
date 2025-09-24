@@ -59,8 +59,8 @@ class UserService extends EventEmitter {
         const channel = `/topic/${this.userId}/${this.eventName}`;
 
         WebSocketClient.subscribe(channel, (message) => {
-            console.log("Received user change message:", message.body);
-            const { record } = JSON.parse(message.body);
+            console.log("Received user change message:", message);
+            const { record } = message;
             this.setUserState(record);
             console.log("Updated user state:", this.userState);
         });

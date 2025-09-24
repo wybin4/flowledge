@@ -80,7 +80,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
     });
 
     const mappedData = useMemo(() => data.map(item => transformData(item, locale, t)), [JSON.stringify(data), locale]);
-
+  
     return (
         <PageLayout
             name={prefix}

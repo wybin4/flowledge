@@ -17,6 +17,7 @@ import (
 	"github.com/wybin4/flowledge/go/account-service/internal/user"
 	user_dto "github.com/wybin4/flowledge/go/account-service/internal/user/dto"
 	user_service "github.com/wybin4/flowledge/go/account-service/internal/user/service"
+	"github.com/wybin4/flowledge/go/account-service/internal/utils"
 	store "github.com/wybin4/flowledge/go/pkg/db"
 	"github.com/wybin4/flowledge/go/pkg/transport"
 )
@@ -44,22 +45,18 @@ func main() {
 				return user_service.NewUserService(repo, es)
 			},
 
-			// --- MemoryStore для LDAPSettingProvider ---
 			func() *store.MemoryStore[auth_provider.GetSettingResponse] {
 				return store.NewMemoryStore[auth_provider.GetSettingResponse]()
 			},
 
-			// --- ResourceManager ---
 			func(repo *store.MemoryStore[auth_provider.GetSettingResponse]) *transport.ResourceManager[auth_provider.GetSettingResponse] {
 				return transport.NewResourceManager(repo)
 			},
 
-			// --- ServiceClient ---
 			func(pub *kafka.Publisher, sub *kafka.Subscriber) *transport.ServiceClient[auth_provider.GetSettingResponse] {
 				return transport.NewServiceClient[auth_provider.GetSettingResponse](pub, sub, "policy.requests", "policy.responses")
 			},
 
-			// --- LDAPSettingProvider ---
 			func(
 				client *transport.ServiceClient[auth_provider.GetSettingResponse],
 				manager *transport.ResourceManager[auth_provider.GetSettingResponse],
@@ -68,17 +65,16 @@ func main() {
 				return auth_provider.NewLDAPSettingProvider(client, manager, sub)
 			},
 
-			// LDAPService
 			func(ldapSvc *auth_provider.LDAPSettingProvider) *auth_service.LDAPService {
 				return auth_service.NewLDAPService(ldapSvc)
 			},
 
-			// JWT токены
 			func(repo *user.UserRepository) auth_service.TokenService {
 				return auth_service.NewJwtTokenService("supersecret", 15*time.Minute, 7*24*time.Hour, repo)
 			},
+
 			auth_service.NewPasswordService,
-			// AuthService
+
 			func(repo *user.UserRepository, token auth_service.TokenService, userSvc *user_service.UserService, ldapAuth *auth_service.LDAPService, pwd *auth_service.PasswordService) *auth_service.AuthService {
 				return auth_service.NewAuthService(repo, token, userSvc, ldapAuth, pwd)
 			},
@@ -102,7 +98,20 @@ func main() {
 						Logger:        logger,
 						Handler: func(ctx context.Context, req transport.Request) (interface{}, error) {
 							switch req.Endpoint {
-							case "users.get":
+							case "users.count":
+								var searchQuery string
+								if raw, ok := req.Payload["searchQuery"]; ok {
+									searchQuery, _ = raw.(string)
+								}
+
+								count, err := userService.CountByUsername(ctx, searchQuery)
+								if err != nil {
+									return nil, err
+								}
+
+								return count, nil
+
+							case "users.get.id":
 								var userID string
 								if rawID, ok := req.Payload["id"]; ok {
 									if idStr, ok := rawID.(string); ok && idStr != "" {
@@ -115,6 +124,23 @@ func main() {
 								}
 
 								return userService.GetUser(ctx, userID)
+
+							case "users.get":
+								var payload map[string]interface{}
+								if err := mapstructure.Decode(req.Payload, &payload); err != nil {
+									return nil, fmt.Errorf("invalid payload: %w", err)
+								}
+
+								request := user_dto.UserGetRequest{
+									ExcludedIDs: utils.CastStringSlice(payload["excludedIds"]),
+									IsSmall:     utils.CastToBool(payload["isSmall"]),
+									Page:        utils.CastToInt(payload["page"], 1),
+									PageSize:    utils.CastToInt(payload["pageSize"], 10),
+									SearchQuery: utils.CastToString(payload["searchQuery"]),
+									SortQuery:   utils.CastToString(payload["sortQuery"]),
+								}
+
+								return userService.GetUsers(ctx, request)
 
 							case "users.set-setting":
 								var input struct {

@@ -1,46 +1,42 @@
-package permission
+package permission_service
 
 import (
 	"context"
 
+	"github.com/wybin4/flowledge/go/policy-service/internal/permission"
 	"github.com/wybin4/flowledge/go/policy-service/internal/role"
 	"github.com/wybin4/flowledge/go/policy-service/internal/utils"
 )
 
-// PermissionService управляет пермишнами
 type PermissionService struct {
-	PermissionRepo *PermissionRepository
+	PermissionRepo *permission.PermissionRepository
 	RoleRepo       *role.RoleRepository
+	EventSvc       *PermissionEventService
 }
 
-// Конструктор
-func NewPermissionService(permissionRepo *PermissionRepository, roleRepo *role.RoleRepository) *PermissionService {
+func NewPermissionService(permissionRepo *permission.PermissionRepository, roleRepo *role.RoleRepository, es *PermissionEventService) *PermissionService {
 	return &PermissionService{
 		PermissionRepo: permissionRepo,
 		RoleRepo:       roleRepo,
+		EventSvc:       es,
 	}
 }
 
-// GetPermissions возвращает все пермишны
-func (s *PermissionService) GetPermissions(ctx context.Context) ([]Permission, error) {
+func (s *PermissionService) GetPermissions(ctx context.Context) ([]permission.Permission, error) {
 	return s.PermissionRepo.FindAll(ctx)
 }
 
-// TogglePermissionRole добавляет или удаляет роль из пермишна
 func (s *PermissionService) TogglePermissionRole(ctx context.Context, permissionID, roleID string) error {
-	// Проверяем существование роли
 	_, err := s.RoleRepo.FindByID(ctx, roleID)
 	if err != nil {
 		return utils.ErrRoleNotFound
 	}
 
-	// Получаем пермишн
 	permission, err := s.PermissionRepo.FindByID(ctx, permissionID)
 	if err != nil {
 		return utils.ErrPermissionNotFound
 	}
 
-	// Обновляем роли
 	found := false
 	newRoles := make([]string, 0, len(permission.Roles))
 	for _, r := range permission.Roles {
@@ -57,6 +53,12 @@ func (s *PermissionService) TogglePermissionRole(ctx context.Context, permission
 
 	permission.Roles = newRoles
 
-	// Сохраняем изменения
-	return s.PermissionRepo.Save(ctx, permission)
+	updated, err := s.PermissionRepo.Save(ctx, permission)
+	if err != nil {
+		return err
+	}
+
+	go s.EventSvc.SendPermissionEvent("update", updated)
+
+	return nil
 }

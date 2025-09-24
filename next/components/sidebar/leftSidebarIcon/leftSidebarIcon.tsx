@@ -46,8 +46,8 @@ const LeftSidebarIcon = memo(({ isExpanded, name, isRedirectable = true, classNa
             [styles.logo]: name === 'logo',
             [styles.logoExpanded]: name === 'logo' && isExpanded
         })} onClick={handleClick}>
-            <div>{icon}</div>
-            {isExpanded && <div>{t(i18nKey)}</div>}
+            <div className={styles.icon}>{icon}</div>
+            {isExpanded && <div className={styles.textExpanded}>{t(i18nKey)}</div>}
         </div>
     );
 });

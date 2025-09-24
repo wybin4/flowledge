@@ -9,11 +9,12 @@ import (
 	"github.com/wybin4/flowledge/go/account-service/internal/user"
 	user_model "github.com/wybin4/flowledge/go/account-service/internal/user/model"
 	pkg_type "github.com/wybin4/flowledge/go/pkg/type"
+	"github.com/wybin4/flowledge/go/pkg/utils"
 )
 
 type TokenService interface {
 	GenerateTokens(ctx context.Context, user *user_model.User, oldRefreshToken string) (string, string, error)
-	ValidateToken(ctx context.Context, tokenStr, tokenType string) (*pkg_type.UserClaimsResponse, error)
+	ValidateToken(ctx context.Context, tokenStr, tokenType string) (*pkg_type.UserClaims, error)
 }
 
 type JwtTokenService struct {
@@ -36,7 +37,9 @@ func (j *JwtTokenService) GenerateTokens(ctx context.Context, user *user_model.U
 	now := time.Now()
 
 	claims := pkg_type.UserClaims{
+		UserID:   user.ID,
 		Username: user.Username,
+		Roles:    user.Roles,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(now.Add(j.accessTTL)),
@@ -49,7 +52,9 @@ func (j *JwtTokenService) GenerateTokens(ctx context.Context, user *user_model.U
 	}
 
 	refreshClaims := pkg_type.UserClaims{
+		UserID:   user.ID,
 		Username: user.Username,
+		Roles:    user.Roles,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(now.Add(j.refreshTTL)),
@@ -86,17 +91,10 @@ func (j *JwtTokenService) GenerateTokens(ctx context.Context, user *user_model.U
 	return accessToken, refreshToken, nil
 }
 
-func (j *JwtTokenService) ValidateToken(ctx context.Context, tokenStr, tokenType string) (*pkg_type.UserClaimsResponse, error) {
-	token, err := jwt.ParseWithClaims(tokenStr, &pkg_type.UserClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return j.secretKey, nil
-	})
+func (j *JwtTokenService) ValidateToken(ctx context.Context, tokenStr, tokenType string) (*pkg_type.UserClaims, error) {
+	claims, err := utils.ParseClaims(tokenStr, string(j.secretKey))
 	if err != nil {
 		return nil, err
-	}
-
-	claims, ok := token.Claims.(*pkg_type.UserClaims)
-	if !ok || !token.Valid {
-		return nil, jwt.ErrTokenInvalidClaims
 	}
 
 	user, err := j.userRepository.FindByUsername(ctx, claims.Username)
@@ -130,9 +128,9 @@ func (j *JwtTokenService) ValidateToken(ctx context.Context, tokenStr, tokenType
 		return nil, fmt.Errorf("token not active for user")
 	}
 
-	return &pkg_type.UserClaimsResponse{
-		UserClaims: claims,
-		UserID:     user.ID,
-		Roles:      user.Roles,
+	return &pkg_type.UserClaims{
+		UserID:   user.ID,
+		Username: user.Username,
+		Roles:    user.Roles,
 	}, nil
 }

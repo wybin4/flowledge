@@ -158,7 +158,7 @@ func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*auth_t
 	}, nil
 }
 
-func (s *AuthService) Validate(ctx context.Context, token string) (*pkg_type.UserClaimsResponse, error) {
+func (s *AuthService) Validate(ctx context.Context, token string) (*pkg_type.UserClaims, error) {
 	token = strings.TrimSpace(token)
 	if token == "" {
 		return nil, fmt.Errorf("token is empty")

@@ -41,8 +41,9 @@ const createApiClient = (baseUrl: string): ApiClientMethods => {
     };
 
     const handleTokenRefresh = async <T>(url: string, options: RequestInit): Promise<T> => {
-        refreshTokens(onLoginError);
+        const refreshed = await refreshTokens(onLoginError); // ждем обновления
         const newTokens = await getTokensClient();
+
         if (newTokens?.jwtToken) {
             return makeRequest<T>(url, options);
         } else {

@@ -34,6 +34,7 @@ func (s *UserEventService) SendUserEvent(action string, user *user_model.User) {
 			"name":     user.Name,
 			"roles":    user.Roles,
 			"active":   user.Active,
+			"settings": user.Settings,
 		},
 		"timestamp": time.Now(),
 	}

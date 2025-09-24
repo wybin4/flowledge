@@ -72,7 +72,6 @@ func (s *SettingService) GetPrivateSettings(ctx context.Context) ([]*setting_mod
 	return result, nil
 }
 
-// Получение всех публичных настроек
 func (s *SettingService) GetPublicSettings(ctx context.Context) ([]*setting_model.Setting, error) {
 	all, err := s.GetPrivateSettings(ctx)
 	if err != nil {
@@ -88,7 +87,6 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) ([]*setting_mode
 	return public, nil
 }
 
-// Создание или обновление настройки
 func (s *SettingService) SetSettings(ctx context.Context, id string, value interface{}) (*setting_model.Setting, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()

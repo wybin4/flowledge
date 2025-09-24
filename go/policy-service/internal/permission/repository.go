@@ -47,14 +47,17 @@ func (r *PermissionRepository) FindByID(ctx context.Context, id string) (*Permis
 	return &perm, nil
 }
 
-// Save обновляет существующий пермишн или создаёт новый
-func (r *PermissionRepository) Save(ctx context.Context, perm *Permission) error {
+func (r *PermissionRepository) Save(ctx context.Context, perm *Permission) (*Permission, error) {
 	opts := options.Replace().SetUpsert(true)
+
 	_, err := r.collection.ReplaceOne(ctx, bson.M{"_id": perm.ID}, perm, opts)
-	return err
+	if err != nil {
+		return nil, err
+	}
+
+	return perm, nil
 }
 
-// Delete удаляет пермишн по ID
 func (r *PermissionRepository) Delete(ctx context.Context, id string) error {
 	res, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
 	if err != nil {

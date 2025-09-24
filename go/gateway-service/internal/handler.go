@@ -3,7 +3,9 @@ package gateway
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,6 +15,7 @@ import (
 	gateway_provider "github.com/wybin4/flowledge/go/gateway-service/internal/provider"
 	"github.com/wybin4/flowledge/go/pkg/transport"
 	pkg_type "github.com/wybin4/flowledge/go/pkg/type"
+	"github.com/wybin4/flowledge/go/pkg/utils"
 )
 
 type GatewayHandler struct {
@@ -43,46 +46,24 @@ const userClaimsKey ctxKey = "userClaims"
 
 func (h *GatewayHandler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Пропускаем аутентификацию для маршрутов /login и /refresh
 		if r.URL.Path == "/api/auth/login" || r.URL.Path == "/api/auth/refresh" {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		// Извлекаем JWT-токен из кук
-		jwtCookie, err := r.Cookie("jwtToken") // Замените на имя вашей куки
-		if err != nil {
-			http.Error(w, "missing JWT token cookie", http.StatusUnauthorized)
+		jwtCookie, err := r.Cookie("jwtToken")
+		if err != nil || jwtCookie.Value == "" {
+			http.Error(w, "missing or empty JWT token cookie", http.StatusUnauthorized)
 			return
 		}
 
-		token := jwtCookie.Value
-		if token == "" {
+		claims, err := utils.ParseClaims(jwtCookie.Value, "supersecret")
+		if err != nil {
 			http.Error(w, "invalid JWT token", http.StatusUnauthorized)
 			return
 		}
 
-		// Проверяем токен через account-service
-		input := map[string]interface{}{"token": token}
-		respBytes, err := h.AccountClient.Request(r.Context(), "account-service", "validate", input)
-		if err != nil {
-			http.Error(w, "token validation failed", http.StatusUnauthorized)
-			return
-		}
-
-		if len(respBytes) == 0 || string(respBytes) == "null" {
-			http.Error(w, "invalid token", http.StatusUnauthorized)
-			return
-		}
-
-		var claims pkg_type.UserClaimsResponse
-		if err := json.Unmarshal(respBytes, &claims); err != nil {
-			http.Error(w, "invalid token response", http.StatusUnauthorized)
-			return
-		}
-
-		// Сохраняем claims в контекст
-		ctx := context.WithValue(r.Context(), userClaimsKey, &claims)
+		ctx := context.WithValue(r.Context(), userClaimsKey, claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -129,7 +110,7 @@ func (h *GatewayHandler) MetricsMiddleware(next http.Handler) http.Handler {
 
 func RequirePermission(h *GatewayHandler, permID string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaimsResponse)
+		claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaims)
 		if !ok || claims == nil {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
@@ -178,8 +159,10 @@ func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 	sr.Use(h.AuthMiddleware)
 
 	sr.HandleFunc("/users.get/{id}", h.handleGetUser).Methods("GET")
+	sr.HandleFunc("/users.get", h.handleGetUsers).Methods("GET")
 	sr.HandleFunc("/users.set-setting", h.handleSetUserSettings).Methods("POST")
 	sr.Handle("/users.create", RequirePermission(h, "manage-users", http.HandlerFunc(h.handleCreateUser))).Methods("POST")
+	sr.Handle("/users.count", RequirePermission(h, "view-all-users", http.HandlerFunc(h.handleCountUsers))).Methods("GET")
 
 	sr.HandleFunc("/private-settings.get", h.handleGetPrivateSettings).Methods("GET")
 	sr.Handle("/settings.set", RequirePermission(h, "edit-private-settings", http.HandlerFunc(h.handleSetSettings))).Methods("POST")
@@ -196,13 +179,51 @@ func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/auth/refresh", h.handleRefresh).Methods("POST")
 }
 
+func (h *GatewayHandler) getUserClaims(r *http.Request) (*pkg_type.UserClaims, error) {
+	claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaims)
+	if !ok || claims == nil {
+		return nil, fmt.Errorf("user claims not found")
+	}
+	return claims, nil
+}
+
+func parsePaginationRequest(r *http.Request) map[string]interface{} {
+	payload := make(map[string]interface{})
+
+	if page := r.URL.Query().Get("page"); page != "" {
+		if p, err := strconv.Atoi(page); err == nil {
+			payload["page"] = p
+		}
+	} else {
+		payload["page"] = 1
+	}
+
+	if pageSize := r.URL.Query().Get("pageSize"); pageSize != "" {
+		if ps, err := strconv.Atoi(pageSize); err == nil {
+			payload["pageSize"] = ps
+		}
+	} else {
+		payload["pageSize"] = 10
+	}
+
+	if searchQuery := r.URL.Query().Get("searchQuery"); searchQuery != "" {
+		payload["searchQuery"] = searchQuery
+	}
+
+	if sortQuery := r.URL.Query().Get("sortQuery"); sortQuery != "" {
+		payload["sortQuery"] = sortQuery
+	}
+
+	return payload
+}
+
 // --- HTTP handlers ---
 func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaimsResponse)
-	if !ok || claims == nil {
-		http.Error(w, "user claims not found", http.StatusUnauthorized)
+	claims, err := h.getUserClaims(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
@@ -215,11 +236,34 @@ func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.get", map[string]interface{}{"id": id})
+	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.get.id", map[string]interface{}{"id": id})
+}
+
+func (h *GatewayHandler) handleGetUsers(w http.ResponseWriter, r *http.Request) {
+	claims, err := h.getUserClaims(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	isSmall := r.URL.Query().Get("isSmall")
+	if isSmall != "true" && !h.PermissionProvider.CheckPermission("view-all-users", claims.Roles) {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	payload := parsePaginationRequest(r)
+
+	payload["isSmall"] = isSmall == "true"
+	if excludedIds := r.URL.Query()["excludedIds"]; len(excludedIds) > 0 {
+		payload["excludedIds"] = excludedIds
+	}
+
+	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.get", payload)
 }
 
 func (h *GatewayHandler) handleSetUserSettings(w http.ResponseWriter, r *http.Request) {
-	claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaimsResponse)
+	claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaims)
 	if !ok || claims == nil {
 		http.Error(w, "user claims not found", http.StatusUnauthorized)
 		return
@@ -242,6 +286,14 @@ func (h *GatewayHandler) handleCreateUser(w http.ResponseWriter, r *http.Request
 	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.create", input)
 }
 
+func (h *GatewayHandler) handleCountUsers(w http.ResponseWriter, r *http.Request) {
+	searchQuery := r.URL.Query().Get("searchQuery")
+	input := map[string]interface{}{
+		"searchQuery": searchQuery,
+	}
+	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.count", input)
+}
+
 func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Username string `json:"username"`
@@ -254,7 +306,6 @@ func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверяем лимит по логину
 	if blocked := h.LoginLimiter.IsBlocked(input.Username, r.RemoteAddr); blocked {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusTooManyRequests)
@@ -262,12 +313,10 @@ func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Форвардим запрос в account-service
 	resp, err := h.AccountClient.Request(r.Context(), "account-service", "login", input)
 	w.Header().Set("Content-Type", "application/json")
 
 	if err != nil {
-		// Любая системная ошибка
 		h.LoginLimiter.IncrementFailed(input.Username, r.RemoteAddr)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
@@ -279,15 +328,22 @@ func (h *GatewayHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Успешный вход — сбросить счётчики
 	h.LoginLimiter.Reset(input.Username, r.RemoteAddr)
 
 	w.Write(resp)
 }
 
 func (h *GatewayHandler) handleRefresh(w http.ResponseWriter, r *http.Request) {
-	var input map[string]interface{}
-	json.NewDecoder(r.Body).Decode(&input)
+	cookie, err := r.Cookie("refreshToken")
+	if err != nil {
+		http.Error(w, "refresh token not found", http.StatusUnauthorized)
+		return
+	}
+
+	input := map[string]interface{}{
+		"refreshToken": cookie.Value,
+	}
+
 	h.forwardRequest(w, r, h.AccountClient, "account-service", "refresh", input)
 }
 
@@ -306,9 +362,16 @@ func (h *GatewayHandler) handleGetPermissions(w http.ResponseWriter, r *http.Req
 }
 
 func (h *GatewayHandler) handleToggleRole(w http.ResponseWriter, r *http.Request) {
-	var input map[string]interface{}
-	json.NewDecoder(r.Body).Decode(&input)
-	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "permissions.toggle-role", input)
+	q := r.URL.Query()
+	permissionID := q.Get("id")
+	roleID := q.Get("value")
+
+	payload := map[string]interface{}{
+		"permissionId": permissionID,
+		"roleId":       roleID,
+	}
+
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "permissions.toggle-role", payload)
 }
 
 func (h *GatewayHandler) handleGetRoles(w http.ResponseWriter, r *http.Request) {

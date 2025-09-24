@@ -7,15 +7,15 @@ export const createUsersTableHeader = (t: TFunction, onSort: (name: string, posi
     const items = [
         { name: 'avatar' },
         {
-            name: 'username', isSortable: true,
-            onSort: (position?: TopBottomPosition) => {
-                onSort('username', position);
-            }
-        },
-        {
             name: 'name', isSortable: true,
             onSort: (position?: TopBottomPosition) => {
                 onSort('name', position);
+            }
+        },
+        {
+            name: 'username', isSortable: true,
+            onSort: (position?: TopBottomPosition) => {
+                onSort('username', position);
             }
         },
         { name: 'roles' },

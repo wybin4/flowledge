@@ -1,16 +1,13 @@
+"use client";
+
 import { userApiClient } from "@/apiClient";
 import WebSocketClient from "@/socket/WebSocketClient";
 import { CallbackUsage } from "@/types/StateCallback";
 import EventEmitter from "events";
 import Loki, { Collection } from "lokijs";
-const LokiIndexedAdapter = require('lokijs/src/loki-indexed-adapter');
 
-let adapter;
-if (typeof window !== 'undefined' && window.indexedDB) {
-    adapter = new LokiIndexedAdapter();
-} else {
-    adapter = new Loki.LokiMemoryAdapter();
-}
+const LokiIndexedAdapter = require('lokijs/src/loki-indexed-adapter');
+const adapter = new LokiIndexedAdapter();
 
 export const Application = new Loki('app.db', {
     adapter: adapter,

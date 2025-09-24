@@ -2,6 +2,7 @@ package transport
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -42,4 +43,23 @@ func NewKafkaSubscriber(prefix string, logger watermill.LoggerAdapter) (*kafka.S
 		ConsumerGroup: fmt.Sprintf("%s-%s", prefix, podID),
 		Unmarshaler:   kafka.DefaultMarshaler{},
 	}, logger)
+}
+
+func NewPersistentKafkaSubscriber(prefix string, logger watermill.LoggerAdapter) (*kafka.Subscriber, error) {
+	broker := GetKafkaBroker()
+	consumerGroup := fmt.Sprintf("%s-group", prefix)
+
+	config := kafka.SubscriberConfig{
+		Brokers:       []string{broker},
+		ConsumerGroup: consumerGroup,
+		Unmarshaler:   kafka.DefaultMarshaler{},
+	}
+
+	sub, err := kafka.NewSubscriber(config, logger)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Kafka subscriber: %w", err)
+	}
+
+	log.Printf("✅ Created Kafka subscriber for group: %s", consumerGroup)
+	return sub, nil
 }

@@ -11,6 +11,8 @@ export class WebSocketClient {
     private onDisconnectCallback: (() => void) | null = null;
     private onErrorCallback: ((error: Event) => void) | null = null;
 
+    private subscribedTopics = new Set<string>();
+
     constructor(private url: string = "ws://localhost:8088/websocket") { }
 
     public connect(): Promise<void> {
@@ -29,9 +31,12 @@ export class WebSocketClient {
             try {
                 this.socket = new WebSocket(this.url);
 
-                this.socket.onopen = (event) => {
+                this.socket.onopen = () => {
                     cleanup();
                     this.reconnectAttempts = 0;
+                    this.subscribedTopics.forEach(topic => {
+                        this.send({ action: "subscribe", topic });
+                    });
                     this.onConnectCallback?.();
                     resolve();
                 };
@@ -76,23 +81,41 @@ export class WebSocketClient {
 
     private handleMessage(event: MessageEvent) {
         try {
-            const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-            const callbacks = data.action ? this.messageCallbacks.get(data.action) || [] : [];
-            callbacks.forEach(cb => cb(data));
-            (this.messageCallbacks.get('*') || []).forEach(cb => cb(data));
-        } catch {
-            // игнорируем ошибки парсинга
+            const raw = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+
+            const { topic, payload } = raw;
+
+            if (!topic || !payload) {
+                console.warn("Invalid WS message:", raw);
+                return;
+            }
+
+            const callbacks = this.messageCallbacks.get(topic) || [];
+            callbacks.forEach(cb => cb(payload));
+
+            (this.messageCallbacks.get("*") || []).forEach(cb => cb({ topic, payload }));
+        } catch (err) {
+            console.error("Error parsing WS message:", err, event.data);
         }
     }
 
     public async send(message: any) {
         if (!this.isConnected) await this.waitForConnection();
-        this.socket?.readyState === WebSocket.OPEN && this.socket.send(JSON.stringify(message));
+        if (this.socket?.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify(message));
+        }
     }
 
     public subscribe(eventType: string, callback: (data: any) => void) {
         if (!this.messageCallbacks.has(eventType)) this.messageCallbacks.set(eventType, []);
         this.messageCallbacks.get(eventType)!.push(callback);
+
+        if (!this.subscribedTopics.has(eventType)) {
+            this.subscribedTopics.add(eventType);
+            if (this.isConnected) {
+                this.send({ action: "subscribe", topic: eventType });
+            }
+        }
     }
 
     public unsubscribe(eventType: string, callback?: (data: any) => void) {
@@ -104,6 +127,13 @@ export class WebSocketClient {
             }
         } else {
             this.messageCallbacks.delete(eventType);
+        }
+
+        if (!this.messageCallbacks.has(eventType) && this.subscribedTopics.has(eventType)) {
+            this.subscribedTopics.delete(eventType);
+            if (this.isConnected) {
+                this.send({ action: "unsubscribe", topic: eventType });
+            }
         }
     }
 

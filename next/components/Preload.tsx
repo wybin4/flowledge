@@ -36,16 +36,16 @@ const Preload: React.FC<{ children: ReactNode }> = ({ children }) => {
         loadUserSettings();
     }, []);
 
-    // useEffect(() => {
-    //     if (pathname == '/login') {
-    //         document.body.classList.add('hide-sidebar');
-    //     }
-    // }, [pathname]);
+    useEffect(() => {
+        if (pathname == '/login') {
+            document.body.classList.add('hide-sidebar');
+        }
+    }, [pathname]);
 
-    // if (loading && pathname != '/login') {
-    //     router.push('/login');
-    //     return <div>Loading...</div>;
-    // }
+    if (loading && pathname != '/login') {
+        router.push('/login');
+        return <div>Loading...</div>;
+    }
 
     return <>{children}</>;
 };

@@ -34,7 +34,7 @@
     color: var(--dark);
 }
 
-.container svg {
+.container div {
     width: 1.625rem;
     height: 1.625rem;
 }

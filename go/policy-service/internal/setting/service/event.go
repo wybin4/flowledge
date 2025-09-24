@@ -28,7 +28,7 @@ func (s *SettingEventService) SendSettingEvent(action string, setting *setting_m
 
 	event := map[string]interface{}{
 		"action": action,
-		"setting": map[string]interface{}{
+		"record": map[string]interface{}{
 			"id":              setting.ID,
 			"type":            setting.Type,
 			"public":          setting.Public,

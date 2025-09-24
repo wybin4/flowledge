@@ -28,7 +28,7 @@ func (s *UserEventService) SendUserEvent(action string, user *user_model.User) {
 
 	event := map[string]interface{}{
 		"action": action,
-		"user": map[string]interface{}{
+		"record": map[string]interface{}{
 			"id":       user.ID,
 			"username": user.Username,
 			"name":     user.Name,

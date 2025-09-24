@@ -11,7 +11,7 @@ type User struct {
 	ID        string       `bson:"_id" json:"id"`
 	Username  string       `bson:"username" json:"username"`
 	Name      string       `bson:"name" json:"name"`
-	Roles     []string     `bson:"roles" json:"-"`
+	Roles     []string     `bson:"roles" json:"roles"`
 	Active    bool         `bson:"active" json:"active"`
 	CreatedAt time.Time    `bson:"createdAt" json:"-"`
 	UpdatedAt time.Time    `bson:"updatedAt" json:"-"`

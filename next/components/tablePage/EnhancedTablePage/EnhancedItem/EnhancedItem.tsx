@@ -49,11 +49,11 @@ export interface BaseEnhancedItemProps<T> {
 }
 
 export interface EnhancedItemProps<T, U> extends BaseEnhancedItemProps<T> {
-    _id?: string;
+    id?: string;
     apiPrefix?: string;
     apiClient: ApiClientMethods;
     transformItemToSave: TransformItemToSave<T, U>;
-    useGetItemHook?: (callback: (item: T) => void) => (_id: string) => void;
+    useGetItemHook?: (callback: (item: T) => void) => (id: string) => void;
 
     backButton?: ButtonBackProps & Pick<ButtonBackContainerProps, 'type' | 'compressBody'>;
     containerStyles?: string;
@@ -70,7 +70,7 @@ export interface EnhancedItemProps<T, U> extends BaseEnhancedItemProps<T> {
 }
 
 const EnhancedItem = <T extends Identifiable, U>({
-    _id, mode, prefix, apiPrefix, permissions,
+    id, mode, prefix, apiPrefix, permissions,
     apiClient, queryParams,
     passedInitialValues,
     settingKeys,
@@ -91,10 +91,10 @@ const EnhancedItem = <T extends Identifiable, U>({
 
     const realPrefix = apiPrefix ?? prefix;
 
-    const isEditMode = mode === TablePageMode.EDIT && !!_id;
+    const isEditMode = mode === TablePageMode.EDIT && !!id;
 
     const saveItem = useSaveEnhancedTablePageItem(
-        mode, realPrefix, apiClient, transformItemToSave, _id, onActionCallback, isBackWithRouter
+        mode, realPrefix, apiClient, transformItemToSave, id, onActionCallback, isBackWithRouter
     );
     const deleteItem = useDeleteEnhancedTablePageItem(
         realPrefix, apiClient, onActionCallback, isBackWithRouter
@@ -113,12 +113,12 @@ const EnhancedItem = <T extends Identifiable, U>({
 
     useEffect(() => {
         if (isEditMode) {
-            getItem(_id);
+            getItem(id);
         } else {
             const newItem = passedInitialValues ?? createEmptyItem?.();
             setItemAndInitialValues(newItem as T);
         }
-    }, [_id, mode, JSON.stringify(passedInitialValues)]);
+    }, [id, mode, JSON.stringify(passedInitialValues)]);
 
     const hasChanges = useCallback(() => {
         if (!initialValues || !item) return false;

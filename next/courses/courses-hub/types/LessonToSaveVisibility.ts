@@ -1,4 +1,4 @@
 export type LessonToSaveVisibility = {
-    _id: string;
+    id: string;
     isVisible: boolean;
 }

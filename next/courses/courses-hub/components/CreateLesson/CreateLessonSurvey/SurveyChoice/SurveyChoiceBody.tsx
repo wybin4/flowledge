@@ -8,7 +8,7 @@ import { SurveyChoiceItem } from "./SurveyChoiceItem";
 type SurveyChoiceBodyProps = {
     choice: SurveyChoice;
     setChoices: (fn: (prevChoices: SurveyChoice[]) => SurveyChoice[]) => void;
-    onDelete: (_id: string) => void;
+    onDelete: (id: string) => void;
     deleteClassNames?: string;
 };
 
@@ -16,14 +16,14 @@ export const SurveyChoiceBody = ({
     choice, setChoices,
     onDelete, deleteClassNames
 }: SurveyChoiceBodyProps) => {
-    const { _id, title } = choice;
+    const { id, title } = choice;
 
     const deleteIcon = useIcon('delete');
 
     const handleChoiceTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const text = e.target.value;
         setChoices(prevChoices => prevChoices.map(c =>
-            c._id === choice._id ? { ...c, text } : c
+            c.id === choice.id ? { ...c, text } : c
         ));
     };
 
@@ -35,7 +35,7 @@ export const SurveyChoiceBody = ({
             actions={<>
                 <div
                     className={cn(styles.itemDelete, deleteClassNames)}
-                    onClick={() => onDelete(_id)}
+                    onClick={() => onDelete(id)}
                 >
                     {deleteIcon}
                 </div>

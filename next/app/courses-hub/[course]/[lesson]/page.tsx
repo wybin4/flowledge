@@ -9,5 +9,5 @@ export default async function DynamicCourseHubLessonPage({
     const { lesson } = await params;
     const searchParamsRes = await searchParams;
 
-    return <CreateLesson _id={lesson} {...searchParamsRes} />;
+    return <CreateLesson id={lesson} {...searchParamsRes} />;
 }

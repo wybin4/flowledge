@@ -109,7 +109,7 @@ export const LessonPage = ({
                 lesson.stuffList.length > 0 &&
                 lesson.stuffList.map(stuff => (
                     <StuffItem
-                        key={stuff._id}
+                        key={stuff.id}
                         stuff={stuff as Stuff}
                         onDownload={() => onDownloadStuff(stuff)}
                     />

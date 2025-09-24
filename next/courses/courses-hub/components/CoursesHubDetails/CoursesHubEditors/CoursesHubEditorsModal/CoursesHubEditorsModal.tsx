@@ -41,14 +41,14 @@ export const CoursesHubEditorsModal = ({
         JSON.stringify(initialEditors) != JSON.stringify(editors);
 
     useEffect(() => {
-        const excludedIds = editors.map(e => e._id);
+        const excludedIds = editors.map(e => e.id);
         userApiClient.get<UserGetResponse[]>(
             `${usersPrefix}.get${setQueryParams({
                 pageSize, searchQuery, excludedIds, isSmall: true
             })}`
         ).then(users => {
             setUsers(users.map(u => ({
-                value: u._id,
+                value: u.id,
                 label: u.name,
                 avatar: u.avatar
             })))
@@ -61,7 +61,7 @@ export const CoursesHubEditorsModal = ({
         }
 
         const processedEditors = editors.map(e => ({
-            _id: e._id,
+            id: e.id,
             roles: e.roles.filter(role => role !== null && role !== undefined)
         }));
 
@@ -88,7 +88,7 @@ export const CoursesHubEditorsModal = ({
                     changeable={false}
                     onChange={(newValue: any) => {
                         setEditors(editors => [...editors, {
-                            _id: newValue.value,
+                            id: newValue.value,
                             name: newValue.label,
                             avatar: newValue.avatar,
                             roles: []

@@ -2,14 +2,14 @@ import { PrivateSettings } from "@/collections/PrivateSettings";
 import { SettingValue, SettingsTab } from "@/types/Setting";
 import { useMemo } from "react";
 
-function getTabFromId(_id: string) {
-    const parts = _id.split('.');
+function getTabFromId(id: string) {
+    const parts = id.split('.');
     return parts.length > 1 ? parts[0] : undefined;
 }
 
 function useSettingTabs(settings: SettingValue[]): Omit<SettingsTab, 'settings'>[] {
     const tabs = settings
-        .map(setting => getTabFromId(setting._id))
+        .map(setting => getTabFromId(setting.id))
         .filter(tab => tab !== undefined);
 
     const uniqueTabs = Array.from(new Set(tabs));

@@ -83,8 +83,8 @@ func main() {
 							switch req.Endpoint {
 							case "settings.get-private":
 								return settingSvc.GetPrivateSettings(ctx)
-							case "settings.get-public":
-								return settingSvc.GetPublicSettings(ctx)
+							// case "settings.get-public":
+							// 	return settingSvc.GetPublicSettings(ctx)
 							case "settings.set":
 								idVal, _ := req.Payload["id"].(string)
 								value := req.Payload["value"]

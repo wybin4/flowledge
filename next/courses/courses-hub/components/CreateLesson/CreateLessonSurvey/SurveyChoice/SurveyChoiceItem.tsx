@@ -27,7 +27,7 @@ export const SurveyChoiceItem = ({
     const handleToggle = () => {
         setChoices(prevChoices =>
             prevChoices.map(c => {
-                if (c._id === choice._id) {
+                if (c.id === choice.id) {
                     return { ...c, [fieldToHandle]: !c[fieldToHandle] };
                 } else {
                     return { ...c, [fieldToHandle]: false };

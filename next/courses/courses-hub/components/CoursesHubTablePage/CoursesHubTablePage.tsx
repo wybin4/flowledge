@@ -106,7 +106,7 @@ export const CoursesHubTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 return body;
             }}
             createEmptyItem={() => ({
-                _id: "",
+                id: "",
                 title: "",
                 description: "",
                 imageUrl: "",

@@ -46,7 +46,7 @@ export const CourseListSurvey = ({ courseId, lessonId, onExit, onBack, onNext, t
             if (survey.questions.length) {
                 setQuestions(survey.questions);
                 setSelectedQuestion(survey.questions[0]);
-                setSurveyId(survey._id);
+                setSurveyId(survey.id);
             }
 
             if (result) {
@@ -79,7 +79,7 @@ export const CourseListSurvey = ({ courseId, lessonId, onExit, onBack, onNext, t
         return (fn: (prevChoices: SurveyChoice[]) => SurveyChoice[]) => {
             setQuestions(prevQuestions => {
                 const updatedQuestions = prevQuestions.map(question => {
-                    if (question._id === questionId) {
+                    if (question.id === questionId) {
                         const updatedChoices = fn(question.choices);
                         return {
                             ...question,
@@ -89,7 +89,7 @@ export const CourseListSurvey = ({ courseId, lessonId, onExit, onBack, onNext, t
                     return question;
                 });
 
-                const updatedSelectedQuestion = updatedQuestions.find(q => q._id === questionId);
+                const updatedSelectedQuestion = updatedQuestions.find(q => q.id === questionId);
                 if (updatedSelectedQuestion) {
                     setSelectedQuestion(updatedSelectedQuestion);
                 }
@@ -190,7 +190,7 @@ export const CourseListSurvey = ({ courseId, lessonId, onExit, onBack, onNext, t
                                                     <SurveyChoiceItem
                                                         choice={choice}
                                                         fieldToHandle='isChecked'
-                                                        setChoices={setChoices(selectedQuestion._id)}
+                                                        setChoices={setChoices(selectedQuestion.id)}
                                                         text={<div>{choice.title}</div>}
                                                         handledIconClassName={styles.checkedChoiceIcon}
                                                     />

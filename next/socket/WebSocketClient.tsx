@@ -1,81 +1,139 @@
-import { Client, IMessage } from "@stomp/stompjs";
+export class WebSocketClient {
+    private socket: WebSocket | null = null;
+    private reconnectAttempts = 0;
+    private maxReconnectAttempts = 5;
+    private reconnectInterval = 3000;
+    private isConnecting = false;
+    private connectionPromise: Promise<void> | null = null;
 
-class WebSocketClient {
-    private client: Client;
-    public isConnected: boolean = false;
-    private connectPromise: Promise<void>;
-    private resolveConnect: () => void = () => { };
+    private messageCallbacks = new Map<string, ((data: any) => void)[]>();
+    private onConnectCallback: (() => void) | null = null;
+    private onDisconnectCallback: (() => void) | null = null;
+    private onErrorCallback: ((error: Event) => void) | null = null;
 
-    constructor(brokerURL: string) {
-        this.client = new Client({
-            brokerURL,
-            onConnect: this.onConnect,
-            onDisconnect: this.onDisconnect,
-            onStompError: this.onStompError,
+    constructor(private url: string = "ws://localhost:8088/websocket") { }
+
+    public connect(): Promise<void> {
+        if (this.connectionPromise) return this.connectionPromise;
+        if (this.socket?.readyState === WebSocket.OPEN) return Promise.resolve();
+        if (this.isConnecting) return Promise.reject(new Error("Connection already in progress"));
+
+        this.connectionPromise = new Promise((resolve, reject) => {
+            this.isConnecting = true;
+
+            const cleanup = () => {
+                this.isConnecting = false;
+                this.connectionPromise = null;
+            };
+
+            try {
+                this.socket = new WebSocket(this.url);
+
+                this.socket.onopen = (event) => {
+                    cleanup();
+                    this.reconnectAttempts = 0;
+                    this.onConnectCallback?.();
+                    resolve();
+                };
+
+                this.socket.onerror = (event) => {
+                    cleanup();
+                    this.onErrorCallback?.(event);
+                    reject(new Error("WebSocket connection failed"));
+                };
+
+                this.socket.onclose = (event) => {
+                    cleanup();
+                    this.onDisconnectCallback?.();
+                    if (event.code !== 1000) this.handleReconnection();
+                };
+
+                this.socket.onmessage = (event) => this.handleMessage(event);
+
+                setTimeout(() => {
+                    if (this.isConnecting) {
+                        this.socket?.close(1000, "Connection timeout");
+                        reject(new Error("Connection timeout"));
+                    }
+                }, 10000);
+
+            } catch (error) {
+                cleanup();
+                reject(error);
+            }
         });
 
-        this.connectPromise = new Promise((resolve) => {
-            this.resolveConnect = resolve;
+        return this.connectionPromise;
+    }
+
+    private handleReconnection() {
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+            this.reconnectAttempts++;
+            const delay = this.reconnectInterval * Math.pow(1.5, this.reconnectAttempts - 1);
+            setTimeout(() => this.connect().catch(() => { }), delay);
+        }
+    }
+
+    private handleMessage(event: MessageEvent) {
+        try {
+            const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+            const callbacks = data.action ? this.messageCallbacks.get(data.action) || [] : [];
+            callbacks.forEach(cb => cb(data));
+            (this.messageCallbacks.get('*') || []).forEach(cb => cb(data));
+        } catch {
+            // игнорируем ошибки парсинга
+        }
+    }
+
+    public async send(message: any) {
+        if (!this.isConnected) await this.waitForConnection();
+        this.socket?.readyState === WebSocket.OPEN && this.socket.send(JSON.stringify(message));
+    }
+
+    public subscribe(eventType: string, callback: (data: any) => void) {
+        if (!this.messageCallbacks.has(eventType)) this.messageCallbacks.set(eventType, []);
+        this.messageCallbacks.get(eventType)!.push(callback);
+    }
+
+    public unsubscribe(eventType: string, callback?: (data: any) => void) {
+        if (callback) {
+            const callbacks = this.messageCallbacks.get(eventType);
+            if (callbacks) {
+                const idx = callbacks.indexOf(callback);
+                if (idx > -1) callbacks.splice(idx, 1);
+            }
+        } else {
+            this.messageCallbacks.delete(eventType);
+        }
+    }
+
+    public onConnect(cb: () => void) { this.onConnectCallback = cb; }
+    public onDisconnect(cb: () => void) { this.onDisconnectCallback = cb; }
+    public onError(cb: (err: Event) => void) { this.onErrorCallback = cb; }
+
+    public disconnect() {
+        this.socket?.close(1000, "Client disconnected");
+        this.socket = null;
+        this.reconnectAttempts = this.maxReconnectAttempts;
+    }
+
+    public get isConnected() { return this.socket?.readyState === WebSocket.OPEN; }
+
+    public waitForConnection(): Promise<void> {
+        if (this.isConnected) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            let attempts = 0;
+            const maxAttempts = 50;
+            const check = () => {
+                if (this.isConnected) resolve();
+                else if (attempts++ >= maxAttempts) reject(new Error("Connection timeout"));
+                else setTimeout(check, 100);
+            };
+            check();
         });
-
-        this.client.activate();
-    }
-
-    private onConnect = () => {
-        this.isConnected = true;
-        console.log("WebSocket connected");
-        this.resolveConnect();
-    };
-
-    private onDisconnect = () => {
-        this.isConnected = false;
-        console.log("WebSocket disconnected");
-    };
-
-    private onStompError = (frame: any) => {
-        console.error("STOMP error: ", frame);
-    };
-
-    public activate() {
-        this.client.activate();
-    }
-
-    public deactivate() {
-        if (this.client.connected) {
-            this.client.deactivate();
-        }
-    }
-
-    public subscribeToChannel(channel: string, callback: (message: IMessage) => void) {
-        if (this.isConnected) {
-            this.client.subscribe(channel, (message: IMessage) => {
-                console.log("Received message on channel:", channel);
-                console.log(message.body);
-                callback(message);
-            });
-        } else {
-            console.error("WebSocket is not connected. Unable to subscribe.");
-        }
-    }
-
-    public unsubscribeFromChannel(channel: string) {
-        if (this.isConnected) {
-            this.client.unsubscribe(channel);
-            console.log(`Unsubscribed from channel: ${channel}`);
-        } else {
-            console.error("WebSocket is not connected. Unable to unsubscribe.");
-        }
-    }
-
-    public getConnectionStatus() {
-        return this.isConnected;
-    }
-
-    // Метод, который будет ждать подключения
-    public waitForConnection() {
-        return this.connectPromise;
     }
 }
 
-const webSocketClient = new WebSocketClient("ws://localhost:8080/websocket");
+const webSocketClient = new WebSocketClient();
 export default webSocketClient;
+export async function initializeWebSocket() { await webSocketClient.connect(); }

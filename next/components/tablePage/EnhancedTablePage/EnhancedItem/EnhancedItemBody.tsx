@@ -20,7 +20,7 @@ export interface EnhancedItemBodyProps<T> extends BaseEnhancedItemProps<T> {
     hasChanges: boolean;
     item: T;
     setItem: Dispatch<SetStateAction<T | undefined>>;
-    deleteItem: (_id: string) => Promise<void>;
+    deleteItem: (id: string) => Promise<void>;
     saveItem: (item: T | undefined) => Promise<void>;
     deleteItemDescription?: string;
 };
@@ -45,10 +45,10 @@ const EnhancedItemBody = <T extends Identifiable,>({
 
         const { hasDescription, additionalProps, types } = props;
         const isMulti = (types?.length || 0) > 1;
-       
+
         return {
             setting: {
-                _id: key,
+                id: key,
                 i18nLabel: props.i18nLabel ? props.i18nLabel : hasDescription ? `${prefix}.${key}.name` : `${prefix}.${key}`,
                 i18nDescription: hasDescription ? `${prefix}.${key}.description` : undefined,
                 value,
@@ -82,7 +82,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
                             additionalProps={additionalProps}
                             types={types}
                             handleSave={(newValue) => {
-                                handleSave({ id: setting._id, value: newValue.value });
+                                handleSave({ id: setting.id, value: newValue.value });
                             }}
                         />
                     );
@@ -95,7 +95,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
                             withWrapper={setting.withWrapper}
                             setting={setting as SettingValue}
                             handleSave={(newValue) => {
-                                handleSave({ id: setting._id, value: newValue.value });
+                                handleSave({ id: setting.id, value: newValue.value });
                             }}
                         />
                     );
@@ -104,7 +104,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
             return null;
         });
     };
- 
+
     return (
         <>
             {hasTitle && <h2 className={styles.title}>{title}</h2>}
@@ -130,7 +130,7 @@ const EnhancedItemBody = <T extends Identifiable,>({
                 }
                 {isDeletionPermitted && isEditMode &&
                     <div className={styles.deleteContainer}>
-                        <Button onClick={() => deleteItem(item._id)} prefix={prefix} type={ButtonType.DELETE} />
+                        <Button onClick={() => deleteItem(item.id)} prefix={prefix} type={ButtonType.DELETE} />
                         {deleteItemDescription &&
                             <div className={styles.description}>{deleteItemDescription}</div>
                         }

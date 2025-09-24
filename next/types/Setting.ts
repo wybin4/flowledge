@@ -17,7 +17,7 @@ export enum SettingType {
 }
 
 type BaseSetting<T> = {
-    _id: string;
+    id: string;
     type: SettingType;
     i18nLabel: string;
     i18nDescription?: string;

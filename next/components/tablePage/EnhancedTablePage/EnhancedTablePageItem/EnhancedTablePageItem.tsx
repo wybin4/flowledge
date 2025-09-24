@@ -13,7 +13,7 @@ interface EnhancedTablePageItemProps<T> {
     item: T;
     mode: TablePageMode;
     itemKeys: EnhancedItemChildren[];
-    onClick?: (_id: string) => void;
+    onClick?: (id: string) => void;
     isItemClickable: boolean;
 }
 
@@ -24,7 +24,7 @@ export const EnhancedTablePageItem = <T extends Identifiable>({
     onClick: passedOnClick
 }: EnhancedTablePageItemProps<T>) => {
     const router = useRouter();
-    const onClick = passedOnClick ? () => passedOnClick(item._id) : () => router.push(`/${prefix}/${item._id}?mode=${mode}`);
+    const onClick = passedOnClick ? () => passedOnClick(item.id) : () => router.push(`/${prefix}/${item.id}?mode=${mode}`);
 
     const getValueByKeys = (item: any, keys: string[]): string | undefined => {
         for (const key of keys) {

@@ -2,11 +2,11 @@ package setting_service
 
 import (
 	"context"
-	"regexp"
 	"time"
 
 	setting "github.com/wybin4/flowledge/go/policy-service/internal/setting"
 	setting_model "github.com/wybin4/flowledge/go/policy-service/internal/setting/model"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type SettingService struct {
@@ -25,27 +25,36 @@ func (s *SettingService) GetSettingsByPattern(ctx context.Context, pattern strin
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	settings, err := s.repo.FindAll(ctx)
+	filter := bson.M{
+		"_id": bson.M{
+			"$regex":   pattern,
+			"$options": "i",
+		},
+	}
+
+	cursor, err := s.repo.Collection().Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
+	defer cursor.Close(ctx)
 
-	re, err := regexp.Compile(pattern)
-	if err != nil {
+	var settings []struct {
+		ID    string      `bson:"_id"`
+		Value interface{} `bson:"value"`
+	}
+
+	if err := cursor.All(ctx, &settings); err != nil {
 		return nil, err
 	}
 
-	result := make(map[string]interface{})
-	for _, st := range settings {
-		if re.MatchString(st.ID) {
-			result[st.ID] = st.Value
-		}
+	result := make(map[string]interface{}, len(settings))
+	for _, s := range settings {
+		result[s.ID] = s.Value
 	}
 
 	return result, nil
 }
 
-// Получение всех приватных настроек
 func (s *SettingService) GetPrivateSettings(ctx context.Context) ([]*setting_model.Setting, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -55,7 +64,6 @@ func (s *SettingService) GetPrivateSettings(ctx context.Context) ([]*setting_mod
 		return nil, err
 	}
 
-	// Преобразуем []setting_model.Setting -> []*setting_model.Setting
 	result := make([]*setting_model.Setting, len(settings))
 	for i := range settings {
 		result[i] = &settings[i]

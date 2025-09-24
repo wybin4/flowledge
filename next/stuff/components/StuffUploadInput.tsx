@@ -55,7 +55,7 @@ export const StuffUploadInput = ({ type, i18nPrefix, onAccept }: StuffUploadInpu
             })}
         >
             <FileUploader
-                onFileUpload={(file) => onAccept({ type, file, _id: generateRandomId() })}
+                onFileUpload={(file) => onAccept({ type, file, id: generateRandomId() })}
                 allowedTypes={allowedTypes}
                 input={(onClick) => (
                     <Input
@@ -86,7 +86,7 @@ export const StuffUploadInput = ({ type, i18nPrefix, onAccept }: StuffUploadInpu
                                 <hr className={styles.lineInput} />
                                 <span
                                     className={styles.acceptInputIcon}
-                                    onClick={() => onAccept({ type, value, _id: generateRandomId() })}
+                                    onClick={() => onAccept({ type, value, id: generateRandomId() })}
                                 >
                                     {acceptIcon}
                                 </span>

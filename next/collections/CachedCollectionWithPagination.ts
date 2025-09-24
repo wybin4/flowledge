@@ -9,7 +9,7 @@ export class CachedCollectionWithPagination<T extends Identifiable> extends Cach
 
         return this.collection.chain()
             .find(searchQuery ? {
-                _id: { $regex: new RegExp(searchQuery, "i") }
+                id: { $regex: new RegExp(searchQuery, "i") }
             } : {})
             .offset(offset)
             .limit(pageSize)
@@ -22,7 +22,7 @@ export class CachedCollectionWithPagination<T extends Identifiable> extends Cach
         }
 
         return this.collection.chain()
-            .find({ _id: { $regex: new RegExp(searchQuery, "i") } })
+            .find({ id: { $regex: new RegExp(searchQuery, "i") } })
             .data().length;
     }
 }

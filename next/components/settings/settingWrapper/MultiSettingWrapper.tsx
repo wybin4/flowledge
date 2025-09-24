@@ -109,6 +109,6 @@ export const MultiSettingWrapper = memo(({
 }, (prevProps, nextProps) =>
     JSON.stringify(prevProps.types) === JSON.stringify(nextProps.types) &&
     JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
-    prevProps.setting._id === nextProps.setting._id &&
+    prevProps.setting.id === nextProps.setting.id &&
     (areSettingWrapperContainerPropsEqual as any)(prevProps, nextProps)
 );

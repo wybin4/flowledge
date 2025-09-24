@@ -9,7 +9,7 @@ export const SettingTextArea = memo(({ setting, handleSave, debounceTime = 1000 
     const [inputValue, setInputValue] = useDebouncedSave<SettingValueType>(
         setting.value,
         debounceTime,
-        (value) => handleSave({ id: setting._id, value })
+        (value) => handleSave({ id: setting.id, value })
     );
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

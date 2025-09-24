@@ -3,12 +3,12 @@ export enum ApiIntegrationEntity {
 }
 
 export interface ApiIntegration {
-    _id: string;
+    id: string;
     name: string;
     secret: string;
     script: string;
     u: {
-        _id: string;
+        id: string;
         username: string;
     };
     createdAt: string;

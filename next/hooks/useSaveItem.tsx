@@ -5,17 +5,17 @@ export const useSaveItem = async<T, U>({
     prefix,
     apiClient,
     transformItem,
-    _id,
+    id,
     item
 }: {
     isCreate: boolean,
     prefix: string,
     apiClient: ApiClientMethods,
     transformItem?: (item: T) => U,
-    _id?: string,
+    id?: string,
     item: T | undefined
 }) => {
-    const url = isCreate ? `${prefix}.create` : `${prefix}.update/${_id}`;
+    const url = isCreate ? `${prefix}.create` : `${prefix}.update/${id}`;
     if (item) {
         const body = transformItem ? transformItem(item) : item;
         return await apiClient.post<T>(url, body);

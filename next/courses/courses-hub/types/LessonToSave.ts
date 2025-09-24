@@ -9,7 +9,7 @@ interface LessonToSaveRequest {
 }
 
 export interface LessonToSaveOnDraftRequest extends LessonToSaveRequest {
-    _id: string;
+    id: string;
     videoId?: string;
     synopsis?: string;
     survey?: string;
@@ -32,7 +32,7 @@ export interface LessonToSaveOnDetailsRequest extends
     LessonToSaveOnDetailsRequestTime { }
 
 export type LessonToSaveOnDetails = {
-    _id: string;
+    id: string;
     title: string;
     time: LessonToSaveOnDetailsRequestTime;
     imageUrl?: string;

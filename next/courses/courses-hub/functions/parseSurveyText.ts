@@ -16,10 +16,10 @@ export const parseSurveyText = (title: string): SurveyQuestion[] => {
         const correctAnswer = lines[lines.length - 1].match(/Правильный ответ:\s*([A-Z])/)?.[1];
 
         questions.push({
-            _id: String(Date.now() + index),
+            id: String(Date.now() + index),
             title: questionText,
             choices: answers.map((answer, i) => ({
-                _id: String(i + 1),
+                id: String(i + 1),
                 title: answer,
                 isCorrect: correctAnswer === String.fromCharCode(65 + i)
             }))

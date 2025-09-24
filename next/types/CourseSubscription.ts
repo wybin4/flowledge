@@ -1,7 +1,7 @@
 import { CourseProgress } from "@/courses/courses-hub/types/progress/CourseProgress";
 
 export interface ICourseSubscription {
-    _id: string;
+    id: string;
     subId: string;
     userId: string;
     isFavourite?: boolean;

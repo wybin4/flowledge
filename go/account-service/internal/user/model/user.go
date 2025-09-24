@@ -15,7 +15,7 @@ type User struct {
 	Active    bool         `bson:"active" json:"active"`
 	CreatedAt time.Time    `bson:"createdAt" json:"-"`
 	UpdatedAt time.Time    `bson:"updatedAt" json:"-"`
-	Settings  UserSettings `bson:"settings" json:"-"`
+	Settings  UserSettings `bson:"settings" json:"settings"`
 	Services  UserServices `bson:"services" json:"-"`
 }
 

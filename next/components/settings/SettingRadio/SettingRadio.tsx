@@ -17,7 +17,7 @@ export const SettingRadio = memo(({ setting, handleSave, withWrapper = true, dis
     const handleToggle = () => {
         const newValue = !isChecked;
         setIsChecked(newValue);
-        handleSave({ id: setting._id, value: newValue });
+        handleSave({ id: setting.id, value: newValue });
     };
 
     if (withWrapper) {
@@ -50,5 +50,5 @@ export const SettingRadio = memo(({ setting, handleSave, withWrapper = true, dis
     );
 }, (prevProps, nextProps) =>
     JSON.stringify(prevProps.setting.value) === JSON.stringify(nextProps.setting.value) &&
-    prevProps.setting._id === nextProps.setting._id
+    prevProps.setting.id === nextProps.setting.id
 );

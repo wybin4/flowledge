@@ -39,6 +39,40 @@ func (s *UserService) GetUser(ctx context.Context, id string) (*user_model.User,
 	return user, nil
 }
 
+func (s *UserService) SetUserSettings(ctx context.Context, userID, settingID string, value interface{}) error {
+	user, err := s.repo.FindByID(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("failed to find user: %w", err)
+	}
+	if user == nil {
+		return fmt.Errorf("user not found")
+	}
+
+	switch settingID {
+	case "theme":
+		if theme, ok := value.(string); ok {
+			user.Settings.Theme = theme
+		} else {
+			return fmt.Errorf("invalid value type for theme")
+		}
+	case "language":
+		if lang, ok := value.(string); ok {
+			user.Settings.Language = lang
+		} else {
+			return fmt.Errorf("invalid value type for language")
+		}
+	default:
+		return fmt.Errorf("unknown setting id: %s", settingID)
+	}
+
+	if err := s.repo.Update(ctx, user); err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	go s.eventSvc.SendUserEvent("update", user)
+	return nil
+}
+
 func (s *UserService) CreateUser(ctx context.Context, username, name string, password *user_model.Password, roles []string) (*user_model.User, error) {
 	username = strings.TrimSpace(username)
 	if username == "" {

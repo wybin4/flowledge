@@ -1,5 +1,5 @@
 export interface CourseProgressLesson {
-    _id: string;
+    id: string;
     progress: number;
     isSurveyPassed?: boolean;
     synopsisProgress?: number;

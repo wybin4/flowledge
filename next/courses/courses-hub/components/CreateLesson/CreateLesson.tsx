@@ -15,7 +15,7 @@ import { LessonSaveType } from "@/courses/types/LessonSaveType";
 import { usePathname } from "next/navigation";
 
 export type CreateLessonProps = Partial<Record<Lowercase<keyof typeof LessonSaveType>, string>> & {
-    _id: string;
+    id: string;
     hasVideo?: string;
     questionId?: string;
 };
@@ -26,7 +26,7 @@ export interface CreateLessonChildrenProps {
     courseId: string;
 }
 
-export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLessonProps) => {
+export const CreateLesson = ({ id, hasVideo, questionId, ...props }: CreateLessonProps) => {
     const [lesson, setLesson] = useState<LessonGetByIdResponse | undefined>(undefined);
 
     const currentPath = usePathname();
@@ -36,14 +36,14 @@ export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLess
 
     useEffect(() => {
         userApiClient.get<LessonGetByIdResponse>(
-            `${coursesHubLessonsPrefixApi}.get/${_id}?courseId=${courseId}`
+            `${coursesHubLessonsPrefixApi}.get/${id}?courseId=${courseId}`
         ).then(lesson => setLesson(lesson));
-    }, [_id]);
+    }, [id]);
 
     const componentMap = {
         [LessonSaveType.Video]: () => (
             <CreateLessonVideo
-                lessonId={_id}
+                lessonId={id}
                 courseId={courseId}
                 setLesson={setLesson}
                 videoId={lesson?.videoId}
@@ -51,7 +51,7 @@ export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLess
         ),
         [LessonSaveType.Details]: () => (
             <CreateLessonDetails
-                lessonId={_id}
+                lessonId={id}
                 courseId={courseId}
                 time={lesson?.time}
                 title={lesson?.title}
@@ -62,7 +62,7 @@ export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLess
         ),
         [LessonSaveType.Synopsis]: () => (
             <CreateLessonSynopsisAndStuff
-                lessonId={_id}
+                lessonId={id}
                 courseId={courseId}
                 setLesson={setLesson}
                 synopsisText={lesson?.synopsisText}
@@ -71,7 +71,7 @@ export const CreateLesson = ({ _id, hasVideo, questionId, ...props }: CreateLess
         ),
         [LessonSaveType.Survey]: () => (
             <CreateLessonSurvey
-                lessonId={_id}
+                lessonId={id}
                 courseId={courseId}
                 setLesson={setLesson}
                 selectedQuestionId={questionId}

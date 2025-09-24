@@ -3,5 +3,5 @@ import { CourseListItemPage } from "@/courses/courses-list/components/CoursesLis
 export default async function DynamicCourseListSectionPage({ params }: { params: { course: string } }) {
     const { course } = await params;
 
-    return <CourseListItemPage _id={course} />;
+    return <CourseListItemPage id={course} />;
 }

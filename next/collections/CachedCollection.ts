@@ -5,7 +5,12 @@ import EventEmitter from "events";
 import Loki, { Collection } from "lokijs";
 const LokiIndexedAdapter = require('lokijs/src/loki-indexed-adapter');
 
-const adapter = new LokiIndexedAdapter();
+let adapter;
+if (typeof window !== 'undefined' && window.indexedDB) {
+    adapter = new LokiIndexedAdapter();
+} else {
+    adapter = new Loki.LokiMemoryAdapter();
+}
 
 export const Application = new Loki('app.db', {
     adapter: adapter,
@@ -19,7 +24,7 @@ export const Application = new Loki('app.db', {
 
 type CachedCollectionCallback<T> = (data: T[], usage: CallbackUsage, regex?: string) => void;
 
-export class CachedCollection<T extends { _id: string }, U = T> extends EventEmitter {
+export class CachedCollection<T extends { id: string }, U = T> extends EventEmitter {
     public collection: Collection<T>;
     protected name: string;
     public eventName: string;
@@ -30,7 +35,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends EventEmi
         super();
         this.name = name;
         this.eventName = `${name}-changed`
-        this.collection = Application.addCollection<T>(name, { unique: ["_id"] });
+        this.collection = Application.addCollection<T>(name, { unique: ["id"] });
     }
 
     pushCallback(callback: CachedCollectionCallback<T>, regex?: string): void {
@@ -73,23 +78,23 @@ export class CachedCollection<T extends { _id: string }, U = T> extends EventEmi
         const newRecord = this.handleReceived(record, action);
 
         if (!this.hasId(newRecord)) {
-            console.warn("Received record without _id. Skipping...", record);
+            console.warn("Received record without id. Skipping...", record);
             return;
         }
 
-        const { _id } = newRecord;
+        const { id } = newRecord;
 
         if (action === 'removed') {
-            this.collection.findAndRemove({ _id: { $eq: _id } });
-            console.log(`Record removed: ${_id}`);
+            this.collection.findAndRemove({ id: { $eq: id } });
+            console.log(`Record removed: ${id}`);
         } else {
-            const recordToUpdate = this.collection.findOne({ _id: { $eq: _id } });
+            const recordToUpdate = this.collection.findOne({ id: { $eq: id } });
             if (recordToUpdate) {
-                const updatedRecord = { ...recordToUpdate, ...newRecord, _id: recordToUpdate._id };
+                const updatedRecord = { ...recordToUpdate, ...newRecord, id: recordToUpdate.id };
                 this.collection.update(updatedRecord);
-                console.log(`Record updated: ${_id}`);
+                console.log(`Record updated: ${id}`);
             } else {
-                console.log(`Insert new record with id: ${_id}`);
+                console.log(`Insert new record with id: ${id}`);
                 this.collection.insert(newRecord);
             }
         }
@@ -98,30 +103,51 @@ export class CachedCollection<T extends { _id: string }, U = T> extends EventEmi
     }
 
     async setupListener() {
-        if (!WebSocketClient.isConnected) {
-            console.warn("WebSocket is not connected. Waiting for connection...");
+        let attempts = 0;
+        const maxAttempts = 5;
+        const retryDelay = 3000;
+
+        while (attempts < maxAttempts) {
             try {
-                await WebSocketClient.waitForConnection();
-                console.log("WebSocket connected, proceeding with subscription...");
+                if (!WebSocketClient.isConnected) {
+                    console.warn("WebSocket is not connected. Waiting for connection...");
+                    try {
+                        await WebSocketClient.waitForConnection();
+                        console.log("WebSocket connected, proceeding with subscription...");
+                    } catch (error) {
+                        console.error("Failed to connect to WebSocket:", error);
+                        return;
+                    }
+                }
+
+                const channel = `/topic/${this.eventName}`;
+                WebSocketClient.subscribe(channel, async (message) => {
+                    try {
+                        if (message.body) {
+                            const { action, record } = JSON.parse(message.body);
+                            console.log("Received WebSocket message:", action, record);
+                            await this.handleRecordEvent(action, record);
+                        } else {
+                            const { action, record } = message;
+                            console.log("Received WebSocket message:", action, record);
+                            await this.handleRecordEvent(action, record);
+                        }
+                    } catch (error) {
+                        console.error("Error processing WebSocket message:", error);
+                    }
+                });
+                console.log(`Subscribed to WebSocket channel: ${channel}`);
+                return;
             } catch (error) {
                 console.error("WebSocket connection failed or timed out", error);
-                return;
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    console.error("Max WebSocket connection attempts reached");
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
             }
         }
-
-        const channel = `/topic/${this.eventName}`;
-
-        WebSocketClient.subscribeToChannel(channel, async (message) => {
-            try {
-                const { action, record } = JSON.parse(message.body);
-                console.log("Received WebSocket message:", action, record);
-                await this.handleRecordEvent(action, record);
-            } catch (error) {
-                console.error("Error processing WebSocket message:", error);
-            }
-        });
-
-        console.log(`Subscribed to WebSocket channel: ${channel}`);
     }
 
     loadFromCache(): T[] {
@@ -140,8 +166,8 @@ export class CachedCollection<T extends { _id: string }, U = T> extends EventEmi
                     return;
                 }
 
-                const { _id } = newRecord;
-                this.collection.findAndRemove({ _id: { $eq: _id } });
+                const { id } = newRecord;
+                this.collection.findAndRemove({ id: { $eq: id } });
                 this.collection.insert(newRecord);
 
                 if (this.hasUpdatedAt(newRecord) && newRecord._updatedAt! > this.updatedAt) {
@@ -160,7 +186,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends EventEmi
         return record;
     }
 
-    private hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
+    private hasId = <T>(record: T): record is T & { id: string } => typeof record === 'object' && record !== null && 'id' in record;
     private hasUpdatedAt = <T>(record: T): record is T & { _updatedAt: Date } =>
         typeof record === 'object' &&
         record !== null &&

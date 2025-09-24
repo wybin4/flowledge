@@ -23,7 +23,7 @@ class UserService extends EventEmitter {
 
     async fetchUser() {
         const user = await userApiClient.get<User>(`users.get/me`);
-        this.userId = user._id;
+        this.userId = user.id;
         this.setUserState(user);
     }
 
@@ -58,7 +58,7 @@ class UserService extends EventEmitter {
     subscribeToUserChanges() {
         const channel = `/topic/${this.userId}/${this.eventName}`;
 
-        WebSocketClient.subscribeToChannel(channel, (message) => {
+        WebSocketClient.subscribe(channel, (message) => {
             console.log("Received user change message:", message.body);
             const { record } = JSON.parse(message.body);
             this.setUserState(record);
@@ -68,7 +68,7 @@ class UserService extends EventEmitter {
 
     async updateUserSetting(setting: UpdatableSetting): Promise<void> {
         try {
-            await userApiClient.post(`users.set-setting?userId=${this.userId}`, setting);
+            await userApiClient.post('users.set-setting', setting);
         } catch (error: any) {
             return error.message;
         }
@@ -93,7 +93,7 @@ class UserService extends EventEmitter {
             const defaultSettings = getPrivateSettingsByRegex(regexArray);
 
             defaultSettings.forEach((defaultSetting: SettingValue, idx) => {
-                const key = defaultSetting._id.split('.').pop() || '';
+                const key = defaultSetting.id.split('.').pop() || '';
                 const settingValue = settings[key as keyof UserSetting];
                 if (settingValue) {
                     defaultSettings[idx] = {

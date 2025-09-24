@@ -9,7 +9,7 @@ const areSettingKeysEqual = (prevKeys: EnhancedItemSettingKey[], nextKeys: Enhan
 }
 
 export const areEnhancedItemPropsEqual = <T, U>(prevProps: EnhancedItemProps<T, U>, nextProps: EnhancedItemProps<T, U>) => {
-    return prevProps._id === nextProps._id &&
+    return prevProps.id === nextProps.id &&
         prevProps.mode === nextProps.mode &&
         prevProps.title === nextProps.title &&
         JSON.stringify(prevProps.passedInitialValues) === JSON.stringify(nextProps.passedInitialValues) &&

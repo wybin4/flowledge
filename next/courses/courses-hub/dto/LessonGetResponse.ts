@@ -2,7 +2,7 @@ import { TimeUnit } from "@/types/TimeUnit";
 import { Survey } from "../../types/Survey";
 
 export interface LessonGetResponse {
-    _id: string;
+    id: string;
     title: string;
     time?: TimeUnit;
     imageUrl?: string;

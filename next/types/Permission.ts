@@ -1,4 +1,4 @@
 export interface IPermission {
-    _id: string;
+    id: string;
     roles: string[];
 }

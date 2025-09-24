@@ -23,6 +23,7 @@ export const SettingWrapper = memo(({
     debounceTime = 1000, withWrapper = true,
     validateError, disabled, isOptionsTranslatable
 }: SettingWrapperProps) => {
+ 
     return (
         <SettingWrapperContainer
             i18nLabel={setting.type !== SettingType.Radio ? setting.i18nLabel : undefined}

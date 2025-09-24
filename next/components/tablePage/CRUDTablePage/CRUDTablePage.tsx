@@ -43,14 +43,14 @@ export const CRUDTablePage = <T extends Identifiable, L, U extends Identifiable>
         setSelectedItemId(hasMode ? id : undefined);
     };
 
-    const onItemClick = (_id?: string) => {
+    const onItemClick = (id?: string) => {
         const currentMode = searchParams.get('mode');
         if (currentMode) {
             router.push(`/${prefix}`);
             updateState(null);
         } else {
             router.push(`/${prefix}/?mode=${TablePageMode.EDIT}`);
-            updateState(TablePageMode.EDIT, _id);
+            updateState(TablePageMode.EDIT, id);
         }
     };
 
@@ -83,7 +83,7 @@ export const CRUDTablePage = <T extends Identifiable, L, U extends Identifiable>
                     apiPrefix={apiPrefix}
                     queryParams={queryParams}
                     mode={mode}
-                    _id={selectedItemId}
+                    id={selectedItemId}
                     settingKeys={settingKeys}
                     transformItemToSave={transformItemToSave}
                     createEmptyItem={createEmptyItem}
@@ -102,9 +102,9 @@ export const CRUDTablePage = <T extends Identifiable, L, U extends Identifiable>
                         getHeaderItems={getHeaderItems}
                         transformData={transformData}
                         itemKeys={itemKeys}
-                        onItemClick={(_id) => {
+                        onItemClick={(id) => {
                             toggleSidebar();
-                            onItemClick(_id);
+                            onItemClick(id);
                         }}
                         className={cn({
                             [styles.elementsExpanded]: isExpanded

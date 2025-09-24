@@ -7,7 +7,7 @@ export interface LessonPageSectionItem {
 };
 
 export interface LessonPageSectionLessonItem {
-    _id: string;
+    id: string;
     title: string;
     imageUrl?: string;
 

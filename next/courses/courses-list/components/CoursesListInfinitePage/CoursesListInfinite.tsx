@@ -35,7 +35,7 @@ export const CoursesListInfinite = ({
 
     useEffect(() => {
         const filteredData = (data as CourseWithSubscriptionItem[]).filter(
-            course => !excludedIds.includes(course._id)
+            course => !excludedIds.includes(course.id)
         );
         setCourses(filteredData);
     }, [data, excludedIds]);

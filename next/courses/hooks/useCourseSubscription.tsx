@@ -3,13 +3,13 @@ import { useStateFromService } from "@/hooks/useStateFromService";
 import { useEffect, useState } from "react";
 import { CourseSubscriptionItem } from "../courses-list/types/CourseSubscriptionItem";
 
-export const useCourseSubscription = (_id: string): CourseSubscriptionItem | null => {
-    const getValue = () => findSubscriptionByCourseId(_id);
+export const useCourseSubscription = (id: string): CourseSubscriptionItem | null => {
+    const getValue = () => findSubscriptionByCourseId(id);
     const [subscription, setSubscription] = useState<CourseSubscriptionItem | null>(getValue());
 
     useEffect(() => {
         setSubscription(getValue());
-    }, [_id]);
+    }, [id]);
 
     useStateFromService(
         getValue,

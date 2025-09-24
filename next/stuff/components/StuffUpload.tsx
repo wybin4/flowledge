@@ -28,7 +28,7 @@ export const StuffUpload = ({ stuffList, setStuffList, className }: StuffUploadP
     };
 
     const handleClear = (itemToRemove: Stuff) => {
-        const newItems = stuffList.filter(stuff => stuff._id !== itemToRemove._id);
+        const newItems = stuffList.filter(stuff => stuff.id !== itemToRemove.id);
         setStuffList(newItems);
     };
 
@@ -65,7 +65,7 @@ export const StuffUpload = ({ stuffList, setStuffList, className }: StuffUploadP
             {stuffList.length > 0 &&
                 <div>{stuffList.map(stuff =>
                     <StuffItem
-                        key={stuff._id}
+                        key={stuff.id}
                         stuff={stuff}
                         onClear={handleClear}
                     />

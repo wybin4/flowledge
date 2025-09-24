@@ -27,7 +27,7 @@ export const CoursesHubSideSectionAddUsers = ({ courseId, prefix, setTab }: Cour
             })}`
         ).then(users => {
             setUsers(users.map(u => ({
-                value: u._id,
+                value: u.id,
                 label: u.name,
                 avatar: u.avatar
             })))

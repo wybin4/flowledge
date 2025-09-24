@@ -4,5 +4,5 @@ export const getCheckedChoiceIds = (questions: SurveyQuestion[]): string[] => {
     return questions
         .flatMap(question => question.choices)
         .filter(choice => choice.isChecked)
-        .map(choice => choice._id);
+        .map(choice => choice.id);
 };

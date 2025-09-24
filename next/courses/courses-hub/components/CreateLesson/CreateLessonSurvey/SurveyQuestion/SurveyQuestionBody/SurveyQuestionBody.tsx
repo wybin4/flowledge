@@ -13,7 +13,7 @@ import { ItemSize } from "@/types/ItemSize";
 type SurveyQuestionBodyProps = {
     number?: number;
     question: SurveyQuestion;
-    setQuestion?: (newQuestion?: SurveyQuestion, _id?: string) => void;
+    setQuestion?: (newQuestion?: SurveyQuestion, id?: string) => void;
     canDeleteQuestions?: boolean;
 };
 
@@ -37,11 +37,11 @@ export const SurveyQuestionBody = ({
         setQuestion?.({ ...question, title });
     };
 
-    const handleDeleteQuestion = () => canDeleteQuestions && setQuestion?.(undefined, question._id);
+    const handleDeleteQuestion = () => canDeleteQuestions && setQuestion?.(undefined, question.id);
 
     return (
         <SurveyQuestionItem
-            _id={question._id}
+            id={question.id}
             number={number}
             size={ItemSize.Big}
             handleDelete={handleDeleteQuestion}

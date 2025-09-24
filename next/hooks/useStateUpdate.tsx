@@ -14,7 +14,7 @@ export function useStateUpdate<T extends Identifiable>(
                 const regex = searchQuery ? new RegExp(searchQuery, "i") : null;
 
                 const filteredItems = regex
-                    ? newItems.filter((item) => regex.test(item._id))
+                    ? newItems.filter((item) => regex.test(item.id))
                     : newItems;
 
                 if (usage === CallbackUsage.MANY) {
@@ -22,9 +22,9 @@ export function useStateUpdate<T extends Identifiable>(
                 }
 
                 if (filteredItems.length === 1) {
-                    const existingItem = prevData.find(p => p._id === filteredItems[0]._id);
+                    const existingItem = prevData.find(p => p.id === filteredItems[0].id);
                     if (existingItem) {
-                        return prevData.map(p => (p._id === filteredItems[0]._id ? filteredItems[0] : p));
+                        return prevData.map(p => (p.id === filteredItems[0].id ? filteredItems[0] : p));
                     } else {
                         return [...prevData, filteredItems[0]];
                     }

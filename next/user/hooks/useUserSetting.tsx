@@ -5,8 +5,8 @@ import { User } from "../types/User";
 import { UserSetting } from "../types/UserSetting";
 import { useStateFromService } from "@/hooks/useStateFromService";
 
-export const useUserSetting = <T,>(_id: keyof UserSetting): T | undefined => {
-    const [settingValue, setSettingValue] = useState<T | undefined>(UserService.getUserState()?.settings[_id] as T);
+export const useUserSetting = <T,>(id: keyof UserSetting): T | undefined => {
+    const [settingValue, setSettingValue] = useState<T | undefined>(UserService.getUserState()?.settings[id] as T);
 
     const updateSettingValue = useCallback(
         (newState: User | undefined) => {
@@ -16,14 +16,14 @@ export const useUserSetting = <T,>(_id: keyof UserSetting): T | undefined => {
 
             const defaultSettingValue = getPrivateSettingByRegex<T>([
                 UserService.getUserSettingRegex(),
-                _id,
+                id,
             ]);
 
-            const newUserSettingValue = newState.settings[_id] as T | undefined;
+            const newUserSettingValue = newState.settings[id] as T | undefined;
 
             setSettingValue(newUserSettingValue || defaultSettingValue);
         },
-        [_id]
+        [id]
     );
 
     useStateFromService<User | undefined>(

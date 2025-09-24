@@ -52,7 +52,7 @@ export const CourseTagsTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 return { name: item.name };
             }}
             createEmptyItem={() => ({
-                _id: '',
+                id: '',
                 name: '',
             })}
             getHeaderItems={getHeaderItems}

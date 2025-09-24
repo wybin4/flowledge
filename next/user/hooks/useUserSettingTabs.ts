@@ -3,14 +3,14 @@ import { useMemo } from "react";
 import userService from "../UserService";
 import { SettingValue, SettingsTab } from "@/types/Setting";
 
-function getTabFromId(_id: string) {
-    const parts = _id.split('.');
+function getTabFromId(id: string) {
+    const parts = id.split('.');
     return { group: parts.length > 1 ? parts[0] : undefined, tab: parts.length > 1 ? parts[1] : undefined };
 }
 
 function useSettingTabs(settings: SettingValue[]): Omit<SettingsTab, 'settings'>[] {
     const tabs = settings
-        .map(setting => getTabFromId(setting._id))
+        .map(setting => getTabFromId(setting.id))
         .filter(tab => tab.tab !== undefined);
 
     const uniqueTabs = Array.from(new Set(tabs.map(tab => `${tab.group}.${tab.tab}`)));

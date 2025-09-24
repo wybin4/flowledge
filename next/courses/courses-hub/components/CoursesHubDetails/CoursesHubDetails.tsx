@@ -106,23 +106,23 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
         return true;
     };
 
-    const handleSaveNewSection = async (_id?: string) => {
+    const handleSaveNewSection = async (id?: string) => {
         if (newSection) {
             const result = await useSaveItem<Section, SectionToSave>({
-                isCreate: _id ? false : true,
+                isCreate: id ? false : true,
                 prefix: coursesHubSectionsPrefixApi,
                 apiClient: userApiClient,
-                _id,
+                id,
                 item: {
                     title: newSection,
-                    courseId: course._id,
+                    courseId: course.id,
                     isVisible: false
                 } as unknown as Section
             });
             if (result) {
-                if (_id) {
+                if (id) {
                     setCourseSections(courseSections.map(section => {
-                        if (section.section._id === result._id) {
+                        if (section.section.id === result.id) {
                             section.section.title = result.title;
                         }
                         return section;
@@ -145,10 +145,10 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
 
     const sectionHandleChange: HandleChangeInRightSidebar<Section> = (type, item, id) => {
         if (type === TablePageActionType.DELETE) {
-            setCourseSections(courseSections.filter(section => section.section._id !== id));
+            setCourseSections(courseSections.filter(section => section.section.id !== id));
         } else if (type === TablePageActionType.EDIT) {
             setCourseSections(courseSections.map(section => {
-                if (section.section._id === id && item) {
+                if (section.section.id === id && item) {
                     section.section = item;
                 }
                 return section;
@@ -160,10 +160,10 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
         setCourseSections(courseSections.map(section => {
             if (section.lessons) {
                 if (type === TablePageActionType.DELETE) {
-                    section.lessons = section.lessons.filter(lesson => lesson._id !== id);
+                    section.lessons = section.lessons.filter(lesson => lesson.id !== id);
                 } else if (type === TablePageActionType.EDIT) {
                     section.lessons = section.lessons.map(lesson => {
-                        if (lesson._id === id && item) {
+                        if (lesson.id === id && item) {
                             return item;
                         }
                         return lesson;
@@ -181,7 +181,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                 <div className={cn(classNames.containerClassName)}>
                     {selectedSectionIdToEdit && (
                         <SectionRightSidebarModal
-                            courseId={course._id}
+                            courseId={course.id}
                             selectedId={selectedSectionIdToEdit}
                             setSelectedId={setSelectedSectionIdToEdit}
                             setIsExpanded={setIsExpanded}
@@ -194,7 +194,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     )}
                     {selectedLessonToEdit && (
                         <LessonRightSidebarModal
-                            courseId={course._id}
+                            courseId={course.id}
                             selected={selectedLessonToEdit}
                             setSelected={setSelectedLessonToEdit}
                             setIsExpanded={setIsExpanded}
@@ -209,7 +209,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                         {onClose =>
                             <CoursesHubEditorsModal
-                                courseId={course._id}
+                                courseId={course.id}
                                 editors={courseEditors || []}
                                 onSave={(editors) => setCourseEditors(editors)}
                                 onCancel={onClose as any}
@@ -273,7 +273,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                 }
                                 {courseSections && courseSections.length > 0 && courseSections.map(section => (
                                     <CourseSection
-                                        key={section.section._id}
+                                        key={section.section.id}
                                         section={section}
                                         setLesson={(lesson) => {
                                             setSelectedLessonToEdit(lesson);
@@ -283,7 +283,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                             title: t('edit'),
                                             type: ChildrenPosition.Right,
                                             onClick: () => {
-                                                setSelectedSectionIdToEdit(section.section._id);
+                                                setSelectedSectionIdToEdit(section.section.id);
                                                 onClick();
                                             }
                                         },
@@ -294,10 +294,10 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
                                                     `${coursesHubLessonsPrefixApi}.create`,
                                                     {
                                                         type: LessonSaveType.Draft,
-                                                        sectionId: section.section._id, courseId: course._id
+                                                        sectionId: section.section.id, courseId: course.id
                                                     }
                                                 ).then(({ lessonId }) => {
-                                                    router.push(`/${coursesHubPrefix}/${course._id}/${lessonId}?video=true`);
+                                                    router.push(`/${coursesHubPrefix}/${course.id}/${lessonId}?video=true`);
                                                 })
                                             },
                                             type: ChildrenPosition.Bottom
@@ -310,7 +310,7 @@ export const CoursesHubDetails = memo(({ course }: { course: CoursesHubDetail })
 
                         {(viewSubscribers || viewStatistics) &&
                             <CoursesHubSideSection
-                                courseId={course._id}
+                                courseId={course.id}
                                 tabs={Object.values(CoursesHubSideSectionMainTabs).filter(tab => {
                                     return (tab === CoursesHubSideSectionMainTabs.Users && viewSubscribers) ||
                                         (tab === CoursesHubSideSectionMainTabs.Statistics && viewStatistics);

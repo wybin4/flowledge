@@ -36,7 +36,7 @@ export const CoursesHubSideSectionUsers = ({ prefix, courseId, setTab }: Courses
             `${courseSubscriptionsPrefix}.get/${courseId}${setQueryParams({ pageSize })}`
         ).then(users => {
             setSubscribers(users.map(u => ({
-                value: u._id,
+                value: u.id,
                 label: u.name,
                 avatar: u.avatar
             })));

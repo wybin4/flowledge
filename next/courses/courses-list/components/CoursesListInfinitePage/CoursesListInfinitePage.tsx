@@ -35,8 +35,8 @@ export const CoursesListInfinitePage = () => {
         removeStateCallbacks: CourseSubscriptions.popCallback.bind(CourseSubscriptions),
         onSetData: (data) => {
             const favouriteSubs = data.filter(sub => sub.isFavourite === true);
-            const restSubs = data.filter(sub => !favouriteSubs.some(fav => fav._id === sub._id));
-            const excludedIds = data.map(item => item._id);
+            const restSubs = data.filter(sub => !favouriteSubs.some(fav => fav.id === sub.id));
+            const excludedIds = data.map(item => item.id);
 
             const transSubs = restSubs.map(item => ({
                 ...item,

@@ -26,8 +26,8 @@ export const SectionRightSidebarModal = ({
     setIsExpanded
 }: SectionRightSidebarModalProps) => {
     const useGetItemHook = useCallback((callback: (item: Section) => void) => {
-        return (_id: string) => {
-            const section = sections.find(section => section.section._id === selectedId);
+        return (id: string) => {
+            const section = sections.find(section => section.section.id === selectedId);
             if (section) {
                 callback(section.section);
             }
@@ -46,7 +46,7 @@ export const SectionRightSidebarModal = ({
             prefix={coursesHubSectionsPrefixTranslate}
             apiPrefix={coursesHubSectionsPrefixApi}
             mode={TablePageMode.EDIT}
-            _id={selectedId}
+            id={selectedId}
             settingKeys={[
                 { name: 'title', types: [SettingType.InputText], error: sectionTitleError },
                 {
@@ -66,7 +66,7 @@ export const SectionRightSidebarModal = ({
                 return body;
             }}
             createEmptyItem={() => ({
-                _id: "",
+                id: "",
                 title: "",
                 courseId: courseId,
                 isVisible: false

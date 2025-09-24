@@ -1,5 +1,5 @@
 export interface CourseCreator {
-    _id: string;
+    id: string;
     name: string;
     username: string;
 }

@@ -27,7 +27,7 @@ export const CreateLessonSynopsisAndStuff = ({ lessonId, synopsisText, stuffList
     });
 
     const initialLesson: LessonPageItem = {
-        _id: lessonId, title: '', time: '', synopsisText, stuffList
+        id: lessonId, title: '', time: '', synopsisText, stuffList
     };
 
     useEffect(() => {

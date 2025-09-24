@@ -4,7 +4,7 @@ import { CachedCollection } from './CachedCollection';
 export const PrivateSettings = new CachedCollection<SettingValue>('private-settings');
 
 function filterSettingsByRegex(regexArray: string[]): SettingValue[] {
-    const regexQueries = regexArray.map(regex => ({ _id: { '$regex': regex } }));
+    const regexQueries = regexArray.map(regex => ({ id: { '$regex': regex } }));
     const settings = PrivateSettings.collection.find({
         $and: regexQueries
     });

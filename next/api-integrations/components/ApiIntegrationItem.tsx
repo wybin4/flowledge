@@ -14,10 +14,10 @@ import { useTranslation } from "react-i18next";
 
 interface ApiIntegrationItemProps {
     mode: TablePageMode;
-    _id?: string;
+    id?: string;
 }
 
-export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
+export const ApiIntegrationItem = ({ mode, id }: ApiIntegrationItemProps) => {
     const isPermitted = usePermission('manage-integrations');
     const { t } = useTranslation();
 
@@ -29,7 +29,7 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
                 isEditionPermitted: isPermitted,
                 isDeletionPermitted: isPermitted
             }}
-            _id={_id}
+            id={id}
             settingKeys={[
                 { name: 'enabled', types: [SettingType.Radio] },
                 { name: 'title', types: [SettingType.InputText] },
@@ -58,12 +58,12 @@ export const ApiIntegrationItem = ({ mode, _id }: ApiIntegrationItemProps) => {
                 type: ChildrenPosition.Left
             }}
             createEmptyItem={() => ({
-                _id: "",
+                id: "",
                 name: "",
                 secret: "",
                 script: "",
                 u: {
-                    _id: "",
+                    id: "",
                     username: ""
                 },
                 createdAt: "",

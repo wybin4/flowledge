@@ -3,7 +3,6 @@ package gateway
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -44,24 +43,26 @@ const userClaimsKey ctxKey = "userClaims"
 
 func (h *GatewayHandler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/login" || r.URL.Path == "/refresh" {
+		// Пропускаем аутентификацию для маршрутов /login и /refresh
+		if r.URL.Path == "/api/auth/login" || r.URL.Path == "/api/auth/refresh" {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			http.Error(w, "missing Authorization header", http.StatusUnauthorized)
+		// Извлекаем JWT-токен из кук
+		jwtCookie, err := r.Cookie("jwtToken") // Замените на имя вашей куки
+		if err != nil {
+			http.Error(w, "missing JWT token cookie", http.StatusUnauthorized)
 			return
 		}
 
-		var token string
-		fmt.Sscanf(authHeader, "Bearer %s", &token)
+		token := jwtCookie.Value
 		if token == "" {
-			http.Error(w, "invalid Authorization header", http.StatusUnauthorized)
+			http.Error(w, "invalid JWT token", http.StatusUnauthorized)
 			return
 		}
 
+		// Проверяем токен через account-service
 		input := map[string]interface{}{"token": token}
 		respBytes, err := h.AccountClient.Request(r.Context(), "account-service", "validate", input)
 		if err != nil {
@@ -80,6 +81,7 @@ func (h *GatewayHandler) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		// Сохраняем claims в контекст
 		ctx := context.WithValue(r.Context(), userClaimsKey, &claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -167,20 +169,19 @@ func (h *GatewayHandler) handleOptions(w http.ResponseWriter, r *http.Request) {
 func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 	r.Use(CORSMiddleware)
 	r.Use(h.MetricsMiddleware)
+	r.Use(h.RateLimitMiddleware)
 
 	r.HandleFunc("/api/{rest:.*}", h.handleOptions).Methods("OPTIONS")
 
 	sr := r.PathPrefix("/api/").Subrouter()
 
-	sr.Use(h.MetricsMiddleware)
-	sr.Use(h.RateLimitMiddleware)
 	sr.Use(h.AuthMiddleware)
-	sr.Use(h.MetricsMiddleware)
 
 	sr.HandleFunc("/users.get/{id}", h.handleGetUser).Methods("GET")
+	sr.HandleFunc("/users.set-setting", h.handleSetUserSettings).Methods("POST")
 	sr.Handle("/users.create", RequirePermission(h, "manage-users", http.HandlerFunc(h.handleCreateUser))).Methods("POST")
 
-	sr.HandleFunc("/settings.get", h.handleGetSettings).Methods("GET")
+	sr.HandleFunc("/private-settings.get", h.handleGetPrivateSettings).Methods("GET")
 	sr.Handle("/settings.set", RequirePermission(h, "edit-private-settings", http.HandlerFunc(h.handleSetSettings))).Methods("POST")
 
 	sr.HandleFunc("/permissions.get", h.handleGetPermissions).Methods("GET")
@@ -198,7 +199,41 @@ func (h *GatewayHandler) RegisterRoutes(r *mux.Router) {
 // --- HTTP handlers ---
 func (h *GatewayHandler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
+
+	claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaimsResponse)
+	if !ok || claims == nil {
+		http.Error(w, "user claims not found", http.StatusUnauthorized)
+		return
+	}
+
+	if id == "me" {
+		id = claims.UserID
+	}
+
+	if id != claims.UserID && !h.PermissionProvider.CheckPermission("view-all-users", claims.Roles) {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
 	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.get", map[string]interface{}{"id": id})
+}
+
+func (h *GatewayHandler) handleSetUserSettings(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(userClaimsKey).(*pkg_type.UserClaimsResponse)
+	if !ok || claims == nil {
+		http.Error(w, "user claims not found", http.StatusUnauthorized)
+		return
+	}
+
+	var input map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	input["userId"] = claims.UserID
+
+	h.forwardRequest(w, r, h.AccountClient, "account-service", "users.set-setting", input)
 }
 
 func (h *GatewayHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
@@ -262,8 +297,8 @@ func (h *GatewayHandler) handleSetSettings(w http.ResponseWriter, r *http.Reques
 	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "settings.set", input)
 }
 
-func (h *GatewayHandler) handleGetSettings(w http.ResponseWriter, r *http.Request) {
-	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "settings.get", nil)
+func (h *GatewayHandler) handleGetPrivateSettings(w http.ResponseWriter, r *http.Request) {
+	h.forwardRequest(w, r, h.PolicyClient, "policy-service", "settings.get-private", nil)
 }
 
 func (h *GatewayHandler) handleGetPermissions(w http.ResponseWriter, r *http.Request) {

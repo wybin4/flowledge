@@ -105,7 +105,7 @@ export const CreateLessonVideo = ({ courseId, lessonId, setLesson, videoId: init
     const mappingFromEntitiesToIntegrationIds = usePrivateSetting<string>('api-integrations.map-types-to-integrations') || '';
 
     const integrationId = getIntegrationIdFromMap(ApiIntegrationEntity.Survey, mappingFromEntitiesToIntegrationIds);
-   
+
     const saveLesson = (body?: LessonToSaveOnDraftRequest) =>
         userApiClient.post<LessonToSaveOnDraftResponse>(
             `${coursesHubLessonsPrefixApi}.create`, { ...body, courseId }
@@ -213,7 +213,7 @@ export const CreateLessonVideo = ({ courseId, lessonId, setLesson, videoId: init
 
         if (removeVideo && !withVideo) {
             await saveLesson({
-                _id: lessonId,
+                id: lessonId,
                 type: LessonAdditionalSaveType.RemoveVideo,
             });
             router.push(baseNextUrl);
@@ -248,7 +248,7 @@ export const CreateLessonVideo = ({ courseId, lessonId, setLesson, videoId: init
             await saveLesson({
                 videoId, survey, synopsis,
                 type: LessonSaveType.Video,
-                _id: lessonId
+                id: lessonId
             });
 
             router.push(`${baseNextUrl}&hasVideo=${!!videoId}`)
@@ -340,7 +340,7 @@ export const CreateLessonVideo = ({ courseId, lessonId, setLesson, videoId: init
                                                                 className={styles.videoActionOption}
                                                                 debounceTime={0}
                                                                 setting={{
-                                                                    _id: key,
+                                                                    id: key,
                                                                     value: action.options[key],
                                                                     packageValue: findInitialValue(action.label, key) || '',
                                                                     i18nLabel: `${translationPrefix}.${key}`,

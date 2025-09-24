@@ -38,7 +38,7 @@ export const CoursesHubEditorItem = ({
             const newRoles: { value?: string | undefined; label: string; }[] =
                 rolesFromCurrentScope
                     .map(r => ({
-                        value: r._id, label: formatRoleName(r._id)
+                        value: r.id, label: formatRoleName(r.id)
                     }));
             if (selectedRole) {
                 newRoles.push({
@@ -73,7 +73,7 @@ export const CoursesHubEditorItem = ({
 
     return (
         <LabeledAvatar
-            item={{ value: editor._id, avatar: editor.avatar, label: editor.name }}
+            item={{ value: editor.id, avatar: editor.avatar, label: editor.name }}
             size={size}
             child={(size) => {
                 const currRoles = getCurrentRoles(roles, editor.disabled, permissions);

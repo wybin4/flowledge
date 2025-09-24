@@ -30,6 +30,7 @@ export default function LoginPage() {
         const { jwtToken, refreshToken } = await userApiClient.post<LoginResponse>(
             'auth/login', { username, password }
         );
+        
         saveTokensClient(jwtToken, refreshToken);
         router.push('/');
     };

@@ -18,12 +18,12 @@ export const PermissionsItem = ({ permission, roles, onClick, isEditable }: Perm
         <tr className={cn(styles.container, {
             [styles.pointer]: isEditable
         })}>
-            <td className={styles.first}>{t(`permissions.${permission._id}.name`)}</td>
+            <td className={styles.first}>{t(`permissions.${permission.id}.name`)}</td>
             {roles.map(role => {
                 return (
                     <td
                         key={role}
-                        onClick={() => isEditable ? onClick(permission._id, role) : undefined}
+                        onClick={() => isEditable ? onClick(permission.id, role) : undefined}
                         className={cn(styles.item, {
                             [styles.checked]: permission.roles.includes(role)
                         })}

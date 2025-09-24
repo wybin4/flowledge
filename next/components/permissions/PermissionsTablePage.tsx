@@ -38,7 +38,7 @@ export const PermissionsTablePage = () => {
     });
 
     const roles = Roles.collection.find();
-    const roleNames = roles.map(role => role._id);
+    const roleNames = roles.map(role => role.id);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -81,7 +81,7 @@ export const PermissionsTablePage = () => {
                         body={data.map(permission => (
                             <PermissionsItem
                                 onClick={handleAddRole}
-                                key={permission._id}
+                                key={permission.id}
                                 permission={permission}
                                 roles={roleNames}
                                 isEditable={isEditionPermitted}

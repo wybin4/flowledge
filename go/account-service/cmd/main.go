@@ -116,6 +116,28 @@ func main() {
 
 								return userService.GetUser(ctx, userID)
 
+							case "users.set-setting":
+								var input struct {
+									ID        string      `mapstructure:"id"`
+									Value     interface{} `mapstructure:"value"`
+									UserIDRaw interface{} `mapstructure:"userId"`
+								}
+
+								if err := mapstructure.Decode(req.Payload, &input); err != nil {
+									return nil, fmt.Errorf("invalid setting payload: %w", err)
+								}
+
+								userID, ok := input.UserIDRaw.(string)
+								if !ok || userID == "" {
+									return nil, fmt.Errorf("invalid userId")
+								}
+
+								if err := userService.SetUserSettings(ctx, userID, input.ID, input.Value); err != nil {
+									return nil, err
+								}
+
+								return map[string]interface{}{}, nil
+
 							case "users.create":
 								var payload user_dto.CreateUserRequest
 								if err := mapstructure.Decode(req.Payload, &payload); err != nil {

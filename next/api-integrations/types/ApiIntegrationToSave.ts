@@ -3,7 +3,7 @@ export interface ApiIntegrationToSave {
     secret: string;
     script: string;
     u: {
-        _id: string;
+        id: string;
         username: string;
     };
 }

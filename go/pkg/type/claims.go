@@ -9,5 +9,6 @@ type UserClaims struct {
 
 type UserClaimsResponse struct {
 	*UserClaims
-	Roles []string
+	UserID string
+	Roles  []string
 }

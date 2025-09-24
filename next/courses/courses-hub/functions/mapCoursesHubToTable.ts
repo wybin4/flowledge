@@ -6,7 +6,7 @@ import { getPublicationStatus } from "./getPublicationStatus"
 
 export const mapCoursesHubToTable = (course: Course, locale: string, t: TFunction): CoursesHubTableItem => {
     return {
-        _id: course._id,
+        id: course.id,
         title: course.title,
         creator: course.u.name,
         createdAt: getFormattedDateWithTime(course.createdAt, locale),

@@ -132,6 +132,7 @@ func (j *JwtTokenService) ValidateToken(ctx context.Context, tokenStr, tokenType
 
 	return &pkg_type.UserClaimsResponse{
 		UserClaims: claims,
+		UserID:     user.ID,
 		Roles:      user.Roles,
 	}, nil
 }

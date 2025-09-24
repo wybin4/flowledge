@@ -1,4 +1,4 @@
 export interface CourseTag {
-    _id: string;
+    id: string;
     name: string;
 }

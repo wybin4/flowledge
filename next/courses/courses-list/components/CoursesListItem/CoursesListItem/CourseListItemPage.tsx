@@ -12,11 +12,11 @@ import { useTranslation } from "react-i18next";
 import { useCourseSubscription } from "@/courses/hooks/useCourseSubscription";
 import { CourseSubscriptionItem } from "@/courses/courses-list/types/CourseSubscriptionItem";
 
-export const CourseListItemPage = ({ _id }: { _id: string }) => {
+export const CourseListItemPage = ({ id }: { id: string }) => {
     const [course, setCourse] = useState<CourseWithSubscriptionItem | undefined>(undefined);
     const { t } = useTranslation();
 
-    const subscription = useCourseSubscription(_id);
+    const subscription = useCourseSubscription(id);
 
     const setCourseWithProgress = (course: CourseItem, subscription: CourseSubscriptionItem): CourseWithSubscriptionItem => {
         const progress = subscription.progress;
@@ -31,7 +31,7 @@ export const CourseListItemPage = ({ _id }: { _id: string }) => {
         }
 
         const updatedSections = course.sections?.map(section => {
-            const sectionProgress = progress.sections.find(s => s._id === section.section._id);
+            const sectionProgress = progress.sections.find(s => s.id === section.section.id);
 
             const updatedSection = {
                 ...section.section,
@@ -39,7 +39,7 @@ export const CourseListItemPage = ({ _id }: { _id: string }) => {
             };
 
             const updatedLessons = section.lessons?.map(lesson => {
-                const lessonProgress = sectionProgress?.lessons.find(l => l._id === lesson._id);
+                const lessonProgress = sectionProgress?.lessons.find(l => l.id === lesson.id);
                 return {
                     ...lesson,
                     progress: lessonProgress?.progress,
@@ -71,7 +71,7 @@ export const CourseListItemPage = ({ _id }: { _id: string }) => {
             const courseRes = await useGetItem<CourseItem>(
                 coursesListPrefixApi,
                 userApiClient,
-                _id,
+                id,
                 { ...(subscription?.courseVersion && { versionId: subscription.courseVersion }) }
             );
             if (courseRes) {
@@ -84,7 +84,7 @@ export const CourseListItemPage = ({ _id }: { _id: string }) => {
         };
 
         fetchCourse();
-    }, [_id]);
+    }, [id]);
 
     useEffect(() => {
         if (course && subscription) {

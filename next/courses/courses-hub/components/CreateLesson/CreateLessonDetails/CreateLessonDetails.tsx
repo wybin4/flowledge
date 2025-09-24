@@ -32,7 +32,7 @@ export const CreateLessonDetails = ({ courseId, lessonId, title, time, imageUrl,
     useEffect(() => {
         const { value, unit } = (time && parseTimeUnit(time)) ?? { value: 0, unit: TimeUnit.MINS };
         const details: LessonToSaveOnDetails = {
-            _id: lessonId,
+            id: lessonId,
             title: title ?? '',
             imageUrl,
             time: {
@@ -110,8 +110,8 @@ export const CreateLessonDetails = ({ courseId, lessonId, title, time, imageUrl,
                 }
             ]}
             transformItemToSave={item => {
-                const { _id, title, time } = item;
-                return { _id, title, courseId, ...time, type: LessonSaveType.Details }
+                const { id, title, time } = item;
+                return { id, title, courseId, ...time, type: LessonSaveType.Details }
             }}
             onActionCallback={() => router.push('?synopsis=true')}
             isBackWithRouter={false}

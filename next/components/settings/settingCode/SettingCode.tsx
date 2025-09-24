@@ -14,7 +14,7 @@ export const SettingCode = memo(({ setting, handleSave, disabled }: SettingWrapp
     const [inputValue, setInputValue] = useDebouncedSave<SettingValueType>(
         setting.value,
         1000,
-        (value) => handleSave({ id: setting._id, value })
+        (value) => handleSave({ id: setting.id, value })
     );
 
     return (

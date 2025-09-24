@@ -14,7 +14,7 @@ export const useSaveEnhancedTablePageItem = <T, U>(
     prefix: string,
     apiClient: ApiClientMethods,
     transformItem: (item: T) => U,
-    _id?: string,
+    id?: string,
     callback?: TablePageActionCallback<T>,
     isBackWithRouter = true
 ) => {
@@ -23,7 +23,7 @@ export const useSaveEnhancedTablePageItem = <T, U>(
 
     const saveItem = useCallback(async (item: T | undefined) => {
         const isCreate = mode === TablePageMode.CREATE;
-        const result = await useSaveItem({ isCreate, prefix, apiClient, transformItem, _id, item });
+        const result = await useSaveItem({ isCreate, prefix, apiClient, transformItem, id, item });
         if (result) {
             queryClient.invalidateQueries({ queryKey: [`${prefix}DataPage`] });
             isCreate && queryClient.invalidateQueries({ queryKey: [`${prefix}TotalCount`] });
@@ -32,7 +32,7 @@ export const useSaveEnhancedTablePageItem = <T, U>(
                 router.back();
             }
         }
-    }, [mode, prefix, _id, isBackWithRouter, callback]);
+    }, [mode, prefix, id, isBackWithRouter, callback]);
 
     return saveItem;
 };

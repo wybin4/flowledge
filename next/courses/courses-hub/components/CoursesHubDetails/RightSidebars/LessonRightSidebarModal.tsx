@@ -27,7 +27,7 @@ export const LessonRightSidebarModal = ({
     setIsExpanded
 }: LessonRightSidebarModalProps) => {
     const crumbs = createLessonCrumbs(LessonSaveType.Draft, (currType, router) => {
-        router.replace(`${courseId}/${selected._id}?${currType.toLowerCase()}=true`)
+        router.replace(`${courseId}/${selected.id}?${currType.toLowerCase()}=true`)
     });
     const router = useRouter();
 
@@ -48,7 +48,7 @@ export const LessonRightSidebarModal = ({
             queryParams={{ courseId }}
             title={`${t('edit')} "${selected.title}"`}
             mode={TablePageMode.EDIT}
-            _id={selected._id}
+            id={selected.id}
             settingKeys={[{
                 name: 'isVisible',
                 types: [SettingType.Radio],
@@ -58,7 +58,7 @@ export const LessonRightSidebarModal = ({
             hasDeleteDescription={false}
             apiClient={userApiClient}
             transformItemToSave={(item) => {
-                return { _id: item._id, isVisible: item.isVisible ?? false, courseId };
+                return { id: item.id, isVisible: item.isVisible ?? false, courseId };
             }}
             onBackButtonClick={() => {
                 setIsExpanded(false);
@@ -66,7 +66,7 @@ export const LessonRightSidebarModal = ({
             }}
             isBackWithRouter={false}
             onActionCallback={(type, item) => {
-                handleChange(type, item, selected._id);
+                handleChange(type, item, selected.id);
                 setIsExpanded(false);
                 clearState();
             }}

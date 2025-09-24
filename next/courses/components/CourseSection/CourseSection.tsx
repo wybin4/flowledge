@@ -97,9 +97,9 @@ export const CourseSection = ({
                 {...sectionClassNames}>
                 {(section.lessons && section.lessons.length > 0) ? section.lessons.map((lesson) => (
                     <CollapsibleSectionChild
-                        id={lesson._id}
+                        id={lesson.id}
                         onClick={() => setLesson?.(lesson)}
-                        key={lesson._id}
+                        key={lesson.id}
                         title={lesson.title}
                         time={(lesson.time ? translateTime(lesson.time) : lesson.time) || ''}
                         additionalInfo={lesson.additionalInfo}

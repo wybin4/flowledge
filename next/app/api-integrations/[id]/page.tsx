@@ -6,6 +6,6 @@ export default async function ApiIntegrationItemPage({ params, searchParams }: {
     const { mode } = await searchParams;
 
     return (
-        <ApiIntegrationItem mode={mode as TablePageMode} _id={id} />
+        <ApiIntegrationItem mode={mode as TablePageMode} id={id} />
     );
 }

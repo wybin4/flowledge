@@ -70,7 +70,7 @@ export const UsersTablePage = ({ mode }: { mode?: TablePageMode }) => {
                         prefix: usersPrefix,
                         selectedKey: 'roles',
                         options: rolesFromCurrentScope.map(
-                            role => ({ value: role._id, label: t(`${rolesPrefix}.${role._id}`) })
+                            role => ({ value: role.id, label: t(`${rolesPrefix}.${role.id}`) })
                         )
                     }
                 },
@@ -84,7 +84,7 @@ export const UsersTablePage = ({ mode }: { mode?: TablePageMode }) => {
                 return body;
             }}
             createEmptyItem={() => ({
-                _id: "",
+                id: "",
                 name: "",
                 username: "",
                 avatar: "",

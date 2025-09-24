@@ -59,13 +59,13 @@ export const CreateLessonSurvey = ({ courseId, lessonId, selectedQuestionId, sur
     const router = useRouter();
     const currentPath = usePathname();
 
-    const handleSetQuestion = (newQuestion?: SurveyQuestion, _id?: string) => {
+    const handleSetQuestion = (newQuestion?: SurveyQuestion, id?: string) => {
         setQuestions(prevQuestions => {
-            if (_id) {
-                return prevQuestions.filter(question => question._id !== _id);
+            if (id) {
+                return prevQuestions.filter(question => question.id !== id);
             } else if (newQuestion) {
                 return prevQuestions.map(question =>
-                    question._id === newQuestion._id ? newQuestion : question
+                    question.id === newQuestion.id ? newQuestion : question
                 );
             }
             return prevQuestions;
@@ -75,7 +75,7 @@ export const CreateLessonSurvey = ({ courseId, lessonId, selectedQuestionId, sur
     const handleAddQuestion = () => {
         const newId = String(Date.now())
         const newQuestion: SurveyQuestion = {
-            _id: newId,
+            id: newId,
             title: t('type-here'),
             choices: []
         };
@@ -89,7 +89,7 @@ export const CreateLessonSurvey = ({ courseId, lessonId, selectedQuestionId, sur
         userApiClient.post(
             `${coursesHubLessonsPrefixApi}.create`, {
             type: LessonSaveType.Survey,
-            _id: lessonId,
+            id: lessonId,
             questions,
             courseId
         }).then(_ => {
@@ -118,7 +118,7 @@ export const CreateLessonSurvey = ({ courseId, lessonId, selectedQuestionId, sur
                             renderItem={(item, index) => (
                                 <SurveyQuestionItem
                                     key={index}
-                                    _id={item._id}
+                                    id={item.id}
                                     title={item.title}
                                     number={index + 1}
                                 />

@@ -15,7 +15,7 @@ type CoursesHubEditorsProps = {
 export const CoursesHubEditors = ({ editors, setEditors, size = ItemSize.Little, permissions }: CoursesHubEditorsProps) => {
     const handleEditorChange = (updatedEditor: CourseEditor) => {
         const updatedEditors = editors.map(editor =>
-            editor._id === updatedEditor._id ? updatedEditor : editor
+            editor.id === updatedEditor.id ? updatedEditor : editor
         );
         setEditors?.(updatedEditors);
     };

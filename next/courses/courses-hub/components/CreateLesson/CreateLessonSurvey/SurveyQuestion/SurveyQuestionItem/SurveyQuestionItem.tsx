@@ -7,7 +7,7 @@ import styles from "./SurveyQuestionItem.module.css";
 import cn from "classnames";
 
 type SurveyQuestionItemProps = {
-    _id: string;
+    id: string;
     title?: string;
     number?: number;
     size?: ItemSize;
@@ -17,7 +17,7 @@ type SurveyQuestionItemProps = {
 };
 
 export const SurveyQuestionItem = ({
-    _id, number, title,
+    id, number, title,
     size = ItemSize.Little,
     handleDelete, deleteClassNames,
     children
@@ -30,8 +30,8 @@ export const SurveyQuestionItem = ({
 
     return (
         <Card
-            id={!isLittle ? _id : ''}
-            onClick={isLittle ? () => handleScrollToQuestion(_id) : undefined}
+            id={!isLittle ? id : ''}
+            onClick={isLittle ? () => handleScrollToQuestion(id) : undefined}
             title={_ => isLittle ? title : `${t('questions.index')} ${number}`}
             dotText={_ => isLittle ? String(number) : '?'}
             actions={[

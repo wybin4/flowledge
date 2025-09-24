@@ -30,7 +30,7 @@ export const SettingSelector = memo(({
                                         value={option.value as string}
                                         selectedValue={setting.value as string}
                                         label={option.label}
-                                        onClick={() => handleSave({ id: setting._id, value: option.value })}
+                                        onClick={() => handleSave({ id: setting.id, value: option.value })}
                                         disabled={disabled}
                                     />
                                 ))}
@@ -48,7 +48,7 @@ export const SettingSelector = memo(({
                                 width='100%'
                                 value={String(setting.value)}
                                 placeholder={setting.placeholder}
-                                onChange={(newValue: any) => handleSave({ id: setting._id, value: newValue.value })}
+                                onChange={(newValue: any) => handleSave({ id: setting.id, value: newValue.value })}
                             />
                         )
                     }
@@ -64,9 +64,9 @@ export const SettingSelector = memo(({
                                 setSelectedValues={setSelectedValues}
                                 onChange={(newValue: any) => {
                                     if (newValue.action === 'remove') {
-                                        return handleSave({ id: setting._id, value: setting.value.filter(s => s != newValue.value) as any });
+                                        return handleSave({ id: setting.id, value: setting.value.filter(s => s != newValue.value) as any });
                                     }
-                                    return handleSave({ id: setting._id, value: [...setting.value || [], newValue.value] as any });
+                                    return handleSave({ id: setting.id, value: [...setting.value || [], newValue.value] as any });
                                 }}
                             />
                         );

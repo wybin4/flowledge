@@ -9,8 +9,8 @@ export const useGetEnhancedTablePageItem = <T,>(
     setItem: (item: T) => void,
     queryParams?: QueryParams
 ) => {
-    const getItem = useCallback(async (_id: string) => {
-        const item = await useGetItem<T>(prefix, apiClient, _id, queryParams);
+    const getItem = useCallback(async (id: string) => {
+        const item = await useGetItem<T>(prefix, apiClient, id, queryParams);
         setItem(item);
     }, [setItem]);
 

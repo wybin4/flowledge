@@ -30,8 +30,8 @@ export const SortableList = <T extends Identifiable>({
         const { active, over } = event;
 
         if (active.id !== over.id) {
-            const oldIndex = items.findIndex(item => item._id === active.id);
-            const newIndex = items.findIndex(item => item._id === over.id);
+            const oldIndex = items.findIndex(item => item.id === active.id);
+            const newIndex = items.findIndex(item => item.id === over.id);
             const newItems = arrayMove(items, oldIndex, newIndex);
             setItems(newItems);
         }
@@ -39,9 +39,9 @@ export const SortableList = <T extends Identifiable>({
 
     return (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={items.map(item => item._id)} strategy={verticalListSortingStrategy}>
+            <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
                 {items.map((item, index) => (
-                    <SortableItem key={item._id} id={item._id} className={className}>{
+                    <SortableItem key={item.id} id={item.id} className={className}>{
                         button => (
                             <div className={styles.list}>
                                 {buttonPosition === ChildrenPosition.Left && button}

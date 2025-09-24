@@ -27,7 +27,7 @@ export interface EnhancedTablePageProps<T, U> {
     transformData: (data: T, locale: string, t: TFunction) => U;
     getHeaderItems: (t: TFunction, setSortQuery: (query: string) => void) => Sortable[];
     itemKeys: EnhancedItemChildren[];
-    onItemClick?: (_id: string) => void;
+    onItemClick?: (id: string) => void;
     className?: string;
     tableStyles?: string;
     getDataPageFunctions: DataPageHookFunctions<T>;
@@ -115,7 +115,7 @@ export const EnhancedTablePage = <T extends Identifiable, U extends Identifiable
                         }
                         body={mappedData.map((item) =>
                             <EnhancedTablePageItem
-                                key={item._id}
+                                key={item.id}
                                 item={item}
                                 mode={TablePageMode.EDIT}
                                 itemKeys={itemKeys}

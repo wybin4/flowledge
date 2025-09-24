@@ -1,7 +1,7 @@
 import { LessonStuff } from "./LessonStuff";
 
 export type LessonPageItem = {
-    _id: string;
+    id: string;
     title: string;
     time: string;
     imageUrl?: string;

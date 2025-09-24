@@ -82,7 +82,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
                         });
 
                         setSection({ ...sectionRes, lessons });
-                        const currentLessonMaterials = lessons.find(lesson => lesson.lesson._id === currentLessonRes._id)?.materials;
+                        const currentLessonMaterials = lessons.find(lesson => lesson.lesson.id === currentLessonRes.id)?.materials;
                         if (currentLessonMaterials && currentLessonMaterials.length) {
                             setCurrentLessonMaterial(currentLessonMaterials[0]);
                             setCurrentLessonMaterials(currentLessonMaterials);
@@ -95,7 +95,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
 
     useEffect(() => {
         if (currentLesson) {
-            const currentSectionProgress = subscription?.progress?.sections.find(s => s._id === currentLesson.sectionId);
+            const currentSectionProgress = subscription?.progress?.sections.find(s => s.id === currentLesson.sectionId);
             const sectionProgress = currentSectionProgress?.progress;
 
             setSection((prevState: SidebarItem | undefined) => {
@@ -104,7 +104,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
                 }
 
                 const updatedLessons = prevState.lessons.map(lessonItem => {
-                    const lessonProgress = currentSectionProgress.lessons.find(l => l._id === lessonItem.lesson._id);
+                    const lessonProgress = currentSectionProgress.lessons.find(l => l.id === lessonItem.lesson.id);
 
                     if (lessonProgress) {
                         const updatedMaterials = lessonItem.materials.map(material => {
@@ -172,7 +172,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
     };
 
     const findCurrentLessonIndex = (lessons: { lesson: Identifiable }[], currentLessonId: string): number => {
-        return lessons.findIndex(lesson => lesson.lesson._id === currentLessonId);
+        return lessons.findIndex(lesson => lesson.lesson.id === currentLessonId);
     };
 
     const getNextLessonId = (currentLessonId: string): string | undefined => {
@@ -185,7 +185,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
             return undefined;
         }
 
-        return lessons[currentIndex + 1].lesson._id;
+        return lessons[currentIndex + 1].lesson.id;
     };
 
     const navigateMaterial = (direction: 'next' | 'previous') => {
@@ -237,15 +237,15 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
     };
 
     const handleExitFromSurvey = () => {
-        if (currentLesson._id) {
+        if (currentLesson.id) {
             const basePath = removeLastSegment(currentPath);
-            router.push(`${basePath}/${currentLesson._id}`);
+            router.push(`${basePath}/${currentLesson.id}`);
             handlePreviousMaterialClick();
         }
     };
 
     const getNext = () => {
-        const currentLessonId = currentLesson._id;
+        const currentLessonId = currentLesson.id;
         const nextLessonId = getNextLessonId(currentLessonId);
 
         const currentMaterialIndex = currentLessonMaterials?.findIndex(m => m.type === currentLessonMaterial?.type) ?? -1;
@@ -317,7 +317,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
                                 prefix={coursesListPrefix}
                                 size={ItemSize.Big}
                                 className={styles.sectionBar}
-                                additionalText={`${findCurrentLessonIndex(section.lessons, currentLesson._id) + 1}/${section.lessons.length}`}
+                                additionalText={`${findCurrentLessonIndex(section.lessons, currentLesson.id) + 1}/${section.lessons.length}`}
                             />
                         )}
                     </div>
@@ -326,7 +326,7 @@ export const CourseListLessonPage = ({ lessonId, isSurvey, version }: CourseList
                             <CourseListLessonSidebarItem
                                 key={index}
                                 title={lesson.title}
-                                expandedByDefault={lesson._id === currentLesson._id}
+                                expandedByDefault={lesson.id === currentLesson.id}
                                 headerClassName={headerClassName}
                             >
                                 {materials.length === 0 && (

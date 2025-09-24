@@ -3,13 +3,13 @@ import { useStateFromService } from "@/hooks/useStateFromService";
 import { SettingValueType } from "@/types/Setting";
 import { useEffect, useState } from "react";
 
-export const usePrivateSetting = <T,>(_id: string): T | undefined => {
-    const getValue = () => getPrivateSettingByRegex<SettingValueType>([_id]) as T;
+export const usePrivateSetting = <T,>(id: string): T | undefined => {
+    const getValue = () => getPrivateSettingByRegex<SettingValueType>([id]) as T;
     const [settingValue, setSettingValue] = useState<T | undefined>(getValue());
 
     useEffect(() => {
         setSettingValue(getValue());
-    }, [_id]);
+    }, [id]);
 
     useStateFromService(
         getValue,

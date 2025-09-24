@@ -12,7 +12,7 @@ export const useSurveyChoices = (initialChoices: SurveyChoice[]) => {
             return;
         }
         const newChoice: SurveyChoice = {
-            _id: String(Date.now()),
+            id: String(Date.now()),
             text: '',
             isCorrect: false,
         };
@@ -23,10 +23,10 @@ export const useSurveyChoices = (initialChoices: SurveyChoice[]) => {
         setChoices(updatedChoices);
     };
 
-    const handleDeleteChoice = (_id: string) => {
+    const handleDeleteChoice = (id: string) => {
         if (canDeleteChoices) {
-            const deletedChoice = choices.find(choice => choice._id === _id);
-            const newChoices = choices.filter(choice => choice._id !== _id);
+            const deletedChoice = choices.find(choice => choice.id === id);
+            const newChoices = choices.filter(choice => choice.id !== id);
 
             if (deletedChoice?.isCorrect && newChoices.length > 0) {
                 const nearestChoice = newChoices[0];

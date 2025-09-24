@@ -1,5 +1,5 @@
 export interface CourseEditor {
-    _id: string;
+    id: string;
     name: string;
     avatar: string;
     roles: string[];

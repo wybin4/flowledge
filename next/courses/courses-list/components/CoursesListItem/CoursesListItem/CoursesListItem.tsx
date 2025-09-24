@@ -38,7 +38,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
     const currentPath = usePathname();
     const searchParams = useSearchParams();
     const [selectedMenuTab, setSelectedMenuTab] = useState<CourseTabs>(CourseTabs.Lessons);
-    const pathnamePrefix = `${coursesListPrefix}/${course._id}`;
+    const pathnamePrefix = `${coursesListPrefix}/${course.id}`;
 
     const { t } = useTranslation();
 
@@ -59,7 +59,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
 
     const handleToggleFavourite = (newIsFavourite: boolean) => {
         userApiClient.post<ToggleFavouriteRequest>(
-            `${coursesListPrefixApi}.toggle-favourite/${course._id}`, {
+            `${coursesListPrefixApi}.toggle-favourite/${course.id}`, {
             isFavourite: newIsFavourite
         });
     }
@@ -90,13 +90,13 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
         if (!course.progress) {
             const { versionId } = await userApiClient.post<{ versionId: string }>(
                 `${courseSubscriptionsPrefix}/${courseProgressPrefix}.initiate`, {
-                courseId: course._id, lessonId: lesson._id, type
+                courseId: course.id, lessonId: lesson.id, type
             });
             version = versionId || course.courseVersion;
         }
 
         if (version) {
-            router.push(`${currentPath}/${lesson._id}?version=${version}`);
+            router.push(`${currentPath}/${lesson.id}?version=${version}`);
         }
     };
 
@@ -150,7 +150,7 @@ export const CoursesListItem = ({ isListPage, course, header, pointer = true }: 
                             <div>
                                 {course.sections.map(section => (
                                     <CourseSection
-                                        key={section.section._id}
+                                        key={section.section.id}
                                         className={defaultStyles.itemContainer}
                                         section={section}
                                         setLesson={lesson => {

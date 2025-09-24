@@ -1,7 +1,7 @@
 import { CourseProgressLesson } from "./CourseProgressLesson";
 
 export interface CourseProgressSection {
-    _id: string;
+    id: string;
     lessons: CourseProgressLesson[];
     progress: number;
 }

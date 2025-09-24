@@ -12,11 +12,11 @@ export const useDeleteEnhancedTablePageItem = <T,>(
     const router = useRouter();
     const queryClient = useQueryClient();
 
-    const deleteEnhancedTablePageItem = useCallback(async (_id: string) => {
-        await useDeleteItem(prefix, apiClient, _id);
+    const deleteEnhancedTablePageItem = useCallback(async (id: string) => {
+        await useDeleteItem(prefix, apiClient, id);
         queryClient.invalidateQueries({ queryKey: [`${prefix}DataPage`] });
         queryClient.invalidateQueries({ queryKey: [`${prefix}TotalCount`] });
-        callback?.(TablePageActionType.DELETE, { _id } as T);
+        callback?.(TablePageActionType.DELETE, { id } as T);
         if (isBackWithRouter) {
             router.back();
         }

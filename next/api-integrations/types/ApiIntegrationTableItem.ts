@@ -1,7 +1,7 @@
 import { ApiIntegrationEntity } from "./ApiIntegration";
 
 export type ApiIntegrationTableItem = {
-    _id: string;
+    id: string;
     title: string;
     status: string;
     user: string;

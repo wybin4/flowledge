@@ -6,7 +6,7 @@ import { apiIntegrationsPrefix } from "@/helpers/prefixes"
 
 export const mapApiIntegrationToTable = (integration: ApiIntegration, locale: string, t: TFunction): ApiIntegrationTableItem => {
     return {
-        _id: integration._id,
+        id: integration.id,
         title: integration.name,
         user: integration.u.username,
         createdAt: getFormattedDateWithTime(integration.createdAt, locale),

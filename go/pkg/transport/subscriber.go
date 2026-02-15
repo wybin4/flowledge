@@ -60,6 +60,6 @@ func NewPersistentKafkaSubscriber(prefix string, logger watermill.LoggerAdapter)
 		return nil, fmt.Errorf("failed to create Kafka subscriber: %w", err)
 	}
 
-	log.Printf("✅ Created Kafka subscriber for group: %s", consumerGroup)
+	log.Printf("Created Kafka subscriber for group: %s", consumerGroup)
 	return sub, nil
 }

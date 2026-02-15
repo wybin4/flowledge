@@ -6,11 +6,11 @@
 #### a. **Integrations Runner API**
 - Отвечает за интеграцию с внешними ИИ-сервисами и обработку данных. CRUD над интеграциями, выполнение скрипта в изолированном процессе с подстановкой секрета.
 - Тестовая версия: mistral-large-latest
-- Инструментарий: FastAPI, MongoDB, Subprocess. В тестовой версии полноценная изоляция среды выполнения не предусмотрена.
+- Инструментарий: Python, FastAPI, MongoDB, Subprocess. В тестовой версии полноценная изоляция среды выполнения не предусмотрена.
 
 #### b. **Synopsis Forge API**
 - Создает конспекты по видео: принимает видеофайл, извлекает из него аудио и преобразует его в текст с помощью модели **Faster Whisper**. Добавляет пунктуацию и форматирует текст с использованием модели **DeepMultilingualPunctuation**. Разбивает аудио на чанки для параллельной обработки, что ускоряет процесс транскрибации. Возвращает готовый конспект в виде текста.
-- Инструментарий: FastAPI, GridFS и MongoDB, FFmpeg, Faster Whisper, DeepMultilingualPunctuation.
+- Инструментарий: Python, FastAPI, GridFS и MongoDB, FFmpeg, Faster Whisper, DeepMultilingualPunctuation.
 
 <img width="600px" src="https://github.com/wybin4/flowledge/blob/master/assets/neural-backend.png"/>
 
